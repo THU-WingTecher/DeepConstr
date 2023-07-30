@@ -121,8 +121,8 @@ Welcome to the artifact repository of the NeuRI paper which is accepted by ESEC/
 
 > **Note**
 > NeuRI or NNSmith is able to find a lot more TensorFlow bugs in addition to these above.
-> Because we want to report bugs more [responsively](https://blog.regehr.org/archives/2037), we use a buffer size of 15 reports until some of them are fixed.
-> That being said, the 15 reported bugs are not fixed (though confirmed) by TensorFlow developers to date and we thus discontinue finding bugs over TensorFlow.
+> Because we want to report bugs more [responsibly](https://blog.regehr.org/archives/2037), we use a buffer size of 15 reports until some of them are fixed.
+> That being said, the 15 reported bugs were not fixed (though confirmed) by TensorFlow developers at the time we were developing NeuRI and consequently we discontinued bug finding for TensorFlow.
 
 ## Evaluating Coverage (RQ2)
 
