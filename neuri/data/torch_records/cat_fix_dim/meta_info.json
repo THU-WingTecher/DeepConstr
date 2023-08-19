@@ -1,0 +1,9719 @@
+{
+  "torch_ormqr": {
+    "num_insts": 12,
+    "num_records": [
+      9,
+      18,
+      18,
+      9,
+      18,
+      9,
+      9,
+      9,
+      9,
+      18,
+      9,
+      9
+    ]
+  },
+  "torch_Tensor_normal_": {
+    "num_insts": 3,
+    "num_records": [
+      6,
+      7,
+      6
+    ]
+  },
+  "torch_Tensor_mv": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_square": {
+    "num_insts": 5,
+    "num_records": [
+      17,
+      7,
+      2,
+      9,
+      1
+    ]
+  },
+  "torch_Tensor_sigmoid": {
+    "num_insts": 1,
+    "num_records": [
+      4
+    ]
+  },
+  "torch_Tensor_tril_": {
+    "num_insts": 2,
+    "num_records": [
+      3,
+      6
+    ]
+  },
+  "torch_xlogy": {
+    "num_insts": 12,
+    "num_records": [
+      6,
+      2,
+      8,
+      1,
+      1,
+      1,
+      1,
+      7,
+      1,
+      1,
+      2,
+      1
+    ]
+  },
+  "torch_ceil": {
+    "num_insts": 5,
+    "num_records": [
+      32,
+      14,
+      2,
+      1,
+      7
+    ]
+  },
+  "torch__C__linalg_linalg_lu": {
+    "num_insts": 3,
+    "num_records": [
+      5,
+      5,
+      5
+    ]
+  },
+  "torch_nn_functional_instance_norm": {
+    "num_insts": 6,
+    "num_records": [
+      2,
+      3,
+      4,
+      2,
+      1,
+      2
+    ]
+  },
+  "torch_Tensor_clamp_max_": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_Tensor_div": {
+    "num_insts": 15,
+    "num_records": [
+      3,
+      3,
+      6,
+      1,
+      1,
+      2,
+      2,
+      1,
+      1,
+      1,
+      1,
+      2,
+      3,
+      1,
+      1
+    ]
+  },
+  "torch_masked_fill": {
+    "num_insts": 5,
+    "num_records": [
+      2,
+      1,
+      4,
+      1,
+      1
+    ]
+  },
+  "torch_addmm": {
+    "num_insts": 6,
+    "num_records": [
+      12,
+      17,
+      2,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_nanmean": {
+    "num_insts": 9,
+    "num_records": [
+      1,
+      2,
+      2,
+      1,
+      1,
+      2,
+      2,
+      1,
+      1
+    ]
+  },
+  "torch_nn_functional_celu": {
+    "num_insts": 5,
+    "num_records": [
+      10,
+      7,
+      2,
+      9,
+      1
+    ]
+  },
+  "torch_hardshrink": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_cholesky_inverse": {
+    "num_insts": 4,
+    "num_records": [
+      2,
+      2,
+      2,
+      2
+    ]
+  },
+  "torch_Tensor_float_power": {
+    "num_insts": 4,
+    "num_records": [
+      1,
+      4,
+      1,
+      1
+    ]
+  },
+  "torch__C__nn_softplus": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch__C__special_special_chebyshev_polynomial_u": {
+    "num_insts": 3,
+    "num_records": [
+      2,
+      1,
+      3
+    ]
+  },
+  "torch_cholesky": {
+    "num_insts": 6,
+    "num_records": [
+      1,
+      3,
+      1,
+      1,
+      3,
+      1
+    ]
+  },
+  "torch_erfinv": {
+    "num_insts": 5,
+    "num_records": [
+      10,
+      13,
+      2,
+      1,
+      6
+    ]
+  },
+  "torch__C__fft_fft_fftshift": {
+    "num_insts": 5,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_ceil_": {
+    "num_insts": 1,
+    "num_records": [
+      23
+    ]
+  },
+  "torch_Tensor_neg_": {
+    "num_insts": 1,
+    "num_records": [
+      23
+    ]
+  },
+  "torch_permute": {
+    "num_insts": 12,
+    "num_records": [
+      3,
+      1,
+      15,
+      13,
+      6,
+      1,
+      1,
+      4,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_atleast_3d": {
+    "num_insts": 37,
+    "num_records": [
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      5,
+      3,
+      1,
+      3,
+      4,
+      3,
+      2,
+      3,
+      5,
+      1,
+      2,
+      3,
+      2,
+      1,
+      2,
+      3,
+      2,
+      3,
+      2,
+      2,
+      3,
+      1,
+      4,
+      2,
+      2,
+      2,
+      1,
+      3,
+      2,
+      2,
+      1
+    ]
+  },
+  "torch_gt": {
+    "num_insts": 15,
+    "num_records": [
+      3,
+      19,
+      4,
+      5,
+      4,
+      10,
+      1,
+      2,
+      2,
+      1,
+      9,
+      5,
+      2,
+      3,
+      2
+    ]
+  },
+  "torch_nn_functional_group_norm": {
+    "num_insts": 6,
+    "num_records": [
+      5,
+      4,
+      4,
+      2,
+      8,
+      5
+    ]
+  },
+  "torch_resolve_neg": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_flip": {
+    "num_insts": 24,
+    "num_records": [
+      4,
+      4,
+      4,
+      3,
+      4,
+      4,
+      4,
+      4,
+      4,
+      1,
+      3,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      1,
+      3,
+      2,
+      1,
+      2,
+      4,
+      1
+    ]
+  },
+  "torch_divide": {
+    "num_insts": 12,
+    "num_records": [
+      6,
+      4,
+      1,
+      3,
+      5,
+      2,
+      6,
+      1,
+      1,
+      1,
+      2,
+      1
+    ]
+  },
+  "torch_nn_functional_cosine_embedding_loss": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_narrow": {
+    "num_insts": 8,
+    "num_records": [
+      6,
+      2,
+      1,
+      1,
+      2,
+      2,
+      1,
+      2
+    ]
+  },
+  "torch_add": {
+    "num_insts": 31,
+    "num_records": [
+      71,
+      28,
+      26,
+      4,
+      25,
+      85,
+      23,
+      4,
+      23,
+      1,
+      4,
+      1,
+      3,
+      3,
+      2,
+      3,
+      2,
+      2,
+      1,
+      3,
+      10,
+      3,
+      2,
+      1,
+      6,
+      1,
+      3,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch__C__linalg_linalg_householder_product": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_asinh": {
+    "num_insts": 5,
+    "num_records": [
+      10,
+      15,
+      2,
+      1,
+      6
+    ]
+  },
+  "torch__C__linalg_linalg_svd": {
+    "num_insts": 4,
+    "num_records": [
+      18,
+      9,
+      10,
+      18
+    ]
+  },
+  "torch_Tensor_logical_not": {
+    "num_insts": 4,
+    "num_records": [
+      3,
+      4,
+      1,
+      1
+    ]
+  },
+  "torch_subtract": {
+    "num_insts": 7,
+    "num_records": [
+      3,
+      6,
+      2,
+      3,
+      3,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_resolve_conj": {
+    "num_insts": 5,
+    "num_records": [
+      34,
+      37,
+      62,
+      33,
+      8
+    ]
+  },
+  "torch_addr": {
+    "num_insts": 3,
+    "num_records": [
+      3,
+      2,
+      1
+    ]
+  },
+  "torch_le": {
+    "num_insts": 15,
+    "num_records": [
+      3,
+      19,
+      4,
+      5,
+      4,
+      10,
+      1,
+      2,
+      2,
+      1,
+      2,
+      9,
+      5,
+      3,
+      2
+    ]
+  },
+  "torch_Tensor_masked_fill": {
+    "num_insts": 5,
+    "num_records": [
+      2,
+      5,
+      2,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_reshape": {
+    "num_insts": 26,
+    "num_records": [
+      27,
+      114,
+      17,
+      2,
+      90,
+      108,
+      20,
+      43,
+      2,
+      38,
+      2,
+      5,
+      21,
+      8,
+      13,
+      1,
+      2,
+      19,
+      2,
+      2,
+      2,
+      2,
+      3,
+      4,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_norm": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch__C__nn_upsample_bilinear2d": {
+    "num_insts": 4,
+    "num_records": [
+      2,
+      1,
+      2,
+      1
+    ]
+  },
+  "torch_Tensor_tanh_": {
+    "num_insts": 1,
+    "num_records": [
+      23
+    ]
+  },
+  "torch_frac": {
+    "num_insts": 6,
+    "num_records": [
+      35,
+      14,
+      4,
+      8,
+      2,
+      1
+    ]
+  },
+  "torch_Tensor_sign": {
+    "num_insts": 2,
+    "num_records": [
+      3,
+      3
+    ]
+  },
+  "torch_diag": {
+    "num_insts": 2,
+    "num_records": [
+      14,
+      1
+    ]
+  },
+  "torch_addcmul": {
+    "num_insts": 6,
+    "num_records": [
+      25,
+      26,
+      86,
+      1,
+      1,
+      2
+    ]
+  },
+  "torch_nn_functional_poisson_nll_loss": {
+    "num_insts": 12,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_nn_functional_dropout3d": {
+    "num_insts": 7,
+    "num_records": [
+      2,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_lgamma_": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_Tensor_new_empty_strided": {
+    "num_insts": 6,
+    "num_records": [
+      5,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_expand_as": {
+    "num_insts": 6,
+    "num_records": [
+      46,
+      2,
+      3,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_atleast_1d": {
+    "num_insts": 34,
+    "num_records": [
+      2,
+      4,
+      5,
+      2,
+      5,
+      2,
+      3,
+      4,
+      3,
+      1,
+      1,
+      3,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      2,
+      5,
+      1,
+      4,
+      4,
+      1,
+      3,
+      4,
+      3,
+      2,
+      4,
+      1,
+      1,
+      1,
+      2,
+      1
+    ]
+  },
+  "torch_relu": {
+    "num_insts": 4,
+    "num_records": [
+      14,
+      4,
+      2,
+      1
+    ]
+  },
+  "torch_kron": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch__C__special_special_hermite_polynomial_h": {
+    "num_insts": 3,
+    "num_records": [
+      2,
+      1,
+      3
+    ]
+  },
+  "torch_Tensor_sinh_": {
+    "num_insts": 1,
+    "num_records": [
+      23
+    ]
+  },
+  "torch_nn_functional_softmin": {
+    "num_insts": 14,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      7,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_log10": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_Tensor_nan_to_num": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_argwhere": {
+    "num_insts": 2,
+    "num_records": [
+      2,
+      2
+    ]
+  },
+  "torch_nn_functional_l1_loss": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_Tensor_unsqueeze_": {
+    "num_insts": 6,
+    "num_records": [
+      5,
+      1,
+      4,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch__C__special_special_scaled_modified_bessel_k1": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_nn_functional_hardtanh": {
+    "num_insts": 6,
+    "num_records": [
+      24,
+      9,
+      6,
+      5,
+      1,
+      1
+    ]
+  },
+  "torch_clamp_max": {
+    "num_insts": 9,
+    "num_records": [
+      17,
+      4,
+      4,
+      1,
+      9,
+      1,
+      1,
+      9,
+      2
+    ]
+  },
+  "torch_nn_functional_glu": {
+    "num_insts": 17,
+    "num_records": [
+      5,
+      4,
+      4,
+      3,
+      2,
+      3,
+      3,
+      5,
+      1,
+      6,
+      1,
+      3,
+      1,
+      2,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_isneginf": {
+    "num_insts": 5,
+    "num_records": [
+      10,
+      14,
+      2,
+      1,
+      6
+    ]
+  },
+  "torch_Tensor_view_as": {
+    "num_insts": 7,
+    "num_records": [
+      1,
+      1,
+      3,
+      6,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch__C__linalg_linalg_lu_factor": {
+    "num_insts": 3,
+    "num_records": [
+      5,
+      5,
+      5
+    ]
+  },
+  "torch_meshgrid": {
+    "num_insts": 12,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch__C__special_special_airy_ai": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_addcmul_": {
+    "num_insts": 7,
+    "num_records": [
+      25,
+      29,
+      41,
+      89,
+      1,
+      6,
+      1
+    ]
+  },
+  "torch__C__special_special_modified_bessel_i0": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch__C__special_special_bessel_y1": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch__C__special_special_i1": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_nn_functional_max_pool2d_with_indices": {
+    "num_insts": 97,
+    "num_records": [
+      8,
+      4,
+      2,
+      8,
+      4,
+      4,
+      8,
+      4,
+      4,
+      4,
+      2,
+      8,
+      8,
+      8,
+      4,
+      8,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      8,
+      8,
+      4,
+      4,
+      8,
+      4,
+      8,
+      4,
+      4,
+      4,
+      4,
+      8,
+      4,
+      4,
+      2,
+      8,
+      8,
+      8,
+      4,
+      8,
+      2,
+      2,
+      8,
+      4,
+      8,
+      4,
+      8,
+      2,
+      8,
+      2,
+      2,
+      2,
+      2,
+      8,
+      1,
+      4,
+      2,
+      4,
+      2,
+      4,
+      2,
+      2,
+      8,
+      2,
+      4,
+      4,
+      2,
+      4,
+      4,
+      4,
+      4,
+      4,
+      2,
+      4,
+      4,
+      2,
+      2,
+      4,
+      8,
+      4,
+      8,
+      2,
+      4,
+      4,
+      2,
+      2,
+      4,
+      4,
+      4,
+      4,
+      4,
+      2,
+      4,
+      4,
+      2
+    ]
+  },
+  "torch_lerp": {
+    "num_insts": 21,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      2,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      3,
+      1,
+      1,
+      1,
+      2,
+      2,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch__C__linalg_linalg_eigh": {
+    "num_insts": 5,
+    "num_records": [
+      3,
+      2,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_sub": {
+    "num_insts": 26,
+    "num_records": [
+      69,
+      27,
+      26,
+      4,
+      21,
+      81,
+      12,
+      23,
+      4,
+      23,
+      4,
+      5,
+      1,
+      3,
+      2,
+      3,
+      2,
+      2,
+      1,
+      1,
+      3,
+      2,
+      3,
+      1,
+      2,
+      2
+    ]
+  },
+  "torch_cosine_similarity": {
+    "num_insts": 6,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_sqrt": {
+    "num_insts": 5,
+    "num_records": [
+      34,
+      28,
+      9,
+      5,
+      1
+    ]
+  },
+  "torch_hstack": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_swapaxes": {
+    "num_insts": 58,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      2,
+      1,
+      2,
+      1,
+      2,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      2,
+      2,
+      1,
+      2,
+      1,
+      1,
+      2,
+      2,
+      2,
+      1,
+      2,
+      1,
+      2,
+      2,
+      1,
+      1,
+      2,
+      1,
+      2,
+      3,
+      1,
+      1,
+      2,
+      1,
+      2,
+      2,
+      1,
+      1,
+      2,
+      2,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch__C__special_special_erfcx": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_mvlgamma": {
+    "num_insts": 5,
+    "num_records": [
+      36,
+      18,
+      29,
+      6,
+      3
+    ]
+  },
+  "torch_native_batch_norm": {
+    "num_insts": 7,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1
+    ]
+  },
+  "torch_nn_functional_max_pool3d_with_indices": {
+    "num_insts": 49,
+    "num_records": [
+      8,
+      8,
+      8,
+      8,
+      4,
+      8,
+      8,
+      8,
+      8,
+      8,
+      4,
+      8,
+      8,
+      8,
+      4,
+      8,
+      8,
+      8,
+      8,
+      4,
+      4,
+      8,
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      8,
+      4,
+      8,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      8,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      1
+    ]
+  },
+  "torch_Tensor_narrow": {
+    "num_insts": 15,
+    "num_records": [
+      52,
+      28,
+      39,
+      35,
+      6,
+      34,
+      5,
+      11,
+      5,
+      20,
+      6,
+      34,
+      5,
+      1,
+      1
+    ]
+  },
+  "torch__C__special_special_zeta": {
+    "num_insts": 3,
+    "num_records": [
+      2,
+      1,
+      3
+    ]
+  },
+  "torch_diag_embed": {
+    "num_insts": 3,
+    "num_records": [
+      9,
+      2,
+      1
+    ]
+  },
+  "torch__C__fft_fft_irfft2": {
+    "num_insts": 6,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_igamma": {
+    "num_insts": 6,
+    "num_records": [
+      6,
+      10,
+      2,
+      1,
+      1,
+      7
+    ]
+  },
+  "torch_Tensor_new_full": {
+    "num_insts": 36,
+    "num_records": [
+      6,
+      2,
+      6,
+      2,
+      3,
+      6,
+      6,
+      3,
+      1,
+      6,
+      4,
+      2,
+      2,
+      5,
+      1,
+      2,
+      2,
+      2,
+      4,
+      2,
+      1,
+      1,
+      3,
+      3,
+      3,
+      1,
+      1,
+      3,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_erf": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_Tensor_log": {
+    "num_insts": 4,
+    "num_records": [
+      16,
+      9,
+      3,
+      3
+    ]
+  },
+  "torch_Tensor_le": {
+    "num_insts": 5,
+    "num_records": [
+      4,
+      2,
+      7,
+      1,
+      1
+    ]
+  },
+  "torch_round": {
+    "num_insts": 10,
+    "num_records": [
+      21,
+      27,
+      32,
+      17,
+      30,
+      3,
+      2,
+      1,
+      6,
+      7
+    ]
+  },
+  "torch_nn_functional_log_softmax": {
+    "num_insts": 27,
+    "num_records": [
+      2,
+      1,
+      1,
+      6,
+      1,
+      1,
+      5,
+      1,
+      1,
+      2,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      3,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch__C__nn_fractional_max_pool3d": {
+    "num_insts": 4,
+    "num_records": [
+      7,
+      13,
+      1,
+      2
+    ]
+  },
+  "torch_rad2deg": {
+    "num_insts": 5,
+    "num_records": [
+      15,
+      7,
+      2,
+      9,
+      1
+    ]
+  },
+  "torch__C__linalg_linalg_matrix_rank": {
+    "num_insts": 16,
+    "num_records": [
+      4,
+      2,
+      4,
+      2,
+      4,
+      4,
+      4,
+      2,
+      4,
+      2,
+      2,
+      2,
+      2,
+      4,
+      4,
+      2
+    ]
+  },
+  "torch_Tensor_sigmoid_": {
+    "num_insts": 1,
+    "num_records": [
+      23
+    ]
+  },
+  "torch_Tensor_remainder_": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_msort": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_bucketize": {
+    "num_insts": 12,
+    "num_records": [
+      3,
+      3,
+      1,
+      1,
+      1,
+      1,
+      1,
+      3,
+      1,
+      3,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_clamp_min_": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_fmod_": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_as_strided": {
+    "num_insts": 6,
+    "num_records": [
+      3,
+      1,
+      2,
+      1,
+      1,
+      2
+    ]
+  },
+  "torch_Tensor_index_fill": {
+    "num_insts": 4,
+    "num_records": [
+      20,
+      2,
+      2,
+      20
+    ]
+  },
+  "torch_broadcast_tensors": {
+    "num_insts": 16,
+    "num_records": [
+      7,
+      11,
+      6,
+      4,
+      8,
+      6,
+      4,
+      4,
+      6,
+      2,
+      2,
+      1,
+      1,
+      4,
+      1,
+      1
+    ]
+  },
+  "torch_native_layer_norm": {
+    "num_insts": 16,
+    "num_records": [
+      1,
+      1,
+      2,
+      1,
+      2,
+      1,
+      1,
+      2,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch__C__linalg_linalg_det": {
+    "num_insts": 2,
+    "num_records": [
+      10,
+      4
+    ]
+  },
+  "torch_Tensor_digamma": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_tanh": {
+    "num_insts": 5,
+    "num_records": [
+      33,
+      3,
+      17,
+      1,
+      7
+    ]
+  },
+  "torch__C__fft_fft_ifftshift": {
+    "num_insts": 5,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_neg": {
+    "num_insts": 5,
+    "num_records": [
+      32,
+      17,
+      2,
+      1,
+      7
+    ]
+  },
+  "torch__C__nn_avg_pool2d": {
+    "num_insts": 7,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_pow": {
+    "num_insts": 26,
+    "num_records": [
+      20,
+      7,
+      14,
+      1,
+      6,
+      17,
+      4,
+      2,
+      5,
+      4,
+      14,
+      3,
+      22,
+      4,
+      12,
+      2,
+      2,
+      3,
+      3,
+      1,
+      6,
+      9,
+      5,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_trunc_": {
+    "num_insts": 1,
+    "num_records": [
+      23
+    ]
+  },
+  "torch_movedim": {
+    "num_insts": 153,
+    "num_records": [
+      5,
+      5,
+      3,
+      3,
+      3,
+      3,
+      3,
+      5,
+      3,
+      5,
+      3,
+      3,
+      5,
+      3,
+      3,
+      2,
+      5,
+      2,
+      1,
+      3,
+      3,
+      2,
+      2,
+      2,
+      3,
+      6,
+      3,
+      5,
+      5,
+      2,
+      3,
+      5,
+      2,
+      2,
+      2,
+      5,
+      2,
+      3,
+      2,
+      2,
+      3,
+      5,
+      2,
+      5,
+      3,
+      2,
+      3,
+      2,
+      5,
+      5,
+      2,
+      2,
+      5,
+      2,
+      4,
+      2,
+      3,
+      3,
+      2,
+      5,
+      2,
+      3,
+      5,
+      2,
+      2,
+      2,
+      5,
+      3,
+      3,
+      5,
+      2,
+      3,
+      2,
+      2,
+      3,
+      5,
+      3,
+      5,
+      2,
+      3,
+      5,
+      1,
+      3,
+      3,
+      2,
+      2,
+      5,
+      3,
+      3,
+      2,
+      2,
+      5,
+      5,
+      1,
+      2,
+      2,
+      3,
+      5,
+      3,
+      3,
+      2,
+      2,
+      2,
+      1,
+      3,
+      2,
+      3,
+      5,
+      5,
+      4,
+      2,
+      2,
+      3,
+      3,
+      3,
+      3,
+      2,
+      2,
+      3,
+      5,
+      3,
+      3,
+      3,
+      2,
+      3,
+      2,
+      3,
+      2,
+      2,
+      1,
+      2,
+      2,
+      2,
+      3,
+      2,
+      2,
+      2,
+      3,
+      2,
+      3,
+      3,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2
+    ]
+  },
+  "torch_sin": {
+    "num_insts": 5,
+    "num_records": [
+      33,
+      21,
+      2,
+      1,
+      7
+    ]
+  },
+  "torch_polar": {
+    "num_insts": 6,
+    "num_records": [
+      4,
+      2,
+      7,
+      1,
+      1,
+      7
+    ]
+  },
+  "torch_select_scatter": {
+    "num_insts": 2,
+    "num_records": [
+      2,
+      2
+    ]
+  },
+  "torch_Tensor_round": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_Tensor_stft": {
+    "num_insts": 49,
+    "num_records": [
+      2,
+      4,
+      2,
+      4,
+      4,
+      2,
+      2,
+      4,
+      4,
+      2,
+      2,
+      2,
+      4,
+      4,
+      4,
+      4,
+      2,
+      4,
+      2,
+      4,
+      4,
+      2,
+      4,
+      2,
+      2,
+      4,
+      4,
+      2,
+      2,
+      4,
+      2,
+      4,
+      4,
+      2,
+      4,
+      2,
+      2,
+      4,
+      2,
+      4,
+      1,
+      4,
+      2,
+      4,
+      4,
+      2,
+      2,
+      2,
+      2
+    ]
+  },
+  "torch_dsplit": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      2
+    ]
+  },
+  "torch_isfinite": {
+    "num_insts": 5,
+    "num_records": [
+      82,
+      7,
+      2,
+      9,
+      1
+    ]
+  },
+  "torch_Tensor_scatter_": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      1
+    ]
+  },
+  "torch__C__special_special_chebyshev_polynomial_t": {
+    "num_insts": 3,
+    "num_records": [
+      2,
+      1,
+      3
+    ]
+  },
+  "torch_rand_like": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch__C__linalg_linalg_tensorinv": {
+    "num_insts": 1,
+    "num_records": [
+      2
+    ]
+  },
+  "torch_Tensor_as_strided": {
+    "num_insts": 19,
+    "num_records": [
+      25,
+      39,
+      102,
+      36,
+      27,
+      4,
+      13,
+      5,
+      5,
+      3,
+      5,
+      1,
+      14,
+      2,
+      6,
+      5,
+      3,
+      1,
+      1
+    ]
+  },
+  "torch_fmod": {
+    "num_insts": 13,
+    "num_records": [
+      2,
+      16,
+      4,
+      5,
+      3,
+      4,
+      10,
+      1,
+      2,
+      1,
+      9,
+      1,
+      2
+    ]
+  },
+  "torch_log10": {
+    "num_insts": 5,
+    "num_records": [
+      32,
+      18,
+      8,
+      2,
+      1
+    ]
+  },
+  "torch_Tensor___and__": {
+    "num_insts": 5,
+    "num_records": [
+      75,
+      7,
+      3,
+      1,
+      4
+    ]
+  },
+  "torch__C__linalg_linalg_inv": {
+    "num_insts": 3,
+    "num_records": [
+      2,
+      4,
+      2
+    ]
+  },
+  "torch_diagonal": {
+    "num_insts": 14,
+    "num_records": [
+      1,
+      3,
+      1,
+      3,
+      1,
+      2,
+      1,
+      1,
+      3,
+      1,
+      1,
+      4,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor___rshift__": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_float_power": {
+    "num_insts": 22,
+    "num_records": [
+      16,
+      4,
+      2,
+      4,
+      6,
+      4,
+      4,
+      9,
+      1,
+      1,
+      2,
+      2,
+      1,
+      9,
+      2,
+      1,
+      1,
+      1,
+      2,
+      1,
+      2,
+      1
+    ]
+  },
+  "torch_lu_solve": {
+    "num_insts": 2,
+    "num_records": [
+      14,
+      5
+    ]
+  },
+  "torch_logical_and": {
+    "num_insts": 9,
+    "num_records": [
+      18,
+      4,
+      4,
+      10,
+      1,
+      1,
+      9,
+      5,
+      2
+    ]
+  },
+  "torch_matmul": {
+    "num_insts": 14,
+    "num_records": [
+      37,
+      17,
+      24,
+      20,
+      1,
+      39,
+      2,
+      2,
+      3,
+      2,
+      1,
+      1,
+      2,
+      1
+    ]
+  },
+  "torch_Tensor_unfold": {
+    "num_insts": 8,
+    "num_records": [
+      3,
+      5,
+      3,
+      2,
+      3,
+      3,
+      3,
+      1
+    ]
+  },
+  "torch_unfold_copy": {
+    "num_insts": 8,
+    "num_records": [
+      3,
+      5,
+      3,
+      1,
+      3,
+      3,
+      2,
+      1
+    ]
+  },
+  "torch_relu_": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_squeeze": {
+    "num_insts": 16,
+    "num_records": [
+      15,
+      17,
+      5,
+      9,
+      2,
+      2,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_scatter_reduce_": {
+    "num_insts": 5,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_gather": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_bitwise_xor": {
+    "num_insts": 3,
+    "num_records": [
+      2,
+      1,
+      3
+    ]
+  },
+  "torch_angle": {
+    "num_insts": 5,
+    "num_records": [
+      10,
+      16,
+      2,
+      1,
+      6
+    ]
+  },
+  "torch_lt": {
+    "num_insts": 15,
+    "num_records": [
+      3,
+      19,
+      4,
+      5,
+      4,
+      10,
+      1,
+      2,
+      2,
+      1,
+      9,
+      5,
+      2,
+      3,
+      2
+    ]
+  },
+  "torch_nn_functional_grid_sample": {
+    "num_insts": 30,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_log": {
+    "num_insts": 5,
+    "num_records": [
+      33,
+      19,
+      8,
+      3,
+      1
+    ]
+  },
+  "torch_conj": {
+    "num_insts": 5,
+    "num_records": [
+      18,
+      8,
+      2,
+      9,
+      1
+    ]
+  },
+  "torch_diff": {
+    "num_insts": 9,
+    "num_records": [
+      15,
+      8,
+      7,
+      6,
+      10,
+      4,
+      3,
+      5,
+      6
+    ]
+  },
+  "torch_Tensor___iand__": {
+    "num_insts": 4,
+    "num_records": [
+      12,
+      2,
+      5,
+      1
+    ]
+  },
+  "torch_Tensor_mul": {
+    "num_insts": 14,
+    "num_records": [
+      1,
+      27,
+      1,
+      9,
+      3,
+      3,
+      14,
+      7,
+      3,
+      6,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_exp": {
+    "num_insts": 5,
+    "num_records": [
+      32,
+      23,
+      8,
+      3,
+      1
+    ]
+  },
+  "torch_Tensor_bmm": {
+    "num_insts": 1,
+    "num_records": [
+      32
+    ]
+  },
+  "torch_cartesian_prod": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_movedim": {
+    "num_insts": 11,
+    "num_records": [
+      9,
+      1,
+      5,
+      1,
+      8,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_nn_functional_batch_norm": {
+    "num_insts": 11,
+    "num_records": [
+      207,
+      27,
+      6,
+      1,
+      10,
+      2,
+      1,
+      1,
+      2,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_mean": {
+    "num_insts": 8,
+    "num_records": [
+      18,
+      9,
+      10,
+      9,
+      2,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch__C__nn_pad_sequence": {
+    "num_insts": 13,
+    "num_records": [
+      78,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      2,
+      1,
+      3,
+      2
+    ]
+  },
+  "torch_max_pool1d_with_indices": {
+    "num_insts": 96,
+    "num_records": [
+      4,
+      4,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4,
+      8,
+      4,
+      8,
+      8,
+      2,
+      2,
+      2,
+      4,
+      4,
+      8,
+      8,
+      4,
+      4,
+      8,
+      2,
+      2,
+      2,
+      4,
+      8,
+      4,
+      4,
+      8,
+      2,
+      8,
+      2,
+      4,
+      8,
+      4,
+      4,
+      4,
+      8,
+      8,
+      4,
+      4,
+      8,
+      8,
+      4,
+      8,
+      4,
+      8,
+      2,
+      8,
+      4,
+      2,
+      4,
+      4,
+      2,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      2,
+      4,
+      8,
+      8,
+      2,
+      2,
+      4,
+      4,
+      4,
+      2,
+      2,
+      8,
+      4,
+      4,
+      4,
+      8,
+      4,
+      4,
+      4,
+      2,
+      8,
+      4,
+      2,
+      4,
+      4,
+      4,
+      2,
+      4,
+      4,
+      2,
+      2,
+      2,
+      2,
+      2
+    ]
+  },
+  "torch__C__special_special_laguerre_polynomial_l": {
+    "num_insts": 3,
+    "num_records": [
+      2,
+      1,
+      3
+    ]
+  },
+  "torch_Tensor_diag": {
+    "num_insts": 2,
+    "num_records": [
+      2,
+      1
+    ]
+  },
+  "torch_renorm": {
+    "num_insts": 4,
+    "num_records": [
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_sign": {
+    "num_insts": 5,
+    "num_records": [
+      9,
+      14,
+      2,
+      1,
+      7
+    ]
+  },
+  "torch_histogram": {
+    "num_insts": 24,
+    "num_records": [
+      12,
+      12,
+      12,
+      4,
+      12,
+      12,
+      4,
+      4,
+      4,
+      4,
+      12,
+      4,
+      12,
+      4,
+      4,
+      12,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4
+    ]
+  },
+  "torch_broadcast_to": {
+    "num_insts": 9,
+    "num_records": [
+      7,
+      4,
+      6,
+      1,
+      5,
+      1,
+      1,
+      3,
+      3
+    ]
+  },
+  "torch_clamp_": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      2,
+      1
+    ]
+  },
+  "torch_std": {
+    "num_insts": 5,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_cos": {
+    "num_insts": 5,
+    "num_records": [
+      36,
+      20,
+      8,
+      2,
+      1
+    ]
+  },
+  "torch_atleast_2d": {
+    "num_insts": 35,
+    "num_records": [
+      4,
+      3,
+      3,
+      2,
+      4,
+      1,
+      2,
+      2,
+      4,
+      4,
+      5,
+      5,
+      3,
+      3,
+      3,
+      2,
+      2,
+      3,
+      3,
+      4,
+      3,
+      1,
+      3,
+      3,
+      3,
+      2,
+      5,
+      2,
+      4,
+      1,
+      2,
+      2,
+      2,
+      1,
+      1
+    ]
+  },
+  "torch_mode": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_unsqueeze": {
+    "num_insts": 16,
+    "num_records": [
+      11,
+      31,
+      4,
+      22,
+      9,
+      6,
+      15,
+      9,
+      3,
+      8,
+      12,
+      7,
+      10,
+      3,
+      3,
+      1
+    ]
+  },
+  "torch_Tensor___or__": {
+    "num_insts": 6,
+    "num_records": [
+      8,
+      3,
+      2,
+      12,
+      4,
+      2
+    ]
+  },
+  "torch_tril": {
+    "num_insts": 3,
+    "num_records": [
+      4,
+      2,
+      1
+    ]
+  },
+  "torch_Tensor_swapdims_": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch__C__special_special_hermite_polynomial_he": {
+    "num_insts": 3,
+    "num_records": [
+      2,
+      1,
+      3
+    ]
+  },
+  "torch_Tensor_unbind": {
+    "num_insts": 48,
+    "num_records": [
+      1,
+      1,
+      6,
+      5,
+      5,
+      4,
+      1,
+      1,
+      3,
+      1,
+      1,
+      1,
+      4,
+      4,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      4,
+      1,
+      1,
+      1,
+      2,
+      2,
+      3,
+      1,
+      2,
+      1,
+      3,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_aminmax": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      1
+    ]
+  },
+  "torch__C__linalg_linalg_lu_factor_ex": {
+    "num_insts": 3,
+    "num_records": [
+      5,
+      5,
+      5
+    ]
+  },
+  "torch_ge": {
+    "num_insts": 15,
+    "num_records": [
+      3,
+      20,
+      4,
+      5,
+      4,
+      10,
+      1,
+      2,
+      2,
+      1,
+      9,
+      5,
+      2,
+      3,
+      2
+    ]
+  },
+  "torch__C__nn_upsample_bicubic2d": {
+    "num_insts": 4,
+    "num_records": [
+      2,
+      1,
+      2,
+      1
+    ]
+  },
+  "torch_erfc": {
+    "num_insts": 5,
+    "num_records": [
+      32,
+      15,
+      7,
+      2,
+      1
+    ]
+  },
+  "torch_Tensor_trunc": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_sort": {
+    "num_insts": 45,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      5,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      3,
+      4,
+      1,
+      1,
+      1,
+      1,
+      2,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      3,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_vsplit": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      1
+    ]
+  },
+  "torch__C__linalg_linalg_matrix_power": {
+    "num_insts": 2,
+    "num_records": [
+      6,
+      12
+    ]
+  },
+  "torch_Tensor_tril": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_softmax": {
+    "num_insts": 2,
+    "num_records": [
+      3,
+      1
+    ]
+  },
+  "torch_isreal": {
+    "num_insts": 5,
+    "num_records": [
+      17,
+      7,
+      2,
+      9,
+      1
+    ]
+  },
+  "torch__C__special_special_modified_bessel_k1": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_addcdiv_": {
+    "num_insts": 7,
+    "num_records": [
+      41,
+      25,
+      29,
+      87,
+      4,
+      1,
+      1
+    ]
+  },
+  "torch_eq": {
+    "num_insts": 19,
+    "num_records": [
+      3,
+      30,
+      4,
+      5,
+      7,
+      4,
+      34,
+      1,
+      2,
+      3,
+      1,
+      2,
+      2,
+      1,
+      9,
+      5,
+      2,
+      3,
+      1
+    ]
+  },
+  "torch_hypot": {
+    "num_insts": 6,
+    "num_records": [
+      6,
+      2,
+      8,
+      1,
+      1,
+      8
+    ]
+  },
+  "torch_view_as_real": {
+    "num_insts": 7,
+    "num_records": [
+      139,
+      179,
+      130,
+      24,
+      43,
+      1,
+      2
+    ]
+  },
+  "torch_Tensor_masked_fill_": {
+    "num_insts": 8,
+    "num_records": [
+      28,
+      10,
+      3,
+      4,
+      11,
+      8,
+      3,
+      7
+    ]
+  },
+  "torch_Tensor_atan": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_binary_cross_entropy_with_logits": {
+    "num_insts": 1,
+    "num_records": [
+      2
+    ]
+  },
+  "torch_reshape": {
+    "num_insts": 6,
+    "num_records": [
+      9,
+      8,
+      2,
+      4,
+      2,
+      1
+    ]
+  },
+  "torch_logical_not": {
+    "num_insts": 5,
+    "num_records": [
+      17,
+      7,
+      2,
+      10,
+      1
+    ]
+  },
+  "torch_nn_functional_adaptive_max_pool3d_with_indices": {
+    "num_insts": 20,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch__C__fft_fft_irfftn": {
+    "num_insts": 8,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch__C__nn_flatten_dense_tensors": {
+    "num_insts": 6,
+    "num_records": [
+      2,
+      2,
+      2,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch__C__linalg_linalg_tensorsolve": {
+    "num_insts": 4,
+    "num_records": [
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_nonzero": {
+    "num_insts": 8,
+    "num_records": [
+      3,
+      3,
+      4,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_cumsum": {
+    "num_insts": 49,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_einsum": {
+    "num_insts": 15,
+    "num_records": [
+      9,
+      7,
+      1,
+      3,
+      1,
+      1,
+      1,
+      5,
+      1,
+      1,
+      1,
+      3,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_nn_functional_fractional_max_pool3d_with_indices": {
+    "num_insts": 5,
+    "num_records": [
+      7,
+      1,
+      2,
+      3,
+      1
+    ]
+  },
+  "torch_clamp_min": {
+    "num_insts": 9,
+    "num_records": [
+      17,
+      4,
+      4,
+      1,
+      9,
+      1,
+      1,
+      9,
+      3
+    ]
+  },
+  "torch__C__linalg_linalg_eig": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_cosh": {
+    "num_insts": 5,
+    "num_records": [
+      32,
+      18,
+      8,
+      2,
+      1
+    ]
+  },
+  "torch_qr": {
+    "num_insts": 3,
+    "num_records": [
+      18,
+      9,
+      9
+    ]
+  },
+  "torch_Tensor_relu": {
+    "num_insts": 2,
+    "num_records": [
+      5,
+      2
+    ]
+  },
+  "torch_addcdiv": {
+    "num_insts": 6,
+    "num_records": [
+      25,
+      26,
+      85,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_ge": {
+    "num_insts": 4,
+    "num_records": [
+      4,
+      5,
+      2,
+      1
+    ]
+  },
+  "torch_Tensor_reciprocal": {
+    "num_insts": 4,
+    "num_records": [
+      13,
+      12,
+      1,
+      10
+    ]
+  },
+  "torch__C__linalg_linalg_vector_norm": {
+    "num_insts": 100,
+    "num_records": [
+      2,
+      1,
+      1,
+      2,
+      1,
+      2,
+      4,
+      1,
+      1,
+      1,
+      2,
+      1,
+      2,
+      5,
+      1,
+      2,
+      5,
+      5,
+      2,
+      1,
+      1,
+      2,
+      2,
+      2,
+      1,
+      2,
+      1,
+      1,
+      4,
+      1,
+      2,
+      1,
+      1,
+      5,
+      5,
+      4,
+      2,
+      1,
+      1,
+      2,
+      5,
+      1,
+      1,
+      5,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      5,
+      5,
+      2,
+      2,
+      1,
+      1,
+      2,
+      2,
+      1,
+      1,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      4,
+      2,
+      2,
+      1,
+      1,
+      1,
+      2,
+      4,
+      1,
+      2,
+      1,
+      1,
+      2,
+      1,
+      1,
+      2,
+      1,
+      2,
+      2,
+      1,
+      2,
+      1,
+      2,
+      1,
+      1,
+      4,
+      2,
+      1,
+      2,
+      1,
+      2,
+      2,
+      2,
+      2
+    ]
+  },
+  "torch_adaptive_max_pool1d": {
+    "num_insts": 2,
+    "num_records": [
+      2,
+      2
+    ]
+  },
+  "torch_nn_functional_fractional_max_pool2d_with_indices": {
+    "num_insts": 6,
+    "num_records": [
+      3,
+      5,
+      1,
+      4,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_diagonal": {
+    "num_insts": 13,
+    "num_records": [
+      4,
+      3,
+      9,
+      7,
+      1,
+      4,
+      1,
+      5,
+      4,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch__C__linalg_linalg_solve_triangular": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_nn_functional_softmax": {
+    "num_insts": 31,
+    "num_records": [
+      18,
+      5,
+      6,
+      1,
+      1,
+      7,
+      5,
+      3,
+      3,
+      1,
+      4,
+      5,
+      1,
+      1,
+      2,
+      3,
+      1,
+      2,
+      3,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch__C__special_special_ndtr": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_div": {
+    "num_insts": 27,
+    "num_records": [
+      67,
+      24,
+      23,
+      8,
+      54,
+      1,
+      3,
+      2,
+      2,
+      2,
+      1,
+      1,
+      4,
+      8,
+      2,
+      1,
+      3,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_nn_functional_mse_loss": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_imag": {
+    "num_insts": 5,
+    "num_records": [
+      29,
+      7,
+      11,
+      13,
+      1
+    ]
+  },
+  "torch_Tensor_relu_": {
+    "num_insts": 2,
+    "num_records": [
+      2,
+      1
+    ]
+  },
+  "torch_logical_or": {
+    "num_insts": 9,
+    "num_records": [
+      18,
+      4,
+      4,
+      10,
+      1,
+      1,
+      9,
+      5,
+      2
+    ]
+  },
+  "torch_Tensor_div_": {
+    "num_insts": 15,
+    "num_records": [
+      71,
+      26,
+      23,
+      52,
+      66,
+      2,
+      23,
+      6,
+      7,
+      8,
+      1,
+      2,
+      1,
+      1,
+      2
+    ]
+  },
+  "torch_conv_transpose1d": {
+    "num_insts": 10,
+    "num_records": [
+      1,
+      1,
+      2,
+      2,
+      3,
+      2,
+      2,
+      2,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_conj": {
+    "num_insts": 4,
+    "num_records": [
+      25,
+      29,
+      4,
+      1
+    ]
+  },
+  "torch__C__linalg_linalg_solve": {
+    "num_insts": 4,
+    "num_records": [
+      4,
+      8,
+      2,
+      4
+    ]
+  },
+  "torch_Tensor_exp_": {
+    "num_insts": 1,
+    "num_records": [
+      23
+    ]
+  },
+  "torch_tan": {
+    "num_insts": 5,
+    "num_records": [
+      32,
+      17,
+      2,
+      1,
+      7
+    ]
+  },
+  "torch_nn_functional_hardswish": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      1
+    ]
+  },
+  "torch__C__special_special_spherical_bessel_j0": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_logical_xor": {
+    "num_insts": 9,
+    "num_records": [
+      18,
+      4,
+      4,
+      10,
+      1,
+      1,
+      9,
+      5,
+      2
+    ]
+  },
+  "torch_Tensor_sin": {
+    "num_insts": 1,
+    "num_records": [
+      7
+    ]
+  },
+  "torch_atan2": {
+    "num_insts": 7,
+    "num_records": [
+      6,
+      2,
+      7,
+      2,
+      1,
+      10,
+      1
+    ]
+  },
+  "torch__C__fft_fft_hfft2": {
+    "num_insts": 6,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_repeat": {
+    "num_insts": 15,
+    "num_records": [
+      5,
+      4,
+      2,
+      6,
+      8,
+      2,
+      6,
+      3,
+      6,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1
+    ]
+  },
+  "torch_cross": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_fmin": {
+    "num_insts": 6,
+    "num_records": [
+      7,
+      2,
+      7,
+      1,
+      1,
+      7
+    ]
+  },
+  "torch__C__fft_fft_fft": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_gradient": {
+    "num_insts": 5,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_nn_functional_adaptive_avg_pool2d": {
+    "num_insts": 10,
+    "num_records": [
+      28,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1
+    ]
+  },
+  "torch_as_strided_scatter": {
+    "num_insts": 3,
+    "num_records": [
+      2,
+      2,
+      1
+    ]
+  },
+  "torch_Tensor_expand": {
+    "num_insts": 18,
+    "num_records": [
+      88,
+      84,
+      31,
+      5,
+      80,
+      9,
+      1,
+      6,
+      4,
+      8,
+      6,
+      5,
+      5,
+      1,
+      1,
+      2,
+      1,
+      1
+    ]
+  },
+  "torch_bitwise_or": {
+    "num_insts": 11,
+    "num_records": [
+      12,
+      4,
+      4,
+      4,
+      8,
+      1,
+      2,
+      1,
+      9,
+      2,
+      2
+    ]
+  },
+  "torch_outer": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch__C__nn_l1_loss": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_nn_functional_normalize": {
+    "num_insts": 7,
+    "num_records": [
+      2,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1
+    ]
+  },
+  "torch_mm": {
+    "num_insts": 1,
+    "num_records": [
+      50
+    ]
+  },
+  "torch__C__nn_huber_loss": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_real": {
+    "num_insts": 5,
+    "num_records": [
+      29,
+      7,
+      18,
+      13,
+      1
+    ]
+  },
+  "torch_randint_like": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_max_pool1d": {
+    "num_insts": 96,
+    "num_records": [
+      2,
+      8,
+      2,
+      8,
+      8,
+      8,
+      8,
+      4,
+      4,
+      4,
+      2,
+      8,
+      4,
+      2,
+      8,
+      4,
+      4,
+      8,
+      4,
+      4,
+      4,
+      4,
+      4,
+      8,
+      4,
+      2,
+      4,
+      4,
+      4,
+      8,
+      4,
+      8,
+      8,
+      8,
+      4,
+      8,
+      4,
+      2,
+      8,
+      4,
+      8,
+      8,
+      4,
+      2,
+      8,
+      2,
+      8,
+      8,
+      4,
+      4,
+      4,
+      9,
+      4,
+      8,
+      2,
+      4,
+      4,
+      4,
+      8,
+      4,
+      8,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      2,
+      2,
+      2,
+      4,
+      2,
+      4,
+      4,
+      4,
+      2,
+      4,
+      4,
+      2,
+      4,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      4,
+      4,
+      4,
+      2,
+      4,
+      2,
+      2
+    ]
+  },
+  "torch_softmax": {
+    "num_insts": 10,
+    "num_records": [
+      1,
+      1,
+      1,
+      7,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_nn_functional_silu": {
+    "num_insts": 6,
+    "num_records": [
+      2,
+      12,
+      7,
+      2,
+      12,
+      1
+    ]
+  },
+  "torch_Tensor_frac": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch__C__linalg_linalg_solve_ex": {
+    "num_insts": 4,
+    "num_records": [
+      2,
+      4,
+      4,
+      8
+    ]
+  },
+  "torch_vstack": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_sum": {
+    "num_insts": 10,
+    "num_records": [
+      23,
+      18,
+      4,
+      18,
+      26,
+      8,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_bernoulli": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_rot90": {
+    "num_insts": 3,
+    "num_records": [
+      15,
+      11,
+      11
+    ]
+  },
+  "torch_Tensor_cosh": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_Tensor_isnan": {
+    "num_insts": 3,
+    "num_records": [
+      2,
+      3,
+      5
+    ]
+  },
+  "torch_Tensor_clamp_": {
+    "num_insts": 11,
+    "num_records": [
+      47,
+      4,
+      15,
+      3,
+      4,
+      6,
+      1,
+      3,
+      2,
+      1,
+      2
+    ]
+  },
+  "torch_Tensor_sum_to_size": {
+    "num_insts": 6,
+    "num_records": [
+      4,
+      3,
+      2,
+      2,
+      1,
+      1
+    ]
+  },
+  "torch_pinverse": {
+    "num_insts": 3,
+    "num_records": [
+      2,
+      4,
+      2
+    ]
+  },
+  "torch_t": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      2
+    ]
+  },
+  "torch_nanmedian": {
+    "num_insts": 9,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_combinations": {
+    "num_insts": 2,
+    "num_records": [
+      9,
+      9
+    ]
+  },
+  "torch_Tensor_round_": {
+    "num_insts": 1,
+    "num_records": [
+      23
+    ]
+  },
+  "torch_floor": {
+    "num_insts": 5,
+    "num_records": [
+      33,
+      20,
+      2,
+      1,
+      7
+    ]
+  },
+  "torch_baddbmm": {
+    "num_insts": 7,
+    "num_records": [
+      1,
+      1,
+      2,
+      1,
+      3,
+      2,
+      1
+    ]
+  },
+  "torch_argsort": {
+    "num_insts": 17,
+    "num_records": [
+      1,
+      2,
+      2,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_diagflat": {
+    "num_insts": 2,
+    "num_records": [
+      4,
+      1
+    ]
+  },
+  "torch_Tensor_logical_xor_": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_pixel_shuffle": {
+    "num_insts": 1,
+    "num_records": [
+      5
+    ]
+  },
+  "torch_remainder": {
+    "num_insts": 18,
+    "num_records": [
+      2,
+      16,
+      4,
+      6,
+      3,
+      4,
+      11,
+      1,
+      2,
+      2,
+      11,
+      1,
+      1,
+      3,
+      1,
+      2,
+      2,
+      1
+    ]
+  },
+  "torch_Tensor_max": {
+    "num_insts": 8,
+    "num_records": [
+      4,
+      4,
+      9,
+      4,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch__C__linalg_linalg_svdvals": {
+    "num_insts": 3,
+    "num_records": [
+      9,
+      18,
+      9
+    ]
+  },
+  "torch_Tensor_select": {
+    "num_insts": 18,
+    "num_records": [
+      45,
+      74,
+      47,
+      138,
+      68,
+      26,
+      49,
+      23,
+      29,
+      26,
+      7,
+      89,
+      26,
+      12,
+      7,
+      7,
+      7,
+      3
+    ]
+  },
+  "torch_nn_functional_huber_loss": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_logit": {
+    "num_insts": 6,
+    "num_records": [
+      13,
+      1,
+      2,
+      9,
+      7,
+      1
+    ]
+  },
+  "torch_Tensor_zero_": {
+    "num_insts": 5,
+    "num_records": [
+      51,
+      88,
+      24,
+      14,
+      9
+    ]
+  },
+  "torch_max_pool3d": {
+    "num_insts": 48,
+    "num_records": [
+      8,
+      8,
+      20,
+      4,
+      8,
+      8,
+      20,
+      4,
+      8,
+      8,
+      8,
+      8,
+      4,
+      4,
+      4,
+      4,
+      8,
+      8,
+      8,
+      8,
+      4,
+      4,
+      8,
+      4,
+      4,
+      8,
+      4,
+      4,
+      4,
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4,
+      9,
+      4,
+      4,
+      8,
+      4,
+      8,
+      4,
+      4,
+      8,
+      4,
+      4
+    ]
+  },
+  "torch_logaddexp2": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      3
+    ]
+  },
+  "torch_Tensor_heaviside": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_view_as_complex": {
+    "num_insts": 3,
+    "num_records": [
+      6,
+      4,
+      1
+    ]
+  },
+  "torch_gcd": {
+    "num_insts": 7,
+    "num_records": [
+      14,
+      4,
+      4,
+      8,
+      1,
+      1,
+      9
+    ]
+  },
+  "torch_nn_functional_leaky_relu": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_neg": {
+    "num_insts": 4,
+    "num_records": [
+      1,
+      6,
+      1,
+      1
+    ]
+  },
+  "torch__C__special_special_polygamma": {
+    "num_insts": 1,
+    "num_records": [
+      5
+    ]
+  },
+  "torch_Tensor_erfinv": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch__C__nn_upsample_linear1d": {
+    "num_insts": 4,
+    "num_records": [
+      2,
+      1,
+      2,
+      1
+    ]
+  },
+  "torch_bitwise_left_shift": {
+    "num_insts": 6,
+    "num_records": [
+      4,
+      2,
+      7,
+      1,
+      1,
+      7
+    ]
+  },
+  "torch_erf": {
+    "num_insts": 5,
+    "num_records": [
+      32,
+      14,
+      2,
+      1,
+      6
+    ]
+  },
+  "torch_cummin": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_nextafter": {
+    "num_insts": 6,
+    "num_records": [
+      8,
+      2,
+      7,
+      1,
+      1,
+      7
+    ]
+  },
+  "torch_Tensor_triu_": {
+    "num_insts": 2,
+    "num_records": [
+      3,
+      6
+    ]
+  },
+  "torch__C__fft_fft_ifft": {
+    "num_insts": 7,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_nn_functional_dropout": {
+    "num_insts": 12,
+    "num_records": [
+      2,
+      23,
+      8,
+      2,
+      3,
+      7,
+      5,
+      1,
+      1,
+      1,
+      2,
+      1
+    ]
+  },
+  "torch_Tensor_log2": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_rsqrt": {
+    "num_insts": 5,
+    "num_records": [
+      19,
+      8,
+      2,
+      9,
+      1
+    ]
+  },
+  "torch_heaviside": {
+    "num_insts": 7,
+    "num_records": [
+      15,
+      4,
+      4,
+      8,
+      1,
+      1,
+      9
+    ]
+  },
+  "torch_symeig": {
+    "num_insts": 6,
+    "num_records": [
+      2,
+      1,
+      3,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_var": {
+    "num_insts": 7,
+    "num_records": [
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_trunc": {
+    "num_insts": 5,
+    "num_records": [
+      32,
+      14,
+      2,
+      1,
+      7
+    ]
+  },
+  "torch_bitwise_not": {
+    "num_insts": 5,
+    "num_records": [
+      11,
+      7,
+      2,
+      1,
+      8
+    ]
+  },
+  "torch_addbmm": {
+    "num_insts": 6,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_nan_to_num_": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_Tensor_argwhere": {
+    "num_insts": 1,
+    "num_records": [
+      4
+    ]
+  },
+  "torch_asin": {
+    "num_insts": 5,
+    "num_records": [
+      32,
+      17,
+      2,
+      1,
+      7
+    ]
+  },
+  "torch_argmax": {
+    "num_insts": 6,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_t": {
+    "num_insts": 2,
+    "num_records": [
+      52,
+      2
+    ]
+  },
+  "torch_Tensor_abs_": {
+    "num_insts": 3,
+    "num_records": [
+      23,
+      1,
+      1
+    ]
+  },
+  "torch__C__special_special_bessel_j0": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_squeeze": {
+    "num_insts": 6,
+    "num_records": [
+      6,
+      35,
+      1,
+      7,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_bitwise_not_": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch__C__nn_avg_pool3d": {
+    "num_insts": 9,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_log_softmax": {
+    "num_insts": 10,
+    "num_records": [
+      1,
+      1,
+      1,
+      7,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch__C__special_special_scaled_modified_bessel_k0": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_log_": {
+    "num_insts": 1,
+    "num_records": [
+      23
+    ]
+  },
+  "torch_Tensor_logical_and": {
+    "num_insts": 3,
+    "num_records": [
+      4,
+      2,
+      1
+    ]
+  },
+  "torch_floor_divide": {
+    "num_insts": 21,
+    "num_records": [
+      2,
+      16,
+      6,
+      5,
+      1,
+      5,
+      4,
+      12,
+      1,
+      8,
+      1,
+      3,
+      1,
+      2,
+      9,
+      2,
+      1,
+      4,
+      2,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_t_": {
+    "num_insts": 1,
+    "num_records": [
+      2
+    ]
+  },
+  "torch__C__special_special_ndtri": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_block_diag": {
+    "num_insts": 4,
+    "num_records": [
+      1,
+      1,
+      1,
+      2
+    ]
+  },
+  "torch_Tensor_tan_": {
+    "num_insts": 1,
+    "num_records": [
+      23
+    ]
+  },
+  "torch_Tensor_lt": {
+    "num_insts": 4,
+    "num_records": [
+      6,
+      2,
+      3,
+      1
+    ]
+  },
+  "torch_Tensor_gt": {
+    "num_insts": 3,
+    "num_records": [
+      23,
+      3,
+      1
+    ]
+  },
+  "torch__C__nn_smooth_l1_loss": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch__C__nn_upsample_nearest1d": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      2
+    ]
+  },
+  "torch__C__nn_max_pool2d_with_indices": {
+    "num_insts": 96,
+    "num_records": [
+      4,
+      8,
+      4,
+      8,
+      4,
+      4,
+      8,
+      4,
+      2,
+      8,
+      2,
+      8,
+      4,
+      4,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4,
+      4,
+      4,
+      8,
+      2,
+      4,
+      8,
+      8,
+      8,
+      4,
+      4,
+      8,
+      8,
+      4,
+      4,
+      2,
+      8,
+      4,
+      8,
+      4,
+      4,
+      8,
+      2,
+      2,
+      2,
+      4,
+      4,
+      8,
+      4,
+      2,
+      4,
+      4,
+      4,
+      4,
+      8,
+      8,
+      8,
+      2,
+      4,
+      4,
+      2,
+      2,
+      2,
+      4,
+      2,
+      4,
+      4,
+      2,
+      8,
+      4,
+      4,
+      8,
+      2,
+      4,
+      4,
+      8,
+      4,
+      4,
+      4,
+      2,
+      4,
+      4,
+      2,
+      4,
+      2,
+      4,
+      8,
+      4,
+      2,
+      2,
+      4,
+      4,
+      2,
+      2,
+      2,
+      2,
+      4
+    ]
+  },
+  "torch_bitwise_xor": {
+    "num_insts": 11,
+    "num_records": [
+      12,
+      4,
+      4,
+      4,
+      8,
+      1,
+      2,
+      1,
+      9,
+      2,
+      2
+    ]
+  },
+  "torch__C__linalg_linalg_inv_ex": {
+    "num_insts": 3,
+    "num_records": [
+      4,
+      2,
+      2
+    ]
+  },
+  "torch_msort": {
+    "num_insts": 3,
+    "num_records": [
+      3,
+      2,
+      2
+    ]
+  },
+  "torch_Tensor_new_empty": {
+    "num_insts": 10,
+    "num_records": [
+      1,
+      2,
+      1,
+      1,
+      2,
+      2,
+      2,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_sort": {
+    "num_insts": 19,
+    "num_records": [
+      9,
+      9,
+      12,
+      3,
+      3,
+      1,
+      2,
+      9,
+      3,
+      3,
+      3,
+      2,
+      3,
+      3,
+      1,
+      2,
+      1,
+      3,
+      1
+    ]
+  },
+  "torch_lcm": {
+    "num_insts": 7,
+    "num_records": [
+      13,
+      4,
+      4,
+      8,
+      1,
+      1,
+      9
+    ]
+  },
+  "torch_narrow_copy": {
+    "num_insts": 3,
+    "num_records": [
+      2,
+      2,
+      1
+    ]
+  },
+  "torch_count_nonzero": {
+    "num_insts": 7,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_matmul": {
+    "num_insts": 4,
+    "num_records": [
+      20,
+      12,
+      7,
+      5
+    ]
+  },
+  "torch_nn_functional_gaussian_nll_loss": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_nn_functional_multi_head_attention_forward": {
+    "num_insts": 4,
+    "num_records": [
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_logical_xor": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_Tensor_addcmul": {
+    "num_insts": 3,
+    "num_records": [
+      4,
+      4,
+      1
+    ]
+  },
+  "torch_kthvalue": {
+    "num_insts": 6,
+    "num_records": [
+      6,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_ldexp": {
+    "num_insts": 6,
+    "num_records": [
+      7,
+      2,
+      7,
+      1,
+      1,
+      7
+    ]
+  },
+  "torch_pixel_unshuffle": {
+    "num_insts": 1,
+    "num_records": [
+      5
+    ]
+  },
+  "torch_bilinear": {
+    "num_insts": 6,
+    "num_records": [
+      4,
+      2,
+      4,
+      2,
+      2,
+      2
+    ]
+  },
+  "torch_nn_functional_local_response_norm": {
+    "num_insts": 1,
+    "num_records": [
+      5
+    ]
+  },
+  "torch__C__special_special_bessel_y0": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_erfc_": {
+    "num_insts": 1,
+    "num_records": [
+      23
+    ]
+  },
+  "torch_Tensor_logical_and_": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_lerp": {
+    "num_insts": 16,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_argsort": {
+    "num_insts": 2,
+    "num_records": [
+      2,
+      2
+    ]
+  },
+  "torch_Tensor_as_strided_": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      2,
+      1
+    ]
+  },
+  "torch_frexp": {
+    "num_insts": 5,
+    "num_records": [
+      1,
+      4,
+      5,
+      2,
+      8
+    ]
+  },
+  "torch_Tensor_sqrt_": {
+    "num_insts": 3,
+    "num_records": [
+      26,
+      4,
+      1
+    ]
+  },
+  "torch_Tensor_cos": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      6,
+      2
+    ]
+  },
+  "torch_conj_physical": {
+    "num_insts": 5,
+    "num_records": [
+      10,
+      16,
+      2,
+      1,
+      6
+    ]
+  },
+  "torch_native_dropout": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_prod": {
+    "num_insts": 10,
+    "num_records": [
+      2,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      2,
+      1,
+      1
+    ]
+  },
+  "torch__C__special_special_bessel_j1": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_threshold_": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_Tensor_erfinv_": {
+    "num_insts": 2,
+    "num_records": [
+      47,
+      3
+    ]
+  },
+  "torch_Tensor_flip": {
+    "num_insts": 35,
+    "num_records": [
+      1,
+      1,
+      2,
+      2,
+      5,
+      1,
+      2,
+      1,
+      1,
+      2,
+      4,
+      2,
+      1,
+      1,
+      1,
+      2,
+      2,
+      1,
+      3,
+      2,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_isinf": {
+    "num_insts": 5,
+    "num_records": [
+      12,
+      16,
+      2,
+      1,
+      6
+    ]
+  },
+  "torch_roll": {
+    "num_insts": 8,
+    "num_records": [
+      4,
+      2,
+      2,
+      4,
+      2,
+      2,
+      8,
+      1
+    ]
+  },
+  "torch_complex": {
+    "num_insts": 8,
+    "num_records": [
+      12,
+      10,
+      2,
+      10,
+      1,
+      1,
+      2,
+      2
+    ]
+  },
+  "torch_tile": {
+    "num_insts": 31,
+    "num_records": [
+      2,
+      2,
+      2,
+      2,
+      1,
+      2,
+      2,
+      2,
+      1,
+      2,
+      2,
+      1,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_full_like": {
+    "num_insts": 22,
+    "num_records": [
+      4,
+      14,
+      2,
+      4,
+      2,
+      2,
+      1,
+      1,
+      1,
+      6,
+      1,
+      1,
+      1,
+      3,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_nn_functional_softsign": {
+    "num_insts": 5,
+    "num_records": [
+      16,
+      7,
+      2,
+      9,
+      1
+    ]
+  },
+  "torch__C__fft_fft_irfft": {
+    "num_insts": 7,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_deg2rad": {
+    "num_insts": 5,
+    "num_records": [
+      10,
+      14,
+      2,
+      1,
+      6
+    ]
+  },
+  "torch_Tensor_acos": {
+    "num_insts": 3,
+    "num_records": [
+      3,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_exp": {
+    "num_insts": 3,
+    "num_records": [
+      4,
+      3,
+      1
+    ]
+  },
+  "torch_nn_functional_tanhshrink": {
+    "num_insts": 5,
+    "num_records": [
+      15,
+      7,
+      2,
+      9,
+      1
+    ]
+  },
+  "torch_clamp": {
+    "num_insts": 14,
+    "num_records": [
+      1,
+      1,
+      7,
+      1,
+      1,
+      7,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_where": {
+    "num_insts": 14,
+    "num_records": [
+      2,
+      81,
+      4,
+      3,
+      2,
+      1,
+      2,
+      3,
+      2,
+      3,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch__C__fft_fft_rfft": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_column_stack": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_diagonal_copy": {
+    "num_insts": 6,
+    "num_records": [
+      3,
+      1,
+      1,
+      3,
+      1,
+      4
+    ]
+  },
+  "torch_bitwise_right_shift": {
+    "num_insts": 6,
+    "num_records": [
+      4,
+      2,
+      7,
+      1,
+      1,
+      7
+    ]
+  },
+  "torch_pairwise_distance": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_nn_functional_binary_cross_entropy_with_logits": {
+    "num_insts": 5,
+    "num_records": [
+      1,
+      2,
+      1,
+      2,
+      1
+    ]
+  },
+  "torch_Tensor_cumsum_": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      2
+    ]
+  },
+  "torch__C__special_special_log_ndtr": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch__C__linalg_linalg_pinv": {
+    "num_insts": 9,
+    "num_records": [
+      2,
+      2,
+      4,
+      2,
+      4,
+      2,
+      2,
+      2,
+      4
+    ]
+  },
+  "torch_atanh": {
+    "num_insts": 5,
+    "num_records": [
+      10,
+      15,
+      2,
+      1,
+      6
+    ]
+  },
+  "torch_Tensor_floor": {
+    "num_insts": 4,
+    "num_records": [
+      4,
+      1,
+      2,
+      1
+    ]
+  },
+  "torch_Tensor_transpose_": {
+    "num_insts": 12,
+    "num_records": [
+      3,
+      1,
+      4,
+      1,
+      5,
+      5,
+      1,
+      3,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_adaptive_avg_pool1d": {
+    "num_insts": 4,
+    "num_records": [
+      2,
+      2,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_rot90": {
+    "num_insts": 4,
+    "num_records": [
+      1,
+      7,
+      1,
+      1
+    ]
+  },
+  "torch_sgn": {
+    "num_insts": 5,
+    "num_records": [
+      10,
+      15,
+      2,
+      1,
+      6
+    ]
+  },
+  "torch__C__linalg_linalg_slogdet": {
+    "num_insts": 1,
+    "num_records": [
+      6
+    ]
+  },
+  "torch_cholesky_solve": {
+    "num_insts": 4,
+    "num_records": [
+      2,
+      2,
+      2,
+      2
+    ]
+  },
+  "torch_conv2d": {
+    "num_insts": 14,
+    "num_records": [
+      8,
+      2,
+      2,
+      8,
+      3,
+      2,
+      2,
+      2,
+      4,
+      2,
+      2,
+      1,
+      2,
+      1
+    ]
+  },
+  "torch_Tensor_expm1": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_Tensor_polygamma_": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_Tensor_view": {
+    "num_insts": 43,
+    "num_records": [
+      84,
+      62,
+      3,
+      11,
+      49,
+      10,
+      23,
+      23,
+      9,
+      31,
+      43,
+      34,
+      5,
+      2,
+      17,
+      9,
+      19,
+      4,
+      7,
+      11,
+      17,
+      6,
+      9,
+      5,
+      8,
+      4,
+      11,
+      1,
+      6,
+      1,
+      1,
+      2,
+      3,
+      4,
+      3,
+      1,
+      4,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_nn_functional_kl_div": {
+    "num_insts": 4,
+    "num_records": [
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_minimum": {
+    "num_insts": 7,
+    "num_records": [
+      21,
+      32,
+      4,
+      4,
+      1,
+      1,
+      9
+    ]
+  },
+  "torch_Tensor_abs": {
+    "num_insts": 5,
+    "num_records": [
+      33,
+      123,
+      90,
+      147,
+      5
+    ]
+  },
+  "torch_nanquantile": {
+    "num_insts": 16,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_sub": {
+    "num_insts": 8,
+    "num_records": [
+      1,
+      3,
+      3,
+      1,
+      1,
+      1,
+      2,
+      1
+    ]
+  },
+  "torch_Tensor_frac_": {
+    "num_insts": 1,
+    "num_records": [
+      23
+    ]
+  },
+  "torch_mul": {
+    "num_insts": 21,
+    "num_records": [
+      2,
+      67,
+      24,
+      23,
+      9,
+      54,
+      2,
+      2,
+      1,
+      1,
+      1,
+      8,
+      5,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_unflatten": {
+    "num_insts": 9,
+    "num_records": [
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_permute": {
+    "num_insts": 45,
+    "num_records": [
+      5,
+      5,
+      6,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      5,
+      7,
+      7,
+      5,
+      6,
+      6,
+      5,
+      10,
+      1,
+      5,
+      2,
+      2,
+      5,
+      1,
+      5,
+      5,
+      5,
+      4,
+      5,
+      6,
+      5,
+      6,
+      5,
+      2,
+      5,
+      5,
+      1,
+      1,
+      5,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch__C__fft_fft_ihfftn": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_positive": {
+    "num_insts": 5,
+    "num_records": [
+      10,
+      15,
+      2,
+      1,
+      6
+    ]
+  },
+  "torch_hsplit": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      1
+    ]
+  },
+  "torch__C__nn_upsample_trilinear3d": {
+    "num_insts": 4,
+    "num_records": [
+      1,
+      2,
+      1,
+      2
+    ]
+  },
+  "torch_margin_ranking_loss": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_swapdims": {
+    "num_insts": 56,
+    "num_records": [
+      1,
+      2,
+      2,
+      1,
+      2,
+      1,
+      2,
+      1,
+      1,
+      2,
+      2,
+      2,
+      2,
+      1,
+      2,
+      2,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      2,
+      2,
+      2,
+      1,
+      2,
+      1,
+      2,
+      1,
+      2,
+      1,
+      2,
+      2,
+      2,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch__C__nn_gelu": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_transpose": {
+    "num_insts": 59,
+    "num_records": [
+      2,
+      2,
+      6,
+      1,
+      1,
+      3,
+      2,
+      2,
+      3,
+      2,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      3,
+      2,
+      1,
+      1,
+      2,
+      1,
+      2,
+      2,
+      2,
+      2,
+      1,
+      2,
+      2,
+      1,
+      2,
+      1,
+      1,
+      2,
+      1,
+      2,
+      1,
+      2,
+      2,
+      1,
+      1,
+      3,
+      1,
+      1,
+      2,
+      3,
+      1,
+      1,
+      1,
+      2,
+      1,
+      2,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_uniform_": {
+    "num_insts": 17,
+    "num_records": [
+      166,
+      121,
+      49,
+      6,
+      3,
+      5,
+      2,
+      46,
+      5,
+      11,
+      6,
+      3,
+      2,
+      2,
+      1,
+      1,
+      2
+    ]
+  },
+  "torch__C__linalg_linalg_vander": {
+    "num_insts": 4,
+    "num_records": [
+      4,
+      3,
+      1,
+      1
+    ]
+  },
+  "torch_nn_functional_soft_margin_loss": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch__C__fft_fft_ifft2": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_Tensor_clamp_max": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_empty_like": {
+    "num_insts": 34,
+    "num_records": [
+      2,
+      4,
+      3,
+      5,
+      4,
+      1,
+      2,
+      3,
+      6,
+      4,
+      3,
+      1,
+      3,
+      2,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      4,
+      5,
+      1,
+      1,
+      2,
+      2,
+      1,
+      1,
+      2,
+      1
+    ]
+  },
+  "torch_Tensor_index_select": {
+    "num_insts": 1,
+    "num_records": [
+      2
+    ]
+  },
+  "torch_Tensor_adjoint": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_quantile": {
+    "num_insts": 16,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_amax": {
+    "num_insts": 1,
+    "num_records": [
+      2
+    ]
+  },
+  "torch_nn_functional_selu": {
+    "num_insts": 5,
+    "num_records": [
+      10,
+      7,
+      2,
+      9,
+      1
+    ]
+  },
+  "torch_split": {
+    "num_insts": 27,
+    "num_records": [
+      7,
+      7,
+      1,
+      33,
+      12,
+      5,
+      4,
+      1,
+      1,
+      4,
+      7,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_mv": {
+    "num_insts": 1,
+    "num_records": [
+      4
+    ]
+  },
+  "torch__C__linalg_linalg_matrix_norm": {
+    "num_insts": 24,
+    "num_records": [
+      1,
+      4,
+      4,
+      1,
+      1,
+      1,
+      1,
+      4,
+      4,
+      1,
+      1,
+      1,
+      4,
+      1,
+      1,
+      1,
+      4,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_cat": {
+    "num_insts": 69,
+    "num_records": [
+      9,
+      6,
+      4,
+      37,
+      163,
+      3,
+      9,
+      6,
+      80,
+      106,
+      17,
+      9,
+      8,
+      2,
+      4,
+      8,
+      17,
+      1,
+      6,
+      1,
+      8,
+      4,
+      2,
+      1,
+      2,
+      6,
+      8,
+      2,
+      6,
+      10,
+      4,
+      2,
+      11,
+      4,
+      26,
+      8,
+      1,
+      6,
+      2,
+      2,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      5,
+      1,
+      2,
+      1,
+      2,
+      1,
+      1,
+      1,
+      2,
+      2,
+      2,
+      1,
+      7,
+      1,
+      2,
+      2,
+      2,
+      5,
+      2,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch__C__nn_gelu_": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_Tensor_pow": {
+    "num_insts": 11,
+    "num_records": [
+      10,
+      1,
+      3,
+      1,
+      7,
+      4,
+      3,
+      1,
+      3,
+      1,
+      1
+    ]
+  },
+  "torch_cumulative_trapezoid": {
+    "num_insts": 19,
+    "num_records": [
+      1,
+      4,
+      1,
+      3,
+      2,
+      1,
+      1,
+      1,
+      1,
+      2,
+      2,
+      1,
+      3,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_logaddexp": {
+    "num_insts": 3,
+    "num_records": [
+      2,
+      1,
+      3
+    ]
+  },
+  "torch_Tensor_logical_or_": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_lgamma": {
+    "num_insts": 1,
+    "num_records": [
+      2
+    ]
+  },
+  "torch_max_pool2d": {
+    "num_insts": 96,
+    "num_records": [
+      4,
+      12,
+      4,
+      4,
+      4,
+      4,
+      8,
+      4,
+      106,
+      4,
+      4,
+      4,
+      4,
+      8,
+      8,
+      94,
+      4,
+      8,
+      4,
+      8,
+      2,
+      8,
+      8,
+      8,
+      12,
+      4,
+      4,
+      8,
+      8,
+      8,
+      8,
+      2,
+      2,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4,
+      4,
+      2,
+      9,
+      4,
+      4,
+      4,
+      4,
+      8,
+      4,
+      4,
+      4,
+      4,
+      8,
+      8,
+      4,
+      8,
+      2,
+      2,
+      2,
+      2,
+      2,
+      4,
+      4,
+      4,
+      4,
+      8,
+      4,
+      4,
+      4,
+      4,
+      2,
+      2,
+      4,
+      4,
+      2,
+      4,
+      4,
+      2,
+      4,
+      4,
+      2,
+      2,
+      2,
+      4,
+      2,
+      4,
+      2,
+      4,
+      2,
+      2,
+      4,
+      2,
+      2,
+      2,
+      2,
+      4,
+      4
+    ]
+  },
+  "torch_Tensor_reciprocal_": {
+    "num_insts": 2,
+    "num_records": [
+      23,
+      7
+    ]
+  },
+  "torch__C__linalg_linalg_ldl_factor": {
+    "num_insts": 4,
+    "num_records": [
+      1,
+      2,
+      2,
+      1
+    ]
+  },
+  "torch_Tensor___xor__": {
+    "num_insts": 4,
+    "num_records": [
+      8,
+      2,
+      4,
+      1
+    ]
+  },
+  "torch_clamp_max_": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      2
+    ]
+  },
+  "torch_Tensor_contiguous": {
+    "num_insts": 2,
+    "num_records": [
+      2,
+      1
+    ]
+  },
+  "torch_Tensor_add_": {
+    "num_insts": 20,
+    "num_records": [
+      55,
+      51,
+      76,
+      42,
+      24,
+      3,
+      29,
+      30,
+      93,
+      47,
+      8,
+      2,
+      23,
+      5,
+      23,
+      1,
+      9,
+      3,
+      1,
+      2
+    ]
+  },
+  "torch_prod": {
+    "num_insts": 29,
+    "num_records": [
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_abs": {
+    "num_insts": 5,
+    "num_records": [
+      36,
+      38,
+      12,
+      3,
+      1
+    ]
+  },
+  "torch_nn_functional_embedding": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_diagonal_scatter": {
+    "num_insts": 3,
+    "num_records": [
+      13,
+      2,
+      1
+    ]
+  },
+  "torch__C__special_special_i1e": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_matrix_exp": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_tan": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_Tensor_xlogy_": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_ne": {
+    "num_insts": 18,
+    "num_records": [
+      3,
+      21,
+      4,
+      5,
+      4,
+      2,
+      10,
+      1,
+      2,
+      2,
+      1,
+      2,
+      2,
+      1,
+      9,
+      5,
+      3,
+      2
+    ]
+  },
+  "torch_zeros_like": {
+    "num_insts": 40,
+    "num_records": [
+      59,
+      75,
+      1,
+      58,
+      34,
+      2,
+      1,
+      2,
+      1,
+      2,
+      2,
+      1,
+      4,
+      1,
+      2,
+      3,
+      6,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_exp2": {
+    "num_insts": 5,
+    "num_records": [
+      15,
+      7,
+      2,
+      9,
+      1
+    ]
+  },
+  "torch_addmv": {
+    "num_insts": 2,
+    "num_records": [
+      3,
+      2
+    ]
+  },
+  "torch_Tensor_atan_": {
+    "num_insts": 1,
+    "num_records": [
+      23
+    ]
+  },
+  "torch_Tensor_digamma_": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch__C__special_special_xlog1py": {
+    "num_insts": 3,
+    "num_records": [
+      2,
+      1,
+      3
+    ]
+  },
+  "torch_isin": {
+    "num_insts": 12,
+    "num_records": [
+      10,
+      4,
+      2,
+      1,
+      15,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_atan": {
+    "num_insts": 5,
+    "num_records": [
+      32,
+      17,
+      2,
+      1,
+      7
+    ]
+  },
+  "torch_fmax": {
+    "num_insts": 6,
+    "num_records": [
+      7,
+      2,
+      7,
+      1,
+      1,
+      7
+    ]
+  },
+  "torch_Tensor_random_": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_searchsorted": {
+    "num_insts": 48,
+    "num_records": [
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2
+    ]
+  },
+  "torch_Tensor_log1p_": {
+    "num_insts": 1,
+    "num_records": [
+      23
+    ]
+  },
+  "torch_argmin": {
+    "num_insts": 6,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_nn_functional_relu": {
+    "num_insts": 9,
+    "num_records": [
+      226,
+      32,
+      16,
+      2,
+      10,
+      9,
+      1,
+      1,
+      4
+    ]
+  },
+  "torch_Tensor_sqrt": {
+    "num_insts": 3,
+    "num_records": [
+      24,
+      29,
+      7
+    ]
+  },
+  "torch_expm1": {
+    "num_insts": 5,
+    "num_records": [
+      32,
+      15,
+      2,
+      1,
+      7
+    ]
+  },
+  "torch__C__fft_fft_ihfft2": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch__C__nn_adaptive_max_pool2d": {
+    "num_insts": 4,
+    "num_records": [
+      5,
+      1,
+      5,
+      1
+    ]
+  },
+  "torch_Tensor_heaviside_": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch__C__fft_fft_hfftn": {
+    "num_insts": 8,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_cummax": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      1
+    ]
+  },
+  "torch__C__nn_soft_margin_loss": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_Tensor_atan2": {
+    "num_insts": 5,
+    "num_records": [
+      1,
+      5,
+      1,
+      2,
+      1
+    ]
+  },
+  "torch_nansum": {
+    "num_insts": 9,
+    "num_records": [
+      1,
+      2,
+      2,
+      1,
+      1,
+      2,
+      2,
+      1,
+      1
+    ]
+  },
+  "torch_triplet_margin_loss": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_nn_functional_adaptive_max_pool2d_with_indices": {
+    "num_insts": 20,
+    "num_records": [
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      2,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_igammac": {
+    "num_insts": 6,
+    "num_records": [
+      6,
+      10,
+      2,
+      1,
+      1,
+      7
+    ]
+  },
+  "torch_Tensor_chunk": {
+    "num_insts": 18,
+    "num_records": [
+      37,
+      31,
+      1,
+      1,
+      2,
+      1,
+      4,
+      4,
+      3,
+      13,
+      1,
+      6,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_rsqrt_": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_lgamma": {
+    "num_insts": 5,
+    "num_records": [
+      16,
+      8,
+      2,
+      11,
+      1
+    ]
+  },
+  "torch_Tensor_isinf": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_chunk": {
+    "num_insts": 6,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_sigmoid_": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_hinge_embedding_loss": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_amax": {
+    "num_insts": 19,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_ldexp_": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_constant_pad_nd": {
+    "num_insts": 33,
+    "num_records": [
+      3,
+      4,
+      2,
+      5,
+      2,
+      5,
+      5,
+      8,
+      4,
+      4,
+      3,
+      3,
+      5,
+      4,
+      2,
+      3,
+      3,
+      3,
+      6,
+      4,
+      3,
+      3,
+      4,
+      9,
+      4,
+      3,
+      2,
+      2,
+      3,
+      2,
+      2,
+      2,
+      2
+    ]
+  },
+  "torch_nn_functional_dropout1d": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_ravel": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_Tensor_hardshrink": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_acosh": {
+    "num_insts": 5,
+    "num_records": [
+      16,
+      7,
+      2,
+      9,
+      1
+    ]
+  },
+  "torch_Tensor_float_power_": {
+    "num_insts": 4,
+    "num_records": [
+      1,
+      4,
+      1,
+      1
+    ]
+  },
+  "torch_histogramdd": {
+    "num_insts": 16,
+    "num_records": [
+      9,
+      9,
+      9,
+      3,
+      3,
+      9,
+      9,
+      9,
+      3,
+      9,
+      3,
+      3,
+      3,
+      9,
+      3,
+      3
+    ]
+  },
+  "torch_polygamma": {
+    "num_insts": 5,
+    "num_records": [
+      59,
+      30,
+      47,
+      10,
+      5
+    ]
+  },
+  "torch_Tensor_logical_or": {
+    "num_insts": 2,
+    "num_records": [
+      6,
+      1
+    ]
+  },
+  "torch_Tensor_new_ones": {
+    "num_insts": 20,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_i0": {
+    "num_insts": 5,
+    "num_records": [
+      18,
+      2,
+      9,
+      1,
+      6
+    ]
+  },
+  "torch_Tensor_log_softmax": {
+    "num_insts": 2,
+    "num_records": [
+      2,
+      1
+    ]
+  },
+  "torch_threshold": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_amin": {
+    "num_insts": 17,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_nn_functional_layer_norm": {
+    "num_insts": 11,
+    "num_records": [
+      2,
+      18,
+      5,
+      4,
+      1,
+      2,
+      2,
+      1,
+      1,
+      1,
+      2
+    ]
+  },
+  "torch__C__nn_fractional_max_pool2d": {
+    "num_insts": 4,
+    "num_records": [
+      10,
+      5,
+      2,
+      1
+    ]
+  },
+  "torch_Tensor_addmv_": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_Tensor_log2_": {
+    "num_insts": 1,
+    "num_records": [
+      23
+    ]
+  },
+  "torch_triangular_solve": {
+    "num_insts": 2,
+    "num_records": [
+      4,
+      8
+    ]
+  },
+  "torch_sigmoid": {
+    "num_insts": 5,
+    "num_records": [
+      37,
+      3,
+      17,
+      8,
+      1
+    ]
+  },
+  "torch_trapezoid": {
+    "num_insts": 14,
+    "num_records": [
+      3,
+      1,
+      1,
+      1,
+      1,
+      1,
+      3,
+      3,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_nn_functional_cross_entropy": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_Tensor___lshift__": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_Tensor_nonzero": {
+    "num_insts": 2,
+    "num_records": [
+      2,
+      2
+    ]
+  },
+  "torch__C__linalg_linalg_lu_solve": {
+    "num_insts": 8,
+    "num_records": [
+      5,
+      14,
+      14,
+      14,
+      5,
+      14,
+      5,
+      5
+    ]
+  },
+  "torch_Tensor_new_zeros": {
+    "num_insts": 26,
+    "num_records": [
+      18,
+      2,
+      4,
+      1,
+      18,
+      11,
+      13,
+      1,
+      4,
+      25,
+      1,
+      7,
+      1,
+      1,
+      1,
+      1,
+      4,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_sinh": {
+    "num_insts": 5,
+    "num_records": [
+      32,
+      17,
+      2,
+      1,
+      7
+    ]
+  },
+  "torch_all": {
+    "num_insts": 6,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_nn_functional_hardsigmoid": {
+    "num_insts": 6,
+    "num_records": [
+      11,
+      7,
+      2,
+      9,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_split": {
+    "num_insts": 7,
+    "num_records": [
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_median": {
+    "num_insts": 6,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_bitwise_or": {
+    "num_insts": 3,
+    "num_records": [
+      2,
+      1,
+      3
+    ]
+  },
+  "torch_Tensor_tanh": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch__C__linalg_linalg_lstsq": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_bitwise_and": {
+    "num_insts": 11,
+    "num_records": [
+      12,
+      4,
+      4,
+      4,
+      8,
+      1,
+      2,
+      1,
+      9,
+      2,
+      2
+    ]
+  },
+  "torch_min": {
+    "num_insts": 10,
+    "num_records": [
+      20,
+      4,
+      4,
+      9,
+      1,
+      1,
+      9,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_squeeze_": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch__C__linalg_linalg_multi_dot": {
+    "num_insts": 3,
+    "num_records": [
+      3,
+      3,
+      1
+    ]
+  },
+  "torch__C__special_special_entr": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_repeat_interleave": {
+    "num_insts": 6,
+    "num_records": [
+      71,
+      1,
+      7,
+      5,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_sub_": {
+    "num_insts": 11,
+    "num_records": [
+      64,
+      25,
+      24,
+      70,
+      23,
+      23,
+      1,
+      1,
+      1,
+      1,
+      2
+    ]
+  },
+  "torch_nan_to_num": {
+    "num_insts": 6,
+    "num_records": [
+      15,
+      5,
+      7,
+      1,
+      10,
+      1
+    ]
+  },
+  "torch__C__special_special_i0e": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_as_tensor": {
+    "num_insts": 6,
+    "num_records": [
+      5,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_isnan": {
+    "num_insts": 5,
+    "num_records": [
+      15,
+      12,
+      19,
+      2,
+      1
+    ]
+  },
+  "torch_std_mean": {
+    "num_insts": 5,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_logsumexp": {
+    "num_insts": 12,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_flatten": {
+    "num_insts": 20,
+    "num_records": [
+      6,
+      39,
+      20,
+      1,
+      3,
+      1,
+      1,
+      1,
+      1,
+      8,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_maximum": {
+    "num_insts": 7,
+    "num_records": [
+      21,
+      33,
+      4,
+      4,
+      1,
+      1,
+      10
+    ]
+  },
+  "torch__C__nn_reflection_pad1d": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_zero_": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch__C__nn_max_pool3d_with_indices": {
+    "num_insts": 48,
+    "num_records": [
+      4,
+      8,
+      8,
+      8,
+      4,
+      4,
+      8,
+      8,
+      8,
+      4,
+      8,
+      8,
+      4,
+      8,
+      8,
+      8,
+      8,
+      8,
+      4,
+      4,
+      4,
+      4,
+      8,
+      8,
+      4,
+      8,
+      4,
+      8,
+      8,
+      8,
+      4,
+      8,
+      4,
+      8,
+      4,
+      4,
+      8,
+      4,
+      8,
+      4,
+      4,
+      4,
+      4,
+      4,
+      8,
+      4,
+      4,
+      4
+    ]
+  },
+  "torch_log2": {
+    "num_insts": 5,
+    "num_records": [
+      32,
+      18,
+      8,
+      2,
+      1
+    ]
+  },
+  "torch__C__linalg_linalg_cholesky_ex": {
+    "num_insts": 6,
+    "num_records": [
+      2,
+      2,
+      4,
+      2,
+      4,
+      2
+    ]
+  },
+  "torch_take": {
+    "num_insts": 2,
+    "num_records": [
+      2,
+      1
+    ]
+  },
+  "torch_Tensor_log1p": {
+    "num_insts": 4,
+    "num_records": [
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor___ior__": {
+    "num_insts": 4,
+    "num_records": [
+      14,
+      2,
+      6,
+      1
+    ]
+  },
+  "torch_Tensor_erfc": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_Tensor_mm": {
+    "num_insts": 1,
+    "num_records": [
+      3
+    ]
+  },
+  "torch_resolve_conj": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch__C__nn_unflatten_dense_tensors": {
+    "num_insts": 6,
+    "num_records": [
+      2,
+      1,
+      1,
+      2,
+      2,
+      1
+    ]
+  },
+  "torch_logcumsumexp": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch__C__linalg_linalg_eigvals": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch__C__linalg_linalg_cross": {
+    "num_insts": 2,
+    "num_records": [
+      2,
+      1
+    ]
+  },
+  "torch_nn_functional_elu": {
+    "num_insts": 5,
+    "num_records": [
+      10,
+      10,
+      8,
+      2,
+      1
+    ]
+  },
+  "torch__C__linalg_linalg_vecdot": {
+    "num_insts": 3,
+    "num_records": [
+      12,
+      12,
+      12
+    ]
+  },
+  "torch_pdist": {
+    "num_insts": 1,
+    "num_records": [
+      4
+    ]
+  },
+  "torch_Tensor_ceil": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch__C__nn_log_sigmoid": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_unique_consecutive": {
+    "num_insts": 6,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch__C__nn_upsample_nearest3d": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      2
+    ]
+  },
+  "torch__C__nn_linear": {
+    "num_insts": 7,
+    "num_records": [
+      5,
+      3,
+      12,
+      2,
+      2,
+      2,
+      2
+    ]
+  },
+  "torch_nn_functional_mish": {
+    "num_insts": 6,
+    "num_records": [
+      2,
+      10,
+      7,
+      2,
+      11,
+      1
+    ]
+  },
+  "torch_Tensor_broadcast_to": {
+    "num_insts": 3,
+    "num_records": [
+      2,
+      1,
+      1
+    ]
+  },
+  "torch_nn_functional_pad": {
+    "num_insts": 32,
+    "num_records": [
+      5,
+      73,
+      3,
+      3,
+      20,
+      27,
+      12,
+      17,
+      2,
+      1,
+      5,
+      3,
+      4,
+      2,
+      2,
+      3,
+      5,
+      1,
+      2,
+      5,
+      3,
+      3,
+      1,
+      5,
+      1,
+      2,
+      3,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_sin_": {
+    "num_insts": 1,
+    "num_records": [
+      23
+    ]
+  },
+  "torch_logdet": {
+    "num_insts": 1,
+    "num_records": [
+      6
+    ]
+  },
+  "torch_mean": {
+    "num_insts": 12,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_copysign": {
+    "num_insts": 9,
+    "num_records": [
+      6,
+      2,
+      3,
+      8,
+      1,
+      1,
+      7,
+      1,
+      1
+    ]
+  },
+  "torch__C__linalg_linalg_norm": {
+    "num_insts": 11,
+    "num_records": [
+      8,
+      2,
+      2,
+      4,
+      4,
+      2,
+      4,
+      6,
+      4,
+      2,
+      2
+    ]
+  },
+  "torch__C__fft_fft_rfft2": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch__C__nn_adaptive_max_pool3d": {
+    "num_insts": 2,
+    "num_records": [
+      5,
+      5
+    ]
+  },
+  "torch_Tensor_acos_": {
+    "num_insts": 1,
+    "num_records": [
+      23
+    ]
+  },
+  "torch_svd": {
+    "num_insts": 4,
+    "num_records": [
+      18,
+      9,
+      18,
+      9
+    ]
+  },
+  "torch_nn_functional_dropout2d": {
+    "num_insts": 7,
+    "num_records": [
+      1,
+      1,
+      2,
+      1,
+      2,
+      1,
+      1
+    ]
+  },
+  "torch_select": {
+    "num_insts": 7,
+    "num_records": [
+      5,
+      11,
+      7,
+      1,
+      1,
+      2,
+      2
+    ]
+  },
+  "torch_nn_functional_feature_alpha_dropout": {
+    "num_insts": 5,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch__C__special_special_modified_bessel_k0": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_ravel": {
+    "num_insts": 4,
+    "num_records": [
+      1,
+      2,
+      1,
+      1
+    ]
+  },
+  "torch_tanh_": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_flipud": {
+    "num_insts": 4,
+    "num_records": [
+      4,
+      6,
+      4,
+      1
+    ]
+  },
+  "torch_Tensor_cosh_": {
+    "num_insts": 1,
+    "num_records": [
+      23
+    ]
+  },
+  "torch_nn_functional_threshold": {
+    "num_insts": 12,
+    "num_records": [
+      1,
+      1,
+      2,
+      2,
+      1,
+      6,
+      9,
+      12,
+      3,
+      4,
+      1,
+      4
+    ]
+  },
+  "torch_Tensor_ge_": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_Tensor_atan2_": {
+    "num_insts": 3,
+    "num_records": [
+      2,
+      1,
+      2
+    ]
+  },
+  "torch_conv1d": {
+    "num_insts": 10,
+    "num_records": [
+      1,
+      2,
+      2,
+      2,
+      2,
+      1,
+      2,
+      1,
+      2,
+      1
+    ]
+  },
+  "torch__C__nn_upsample_nearest2d": {
+    "num_insts": 2,
+    "num_records": [
+      2,
+      1
+    ]
+  },
+  "torch_Tensor_eq": {
+    "num_insts": 9,
+    "num_records": [
+      38,
+      35,
+      18,
+      17,
+      2,
+      2,
+      1,
+      1,
+      2
+    ]
+  },
+  "torch_Tensor_addmm_": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_view_copy": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch__C__linalg_linalg_ldl_factor_ex": {
+    "num_insts": 4,
+    "num_records": [
+      2,
+      2,
+      1,
+      1
+    ]
+  },
+  "torch_index_put": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_ldexp": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_Tensor_erf_": {
+    "num_insts": 1,
+    "num_records": [
+      23
+    ]
+  },
+  "torch_cosine_embedding_loss": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_digamma": {
+    "num_insts": 5,
+    "num_records": [
+      16,
+      8,
+      2,
+      10,
+      1
+    ]
+  },
+  "torch__C__nn_softshrink": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_randn_like": {
+    "num_insts": 8,
+    "num_records": [
+      98,
+      22,
+      13,
+      1,
+      6,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_dstack": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_any": {
+    "num_insts": 6,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_requires_grad_": {
+    "num_insts": 11,
+    "num_records": [
+      111,
+      128,
+      59,
+      143,
+      90,
+      84,
+      142,
+      27,
+      93,
+      43,
+      7
+    ]
+  },
+  "torch__C__fft_fft_ihfft": {
+    "num_insts": 7,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_sign_": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_trapz": {
+    "num_insts": 4,
+    "num_records": [
+      1,
+      1,
+      3,
+      1
+    ]
+  },
+  "torch_conv_transpose3d": {
+    "num_insts": 10,
+    "num_records": [
+      3,
+      2,
+      2,
+      2,
+      2,
+      2,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_fill_": {
+    "num_insts": 10,
+    "num_records": [
+      117,
+      66,
+      4,
+      15,
+      6,
+      33,
+      1,
+      1,
+      2,
+      1
+    ]
+  },
+  "torch_Tensor_bitwise_not": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_acos": {
+    "num_insts": 5,
+    "num_records": [
+      32,
+      18,
+      8,
+      2,
+      1
+    ]
+  },
+  "torch__C__special_special_modified_bessel_i1": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_type_as": {
+    "num_insts": 1,
+    "num_records": [
+      2
+    ]
+  },
+  "torch_masked_scatter": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_log10_": {
+    "num_insts": 1,
+    "num_records": [
+      23
+    ]
+  },
+  "torch_conv_transpose2d": {
+    "num_insts": 10,
+    "num_records": [
+      4,
+      2,
+      1,
+      3,
+      1,
+      1,
+      2,
+      2,
+      2,
+      1
+    ]
+  },
+  "torch__C__linalg_linalg_eigvalsh": {
+    "num_insts": 5,
+    "num_records": [
+      2,
+      1,
+      3,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_ne": {
+    "num_insts": 4,
+    "num_records": [
+      76,
+      20,
+      1,
+      1
+    ]
+  },
+  "torch_slice_scatter": {
+    "num_insts": 3,
+    "num_records": [
+      3,
+      3,
+      3
+    ]
+  },
+  "torch_Tensor_cos_": {
+    "num_insts": 2,
+    "num_records": [
+      23,
+      2
+    ]
+  },
+  "torch_nn_functional_triplet_margin_loss": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_sinc": {
+    "num_insts": 5,
+    "num_records": [
+      17,
+      7,
+      2,
+      9,
+      1
+    ]
+  },
+  "torch_Tensor_asin_": {
+    "num_insts": 1,
+    "num_records": [
+      23
+    ]
+  },
+  "torch_Tensor_clamp": {
+    "num_insts": 9,
+    "num_records": [
+      3,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_sum": {
+    "num_insts": 138,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      6,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_reciprocal": {
+    "num_insts": 5,
+    "num_records": [
+      32,
+      18,
+      8,
+      2,
+      1
+    ]
+  },
+  "torch_nn_functional_adaptive_avg_pool3d": {
+    "num_insts": 10,
+    "num_records": [
+      2,
+      1,
+      1,
+      6,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_signbit": {
+    "num_insts": 5,
+    "num_records": [
+      10,
+      15,
+      2,
+      1,
+      6
+    ]
+  },
+  "torch_nn_functional_max_pool1d_with_indices": {
+    "num_insts": 97,
+    "num_records": [
+      4,
+      4,
+      4,
+      8,
+      4,
+      4,
+      4,
+      2,
+      8,
+      8,
+      4,
+      8,
+      4,
+      4,
+      4,
+      4,
+      8,
+      8,
+      4,
+      4,
+      4,
+      4,
+      8,
+      4,
+      4,
+      8,
+      8,
+      2,
+      4,
+      1,
+      4,
+      8,
+      2,
+      8,
+      2,
+      8,
+      8,
+      8,
+      8,
+      8,
+      8,
+      4,
+      4,
+      2,
+      4,
+      2,
+      4,
+      8,
+      4,
+      4,
+      8,
+      8,
+      4,
+      8,
+      4,
+      2,
+      4,
+      2,
+      2,
+      2,
+      4,
+      4,
+      4,
+      4,
+      4,
+      8,
+      8,
+      2,
+      4,
+      2,
+      4,
+      4,
+      4,
+      2,
+      8,
+      4,
+      4,
+      2,
+      2,
+      2,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      2,
+      4,
+      2,
+      2,
+      2,
+      4,
+      4,
+      2,
+      2,
+      2,
+      2
+    ]
+  },
+  "torch_Tensor_true_divide_": {
+    "num_insts": 2,
+    "num_records": [
+      2,
+      1
+    ]
+  },
+  "torch_clamp_min_": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      2
+    ]
+  },
+  "torch_nn_functional_smooth_l1_loss": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_Tensor_transpose": {
+    "num_insts": 45,
+    "num_records": [
+      22,
+      20,
+      9,
+      6,
+      7,
+      1,
+      5,
+      2,
+      6,
+      3,
+      4,
+      4,
+      8,
+      20,
+      9,
+      3,
+      11,
+      12,
+      1,
+      7,
+      1,
+      5,
+      15,
+      3,
+      2,
+      6,
+      3,
+      4,
+      4,
+      1,
+      4,
+      1,
+      1,
+      3,
+      1,
+      1,
+      3,
+      1,
+      1,
+      1,
+      2,
+      2,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_log1p": {
+    "num_insts": 5,
+    "num_records": [
+      34,
+      16,
+      8,
+      2,
+      1
+    ]
+  },
+  "torch_split_copy": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_Tensor_any": {
+    "num_insts": 14,
+    "num_records": [
+      6,
+      6,
+      6,
+      6,
+      3,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      2,
+      1,
+      1
+    ]
+  },
+  "torch__C__fft_fft_fftn": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_corrcoef": {
+    "num_insts": 1,
+    "num_records": [
+      2
+    ]
+  },
+  "torch_Tensor_floor_": {
+    "num_insts": 2,
+    "num_records": [
+      23,
+      1
+    ]
+  },
+  "torch_unbind": {
+    "num_insts": 14,
+    "num_records": [
+      1,
+      1,
+      2,
+      3,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_nn_functional_hinge_embedding_loss": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      1
+    ]
+  },
+  "torch__C__fft_fft_rfftn": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_moveaxis": {
+    "num_insts": 153,
+    "num_records": [
+      5,
+      5,
+      3,
+      5,
+      5,
+      5,
+      2,
+      5,
+      2,
+      5,
+      2,
+      3,
+      5,
+      5,
+      5,
+      3,
+      5,
+      5,
+      2,
+      3,
+      5,
+      2,
+      2,
+      3,
+      3,
+      3,
+      3,
+      3,
+      6,
+      2,
+      3,
+      3,
+      3,
+      5,
+      3,
+      5,
+      3,
+      3,
+      2,
+      2,
+      3,
+      3,
+      2,
+      5,
+      2,
+      2,
+      3,
+      5,
+      5,
+      5,
+      2,
+      5,
+      5,
+      3,
+      3,
+      3,
+      2,
+      3,
+      3,
+      5,
+      3,
+      5,
+      5,
+      5,
+      3,
+      3,
+      3,
+      2,
+      2,
+      2,
+      3,
+      3,
+      2,
+      2,
+      5,
+      2,
+      2,
+      3,
+      2,
+      3,
+      5,
+      5,
+      2,
+      5,
+      3,
+      5,
+      5,
+      3,
+      3,
+      3,
+      1,
+      3,
+      3,
+      3,
+      5,
+      5,
+      3,
+      5,
+      2,
+      2,
+      3,
+      5,
+      3,
+      2,
+      3,
+      5,
+      3,
+      5,
+      1,
+      2,
+      2,
+      3,
+      2,
+      3,
+      3,
+      2,
+      2,
+      2,
+      2,
+      3,
+      2,
+      2,
+      3,
+      2,
+      1,
+      2,
+      5,
+      3,
+      3,
+      2,
+      3,
+      2,
+      2,
+      1,
+      2,
+      3,
+      2,
+      3,
+      2,
+      3,
+      3,
+      3,
+      3,
+      3,
+      1,
+      2,
+      3,
+      3,
+      2,
+      3,
+      2,
+      2,
+      2
+    ]
+  },
+  "torch_unsqueeze": {
+    "num_insts": 14,
+    "num_records": [
+      1,
+      1,
+      1,
+      2,
+      1,
+      3,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_split_with_sizes": {
+    "num_insts": 3,
+    "num_records": [
+      2,
+      1,
+      1
+    ]
+  },
+  "torch_masked_select": {
+    "num_insts": 1,
+    "num_records": [
+      3
+    ]
+  },
+  "torch_avg_pool1d": {
+    "num_insts": 4,
+    "num_records": [
+      4,
+      4,
+      2,
+      1
+    ]
+  },
+  "torch_geqrf": {
+    "num_insts": 3,
+    "num_records": [
+      18,
+      18,
+      9
+    ]
+  },
+  "torch_dropout": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch__C__linalg_linalg_cholesky": {
+    "num_insts": 6,
+    "num_records": [
+      1,
+      3,
+      1,
+      1,
+      3,
+      1
+    ]
+  },
+  "torch_Tensor_pow_": {
+    "num_insts": 8,
+    "num_records": [
+      2,
+      4,
+      3,
+      3,
+      1,
+      3,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_mul_": {
+    "num_insts": 23,
+    "num_records": [
+      41,
+      56,
+      69,
+      23,
+      116,
+      22,
+      47,
+      41,
+      2,
+      23,
+      1,
+      1,
+      3,
+      2,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1
+    ]
+  },
+  "torch_Tensor_scatter_add_": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_Tensor_reshape_as": {
+    "num_insts": 5,
+    "num_records": [
+      1,
+      3,
+      1,
+      2,
+      1
+    ]
+  },
+  "torch_nn_functional_relu6": {
+    "num_insts": 4,
+    "num_records": [
+      8,
+      5,
+      5,
+      1
+    ]
+  },
+  "torch_bmm": {
+    "num_insts": 1,
+    "num_records": [
+      8
+    ]
+  },
+  "torch_Tensor___ixor__": {
+    "num_insts": 4,
+    "num_records": [
+      10,
+      2,
+      7,
+      1
+    ]
+  },
+  "torch_Tensor_expm1_": {
+    "num_insts": 1,
+    "num_records": [
+      23
+    ]
+  },
+  "torch_cov": {
+    "num_insts": 1,
+    "num_records": [
+      6
+    ]
+  },
+  "torch_Tensor_copy_": {
+    "num_insts": 9,
+    "num_records": [
+      61,
+      59,
+      72,
+      69,
+      17,
+      1,
+      4,
+      1,
+      2
+    ]
+  },
+  "torch__C__fft_fft_ifftn": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_ones_like": {
+    "num_insts": 17,
+    "num_records": [
+      15,
+      13,
+      1,
+      1,
+      11,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_true_divide": {
+    "num_insts": 15,
+    "num_records": [
+      7,
+      14,
+      1,
+      3,
+      1,
+      1,
+      1,
+      3,
+      1,
+      11,
+      1,
+      1,
+      3,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_swapaxes_": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_histc": {
+    "num_insts": 3,
+    "num_records": [
+      48,
+      18,
+      17
+    ]
+  },
+  "torch_Tensor_all": {
+    "num_insts": 1,
+    "num_records": [
+      2
+    ]
+  },
+  "torch_cumprod": {
+    "num_insts": 50,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_asin": {
+    "num_insts": 4,
+    "num_records": [
+      1,
+      1,
+      2,
+      1
+    ]
+  },
+  "torch_nn_functional_margin_ranking_loss": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_nn_functional_adaptive_max_pool1d_with_indices": {
+    "num_insts": 4,
+    "num_records": [
+      2,
+      2,
+      2,
+      2
+    ]
+  },
+  "torch_nn_functional_rrelu": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_max": {
+    "num_insts": 10,
+    "num_records": [
+      23,
+      4,
+      4,
+      10,
+      1,
+      10,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch__C__nn_mse_loss": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_Tensor_add": {
+    "num_insts": 15,
+    "num_records": [
+      11,
+      5,
+      5,
+      3,
+      1,
+      3,
+      7,
+      8,
+      4,
+      3,
+      5,
+      3,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_clamp_min": {
+    "num_insts": 4,
+    "num_records": [
+      6,
+      4,
+      1,
+      1
+    ]
+  },
+  "torch_triu": {
+    "num_insts": 3,
+    "num_records": [
+      5,
+      2,
+      1
+    ]
+  },
+  "torch__C__linalg_linalg_qr": {
+    "num_insts": 3,
+    "num_records": [
+      18,
+      9,
+      10
+    ]
+  },
+  "torch_nn_functional_unfold": {
+    "num_insts": 16,
+    "num_records": [
+      36,
+      24,
+      36,
+      72,
+      36,
+      6,
+      24,
+      72,
+      36,
+      18,
+      12,
+      12,
+      12,
+      26,
+      6,
+      12
+    ]
+  },
+  "torch__C__fft_fft_fft2": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_Tensor_bitwise_and": {
+    "num_insts": 3,
+    "num_records": [
+      2,
+      1,
+      3
+    ]
+  },
+  "torch_Tensor_logical_not_": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_stack": {
+    "num_insts": 61,
+    "num_records": [
+      19,
+      13,
+      8,
+      3,
+      24,
+      14,
+      3,
+      16,
+      4,
+      35,
+      23,
+      2,
+      1,
+      8,
+      1,
+      10,
+      6,
+      1,
+      1,
+      8,
+      1,
+      1,
+      1,
+      1,
+      3,
+      2,
+      9,
+      1,
+      3,
+      1,
+      1,
+      8,
+      1,
+      1,
+      1,
+      1,
+      8,
+      1,
+      10,
+      6,
+      4,
+      1,
+      1,
+      5,
+      1,
+      1,
+      5,
+      3,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1
+    ]
+  },
+  "torch__C__fft_fft_hfft": {
+    "num_insts": 7,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_istft": {
+    "num_insts": 79,
+    "num_records": [
+      1,
+      4,
+      1,
+      1,
+      4,
+      1,
+      4,
+      4,
+      1,
+      2,
+      4,
+      3,
+      4,
+      2,
+      2,
+      2,
+      2,
+      3,
+      2,
+      2,
+      1,
+      2,
+      2,
+      4,
+      4,
+      2,
+      2,
+      1,
+      4,
+      2,
+      2,
+      2,
+      1,
+      2,
+      2,
+      1,
+      1,
+      3,
+      4,
+      4,
+      2,
+      1,
+      2,
+      1,
+      1,
+      2,
+      1,
+      4,
+      2,
+      4,
+      2,
+      2,
+      4,
+      1,
+      2,
+      3,
+      1,
+      4,
+      4,
+      2,
+      2,
+      1,
+      1,
+      1,
+      2,
+      4,
+      2,
+      1,
+      2,
+      2,
+      2,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_rsub": {
+    "num_insts": 9,
+    "num_records": [
+      6,
+      2,
+      9,
+      1,
+      1,
+      8,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_var_mean": {
+    "num_insts": 8,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "torch_Tensor_rsqrt": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "torch_isposinf": {
+    "num_insts": 5,
+    "num_records": [
+      10,
+      14,
+      2,
+      1,
+      6
+    ]
+  },
+  "torch__C__linalg_linalg_cond": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "torch_fliplr": {
+    "num_insts": 3,
+    "num_records": [
+      6,
+      4,
+      1
+    ]
+  },
+  "torch_Tensor_sinh": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  }
+}

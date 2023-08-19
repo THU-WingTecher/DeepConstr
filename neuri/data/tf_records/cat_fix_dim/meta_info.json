@@ -1,0 +1,2928 @@
+{
+  "BitwiseXor": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      1
+    ]
+  },
+  "Reshape": {
+    "num_insts": 54,
+    "num_records": [
+      19,
+      2,
+      31,
+      7,
+      11,
+      10,
+      7,
+      74,
+      6,
+      21,
+      21,
+      24,
+      28,
+      57,
+      20,
+      6,
+      34,
+      2,
+      1,
+      4,
+      6,
+      21,
+      25,
+      2,
+      8,
+      7,
+      5,
+      9,
+      16,
+      3,
+      1,
+      7,
+      6,
+      6,
+      2,
+      4,
+      3,
+      1,
+      1,
+      1,
+      1,
+      6,
+      5,
+      1,
+      2,
+      2,
+      4,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "Asinh": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "Less": {
+    "num_insts": 4,
+    "num_records": [
+      1,
+      1,
+      1,
+      2
+    ]
+  },
+  "Cumprod": {
+    "num_insts": 11,
+    "num_records": [
+      1,
+      5,
+      1,
+      4,
+      1,
+      1,
+      1,
+      4,
+      1,
+      1,
+      1
+    ]
+  },
+  "AddN": {
+    "num_insts": 30,
+    "num_records": [
+      2,
+      14,
+      5,
+      11,
+      12,
+      20,
+      11,
+      6,
+      1,
+      11,
+      14,
+      2,
+      21,
+      2,
+      2,
+      1,
+      2,
+      1,
+      2,
+      2,
+      2,
+      6,
+      2,
+      1,
+      2,
+      1,
+      1,
+      1,
+      2,
+      1
+    ]
+  },
+  "AvgPool3D": {
+    "num_insts": 3,
+    "num_records": [
+      16,
+      33,
+      1
+    ]
+  },
+  "Atan2": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      2
+    ]
+  },
+  "Relu6Grad": {
+    "num_insts": 2,
+    "num_records": [
+      4,
+      1
+    ]
+  },
+  "Square": {
+    "num_insts": 4,
+    "num_records": [
+      3,
+      1,
+      3,
+      1
+    ]
+  },
+  "MatMul": {
+    "num_insts": 4,
+    "num_records": [
+      321,
+      119,
+      60,
+      3
+    ]
+  },
+  "Xdivy": {
+    "num_insts": 2,
+    "num_records": [
+      4,
+      1
+    ]
+  },
+  "ArgMax": {
+    "num_insts": 18,
+    "num_records": [
+      1,
+      3,
+      1,
+      1,
+      1,
+      2,
+      3,
+      3,
+      6,
+      1,
+      2,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1
+    ]
+  },
+  "SparseToDense": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "Equal": {
+    "num_insts": 31,
+    "num_records": [
+      14,
+      7,
+      5,
+      5,
+      19,
+      6,
+      24,
+      5,
+      3,
+      14,
+      5,
+      2,
+      1,
+      2,
+      5,
+      1,
+      5,
+      1,
+      3,
+      1,
+      2,
+      1,
+      1,
+      1,
+      2,
+      3,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "Reciprocal": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "DepthwiseConv2dNativeBackpropFilter": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "GatherV2": {
+    "num_insts": 89,
+    "num_records": [
+      1,
+      1,
+      196,
+      42,
+      1,
+      160,
+      2,
+      5,
+      33,
+      3,
+      12,
+      3,
+      1,
+      1,
+      12,
+      3,
+      20,
+      3,
+      3,
+      5,
+      3,
+      3,
+      4,
+      1,
+      2,
+      3,
+      1,
+      3,
+      3,
+      1,
+      3,
+      1,
+      1,
+      1,
+      1,
+      10,
+      1,
+      3,
+      3,
+      2,
+      7,
+      3,
+      3,
+      1,
+      1,
+      1,
+      2,
+      5,
+      1,
+      3,
+      1,
+      3,
+      3,
+      1,
+      1,
+      1,
+      3,
+      1,
+      3,
+      1,
+      3,
+      6,
+      1,
+      3,
+      1,
+      1,
+      1,
+      1,
+      1,
+      3,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "RandomGammaGrad": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "Lgamma": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "AvgPool": {
+    "num_insts": 3,
+    "num_records": [
+      99,
+      32,
+      2
+    ]
+  },
+  "AdjustContrastv2": {
+    "num_insts": 2,
+    "num_records": [
+      5,
+      1
+    ]
+  },
+  "MaxPoolGrad": {
+    "num_insts": 1,
+    "num_records": [
+      3
+    ]
+  },
+  "FloorMod": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "SquaredDifference": {
+    "num_insts": 4,
+    "num_records": [
+      1,
+      1,
+      1,
+      2
+    ]
+  },
+  "Any": {
+    "num_insts": 6,
+    "num_records": [
+      10,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "DepthwiseConv2dNative": {
+    "num_insts": 6,
+    "num_records": [
+      16,
+      1,
+      1,
+      2,
+      1,
+      1
+    ]
+  },
+  "LowerBound": {
+    "num_insts": 1,
+    "num_records": [
+      12
+    ]
+  },
+  "SigmoidGrad": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      2
+    ]
+  },
+  "Conv3DBackpropInputV2": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      3
+    ]
+  },
+  "ExtractImagePatches": {
+    "num_insts": 5,
+    "num_records": [
+      4,
+      2,
+      1,
+      3,
+      1
+    ]
+  },
+  "LeakyReluGrad": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      4
+    ]
+  },
+  "MaxPoolV2": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "LogicalOr": {
+    "num_insts": 9,
+    "num_records": [
+      3,
+      3,
+      5,
+      7,
+      3,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "BitwiseOr": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      1
+    ]
+  },
+  "Cosh": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "BatchMatMulV2": {
+    "num_insts": 20,
+    "num_records": [
+      47,
+      108,
+      56,
+      22,
+      132,
+      32,
+      1,
+      8,
+      3,
+      3,
+      1,
+      2,
+      1,
+      3,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "Pow": {
+    "num_insts": 15,
+    "num_records": [
+      3,
+      16,
+      12,
+      16,
+      10,
+      6,
+      12,
+      4,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "GatherNd": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      3,
+      1
+    ]
+  },
+  "SelectV2": {
+    "num_insts": 21,
+    "num_records": [
+      10,
+      11,
+      2,
+      25,
+      13,
+      12,
+      10,
+      1,
+      16,
+      2,
+      1,
+      1,
+      11,
+      1,
+      1,
+      1,
+      2,
+      2,
+      3,
+      1,
+      1
+    ]
+  },
+  "NextAfter": {
+    "num_insts": 1,
+    "num_records": [
+      2
+    ]
+  },
+  "IgammaGradA": {
+    "num_insts": 1,
+    "num_records": [
+      2
+    ]
+  },
+  "Xlog1py": {
+    "num_insts": 2,
+    "num_records": [
+      4,
+      1
+    ]
+  },
+  "TanhGrad": {
+    "num_insts": 2,
+    "num_records": [
+      2,
+      3
+    ]
+  },
+  "DepthwiseConv2dNativeBackpropInput": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "IsInf": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "MaxPoolGradGrad": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "Split": {
+    "num_insts": 15,
+    "num_records": [
+      1,
+      4,
+      3,
+      2,
+      2,
+      7,
+      1,
+      2,
+      3,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "Floor": {
+    "num_insts": 4,
+    "num_records": [
+      4,
+      7,
+      2,
+      1
+    ]
+  },
+  "Snapshot": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "Greater": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "Real": {
+    "num_insts": 8,
+    "num_records": [
+      21,
+      15,
+      14,
+      3,
+      9,
+      16,
+      15,
+      6
+    ]
+  },
+  "BesselI0e": {
+    "num_insts": 2,
+    "num_records": [
+      3,
+      1
+    ]
+  },
+  "Mul": {
+    "num_insts": 45,
+    "num_records": [
+      52,
+      75,
+      32,
+      25,
+      104,
+      57,
+      6,
+      91,
+      48,
+      11,
+      6,
+      16,
+      65,
+      69,
+      20,
+      32,
+      105,
+      39,
+      6,
+      10,
+      8,
+      3,
+      8,
+      1,
+      8,
+      4,
+      4,
+      1,
+      1,
+      3,
+      8,
+      2,
+      7,
+      1,
+      4,
+      2,
+      1,
+      3,
+      2,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1
+    ]
+  },
+  "Conv3D": {
+    "num_insts": 4,
+    "num_records": [
+      23,
+      37,
+      3,
+      22
+    ]
+  },
+  "IdentityN": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "BroadcastGradientArgs": {
+    "num_insts": 1,
+    "num_records": [
+      8
+    ]
+  },
+  "Sin": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "Angle": {
+    "num_insts": 8,
+    "num_records": [
+      1,
+      4,
+      4,
+      3,
+      4,
+      5,
+      3,
+      1
+    ]
+  },
+  "SelfAdjointEigV2": {
+    "num_insts": 6,
+    "num_records": [
+      4,
+      5,
+      3,
+      4,
+      3,
+      5
+    ]
+  },
+  "InTopKV2": {
+    "num_insts": 1,
+    "num_records": [
+      4
+    ]
+  },
+  "Minimum": {
+    "num_insts": 9,
+    "num_records": [
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      2,
+      1,
+      2
+    ]
+  },
+  "Tan": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "ShapeN": {
+    "num_insts": 5,
+    "num_records": [
+      14,
+      6,
+      1,
+      1,
+      1
+    ]
+  },
+  "SpaceToDepth": {
+    "num_insts": 1,
+    "num_records": [
+      14
+    ]
+  },
+  "Igamma": {
+    "num_insts": 1,
+    "num_records": [
+      2
+    ]
+  },
+  "All": {
+    "num_insts": 6,
+    "num_records": [
+      3,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "DivNoNan": {
+    "num_insts": 9,
+    "num_records": [
+      7,
+      6,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "Conv2DBackpropInput": {
+    "num_insts": 2,
+    "num_records": [
+      9,
+      3
+    ]
+  },
+  "SoftsignGrad": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "Erf": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "Min": {
+    "num_insts": 7,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "Atan": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "Sum": {
+    "num_insts": 72,
+    "num_records": [
+      21,
+      7,
+      7,
+      10,
+      2,
+      11,
+      21,
+      17,
+      4,
+      20,
+      4,
+      4,
+      25,
+      7,
+      4,
+      4,
+      3,
+      5,
+      9,
+      4,
+      8,
+      4,
+      4,
+      3,
+      10,
+      17,
+      15,
+      9,
+      5,
+      4,
+      4,
+      3,
+      4,
+      6,
+      4,
+      5,
+      4,
+      5,
+      3,
+      2,
+      3,
+      4,
+      5,
+      14,
+      8,
+      4,
+      2,
+      1,
+      4,
+      4,
+      2,
+      3,
+      1,
+      1,
+      1,
+      1,
+      2,
+      5,
+      3,
+      3,
+      4,
+      2,
+      1,
+      3,
+      2,
+      1,
+      4,
+      2,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "ExpandDims": {
+    "num_insts": 24,
+    "num_records": [
+      27,
+      54,
+      10,
+      10,
+      48,
+      18,
+      12,
+      11,
+      5,
+      11,
+      24,
+      1,
+      2,
+      26,
+      16,
+      5,
+      7,
+      3,
+      12,
+      4,
+      11,
+      2,
+      6,
+      4
+    ]
+  },
+  "MatrixDiagV3": {
+    "num_insts": 7,
+    "num_records": [
+      12,
+      4,
+      28,
+      9,
+      1,
+      1,
+      1
+    ]
+  },
+  "Rint": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "Pack": {
+    "num_insts": 86,
+    "num_records": [
+      1,
+      2,
+      7,
+      5,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      6,
+      2,
+      1,
+      3,
+      2,
+      4,
+      4,
+      1,
+      3,
+      5,
+      1,
+      3,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      3,
+      1,
+      1,
+      1,
+      1,
+      2,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      4,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      3,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "Where": {
+    "num_insts": 3,
+    "num_records": [
+      4,
+      7,
+      1
+    ]
+  },
+  "Unpack": {
+    "num_insts": 55,
+    "num_records": [
+      1,
+      1,
+      5,
+      1,
+      4,
+      1,
+      2,
+      1,
+      2,
+      1,
+      2,
+      1,
+      2,
+      1,
+      3,
+      1,
+      1,
+      4,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      2,
+      2,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "Relu6": {
+    "num_insts": 2,
+    "num_records": [
+      2,
+      2
+    ]
+  },
+  "Conj": {
+    "num_insts": 5,
+    "num_records": [
+      28,
+      52,
+      34,
+      7,
+      1
+    ]
+  },
+  "UpperBound": {
+    "num_insts": 2,
+    "num_records": [
+      9,
+      1
+    ]
+  },
+  "Sub": {
+    "num_insts": 28,
+    "num_records": [
+      22,
+      68,
+      13,
+      48,
+      11,
+      5,
+      14,
+      16,
+      1,
+      36,
+      14,
+      21,
+      12,
+      52,
+      9,
+      9,
+      4,
+      1,
+      1,
+      2,
+      1,
+      1,
+      2,
+      1,
+      1,
+      3,
+      3,
+      1
+    ]
+  },
+  "Betainc": {
+    "num_insts": 1,
+    "num_records": [
+      2
+    ]
+  },
+  "QuantizeAndDequantizeV4": {
+    "num_insts": 10,
+    "num_records": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "Ndtri": {
+    "num_insts": 2,
+    "num_records": [
+      3,
+      1
+    ]
+  },
+  "SoftmaxCrossEntropyWithLogits": {
+    "num_insts": 1,
+    "num_records": [
+      15
+    ]
+  },
+  "Maximum": {
+    "num_insts": 10,
+    "num_records": [
+      2,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2
+    ]
+  },
+  "Identity": {
+    "num_insts": 31,
+    "num_records": [
+      76,
+      86,
+      75,
+      14,
+      2,
+      4,
+      5,
+      4,
+      4,
+      5,
+      4,
+      1,
+      25,
+      12,
+      1,
+      1,
+      3,
+      8,
+      8,
+      1,
+      6,
+      2,
+      8,
+      8,
+      2,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1
+    ]
+  },
+  "NotEqual": {
+    "num_insts": 24,
+    "num_records": [
+      20,
+      8,
+      7,
+      3,
+      16,
+      5,
+      1,
+      1,
+      1,
+      2,
+      5,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      3,
+      3,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "Polygamma": {
+    "num_insts": 1,
+    "num_records": [
+      2
+    ]
+  },
+  "Softmax": {
+    "num_insts": 7,
+    "num_records": [
+      3,
+      9,
+      4,
+      1,
+      3,
+      1,
+      1
+    ]
+  },
+  "ZerosLike": {
+    "num_insts": 5,
+    "num_records": [
+      22,
+      15,
+      37,
+      4,
+      15
+    ]
+  },
+  "MirrorPad": {
+    "num_insts": 1,
+    "num_records": [
+      2
+    ]
+  },
+  "Sign": {
+    "num_insts": 5,
+    "num_records": [
+      8,
+      2,
+      12,
+      10,
+      5
+    ]
+  },
+  "AddV2": {
+    "num_insts": 30,
+    "num_records": [
+      24,
+      392,
+      95,
+      82,
+      107,
+      19,
+      12,
+      42,
+      4,
+      2,
+      20,
+      51,
+      12,
+      87,
+      4,
+      39,
+      10,
+      3,
+      4,
+      7,
+      3,
+      4,
+      3,
+      8,
+      3,
+      3,
+      7,
+      3,
+      7,
+      1
+    ]
+  },
+  "ResizeBilinearGrad": {
+    "num_insts": 1,
+    "num_records": [
+      19
+    ]
+  },
+  "TruncateDiv": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      1
+    ]
+  },
+  "BiasAddGrad": {
+    "num_insts": 7,
+    "num_records": [
+      4,
+      1,
+      1,
+      6,
+      1,
+      1,
+      1
+    ]
+  },
+  "TruncateMod": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      1,
+      1
+    ]
+  },
+  "Sqrt": {
+    "num_insts": 4,
+    "num_records": [
+      9,
+      17,
+      11,
+      16
+    ]
+  },
+  "EluGrad": {
+    "num_insts": 3,
+    "num_records": [
+      2,
+      2,
+      2
+    ]
+  },
+  "ReciprocalGrad": {
+    "num_insts": 2,
+    "num_records": [
+      3,
+      1
+    ]
+  },
+  "Rsqrt": {
+    "num_insts": 5,
+    "num_records": [
+      9,
+      7,
+      1,
+      8,
+      1
+    ]
+  },
+  "DiagPart": {
+    "num_insts": 1,
+    "num_records": [
+      3
+    ]
+  },
+  "Tile": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "Bincount": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      6
+    ]
+  },
+  "SparseSoftmaxCrossEntropyWithLogits": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "ReluGrad": {
+    "num_insts": 2,
+    "num_records": [
+      4,
+      1
+    ]
+  },
+  "Log": {
+    "num_insts": 3,
+    "num_records": [
+      9,
+      5,
+      2
+    ]
+  },
+  "Select": {
+    "num_insts": 10,
+    "num_records": [
+      8,
+      24,
+      14,
+      12,
+      6,
+      1,
+      3,
+      3,
+      1,
+      1
+    ]
+  },
+  "BroadcastArgs": {
+    "num_insts": 1,
+    "num_records": [
+      6
+    ]
+  },
+  "Max": {
+    "num_insts": 25,
+    "num_records": [
+      6,
+      9,
+      4,
+      5,
+      21,
+      2,
+      1,
+      4,
+      1,
+      5,
+      4,
+      5,
+      6,
+      4,
+      8,
+      3,
+      3,
+      4,
+      2,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "Cast": {
+    "num_insts": 52,
+    "num_records": [
+      32,
+      25,
+      19,
+      27,
+      9,
+      21,
+      28,
+      46,
+      15,
+      28,
+      33,
+      23,
+      19,
+      5,
+      34,
+      19,
+      2,
+      20,
+      4,
+      11,
+      52,
+      19,
+      5,
+      2,
+      11,
+      3,
+      1,
+      2,
+      2,
+      4,
+      1,
+      3,
+      1,
+      2,
+      2,
+      10,
+      2,
+      5,
+      1,
+      2,
+      10,
+      4,
+      4,
+      1,
+      1,
+      1,
+      1,
+      3,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "Unique": {
+    "num_insts": 1,
+    "num_records": [
+      10
+    ]
+  },
+  "ArgMin": {
+    "num_insts": 16,
+    "num_records": [
+      1,
+      2,
+      1,
+      1,
+      1,
+      2,
+      2,
+      2,
+      2,
+      1,
+      2,
+      1,
+      1,
+      2,
+      1,
+      1
+    ]
+  },
+  "BitwiseAnd": {
+    "num_insts": 4,
+    "num_records": [
+      1,
+      1,
+      1,
+      2
+    ]
+  },
+  "Zeta": {
+    "num_insts": 2,
+    "num_records": [
+      2,
+      1
+    ]
+  },
+  "Qr": {
+    "num_insts": 1,
+    "num_records": [
+      5
+    ]
+  },
+  "LeakyRelu": {
+    "num_insts": 4,
+    "num_records": [
+      2,
+      3,
+      2,
+      1
+    ]
+  },
+  "BesselI1e": {
+    "num_insts": 2,
+    "num_records": [
+      3,
+      1
+    ]
+  },
+  "Softsign": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "Conv2DBackpropFilter": {
+    "num_insts": 1,
+    "num_records": [
+      9
+    ]
+  },
+  "StopGradient": {
+    "num_insts": 6,
+    "num_records": [
+      9,
+      42,
+      4,
+      10,
+      5,
+      2
+    ]
+  },
+  "LogicalAnd": {
+    "num_insts": 12,
+    "num_records": [
+      3,
+      3,
+      5,
+      9,
+      2,
+      3,
+      6,
+      1,
+      3,
+      1,
+      1,
+      1
+    ]
+  },
+  "MulNoNan": {
+    "num_insts": 2,
+    "num_records": [
+      2,
+      2
+    ]
+  },
+  "Tanh": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "Softplus": {
+    "num_insts": 2,
+    "num_records": [
+      3,
+      2
+    ]
+  },
+  "ResizeNearestNeighbor": {
+    "num_insts": 2,
+    "num_records": [
+      4,
+      1
+    ]
+  },
+  "ConjugateTranspose": {
+    "num_insts": 3,
+    "num_records": [
+      22,
+      17,
+      9
+    ]
+  },
+  "AdjustSaturation": {
+    "num_insts": 2,
+    "num_records": [
+      5,
+      2
+    ]
+  },
+  "ResizeBilinear": {
+    "num_insts": 3,
+    "num_records": [
+      18,
+      19,
+      19
+    ]
+  },
+  "StridedSlice": {
+    "num_insts": 35,
+    "num_records": [
+      52,
+      57,
+      1,
+      2,
+      6,
+      14,
+      11,
+      1,
+      10,
+      11,
+      29,
+      2,
+      4,
+      2,
+      6,
+      1,
+      1,
+      2,
+      1,
+      4,
+      2,
+      2,
+      1,
+      7,
+      4,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "MatrixDiagPartV3": {
+    "num_insts": 14,
+    "num_records": [
+      5,
+      2,
+      2,
+      1,
+      6,
+      3,
+      8,
+      3,
+      3,
+      3,
+      7,
+      6,
+      4,
+      1
+    ]
+  },
+  "RightShift": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "Einsum": {
+    "num_insts": 220,
+    "num_records": [
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      3,
+      1,
+      1,
+      3,
+      1,
+      2,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      2,
+      1,
+      1,
+      1,
+      2,
+      1,
+      4,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      4,
+      1,
+      1,
+      1,
+      1,
+      1,
+      3,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "Abs": {
+    "num_insts": 4,
+    "num_records": [
+      42,
+      22,
+      7,
+      15
+    ]
+  },
+  "Prod": {
+    "num_insts": 8,
+    "num_records": [
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "Sigmoid": {
+    "num_insts": 3,
+    "num_records": [
+      1,
+      13,
+      6
+    ]
+  },
+  "StatelessRandomUniformFullIntV2": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "BatchMatMulV3": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "LeftShift": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      1
+    ]
+  },
+  "ConcatV2": {
+    "num_insts": 70,
+    "num_records": [
+      2,
+      38,
+      7,
+      21,
+      1,
+      8,
+      8,
+      51,
+      10,
+      80,
+      8,
+      23,
+      20,
+      19,
+      19,
+      24,
+      19,
+      17,
+      8,
+      20,
+      7,
+      2,
+      32,
+      1,
+      6,
+      8,
+      2,
+      2,
+      2,
+      7,
+      3,
+      1,
+      6,
+      8,
+      5,
+      6,
+      1,
+      4,
+      1,
+      2,
+      1,
+      3,
+      1,
+      2,
+      2,
+      8,
+      1,
+      3,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      2,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      3,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "IsFinite": {
+    "num_insts": 4,
+    "num_records": [
+      6,
+      2,
+      4,
+      5
+    ]
+  },
+  "RsqrtGrad": {
+    "num_insts": 2,
+    "num_records": [
+      3,
+      2
+    ]
+  },
+  "MaxPool": {
+    "num_insts": 2,
+    "num_records": [
+      93,
+      37
+    ]
+  },
+  "DepthToSpace": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      5
+    ]
+  },
+  "BroadcastTo": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "StatelessRandomGetKeyCounter": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "Asin": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "Cos": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "PadV2": {
+    "num_insts": 4,
+    "num_records": [
+      2,
+      5,
+      1,
+      1
+    ]
+  },
+  "FloorDiv": {
+    "num_insts": 8,
+    "num_records": [
+      2,
+      14,
+      2,
+      1,
+      1,
+      2,
+      1,
+      1
+    ]
+  },
+  "Cholesky": {
+    "num_insts": 3,
+    "num_records": [
+      4,
+      1,
+      1
+    ]
+  },
+  "StatelessMultinomial": {
+    "num_insts": 1,
+    "num_records": [
+      3
+    ]
+  },
+  "Sinh": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "LogicalNot": {
+    "num_insts": 3,
+    "num_records": [
+      4,
+      6,
+      7
+    ]
+  },
+  "ClipByValue": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "Neg": {
+    "num_insts": 1,
+    "num_records": [
+      2
+    ]
+  },
+  "ComplexAbs": {
+    "num_insts": 8,
+    "num_records": [
+      8,
+      7,
+      7,
+      14,
+      3,
+      4,
+      3,
+      4
+    ]
+  },
+  "Complex": {
+    "num_insts": 22,
+    "num_records": [
+      5,
+      6,
+      3,
+      1,
+      4,
+      8,
+      5,
+      7,
+      3,
+      7,
+      1,
+      1,
+      5,
+      5,
+      3,
+      3,
+      1,
+      1,
+      2,
+      4,
+      1,
+      1
+    ]
+  },
+  "OneHot": {
+    "num_insts": 16,
+    "num_records": [
+      6,
+      5,
+      17,
+      1,
+      5,
+      5,
+      1,
+      7,
+      3,
+      1,
+      1,
+      2,
+      1,
+      2,
+      1,
+      1
+    ]
+  },
+  "ReverseV2": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "Elu": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "LogSoftmax": {
+    "num_insts": 3,
+    "num_records": [
+      19,
+      4,
+      3
+    ]
+  },
+  "AdjustHue": {
+    "num_insts": 2,
+    "num_records": [
+      2,
+      6
+    ]
+  },
+  "Multinomial": {
+    "num_insts": 2,
+    "num_records": [
+      8,
+      2
+    ]
+  },
+  "TensorScatterUpdate": {
+    "num_insts": 5,
+    "num_records": [
+      1,
+      5,
+      5,
+      5,
+      1
+    ]
+  },
+  "FusedBatchNorm": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "MaxPool3D": {
+    "num_insts": 3,
+    "num_records": [
+      18,
+      34,
+      1
+    ]
+  },
+  "Bucketize": {
+    "num_insts": 6,
+    "num_records": [
+      1,
+      2,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "Exp": {
+    "num_insts": 4,
+    "num_records": [
+      21,
+      21,
+      22,
+      7
+    ]
+  },
+  "Conv2D": {
+    "num_insts": 7,
+    "num_records": [
+      41,
+      129,
+      33,
+      160,
+      32,
+      12,
+      16
+    ]
+  },
+  "Digamma": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "Atanh": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "Log1p": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "Acos": {
+    "num_insts": 3,
+    "num_records": [
+      3,
+      1,
+      1
+    ]
+  },
+  "TensorStridedSliceUpdate": {
+    "num_insts": 3,
+    "num_records": [
+      2,
+      1,
+      1
+    ]
+  },
+  "Xlogy": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      2
+    ]
+  },
+  "ListDiff": {
+    "num_insts": 3,
+    "num_records": [
+      27,
+      17,
+      1
+    ]
+  },
+  "RealDiv": {
+    "num_insts": 20,
+    "num_records": [
+      66,
+      45,
+      3,
+      10,
+      22,
+      21,
+      19,
+      6,
+      6,
+      29,
+      2,
+      19,
+      2,
+      1,
+      7,
+      4,
+      1,
+      2,
+      1,
+      2
+    ]
+  },
+  "IsNan": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "Relu": {
+    "num_insts": 4,
+    "num_records": [
+      1,
+      3,
+      1,
+      1
+    ]
+  },
+  "Erfc": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "StatelessRandomUniformFullInt": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "MatrixSetDiagV3": {
+    "num_insts": 9,
+    "num_records": [
+      1,
+      22,
+      19,
+      1,
+      1,
+      22,
+      1,
+      1,
+      1
+    ]
+  },
+  "GreaterEqual": {
+    "num_insts": 4,
+    "num_records": [
+      1,
+      1,
+      1,
+      2
+    ]
+  },
+  "PopulationCount": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "MaxPool3DGrad": {
+    "num_insts": 1,
+    "num_records": [
+      2
+    ]
+  },
+  "Pad": {
+    "num_insts": 6,
+    "num_records": [
+      5,
+      14,
+      4,
+      1,
+      3,
+      3
+    ]
+  },
+  "Expm1": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "BiasAdd": {
+    "num_insts": 7,
+    "num_records": [
+      18,
+      3,
+      3,
+      8,
+      4,
+      3,
+      1
+    ]
+  },
+  "Transpose": {
+    "num_insts": 6,
+    "num_records": [
+      42,
+      69,
+      39,
+      6,
+      5,
+      1
+    ]
+  },
+  "RGBToHSV": {
+    "num_insts": 2,
+    "num_records": [
+      1,
+      3
+    ]
+  },
+  "Slice": {
+    "num_insts": 8,
+    "num_records": [
+      122,
+      10,
+      15,
+      5,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "Acosh": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "Imag": {
+    "num_insts": 7,
+    "num_records": [
+      8,
+      5,
+      4,
+      5,
+      9,
+      3,
+      5
+    ]
+  },
+  "Erfinv": {
+    "num_insts": 2,
+    "num_records": [
+      2,
+      1
+    ]
+  },
+  "Shape": {
+    "num_insts": 21,
+    "num_records": [
+      232,
+      83,
+      30,
+      185,
+      173,
+      4,
+      215,
+      59,
+      87,
+      4,
+      2,
+      33,
+      9,
+      1,
+      3,
+      3,
+      2,
+      2,
+      2,
+      1,
+      1
+    ]
+  },
+  "Ceil": {
+    "num_insts": 2,
+    "num_records": [
+      3,
+      1
+    ]
+  },
+  "Round": {
+    "num_insts": 3,
+    "num_records": [
+      4,
+      2,
+      2
+    ]
+  },
+  "TopKV2": {
+    "num_insts": 14,
+    "num_records": [
+      16,
+      24,
+      2,
+      4,
+      1,
+      2,
+      1,
+      4,
+      2,
+      5,
+      4,
+      2,
+      2,
+      2
+    ]
+  },
+  "Selu": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "SqrtGrad": {
+    "num_insts": 2,
+    "num_records": [
+      4,
+      1
+    ]
+  },
+  "LessEqual": {
+    "num_insts": 4,
+    "num_records": [
+      1,
+      1,
+      1,
+      2
+    ]
+  },
+  "MaxPool3DGradGrad": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "Invert": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "Squeeze": {
+    "num_insts": 28,
+    "num_records": [
+      19,
+      41,
+      2,
+      8,
+      4,
+      1,
+      18,
+      2,
+      18,
+      2,
+      2,
+      3,
+      2,
+      1,
+      4,
+      1,
+      4,
+      2,
+      1,
+      1,
+      1,
+      3,
+      3,
+      1,
+      1,
+      1,
+      1,
+      3
+    ]
+  },
+  "Mean": {
+    "num_insts": 22,
+    "num_records": [
+      1,
+      9,
+      9,
+      2,
+      4,
+      5,
+      1,
+      2,
+      1,
+      1,
+      3,
+      2,
+      2,
+      1,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "Cumsum": {
+    "num_insts": 33,
+    "num_records": [
+      1,
+      1,
+      5,
+      1,
+      16,
+      3,
+      1,
+      3,
+      4,
+      1,
+      1,
+      5,
+      5,
+      1,
+      4,
+      1,
+      1,
+      1,
+      2,
+      1,
+      4,
+      3,
+      3,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "SeluGrad": {
+    "num_insts": 2,
+    "num_records": [
+      4,
+      1
+    ]
+  },
+  "NonMaxSuppressionV3": {
+    "num_insts": 1,
+    "num_records": [
+      1
+    ]
+  },
+  "PlaceholderWithDefault": {
+    "num_insts": 7,
+    "num_records": [
+      8,
+      8,
+      4,
+      1,
+      1,
+      2,
+      1
+    ]
+  },
+  "Roll": {
+    "num_insts": 6,
+    "num_records": [
+      7,
+      2,
+      1,
+      3,
+      2,
+      1
+    ]
+  }
+}

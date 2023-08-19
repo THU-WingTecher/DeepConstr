@@ -1,1 +1,4 @@
 pre-commit
+z3
+numpy
+rich
