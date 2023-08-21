@@ -15,10 +15,11 @@ See [lists of bug reports](docs/rq3-bug-reports.md).
 
 ## Get ready for running experiments!
 
-> **Note** General test-bed requirements
+> [!IMPORTANT]
 > 
-> **OS**: A Linux System with Docker Support;
-> **Hardware**: X86/X64 CPU; 16GB RAM; 512GB Storage; Good Network to GitHub and Docker Hub;
+> **General test-bed requirements**
+> - **OS**: A Linux System with Docker Support;
+> - **Hardware**: X86/X64 CPU; 16GB RAM; 512GB Storage; Good Network to GitHub and Docker Hub;
 
 ### S1: Docker installation
 
@@ -64,18 +65,18 @@ Congratulations if you can run it without errors!
 
 We will use `./fuzz.sh` to generate the test-cases.
 
-> **Note** Script usage of `fuzz.sh`
+> [!NOTE]
 > 
-> Command: `./fuzz.sh NSIZE METHOD MODEL BACKEND TIME`
+> **Command usage of**: `./fuzz.sh NSIZE METHOD MODEL BACKEND TIME`
 > 
-> Arguments:
-> -`` `NSIZE`: the number of operators in each generated graph.
-> -`` `METHOD`: in `["neuri", "neuri-i", "neuri-r", "symbolic-cinit"]`.
-> -`` `MODEL`: in `["tensorflow", "torch"]`.
-> -`` `BACKEND`: in `["xla", "torchjit"]`.
+> **Arguments**:
+> - `NSIZE`: the number of operators in each generated graph.
+> - `METHOD`: in `["neuri", "neuri-i", "neuri-r", "symbolic-cinit"]`.
+> - `MODEL`: in `["tensorflow", "torch"]`.
+> - `BACKEND`: in `["xla", "torchjit"]`.
 > - `TIME`: fuzzing time in formats like `4h`, `1m`, `30s`.
 >
-> Outputs:
+> **Outputs**:
 > - `$(pwd)/gen/${MODEL}-${DATE}-${METHOD}-n${NSIZE}.models`: the generated test-cases (models)
 
 ### S2: Collect coverage
@@ -85,10 +86,12 @@ We will use `./fuzz.sh` to generate the test-cases.
 
 ## Evaluating Rule Inference (RQ2)
 
-> **Warning** Experiment dependency.
+> **Warning** 
+> **Experiment dependency**:
 > You need to first finish the last section (RQ1) to continue this section.
 
-> **Note** Please run command `. ./install.sh` in the root directory to install necessary libraries and configure environment variables.
+> **Note** 
+> Please run command `source ./env_std.sh` in the root directory to install necessary libraries and configure environment variables.
 
 ```bash
 # in neuri/autoinf/inference
