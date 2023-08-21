@@ -126,6 +126,17 @@ Welcome to the artifact repository of the NeuRI paper which is accepted by ESEC/
 
 ## Evaluating Coverage (RQ1)
 
+```bash
+# in root directory
+./fuzz.sh NSIZE METHOD MODEL BACKEND TIME
+```
+where
+* `NSIZE` is the number of operators in each generated graph.
+* `METHOD` is in `["neuri", "neuri-i", "neuri-r", "symbolic-cinit"]`.
+* `MODEL` is in `["tensorflow", "torch"]`.
+* `BACKEND` is in `["xla", "torchjit"]`.
+* `TIME` is the total duration of fuzzing. Formats like `4h` `1m` `30s` are valid.
+
 > **Warning** TBD
 
 ## Evaluating Rule Inference (RQ2)
@@ -134,6 +145,23 @@ Welcome to the artifact repository of the NeuRI paper which is accepted by ESEC/
 > You need to first finish the last section (RQ1) to continue this section.
 
 > **Note** Please run command `. ./install.sh` in the root directory to install necessary libraries and configure environment variables.
+
+```bash
+# in neuri/autoinf/inference
+python3 tree.py
+python3 augmentation.py
+python3 shape_solve.py
+python3 predicate_solve.py
+python3 nnsmith_reuse.py
+python3 rule_validity.py
+python3 table3.py
+```
+
+```bash
+# in neuri/autoinf/inference
+python3 rosette_solve.py
+python3 table4.py
+```
 
 ## Learning More
 
