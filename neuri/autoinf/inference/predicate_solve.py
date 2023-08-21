@@ -134,7 +134,12 @@ def inspect_all_records(
     return False
 
 
+skip_solve = ["torch.Tensor.sum_to_size-5.pkl", "torch.Tensor.sum_to_size-3.pkl"]
+
+
 def solve_inst(filename: str, info: dict, predicate_dir: str):
+    if filename in skip_solve:
+        return
     global TreeDB
     valid_list, invalid_list = [], []
     for (inputs, _) in list(info["success"]):
@@ -144,7 +149,7 @@ def solve_inst(filename: str, info: dict, predicate_dir: str):
     dd = {"rules": []}
     input_len = len(valid_list[0])
     RuleDB = RuleDatabase(input_len)
-    timeout = 100
+    timeout = 1000
     tree_tried = 0
     r_count = 0
     start_time = time.time()
