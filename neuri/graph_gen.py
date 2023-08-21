@@ -798,7 +798,7 @@ class ConcolicGen(BaseGen):
 MAX_PRODUCT_COMPLEXITY = 2**16
 
 
-class DynoFuzzR(ConcolicGen):
+class NeuriR(ConcolicGen):
     """Concolic generation assisted with concrete records."""
 
     def __init__(
@@ -994,7 +994,7 @@ class DynoFuzzR(ConcolicGen):
         return BaseGen.abstract_gen(self, max_node_size, max_gen_millisec)
 
 
-class DynoFuzz(DynoFuzzR):
+class Neuri(NeuriR):
     def try_insert(self):
         meta_selector = random.random()  # [0, 1]
         if meta_selector < 0.33:
@@ -1124,7 +1124,7 @@ class DynoFuzz(DynoFuzzR):
         return False
 
 
-class DynoFuzzI(DynoFuzz):
+class NeuriI(Neuri):
     def try_insert(self):
         if random.random() < 0.5:
             if random.random() < self.forward_prob:
@@ -1162,15 +1162,15 @@ def model_gen(
         gen = SymbolicGen(opset, seed, symbolic_init=False, **kwargs)
     elif "concolic" == method:
         gen = ConcolicGen(opset, seed, **kwargs)
-    elif "dynofuzz-r" == method:
+    elif "neuri-r" == method:
         assert record_finder is not None, "record_finder must be provided"
-        gen = DynoFuzzR(opset, record_finder, seed, **kwargs)
-    elif "dynofuzz" == method:
+        gen = NeuriR(opset, record_finder, seed, **kwargs)
+    elif "neuri" == method:
         assert record_finder is not None, "record_finder must be provided"
-        gen = DynoFuzz(opset, record_finder, seed, **kwargs)
-    elif "dynofuzz-i" == method:
+        gen = Neuri(opset, record_finder, seed, **kwargs)
+    elif "neuri-i" == method:
         assert record_finder is not None, "record_finder must be provided"
-        gen = DynoFuzzI(opset, record_finder, seed, **kwargs)
+        gen = NeuriI(opset, record_finder, seed, **kwargs)
     else:
         raise ValueError(f"Unknown method {method}. Try `symbolic` or `concolic`.")
 

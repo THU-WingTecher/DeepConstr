@@ -205,7 +205,7 @@ class FuzzingLoop:
             cfg["fuzz"]["root"],
             resume=resume,
             op_usage=(
-                cfg["mgen"]["max_nodes"] == 1 and cfg["mgen"]["method"] == "dynofuzz-i"
+                cfg["mgen"]["max_nodes"] == 1 and cfg["mgen"]["method"] == "neuri-i"
             ),
         )
 
@@ -225,7 +225,7 @@ class FuzzingLoop:
         )
 
         self.record_finder = None
-        if "dynofuzz" in cfg["mgen"]["method"]:
+        if "neuri" in cfg["mgen"]["method"]:
             self.record_finder = make_record_finder(
                 path=cfg["mgen"]["record_path"],
                 max_elem_per_tensor=cfg["mgen"]["max_elem_per_tensor"],

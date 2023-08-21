@@ -124,14 +124,16 @@ Welcome to the artifact repository of the NeuRI paper which is accepted by ESEC/
 > Because we want to report bugs more [responsibly](https://blog.regehr.org/archives/2037), we use a buffer size of 15 reports until some of them are fixed.
 > That being said, the 15 reported bugs were not fixed (though confirmed) by TensorFlow developers at the time we were developing NeuRI and consequently we discontinued bug finding for TensorFlow.
 
-## Evaluating Coverage (RQ2)
+## Evaluating Coverage (RQ1)
 
 > **Warning** TBD
 
-## Evaluating Rule Inference (RQ3)
+## Evaluating Rule Inference (RQ2)
 
 > **Warning** Experiment dependency.
-> You need to first finish the last section (RQ2) to continue this section.
+> You need to first finish the last section (RQ1) to continue this section.
+
+> **Note** Please run command `. ./install.sh` in the root directory to install necessary libraries and configure environment variables.
 
 ## Learning More
 

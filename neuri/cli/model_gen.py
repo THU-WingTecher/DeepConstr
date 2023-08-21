@@ -43,7 +43,7 @@ def main(cfg: DictConfig):
     opset = auto_opset(ModelType, factory, vulops=mgen_cfg["vulops"])
 
     record_finder = None
-    if "dynofuzz" in mgen_cfg["method"]:
+    if "neuri" in mgen_cfg["method"]:
         record_finder = make_record_finder(
             path=mgen_cfg["record_path"],
             max_elem_per_tensor=mgen_cfg["max_elem_per_tensor"],

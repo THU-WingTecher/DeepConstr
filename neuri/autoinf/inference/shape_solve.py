@@ -112,7 +112,7 @@ def solve_inst(filename: str, OpDB: OpDatabase, dump_dir: str):
     # Preliminaries
     hard = False
     valid_tree_set = [[] for _ in range(output_len)]
-    timeout = 100
+    timeout = 1000
     tree_tried = 0
     start_time = time.time()
     # input rank check
