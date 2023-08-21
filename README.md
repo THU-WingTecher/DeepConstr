@@ -17,8 +17,8 @@ See [lists of bug reports](docs/rq3-bug-reports.md).
 
 > **Note** General test-bed requirements
 > 
-> * **OS**: A Linux System with Docker Support;
-> * **Hardware**: X86/X64 CPU; 16GB RAM; 512GB Storage; Good Network to GitHub and Docker Hub;
+> **OS**: A Linux System with Docker Support;
+> **Hardware**: X86/X64 CPU; 16GB RAM; 512GB Storage; Good Network to GitHub and Docker Hub;
 
 ### S1: Docker installation
 
@@ -69,14 +69,14 @@ We will use `./fuzz.sh` to generate the test-cases.
 > Command: `./fuzz.sh NSIZE METHOD MODEL BACKEND TIME`
 > 
 > Arguments:
-> * `NSIZE`: the number of operators in each generated graph.
-> * `METHOD`: in `["neuri", "neuri-i", "neuri-r", "symbolic-cinit"]`.
-> * `MODEL`: in `["tensorflow", "torch"]`.
-> * `BACKEND`: in `["xla", "torchjit"]`.
-> * `TIME`: fuzzing time in formats like `4h`, `1m`, `30s`.
+> -`` `NSIZE`: the number of operators in each generated graph.
+> -`` `METHOD`: in `["neuri", "neuri-i", "neuri-r", "symbolic-cinit"]`.
+> -`` `MODEL`: in `["tensorflow", "torch"]`.
+> -`` `BACKEND`: in `["xla", "torchjit"]`.
+> - `TIME`: fuzzing time in formats like `4h`, `1m`, `30s`.
 >
 > Outputs:
-> * `$(pwd)/gen/${MODEL}-${DATE}-${METHOD}-n${NSIZE}.models`: the generated test-cases (models)
+> - `$(pwd)/gen/${MODEL}-${DATE}-${METHOD}-n${NSIZE}.models`: the generated test-cases (models)
 
 ### S2: Collect coverage
 
