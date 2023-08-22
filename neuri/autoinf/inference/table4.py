@@ -1,10 +1,11 @@
+import argparse
 import os
 import pickle
 
 from rich.console import Console
 from rich.table import Table
 
-from neuri.autoinf.inference.const import GEN_DIR
+from neuri.autoinf.inference.const import DATA_DIR, GEN_DIR
 
 BLACKLIST = [
     # PyTorch
@@ -50,6 +51,10 @@ def table_fmt(v: int) -> str:
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--rule_dir", type=str, default=DATA_DIR)
+    args = parser.parse_args()
+
     table = Table(title="Table 4: Number of inferred shape propagation rules")
     table.add_column("")
     table.add_column("<1s")
@@ -62,7 +67,7 @@ if __name__ == "__main__":
     library = "torch"
 
     s1, s10, s100, s1000, timeout, unsat = 0, 0, 0, 0, 0, 0
-    shape_dir = os.path.join(GEN_DIR, f"{library}_shape_rules")
+    shape_dir = os.path.join(args.rule_dir, f"{library}_shape_rules")
     for filename in os.listdir(shape_dir):
         if filename.split("-")[0] in BLACKLIST:
             continue

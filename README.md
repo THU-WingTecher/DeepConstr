@@ -221,23 +221,36 @@ Check images under `./results/branch_cov-time.png` for the results.
 > **Note**
 > Please run command `source ./env_std.sh` in the root directory to install necessary libraries and configure environment variables.
 
-```bash
-# in neuri/autoinf/inference
-python3 tree.py
-python3 augmentation.py
-python3 shape_solve.py
-python3 predicate_solve.py
-python3 nnsmith_reuse.py
-python3 rule_validity.py
-python3 table3.py
-```
+### S1: 1-Node test-cases generation
 
 ```bash
-# in neuri/autoinf/inference
-python3 rosette_solve.py
-python3 table4.py
+./fuzz.sh 1 neuri-i   torch      torchjit 4h
+./fuzz.sh 1 neuri-i   tensorflow xla      4h
 ```
 
+### S2: Tree & rule generation
+
+```bash
+python3 neuri/autoinf/inference/tree.py
+python3 neuri/autoinf/inference/augmentation.py
+python3 neuri/autoinf/inference/shape_solve.py
+python3 neuri/autoinf/inference/predicate_solve.py
+python3 neuri/autoinf/inference/nnsmith_reuse.py
+python3 neuri/autoinf/inference/rule_validity.py
+python3 neuri/autoinf/inference/rosette_solve.py
+```
+
+Rules will be stored in `gen/` by default.
+
+### S3: Check the results
+
+#### Table 3 & 4
+```bash
+python3 table3.py [--rule_dir RULE_DIR] [--fuzz_dir FUZZ_DIR]
+python3 table4.py [--rule_dir RULE_DIR]
+```
+
+By default, the scripts evaluates pre-generated rules under `data/`.
 
 ## Learning More
 
