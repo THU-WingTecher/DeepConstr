@@ -164,7 +164,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--batch-size",
         type=int,
-        required=True,
+        default=1000,
         help="How many models evaluted in each profraw?",
     )
 

@@ -146,7 +146,15 @@ python experiments/process_profraws.py --root $(pwd)/gen/torch-neuri-n13.models 
 
 ```bash
 source ./env_cov.sh
-# ... TBD
+python3 experiments/evaluate_tf_models.py --root $(pwd)/gen/tensorflow-neuri-n5.models --parallel $(nproc)
+python3 experiments/evaluate_tf_models.py --root $(pwd)/gen/tensorflow-neuri-i-n5.models --parallel $(nproc)
+python3 experiments/evaluate_tf_models.py --root $(pwd)/gen/tensorflow-neuri-r-n5.models --parallel $(nproc)
+python3 experiments/evaluate_tf_models.py --root $(pwd)/gen/tensorflow-symbolic-cinit-n5.models --parallel $(nproc)
+# Compute coverage
+python3 experiments/process_lcov.py --root $(pwd)/gen/tensorflow-neuri-n5.models --parallel $(nproc)
+python3 experiments/process_lcov.py --root $(pwd)/gen/tensorflow-neuri-i-n5.models --parallel $(nproc)
+python3 experiments/process_lcov.py --root $(pwd)/gen/tensorflow-neuri-r-n5.models --parallel $(nproc)
+python3 experiments/process_lcov.py --root $(pwd)/gen/tensorflow-symbolic-cinit-n5.models --parallel $(nproc)
 ```
 
 ### S3: Checkout the results
@@ -173,10 +181,10 @@ Check the terminal output for the results.
 
 ```bash
 python experiments/viz_merged_cov.py --folders             \
-        $(pwd)/gen/torch-neuri-n5.models/coverage          \
+        $(pwd)/gen/torch-symbolic-cinit-n5.models/coverage \
         $(pwd)/gen/torch-neuri-r-n5.models/coverage        \
         $(pwd)/gen/torch-neuri-i-n5.models/coverage        \
-        $(pwd)/gen/torch-symbolic-cinit-n5.models/coverage \
+        $(pwd)/gen/torch-neuri-n5.models/coverage          \
     --tags '\textsc{NNSmith}' '\textsc{NeuRI}$^r$' '\textsc{NeuRI}$^i$'  '\textsc{NeuRI}'
 ```
 
@@ -186,10 +194,10 @@ Check images under `./results/branch_cov-time.png` for the results.
 
 ```bash
 python experiments/viz_merged_cov.py --folders                  \
-        $(pwd)/gen/tensorflow-neuri-n5.models/coverage          \
+        $(pwd)/gen/tensorflow-symbolic-cinit-n5.models/coverage \
         $(pwd)/gen/tensorflow-neuri-r-n5.models/coverage        \
         $(pwd)/gen/tensorflow-neuri-i-n5.models/coverage        \
-        $(pwd)/gen/tensorflow-symbolic-cinit-n5.models/coverage \
+        $(pwd)/gen/tensorflow-neuri-n5.models/coverage          \
     --tags '\textsc{NNSmith}' '\textsc{NeuRI}$^r$' '\textsc{NeuRI}$^i$'  '\textsc{NeuRI}'
 ```
 

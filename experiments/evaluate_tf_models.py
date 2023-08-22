@@ -27,7 +27,7 @@ def clear_gcda():
 
 
 def move_gcno(id_path):
-    os.system(f"cp ./gcno ./{id_path}-workspace/gcno -r")
+    os.system(f"cp {ROOT_DIR}/experiments/gcno ./{id_path}-workspace/gcno -r")
 
 
 def move_gcda(id_path):
@@ -70,6 +70,7 @@ def model_exec(
 
     # print(len(model_paths))
     gcda_save_path = f"{id_path}-workspace"
+    os.system(f"rm {gcda_save_path} -r")
     os.makedirs(gcda_save_path)
     trial_arguments = [
         "python3",
