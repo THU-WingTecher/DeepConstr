@@ -54,7 +54,7 @@ The overall process of NeuRI is shown as:
 
 > **Note**
 > **Pre-generated rules**: For simplicity, we pre-generated the output of instrumentation and rule inference in `./data` directory.
-> To perform instrumentation from scratch, follow [instructions here](neuri/autoinf/instrument/README.md).
+> To perform instrumentation from scratch, follow [instructions here](https://github.com/ise-uiuc/neuri-artifact/blob/main/neuri/autoinf/instrument/README.md).
 > To perform rule inference, follow the RQ2 section.
 
 ### S1: Start fuzzing and cache test-cases
