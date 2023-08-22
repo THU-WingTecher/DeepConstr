@@ -37,6 +37,8 @@ else
     exit 1
 fi
 
+mkdir $(pwd)/gen -p
+
 # attempt at most 32 times
 for i in {1..32}
 do

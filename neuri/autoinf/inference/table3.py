@@ -1,10 +1,11 @@
+import argparse
 import os
 import pickle
 
 from rich.console import Console
 from rich.table import Table
 
-from neuri.autoinf.inference.const import GEN_DIR, ROOT_DIR
+from neuri.autoinf.inference.const import DATA_DIR, GEN_DIR, ROOT_DIR
 from neuri.autoinf.instrument.categorize import gen_inst_with_records
 from neuri.autoinf.instrument.op import OpInstance
 
@@ -89,8 +90,7 @@ def raw_count(record_path: str) -> int:
     return acount, pacount, rcount
 
 
-def inf_count(library: str):
-    record_path = os.path.join(ROOT_DIR, f"data/{library}_records")
+def inf_count(record_path: str):
     gen_inst_records = gen_inst_with_records(data_dir=record_path, int_policy="fix_dim")
     success_api, success_op = set(), 0
     for (inst, _) in gen_inst_records:
@@ -99,47 +99,18 @@ def inf_count(library: str):
                 success_op += 1
                 success_api.add(inst.name)
     return len(success_api), success_op
-    # aug_record_path = os.path.join(GEN_DIR, f"{library}_augmented_records")
-    # # aug_record_path = f"/JawTitan/yuyao-data/InvocationDB-{library}-extended-20230124"
-    # shape_path = os.path.join(GEN_DIR, f"{library}_shape_rules")
-    # # shape_path = f"/JawTitan/yuyao-data/IO-rules-{library}-extended-20230124"
-    # predicate_path = os.path.join(GEN_DIR, f"{library}_input_predicates")
-    # # predicate_path = f"/JawTitan/yuyao-data/input-rules-{library}-20230124"
-    # nnsmith_path = os.path.join(GEN_DIR, f"{library}_nnsmith_reuse")
-    # # nnsmith_path = f"/JawTitan/yuyao-data/nnsmith_rules-{library}-20230124"
 
-    # gen_inst_records = gen_inst_with_records(data_dir=record_path, int_policy="fix_dim")
-    # success_api, success_op = set(), 0
-    # for (inst, _) in gen_inst_records:
-    #     if not filtered(inst):
-    #         inf_shape, input_predicate, nnsmith_reuse = True, True, False
-    #         try:
-    #             with open(os.path.join(nnsmith_path, f"{inst.name_index}.pkl"), "rb") as f:
-    #                 reuse_list = pickle.load(f)
-    #             if len(reuse_list) > 0:
-    #                 nnsmith_reuse = True
-    #         except:
-    #             pass
-    #         with open(os.path.join(shape_path, f"{inst.name_index}.pkl"), "rb") as f:
-    #             info_dict = pickle.load(f)
-    #         for info in info_dict["output_rules"]:
-    #             if info["rule_count"] == 0:
-    #                 inf_shape = False
-    #                 break
-    #         with open(os.path.join(aug_record_path, f"{inst.name_index}.pkl"), "rb") as f:
-    #             info_dict = pickle.load(f)
-    #         if len(info_dict["fail"]) > 0:
-    #             try:
-    #                 with open(os.path.join(predicate_path, f"{inst.name_index}.pkl"), "rb") as f:
-    #                     info_dict = pickle.load(f)
-    #                 if len(info_dict["rules"]) == 0:
-    #                     input_predicate = False
-    #             except:
-    #                 input_predicate = False
-    #         if (inf_shape and input_predicate) or nnsmith_reuse:
-    #             success_op += 1
-    #             success_api.add(inst.name)
-    # return len(success_api), success_op
+
+def fuzz_count(record_path: str):
+    with open(os.path.join(record_path, "op_rej.txt")) as f:
+        rej_op_inst = f.readlines()
+        rej_op_inst = set([x.strip() for x in rej_op_inst])
+    with open(os.path.join(record_path, "op_used.txt")) as f:
+        used_op_inst = f.readlines()
+        used_op_inst = set([x.strip() for x in used_op_inst])
+    rej_op_apis = set([x.split("-")[0] for x in rej_op_inst])
+    used_op_apis = set([x.split("-")[0] for x in used_op_inst])
+    return len(used_op_apis) - len(rej_op_apis), len(used_op_inst) - len(rej_op_inst)
 
 
 def table_fmt(v: int) -> str:
@@ -147,6 +118,11 @@ def table_fmt(v: int) -> str:
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--rule_dir", type=str, default=DATA_DIR)
+    parser.add_argument("--fuzzing_dir", type=str, default=GEN_DIR)
+    args = parser.parse_args()
+
     table = Table(title="Table 3: # API/partial operator/record at different stages")
     table.add_column("")
     table.add_column("#API (PT)")
@@ -160,9 +136,9 @@ if __name__ == "__main__":
         "Collected", "758", "248", "-", "-", table_fmt(63136), table_fmt(33973)
     )
 
-    tf_raw_path = os.path.join(ROOT_DIR, "data/tf_records")
+    tf_raw_path = os.path.join(DATA_DIR, "tf_records")
     tf_acount, tf_pacount, tf_raw_rcount = raw_count(tf_raw_path)
-    torch_raw_path = os.path.join(ROOT_DIR, "data/torch_records")
+    torch_raw_path = os.path.join(DATA_DIR, "torch_records")
     torch_acount, torch_pacount, torch_raw_rcount = raw_count(torch_raw_path)
     table.add_row(
         "Filtering",
@@ -174,9 +150,9 @@ if __name__ == "__main__":
         table_fmt(tf_raw_rcount),
     )
 
-    tf_aug_path = os.path.join(GEN_DIR, "tf_augmented_records")
+    tf_aug_path = os.path.join(args.rule_dir, "tf_augmented_records")
     tf_aug_rcount = aug_rcount(tf_aug_path)
-    torch_aug_path = os.path.join(GEN_DIR, "torch_augmented_records")
+    torch_aug_path = os.path.join(args.rule_dir, "torch_augmented_records")
     torch_aug_rcount = aug_rcount(torch_aug_path)
 
     table.add_row(
@@ -189,8 +165,8 @@ if __name__ == "__main__":
         table_fmt(tf_aug_rcount),
     )
 
-    torch_api_inf, torch_op_inf = inf_count("torch")
-    tf_api_inf, tf_op_inf = inf_count("tf")
+    torch_api_inf, torch_op_inf = inf_count(torch_raw_path)
+    tf_api_inf, tf_op_inf = inf_count(tf_raw_path)
 
     table.add_row(
         "Inference",
@@ -198,6 +174,21 @@ if __name__ == "__main__":
         table_fmt(tf_api_inf),
         table_fmt(torch_op_inf),
         table_fmt(tf_op_inf),
+        "-",
+        "-",
+    )
+
+    torch_fuzz_path = os.path.join(args.fuzzing_dir, "torch-neuri-i-n1")
+    torch_api_fuzz_bottom, torch_op_fuzz_bottom = fuzz_count(torch_fuzz_path)
+    tf_fuzz_path = os.path.join(args.fuzzing_dir, "tensorflow-neuri-i-n1")
+    tf_api_fuzz_bottom, tf_op_fuzz_bottom = fuzz_count(tf_fuzz_path)
+
+    table.add_row(
+        "Fuzz_bot",
+        table_fmt(torch_api_fuzz_bottom),
+        table_fmt(tf_api_fuzz_bottom),
+        table_fmt(torch_op_fuzz_bottom),
+        table_fmt(tf_op_fuzz_bottom),
         "-",
         "-",
     )
