@@ -100,6 +100,28 @@ source ./env_std.sh
 
 ### S2: Collect coverage
 
+> **Note**
+>
+> Before collecting coverage information, you may need to build pytorch and tensorflow from source with certain flags.
+>
+> **For PyTorch**
+>
+> ```bash
+> USE_CPP_CODE_COVERAGE=1 \
+> USE_KINETO=0 BUILD_CAFFE2=0 USE_DISTRIBUTED=0 USE_NCCL=0 BUILD_TEST=0 USE_XNNPACK=0 \
+> USE_QNNPACK=0 USE_MIOPEN=0 BUILD_CAFFE2_OPS=0 USE_TENSORPIPE=0 \
+> USE_CUDA=0 USE_CUDNN=0 USE_MKLDNN=0 CC=clang-14 CXX=clang++-14 \
+> python3 setup.py develop
+> ```
+>
+> **For TensorFlow**
+>
+> ```bash
+> bazel build --copt="-Wno-unused-result" --copt="-fprofile-arcs" --copt="-ftest-coverage" \
+> --linkopt="-fprofile-arcs" --linkopt="-ftest-coverage" --linkopt="-lgcov" \
+> --jobs=20 //tensorflow/tools/pip_package:build_pip_package --verbose_failures
+> ```
+
 #### For PyTorch
 
 ```bash
