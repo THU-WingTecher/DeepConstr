@@ -22,9 +22,6 @@ if [ -z "$NSIZE" ] || [ -z "$METHOD" ] || [ -z "$MODEL" ] || [ -z "$TIME" ]; the
     exit 1
 fi
 
-
-DATE="$(date +%m%d)"
-
 # set environment variables CUDA_VISIBLE_DEVICES=""
 export CUDA_VISIBLE_DEVICES=""
 echo "CUDA_VISIBLE_DEVICES: $CUDA_VISIBLE_DEVICES"
@@ -32,11 +29,9 @@ echo "CUDA_VISIBLE_DEVICES: $CUDA_VISIBLE_DEVICES"
 if [ $MODEL = "tensorflow" ]; then
     BACKEND="xla"
     RECORD="$(pwd)/data/tf_records"
-    PREFIX="tf"
 elif [ $MODEL = "torch" ]; then
     BACKEND="torchjit"
     RECORD="$(pwd)/data/torch_records"
-    PREFIX="torch"
 else
     echo "MODEL must be tensorflow or torch"
     exit 1
@@ -46,9 +41,9 @@ fi
 for i in {1..32}
 do
     echo "Attempt $i"
-    PYTHONPATH=$(pwd):$(pwd)/neuri python neuri/cli/fuzz.py fuzz.time=${TIME} fuzz.root=$(pwd)/gen/${PREFIX}-${DATE}-${METHOD}-n${NSIZE} \
+    PYTHONPATH=$(pwd):$(pwd)/neuri python neuri/cli/fuzz.py fuzz.time=${TIME} fuzz.root=$(pwd)/gen/${MODEL}-${METHOD}-n${NSIZE} \
                                             mgen.record_path=${RECORD} \
-                                            fuzz.save_test=$(pwd)/gen/${PREFIX}-${DATE}-${METHOD}-n${NSIZE}.models \
+                                            fuzz.save_test=$(pwd)/gen/${MODEL}-${METHOD}-n${NSIZE}.models \
                                             model.type=${MODEL} backend.type=${BACKEND} filter.type="[nan,dup,inf]" \
                                             debug.viz=true hydra.verbose=fuzz fuzz.resume=true \
                                             mgen.method=${METHOD} mgen.max_nodes=${NSIZE}
@@ -62,9 +57,9 @@ do
 done
 
 echo "WAS RUNNING:"
-echo "PYTHONPATH=$(pwd):$(pwd)/neuri python neuri/cli/fuzz.py fuzz.time=${TIME} fuzz.root=$(pwd)/gen/${PREFIX}-${DATE}-${METHOD}-n${NSIZE} \\
+echo "PYTHONPATH=$(pwd):$(pwd)/neuri python neuri/cli/fuzz.py fuzz.time=${TIME} fuzz.root=$(pwd)/gen/${MODEL}-${METHOD}-n${NSIZE} \\
                                             mgen.record_path=${RECORD} \\
-                                            fuzz.save_test=$(pwd)/gen/${PREFIX}-${DATE}-${METHOD}-n${NSIZE}.models \\
+                                            fuzz.save_test=$(pwd)/gen/${MODEL}-${METHOD}-n${NSIZE}.models \\
                                             model.type=${MODEL} backend.type=${BACKEND} filter.type="[nan,dup,inf]" \\
                                             debug.viz=true hydra.verbose=fuzz fuzz.resume=true \\
                                             mgen.method=${METHOD} mgen.max_nodes=${NSIZE}"

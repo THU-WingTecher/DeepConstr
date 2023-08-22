@@ -19,7 +19,7 @@ See [lists of bug reports](docs/rq3-bug-reports.md).
 >
 > **General test-bed requirements**
 > - **OS**: A Linux System with Docker Support;
-> - **Hardware**: X86/X64 CPU; 16GB RAM; 512GB Storage; Good Network to GitHub and Docker Hub;
+> - **Hardware**: X86/X64 CPU; 16GB RAM; 1TB Storage; Good Network to GitHub and Docker Hub;
 
 ### S1: Docker installation
 
@@ -86,24 +86,132 @@ We will use `./fuzz.sh` to generate the test-cases.
 > - `TIME`: fuzzing time in formats like `4h`, `1m`, `30s`.
 >
 > **Outputs**:
-> - `$(pwd)/gen/${MODEL}-${DATE}-${METHOD}-n${NSIZE}.models`: the generated test-cases (models)
+> - `$(pwd)/gen/${MODEL}-${METHOD}-n${NSIZE}.models`: the generated test-cases (models)
 
+#### For PyTorch
 
+```bash
+source ./env_std.sh
+./fuzz.sh 5 neuri          torch torchjit 4h
+./fuzz.sh 5 neuri-i        torch torchjit 4h
+./fuzz.sh 5 neuri-r        torch torchjit 4h
+./fuzz.sh 5 symbolic-cinit torch torchjit 4h # NNSmith
+./fuzz.sh 1  neuri         torch torchjit 4h
+./fuzz.sh 9  neuri         torch torchjit 4h
+./fuzz.sh 13 neuri         torch torchjit 4h
+```
+
+#### For TensorFlow
+
+```bash
+source ./env_std.sh
+./fuzz.sh 5 neuri          tensorflow xla 4h
+./fuzz.sh 5 neuri-i        tensorflow xla 4h
+./fuzz.sh 5 neuri-r        tensorflow xla 4h
+./fuzz.sh 5 symbolic-cinit tensorflow xla 4h # NNSmith
+```
 
 ### S2: Collect coverage
 
+#### For PyTorch
+
+```bash
+source ./env_cov.sh
+python experiments/evaluate_models.py  --root $(pwd)/gen/torch-neuri-n5          --model_type torch --backend_type torchjit --parallel $(nproc)
+python experiments/evaluate_models.py  --root $(pwd)/gen/torch-neuri-i-n5        --model_type torch --backend_type torchjit --parallel $(nproc)
+python experiments/evaluate_models.py  --root $(pwd)/gen/torch-neuri-r-n5        --model_type torch --backend_type torchjit --parallel $(nproc)
+python experiments/evaluate_models.py  --root $(pwd)/gen/torch-symbolic-cinit-n5 --model_type torch --backend_type torchjit --parallel $(nproc)
+python experiments/evaluate_models.py  --root $(pwd)/gen/torch-neuri-n1          --model_type torch --backend_type torchjit --parallel $(nproc)
+python experiments/evaluate_models.py  --root $(pwd)/gen/torch-neuri-n9          --model_type torch --backend_type torchjit --parallel $(nproc)
+python experiments/evaluate_models.py  --root $(pwd)/gen/torch-neuri-n13         --model_type torch --backend_type torchjit --parallel $(nproc)
+# Compute coverage
+python experiments/process_profraws.py --root $(pwd)/gen/torch-neuri-n5.models \
+                                       --llvm-config-path $(which llvm-config-14) \
+                                       --instrumented-libs "$(pwd)/sut/pytorch-cov/build/lib/libtorch_cpu.so" "$(pwd)/sut/pytorch-cov/build/lib/libtorch.so" \
+                                        --batch-size 1000 --parallel $(nproc)
+python experiments/process_profraws.py --root $(pwd)/gen/torch-neuri-i-n5.models \
+                                       --llvm-config-path $(which llvm-config-14) \
+                                       --instrumented-libs "$(pwd)/sut/pytorch-cov/build/lib/libtorch_cpu.so" "$(pwd)/sut/pytorch-cov/build/lib/libtorch.so" \
+                                        --batch-size 1000 --parallel $(nproc)
+python experiments/process_profraws.py --root $(pwd)/gen/torch-neuri-r-n5.models \
+                                       --llvm-config-path $(which llvm-config-14) \
+                                       --instrumented-libs "$(pwd)/sut/pytorch-cov/build/lib/libtorch_cpu.so" "$(pwd)/sut/pytorch-cov/build/lib/libtorch.so" \
+                                        --batch-size 1000 --parallel $(nproc)
+python experiments/process_profraws.py --root $(pwd)/gen/torch-symbolic-cinit-n5.models \
+                                       --llvm-config-path $(which llvm-config-14) \
+                                       --instrumented-libs "$(pwd)/sut/pytorch-cov/build/lib/libtorch_cpu.so" "$(pwd)/sut/pytorch-cov/build/lib/libtorch.so" \
+                                        --batch-size 1000 --parallel $(nproc)
+python experiments/process_profraws.py --root $(pwd)/gen/torch-neuri-n1.models \
+                                       --llvm-config-path $(which llvm-config-14) \
+                                       --instrumented-libs "$(pwd)/sut/pytorch-cov/build/lib/libtorch_cpu.so" "$(pwd)/sut/pytorch-cov/build/lib/libtorch.so" \
+                                        --batch-size 1000 --parallel $(nproc)
+python experiments/process_profraws.py --root $(pwd)/gen/torch-neuri-n9.models \
+                                       --llvm-config-path $(which llvm-config-14) \
+                                       --instrumented-libs "$(pwd)/sut/pytorch-cov/build/lib/libtorch_cpu.so" "$(pwd)/sut/pytorch-cov/build/lib/libtorch.so" \
+                                        --batch-size 1000 --parallel $(nproc)
+python experiments/process_profraws.py --root $(pwd)/gen/torch-neuri-n13.models \
+                                       --llvm-config-path $(which llvm-config-14) \
+                                       --instrumented-libs "$(pwd)/sut/pytorch-cov/build/lib/libtorch_cpu.so" "$(pwd)/sut/pytorch-cov/build/lib/libtorch.so" \
+                                        --batch-size 1000 --parallel $(nproc)
+```
+
+#### For TensorFlow
+
+```bash
+source ./env_cov.sh
+# ... TBD
+```
+
 ### S3: Checkout the results
 
-#### Table 1
+#### Table 1 & 2
 
-#### Table 2
+```bash
+# PyTorch
+python experiments/genstat.py --root $(pwd)/gen/torch-neuri-n5
+python experiments/genstat.py --root $(pwd)/gen/torch-neuri-i-n5
+python experiments/genstat.py --root $(pwd)/gen/torch-neuri-r-n5
+python experiments/genstat.py --root $(pwd)/gen/torch-symbolic-cinit-n5
+
+# TensorFlow
+python experiments/genstat.py --root $(pwd)/gen/tensorflow-neuri-n5
+python experiments/genstat.py --root $(pwd)/gen/tensorflow-neuri-i-n5
+python experiments/genstat.py --root $(pwd)/gen/tensorflow-neuri-r-n5
+python experiments/genstat.py --root $(pwd)/gen/tensorflow-symbolic-cinit-n5
+```
 
 #### Figure 6 (a)
 
+```bash
+python experiments/viz_merged_cov.py --folders             \
+        $(pwd)/gen/torch-neuri-n5.models/coverage          \
+        $(pwd)/gen/torch-neuri-r-n5.models/coverage        \
+        $(pwd)/gen/torch-neuri-i-n5.models/coverage        \
+        $(pwd)/gen/torch-symbolic-cinit-n5.models/coverage \
+    --tags '\textsc{NNSmith}' '\textsc{NeuRI}$^r$' '\textsc{NeuRI}$^i$'  '\textsc{NeuRI}'
+```
+
 #### Figure 6 (b)
+
+```bash
+python experiments/viz_merged_cov.py --folders                  \
+        $(pwd)/gen/tensorflow-neuri-n5.models/coverage          \
+        $(pwd)/gen/tensorflow-neuri-r-n5.models/coverage        \
+        $(pwd)/gen/tensorflow-neuri-i-n5.models/coverage        \
+        $(pwd)/gen/tensorflow-symbolic-cinit-n5.models/coverage \
+    --tags '\textsc{NNSmith}' '\textsc{NeuRI}$^r$' '\textsc{NeuRI}$^i$'  '\textsc{NeuRI}'
+```
 
 #### Figure 6 (c)
 
+```bash
+python experiments/viz_merged_cov.py --folders             \
+        $(pwd)/gen/torch-neuri-n1.models/coverage          \
+        $(pwd)/gen/torch-neuri-n5.models/coverage          \
+        $(pwd)/gen/torch-neuri-n9.models/coverage          \
+        $(pwd)/gen/torch-neuri-n13.models/coverage          \
+    --tags '\#Node 1' '\#Node 5' '\#Node 9' '\#Node 13'
+```
 
 ## Evaluating Rule Inference (RQ2)
 
