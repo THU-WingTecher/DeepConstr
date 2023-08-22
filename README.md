@@ -250,7 +250,7 @@ python3 table3.py [--rule_dir RULE_DIR] [--fuzz_dir FUZZ_DIR]
 python3 table4.py [--rule_dir RULE_DIR]
 ```
 
-By default, the scripts evaluates pre-generated rules under `data/`.
+By default, the scripts evaluate pre-generated rules under `data/`.
 
 ## Learning More
 
