@@ -16,7 +16,7 @@ See [lists of bug reports](docs/rq3-bug-reports.md).
 ## Get ready for running experiments!
 
 > [!IMPORTANT]
-> 
+>
 > **General test-bed requirements**
 > - **OS**: A Linux System with Docker Support;
 > - **Hardware**: X86/X64 CPU; 16GB RAM; 512GB Storage; Good Network to GitHub and Docker Hub;
@@ -24,7 +24,7 @@ See [lists of bug reports](docs/rq3-bug-reports.md).
 ### S1: Docker installation
 
 > **Note**
-> 
+>
 > Before you start, please make sure you have [Docker](https://docs.docker.com/engine/install/) installed.
 >
 > To check the installation:
@@ -61,14 +61,23 @@ Congratulations if you can run it without errors!
 
 ## Evaluating Coverage (RQ1)
 
+The overall process of NeuRI is shown as:
+
+![](gallery/overview.svg)
+
+> **Note**
+> **Pre-generated rules**: For simplicity, we pre-generated the output of instrumentation and rule inference in `./data` directory.
+> To perform instrumentation from scratch, follow [instructions here](neuri/autoinf/instrument/README.md).
+> To perform rule inference, follow the RQ2 section.
+
 ### S1: Start fuzzing and cache test-cases
 
 We will use `./fuzz.sh` to generate the test-cases.
 
 > [!NOTE]
-> 
+>
 > **Command usage of**: `./fuzz.sh NSIZE METHOD MODEL BACKEND TIME`
-> 
+>
 > **Arguments**:
 > - `NSIZE`: the number of operators in each generated graph.
 > - `METHOD`: in `["neuri", "neuri-i", "neuri-r", "symbolic-cinit"]`.
@@ -79,18 +88,26 @@ We will use `./fuzz.sh` to generate the test-cases.
 > **Outputs**:
 > - `$(pwd)/gen/${MODEL}-${DATE}-${METHOD}-n${NSIZE}.models`: the generated test-cases (models)
 
+
+
 ### S2: Collect coverage
 
-### S3: Draw figures
+### S3: Checkout the results
+
+#### Table 1
+
+#### Table 2
+
+#### Figure 6 (a)
+
+#### Figure 6 (b)
+
+#### Figure 6 (c)
 
 
 ## Evaluating Rule Inference (RQ2)
 
-> **Warning** 
-> **Experiment dependency**:
-> You need to first finish the last section (RQ1) to continue this section.
-
-> **Note** 
+> **Note**
 > Please run command `source ./env_std.sh` in the root directory to install necessary libraries and configure environment variables.
 
 ```bash
