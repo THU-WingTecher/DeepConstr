@@ -100,28 +100,6 @@ source ./env_std.sh
 
 ### S2: Collect coverage
 
-> **Note**
->
-> Before collecting coverage information, you may need to build pytorch and tensorflow from source with certain flags.
->
-> **For PyTorch**
->
-> ```bash
-> USE_CPP_CODE_COVERAGE=1 \
-> USE_KINETO=0 BUILD_CAFFE2=0 USE_DISTRIBUTED=0 USE_NCCL=0 BUILD_TEST=0 USE_XNNPACK=0 \
-> USE_QNNPACK=0 USE_MIOPEN=0 BUILD_CAFFE2_OPS=0 USE_TENSORPIPE=0 \
-> USE_CUDA=0 USE_CUDNN=0 USE_MKLDNN=0 CC=clang-14 CXX=clang++-14 \
-> python3 setup.py develop
-> ```
->
-> **For TensorFlow**
->
-> ```bash
-> bazel build --copt="-Wno-unused-result" --copt="-fprofile-arcs" --copt="-ftest-coverage" \
-> --linkopt="-fprofile-arcs" --linkopt="-ftest-coverage" --linkopt="-lgcov" \
-> --jobs=20 //tensorflow/tools/pip_package:build_pip_package --verbose_failures
-> ```
-
 #### For PyTorch
 
 ```bash
@@ -240,19 +218,10 @@ Check images under `./results/branch_cov-time.png` for the results.
 
 ## Evaluating Rule Inference (RQ2)
 
-> **Note**
-> Please run command `source ./env_std.sh` in the root directory to install necessary libraries and configure environment variables.
-
-### S1: 1-Node test-cases generation
+### S1: Tree & rule generation
 
 ```bash
-./fuzz.sh 1 neuri-i   torch      torchjit 4h
-./fuzz.sh 1 neuri-i   tensorflow xla      4h
-```
-
-### S2: Tree & rule generation
-
-```bash
+source ./env_std.sh
 python3 neuri/autoinf/inference/tree.py
 python3 neuri/autoinf/inference/augmentation.py
 python3 neuri/autoinf/inference/shape_solve.py
@@ -262,17 +231,25 @@ python3 neuri/autoinf/inference/rule_validity.py
 python3 neuri/autoinf/inference/rosette_solve.py
 ```
 
-Rules will be stored in `gen/` by default.
+Rules will be stored in `gen/`.
+
+### S2: 1-Node test-cases generation
+
+```bash
+RULE_DIR=$(pwd)/gen ./fuzz.sh 1 neuri-i   torch      torchjit 4h
+RULE_DIR=$(pwd)/gen ./fuzz.sh 1 neuri-i   tensorflow xla      4h
+```
 
 ### S3: Check the results
 
 #### Table 3 & 4
+
 ```bash
-python3 table3.py [--rule_dir RULE_DIR] [--fuzz_dir FUZZ_DIR]
-python3 table4.py [--rule_dir RULE_DIR]
+python3 table3.py
+python3 table4.py
 ```
 
-By default, the scripts evaluate pre-generated rules under `data/`.
+Check the terminal output for the results.
 
 ## Learning More
 
