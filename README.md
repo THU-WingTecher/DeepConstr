@@ -77,6 +77,11 @@ We will use `./fuzz.sh` to generate the test-cases.
 
 #### For PyTorch
 
+> [!NOTE]
+>
+> You may parallelize the scripts below if you have multiple cores, at the risk of potential result unstability.
+> Nonetheless the results in the paper are generated without script parallelization.
+
 ```bash
 source ./env_std.sh
 ./fuzz.sh 5 neuri          torch torchjit 4h
