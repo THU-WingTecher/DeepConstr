@@ -1,28 +1,39 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
+
+# Setup conda environment
+COPY --from=continuumio/miniconda3:23.5.2-0 /opt/conda /opt/conda
+
+ENV PATH=/opt/conda/bin:$PATH
 
 RUN apt update --allow-unauthenticated
+
+RUN DEBIAN_FRONTEND="noninteractive" apt install -y git lz4 lsb-release wget software-properties-common \
+    gnupg build-essential texlive dvipng texlive-latex-extra cm-super texlive-fonts-recommended graphviz gcc-12
 
 # Install racket
 RUN wget https://plt.cs.northwestern.edu/racket-mirror/8.7/racket-8.7-x86_64-linux-cs.sh && \
     bash racket-8.7-x86_64-linux-cs.sh --unix-style --dest /usr --create-dir && \
     rm racket-8.7-x86_64-linux-cs.sh
 
-RUN DEBIAN_FRONTEND="noninteractive" apt install -y python3.8-dev python3.8-venv python3-numpy \
-    git lz4 lsb-release wget software-properties-common gnupg build-essential \
-    texlive dvipng texlive-latex-extra cm-super texlive-fonts-recommended graphviz
-
 RUN wget https://apt.llvm.org/llvm.sh && bash llvm.sh 14 && apt update --allow-unauthenticated
 
-RUN DEBIAN_FRONTEND="noninteractive" apt install -y clang-14 libclang-14-dev llvm-14-dev
+RUN DEBIAN_FRONTEND="noninteractive" apt install -y clang-14 libclang-14-dev llvm-14-dev libclang-rt-14-dev
+
+RUN conda init bash
+
+RUN conda create -n cov python=3.8 -y && conda create -n std python=3.8 -y
 
 COPY ./ /artifact
 
-RUN python3 -m venv /artifact/std && python3 -m venv /artifact/cov
+SHELL ["conda", "run", "-n", "std", "/bin/bash", "-c"]
 
-RUN . /artifact/std/bin/activate && bash /artifact/build/build_std.sh
+RUN bash /artifact/build/build_std.sh
 
-# Copy pre-built coverage instrumented wheels
+SHELL ["conda", "run", "-n", "cov", "/bin/bash", "-c"]
 
-RUN . /artifact/std/bin/activate && bash /artifact/build/build_cov.sh
+RUN bash /artifact/build/build_cov.sh
 
 ENV PYTHONPATH=/artifact/neuri
+
+ENTRYPOINT ["/bin/bash", "-l", "-c"]
+

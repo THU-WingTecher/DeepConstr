@@ -1,0 +1,43 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 784b5284170..186a4771648 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -972,8 +972,7 @@ if(USE_CPP_CODE_COVERAGE)
+     string(APPEND CMAKE_C_FLAGS  " --coverage -fprofile-abs-path")
+     string(APPEND CMAKE_CXX_FLAGS  " --coverage -fprofile-abs-path")
+   elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+-    string(APPEND CMAKE_C_FLAGS  " -fprofile-instr-generate -fcoverage-mapping")
+-    string(APPEND CMAKE_CXX_FLAGS " -fprofile-instr-generate -fcoverage-mapping")
++    SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-instr-generate -fcoverage-mapping")
+   else()
+     message(ERROR "Code coverage for compiler ${CMAKE_CXX_COMPILER_ID} is unsupported")
+   endif()
+diff --git a/caffe2/CMakeLists.txt b/caffe2/CMakeLists.txt
+index 4182797fc78..11dcf9aa220 100644
+--- a/caffe2/CMakeLists.txt
++++ b/caffe2/CMakeLists.txt
+@@ -806,7 +806,24 @@ set(Caffe2_CPU_SRCS ${Caffe2_CPU_SRCS_NON_AVX} ${Caffe2_CPU_SRCS_AVX2} ${Caffe2_
+ # END formerly-libtorch sources
+ # ==========================================================
+ 
++
+ add_library(torch_cpu ${Caffe2_CPU_SRCS})
++
++if(USE_CPP_CODE_COVERAGE)
++  set(EXP_COV_SRC ${Caffe2_CPU_SRCS})
++  list(FILTER EXP_COV_SRC EXCLUDE REGEX  "aten/src/ATen/native/*")
++  list(FILTER EXP_COV_SRC EXCLUDE REGEX  "aten/src/ATen/cpu/*")
++  list(FILTER EXP_COV_SRC EXCLUDE REGEX  "aten/src/ATen/cuda/*")
++  list(FILTER EXP_COV_SRC EXCLUDE REGEX  "aten/src/ATen/Ufunc*")
++  list(FILTER EXP_COV_SRC EXCLUDE REGEX  "torch/csrc/jit/serialization/*") # Linkage error...
++
++  SET_SOURCE_FILES_PROPERTIES(${EXP_COV_SRC}
++      PROPERTIES
++      COMPILE_FLAGS "-fprofile-instr-generate -fcoverage-mapping")
++  MESSAGE(STATUS "EXP_COV_SRC: ${EXP_COV_SRC}")
++  set_target_properties(torch_cpu PROPERTIES LINK_FLAGS "-fprofile-instr-generate -fcoverage-mapping")
++endif()
++
+ if(HAVE_SOVERSION)
+   set_target_properties(torch_cpu PROPERTIES
+       VERSION ${TORCH_VERSION} SOVERSION ${TORCH_SOVERSION})

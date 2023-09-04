@@ -119,31 +119,31 @@ python experiments/evaluate_models.py  --root $(pwd)/gen/torch-neuri-n13        
 # Compute coverage
 python experiments/process_profraws.py --root $(pwd)/gen/torch-neuri-n5.models    \
                                        --llvm-config-path $(which llvm-config-14) \
-                                       --instrumented-libs "$(pwd)/sut/pytorch-cov/build/lib/libtorch_cpu.so" "$(pwd)/sut/pytorch-cov/build/lib/libtorch.so" \
+                                       --instrumented-libs "$(pwd)/build/pytorch-cov/build/lib/libtorch_cpu.so" "$(pwd)/build/pytorch-cov/build/lib/libtorch.so" \
                                         --batch-size 1000 --parallel $(nproc)
 python experiments/process_profraws.py --root $(pwd)/gen/torch-neuri-i-n5.models  \
                                        --llvm-config-path $(which llvm-config-14) \
-                                       --instrumented-libs "$(pwd)/sut/pytorch-cov/build/lib/libtorch_cpu.so" "$(pwd)/sut/pytorch-cov/build/lib/libtorch.so" \
+                                       --instrumented-libs "$(pwd)/build/pytorch-cov/build/lib/libtorch_cpu.so" "$(pwd)/build/pytorch-cov/build/lib/libtorch.so" \
                                         --batch-size 1000 --parallel $(nproc)
 python experiments/process_profraws.py --root $(pwd)/gen/torch-neuri-r-n5.models  \
                                        --llvm-config-path $(which llvm-config-14) \
-                                       --instrumented-libs "$(pwd)/sut/pytorch-cov/build/lib/libtorch_cpu.so" "$(pwd)/sut/pytorch-cov/build/lib/libtorch.so" \
+                                       --instrumented-libs "$(pwd)/build/pytorch-cov/build/lib/libtorch_cpu.so" "$(pwd)/build/pytorch-cov/build/lib/libtorch.so" \
                                         --batch-size 1000 --parallel $(nproc)
 python experiments/process_profraws.py --root $(pwd)/gen/torch-symbolic-cinit-n5.models \
                                        --llvm-config-path $(which llvm-config-14)       \
-                                       --instrumented-libs "$(pwd)/sut/pytorch-cov/build/lib/libtorch_cpu.so" "$(pwd)/sut/pytorch-cov/build/lib/libtorch.so" \
+                                       --instrumented-libs "$(pwd)/build/pytorch-cov/build/lib/libtorch_cpu.so" "$(pwd)/build/pytorch-cov/build/lib/libtorch.so" \
                                         --batch-size 1000 --parallel $(nproc)
 python experiments/process_profraws.py --root $(pwd)/gen/torch-neuri-n1.models    \
                                        --llvm-config-path $(which llvm-config-14) \
-                                       --instrumented-libs "$(pwd)/sut/pytorch-cov/build/lib/libtorch_cpu.so" "$(pwd)/sut/pytorch-cov/build/lib/libtorch.so" \
+                                       --instrumented-libs "$(pwd)/build/pytorch-cov/build/lib/libtorch_cpu.so" "$(pwd)/build/pytorch-cov/build/lib/libtorch.so" \
                                         --batch-size 1000 --parallel $(nproc)
 python experiments/process_profraws.py --root $(pwd)/gen/torch-neuri-n9.models    \
                                        --llvm-config-path $(which llvm-config-14) \
-                                       --instrumented-libs "$(pwd)/sut/pytorch-cov/build/lib/libtorch_cpu.so" "$(pwd)/sut/pytorch-cov/build/lib/libtorch.so" \
+                                       --instrumented-libs "$(pwd)/build/pytorch-cov/build/lib/libtorch_cpu.so" "$(pwd)/build/pytorch-cov/build/lib/libtorch.so" \
                                         --batch-size 1000 --parallel $(nproc)
 python experiments/process_profraws.py --root $(pwd)/gen/torch-neuri-n13.models   \
                                        --llvm-config-path $(which llvm-config-14) \
-                                       --instrumented-libs "$(pwd)/sut/pytorch-cov/build/lib/libtorch_cpu.so" "$(pwd)/sut/pytorch-cov/build/lib/libtorch.so" \
+                                       --instrumented-libs "$(pwd)/build/pytorch-cov/build/lib/libtorch_cpu.so" "$(pwd)/build/pytorch-cov/build/lib/libtorch.so" \
                                         --batch-size 1000 --parallel $(nproc)
 ```
 

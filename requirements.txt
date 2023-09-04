@@ -1,11 +1,10 @@
-z3-solver>=4.11.0
+z3-solver==4.11.2.0
 hydra-core>=1.1.0
 hydra_colorlog
 multipledispatch
 appdirs
 numpy
 pre-commit
-z3
 numpy
 rich
 tqdm
