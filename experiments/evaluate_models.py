@@ -59,7 +59,7 @@ if __name__ == "__main__":
     parser.add_argument("--model_type", type=str, required=True, help="Model type.")
     parser.add_argument("--backend_type", type=str, required=True, help="Backend type.")
     parser.add_argument(
-        "--backend_target", type=str, required=True, help="Say `cpu` or `cuda`."
+        "--backend_target", type=str, default="cpu", help="Say `cpu` or `cuda`."
     )
     parser.add_argument(
         "--parallel", type=int, default=8, help="Number of process for execution."
