@@ -42,9 +42,10 @@ docker pull ganler/neuri-fse23-ae:latest
 
 # Run Docker image
 docker run -it --name ${USER}-neuri ganler/neuri-fse23-ae:latest
-# Now, you will "get into" the image like entering a virtual machine.
 # By using this command, you will "get into" the image like entering a virtual machine.
 # The session will be kept under the name "${USER}-neuri"
+# So that later on even if you exit the interactive bash, you can come back via:
+# `docker start ${USER}-neuri && docker exec -it ${USER}-neuri /bin/bash`
 
 # Inside the image, try to update any timely bug fixes
 cd /artifact
