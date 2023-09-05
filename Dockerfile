@@ -8,7 +8,7 @@ ENV PATH=/opt/conda/bin:$PATH
 RUN apt update --allow-unauthenticated
 
 RUN DEBIAN_FRONTEND="noninteractive" apt install -y git lz4 lsb-release wget software-properties-common \
-    gnupg build-essential texlive dvipng texlive-latex-extra cm-super texlive-fonts-recommended graphviz gcc-12
+    gnupg build-essential texlive dvipng texlive-latex-extra cm-super texlive-fonts-recommended graphviz libstdc++-12-dev
 
 # Install racket
 RUN wget https://plt.cs.northwestern.edu/racket-mirror/8.7/racket-8.7-x86_64-linux-cs.sh && \
@@ -33,7 +33,6 @@ SHELL ["conda", "run", "-n", "cov", "/bin/bash", "-c"]
 
 RUN bash /artifact/build/build_cov.sh
 
-ENV PYTHONPATH=/artifact/neuri
+ENV PYTHONPATH=/artifact/neuri:/artifact/
 
-ENTRYPOINT ["/bin/bash", "-l", "-c"]
-
+SHELL ["conda", "run", "-n", "base", "/bin/bash", "-c"]
