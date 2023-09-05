@@ -1,8 +1,9 @@
 # NeuRI: Diversifying DNN Generation via Inductive Rule Inference
 
 <p align="center">
-    <a href="https://arxiv.org/abs/2302.02261"><img src="https://img.shields.io/badge/arXiv-2302.02261-b31b1b.svg">
-    <a href="https://github.com/ise-uiuc/neuri-artifact/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg"></a>
+    <a href="https://arxiv.org/abs/2302.02261"><img src="https://img.shields.io/badge/arXiv-2302.02261-b31b1b.svg?style=for-the-badge">
+    <a href="https://github.com/ise-uiuc/neuri-artifact/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg?style=for-the-badge"></a>
+    <a href="https://hub.docker.com/r/ganler/neuri-fse23-ae/tags"><img src="https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white"></a>
 </p>
 
 Welcome to the artifact repository of the NeuRI paper which is accepted by ESEC/FSE 2023.
@@ -10,7 +11,7 @@ Welcome to the artifact repository of the NeuRI paper which is accepted by ESEC/
 
 ## Bug finding evidence (RQ3)
 
-See [lists of bug reports](docs/rq3-bug-reports.md).
+See [links to real-world bug reports](docs/rq3-bug-reports.md).
 
 
 ## Get ready for running experiments!
