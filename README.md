@@ -109,13 +109,13 @@ source ./env_std.sh
 
 ```bash
 source ./env_cov.sh
-python experiments/evaluate_models.py  --root $(pwd)/gen/torch-neuri-n5          --model_type torch --backend_type torchjit --parallel $(nproc)
-python experiments/evaluate_models.py  --root $(pwd)/gen/torch-neuri-i-n5        --model_type torch --backend_type torchjit --parallel $(nproc)
-python experiments/evaluate_models.py  --root $(pwd)/gen/torch-neuri-r-n5        --model_type torch --backend_type torchjit --parallel $(nproc)
-python experiments/evaluate_models.py  --root $(pwd)/gen/torch-symbolic-cinit-n5 --model_type torch --backend_type torchjit --parallel $(nproc)
-python experiments/evaluate_models.py  --root $(pwd)/gen/torch-neuri-n1          --model_type torch --backend_type torchjit --parallel $(nproc)
-python experiments/evaluate_models.py  --root $(pwd)/gen/torch-neuri-n9          --model_type torch --backend_type torchjit --parallel $(nproc)
-python experiments/evaluate_models.py  --root $(pwd)/gen/torch-neuri-n13         --model_type torch --backend_type torchjit --parallel $(nproc)
+python experiments/evaluate_models.py  --root $(pwd)/gen/torch-neuri-n5.models          --model_type torch --backend_type torchjit --parallel $(nproc)
+python experiments/evaluate_models.py  --root $(pwd)/gen/torch-neuri-i-n5.models        --model_type torch --backend_type torchjit --parallel $(nproc)
+python experiments/evaluate_models.py  --root $(pwd)/gen/torch-neuri-r-n5.models        --model_type torch --backend_type torchjit --parallel $(nproc)
+python experiments/evaluate_models.py  --root $(pwd)/gen/torch-symbolic-cinit-n5.models --model_type torch --backend_type torchjit --parallel $(nproc)
+python experiments/evaluate_models.py  --root $(pwd)/gen/torch-neuri-n1.models          --model_type torch --backend_type torchjit --parallel $(nproc)
+python experiments/evaluate_models.py  --root $(pwd)/gen/torch-neuri-n9.models          --model_type torch --backend_type torchjit --parallel $(nproc)
+python experiments/evaluate_models.py  --root $(pwd)/gen/torch-neuri-n13.models         --model_type torch --backend_type torchjit --parallel $(nproc)
 # Compute coverage
 python experiments/process_profraws.py --root $(pwd)/gen/torch-neuri-n5.models    \
                                        --llvm-config-path $(which llvm-config-14) \
