@@ -6,7 +6,7 @@ import multiprocessing as mp
 import os
 import subprocess
 
-from nnsmith.util import mkdir
+from neuri.util import mkdir
 
 
 def batched(iterable, n=1):
@@ -25,7 +25,7 @@ def model_exec(test_paths, model_type, backend_type, backend_target, profraw_pat
 
     arguments = [
         "python3",
-        "nnsmith/cli/model_exec.py",
+        "neuri/cli/model_exec.py",
         "model.type=" + model_type,
         "backend.type=" + backend_type,
         "backend.target=" + backend_target,
