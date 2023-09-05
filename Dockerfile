@@ -8,7 +8,8 @@ ENV PATH=/opt/conda/bin:$PATH
 RUN apt update --allow-unauthenticated
 
 RUN DEBIAN_FRONTEND="noninteractive" apt install -y git lz4 lsb-release wget software-properties-common \
-    gnupg build-essential texlive dvipng texlive-latex-extra cm-super texlive-fonts-recommended graphviz libstdc++-12-dev
+    gnupg build-essential texlive dvipng texlive-latex-extra cm-super texlive-fonts-recommended \
+    graphviz libstdc++-12-dev lcov
 
 # Install racket
 RUN wget https://plt.cs.northwestern.edu/racket-mirror/8.7/racket-8.7-x86_64-linux-cs.sh && \
