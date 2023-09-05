@@ -2,7 +2,7 @@
 
 <p align="center">
     <a href="https://arxiv.org/abs/2302.02261"><img src="https://img.shields.io/badge/arXiv-2302.02261-b31b1b.svg?style=for-the-badge">
-    <a href="https://doi.org/10.5281/zenodo.8319847"><img src="https://img.shields.io/badge/DOI-10.5281%2Fzenodo.8319847-8A2BE2?style=for-the-badge">
+    <a href="https://doi.org/10.5281/zenodo.8319975"><img src="https://img.shields.io/badge/DOI-10.5281%2Fzenodo.8319975-8A2BE2?style=for-the-badge">
     <a href="https://github.com/ise-uiuc/neuri-artifact/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg?style=for-the-badge"></a>
     <a href="https://hub.docker.com/r/ganler/neuri-fse23-ae/tags"><img src="https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white"></a>
 </p>
@@ -36,7 +36,7 @@ See [links to real-world bug reports](docs/rq3-bug-reports.md).
 ```bash
 # 💡 Get Docker image from Docker Hub
 docker pull ganler/neuri-fse23-ae:latest
-# 💡 [Alternative] load image from https://doi.org/10.5281/zenodo.8319847
+# 💡 [Alternative] load image from https://doi.org/10.5281/zenodo.8319975
 # 1. Install and "unzip" the package 
 # 2. Run `docker load --input neuri-image-fse23.tar.gz`
 
