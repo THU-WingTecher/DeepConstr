@@ -1,0 +1,81 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  other:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 38
+package: torch
+pass_rate: 0.98
+rules:
+- cot: "The error occurs because we are trying to resize the 'out' tensor to match\
+    \ the shape of the operation result, which is not possible because 'out' tensor\
+    \ is not resizable. Looking at the given example, the 'out' tensor has a different\
+    \ shape [2, 6, 7, 8] than the 'input' tensor [10, 9, 8, 6]. \n\nThe operation\
+    \ result's shape is determined by the input tensor's shape, so the 'out' tensor\
+    \ should have the same shape as the 'input' tensor to avoid this error. \n\nTherefore,\
+    \ Left : out.shape, out.rank op : == right : input.shape, input.rank\n\nThe constraint\
+    \ needed to prevent the error could be:"
+  target: Trying to resize storage that is not resizable
+  txt: (other.shape == input.shape) and (out.shape == input.shape and out.rank ==
+    input.rank)
+- cot: 'The error is caused because the ''dot'' operation expects both vectors to
+    have the same data type, but found Bool and Float. Let''s see what the args were.
+    The inputs ''input'' and ''other'' have different data types, Bool and Float32
+    respectively. Therefore, the data type of ''input'' and ''other'' should be the
+    same for the operation to proceed without errors. Therefore, Left : input.dtype,
+    ''other''.dtype. Op : ==. Right : ''input''.dtype, ''other''.dtype.'
+  target: 'dot : expected both vectors to have same dtype, but found Bool and Float'
+  txt: input.dtype == other.dtype
+- cot: 'The error is because the "dot" operation is not implemented for boolean tensors.
+    Considering the args, it seems ''input'', ''other'', and ''out'' are all boolean
+    tensors. Therefore, Left : input.dtype, other.dtype, out.dtype. It says that "dot"
+    not implemented for ''Bool'', so Op : !=, and Right : bool.'
+  target: '"dot" not implemented for ''Bool'''
+  txt: out.dtype != bool
+- cot: 'The error is triggered because both arguments to matmul need to be at least
+    1D, but they are 0D. Let''s see what the args were. It seems ''input'' and ''other''
+    are 0D. So, ''input''.ndims() and ''other''.ndims() need to be corrected. It says
+    both arguments need to be at least 1D. Therefore, Left : ''input''.ndims() and
+    ''other''.ndims(), Op : >=, and Right : 1.'
+  target: both arguments to matmul need to be at least 1D, but they are 0D and 0D
+  txt: '''other''.ndims() >= 1'
+- cot: 'The error occurs because the first two dimensions of the ''other'' tensor
+    do not match the expected size of [6, 6] and instead, they are [6, 8]. The constraints
+    can be revised so that the first two dimensions of the ''other'' tensor always
+    match the expected size. This can be done with the following constraints:'
+  target: 'Expected size for first two dimensions of batch2 tensor to be: [6, 6] but
+    got: [6, 8].'
+  txt: (len(other.shape) >= 2 and other.shape[0] == 216 and other.shape[1] == 1) and
+    ((other.shape[0]*other.shape[1] == 36 and other.shape[2] == 6) and (other.shape[0]
+    == 6))
+- cot: 'The error is due to the incompatible shapes of mat1 and mat2 for matrix multiplication.
+    Let''s see what the args were. It appears that the shapes of ''input'' and ''other''
+    are both [10,8], which are not compatible for multiplication because the number
+    of columns in the first matrix should be equal to the number of rows in the second
+    matrix. Therefore, ''input'' and ''other'' should be corrected. It says the number
+    of columns in mat1 should be equal to the number of rows in mat2. So, Operation
+    : ==, and Right : input.shape[1], other.shape[0].'
+  target: mat1 and mat2 shapes cannot be multiplied (10x8 and 10x8)
+  txt: input.shape[1] == other.shape[0]
+- cot: 'The error message indicates that the output tensor''s data type ''Float''
+    does not match the input tensor''s data type ''Long''. Therefore, it is necessary
+    to ensure that the data types of input and output tensors are the same. Hence,
+    the Left: type(input) or type(other), Op: ==, and Right: type(out).'
+  target: result dtype Float does not match input dtype Long
+  txt: type(input) == type(out) and type(other) == type(out)
+time_cost: 2179.559910297394
+title: torch.matmul
+tokens_used: 27352
+trained: true

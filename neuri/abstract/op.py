@@ -18,7 +18,7 @@ from neuri.abstract.dtype import (
 )
 from neuri.abstract.tensor import AbsTensor
 from neuri.error import ConstraintCheck, SanityCheck
-
+from neuri.specloader import MAX_ARR_LEN
 # There are following types of constraints at this point:
 # 1. Shape variables must be greater than 0;
 # 2. Shape variables must avoid devision by 0;
@@ -43,7 +43,7 @@ Z3_CONS_FLOPS = Z3_CONS_FLOPS == "on"
 
 
 __MIN_RANK__ = 0
-__MAX_RANK__ = 5
+__MAX_RANK__ = MAX_ARR_LEN
 
 FULL_OPERATOR_SETS: Dict[str, List[Type["AbsOpBase"]]] = dict()
 

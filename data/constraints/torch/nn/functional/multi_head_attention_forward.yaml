@@ -1,0 +1,6 @@
+package: torch
+pass_rate: 0.0
+rules: {}
+title: torch.nn.functional.multi_head_attention_forward
+skipped: true
+skipped_reason: no non documented

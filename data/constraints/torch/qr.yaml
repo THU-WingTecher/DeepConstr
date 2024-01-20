@@ -1,0 +1,33 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  some:
+    default: true
+    dtype: bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 7
+package: torch
+pass_rate: 1.0
+rules:
+- cot: 'Error is triggered because the input tensor A has less than 2 dimensions,
+    What the args were? The tensor is a 1-dimensional tensor. Therefore, we can specify
+    that the shape of the input tensor should be at least 2 dimensions. Therefore,
+    Left : len(input.shape), op : >=, right : 2.'
+  target: 'linalg.qr: The input tensor A must have at least 2 dimensions.'
+  txt: len(input.shape) >= 2
+- cot: 'Error is triggered because linalg.qr operation expects a floating point or
+    complex tensor as input, but it got Boolean tensor. Let''s see what the args were.
+    The input tensor given is of boolean type which is causing the error. Therefore,
+    left : input.dtype op : != right : bool. The input tensor should be of floating
+    point or complex type, so op : == right : float or complex.'
+  target: 'linalg.qr: Expected a floating point or complex tensor as input. Got Bool'
+  txt: input.dtype == float or input.dtype == complex
+time_cost: 314.4797532558441
+title: torch.qr
+tokens_used: 4126
+trained: true

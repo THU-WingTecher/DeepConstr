@@ -1,0 +1,37 @@
+alias: torch.reciprocal
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 16
+package: torch
+pass_rate: 0.87
+rules:
+- cot: "The error refers to a failed attempt to resize a storage that is not resizable.\
+    \ It's likely that the dimensions of the 'input' tensor ([6, 8, 6, 6]) are not\
+    \ compatible with the dimensions of the 'out' tensor ([2, 8]). The 'input' tensor\
+    \ has 4 dimensions while the 'out' tensor has only 2 dimensions. Therefore, the\
+    \ two tensors must be reshaped to be compatible before they can be operated on\
+    \ together. \n\nIn this case, the 'input' tensor should be reshaped to match the\
+    \ 'out' tensor's shape. Alternatively, the operation that causes the error should\
+    \ be modified to handle tensors of different dimensions."
+  target: Trying to resize storage that is not resizable
+  txt: input.shape == out.shape
+- cot: 'The error is triggered because result type Float cannot be cast to the Int.
+    From the values, we can see that the type of ''input'' and ''out'' are int32.
+    So, the output type should be consistent with the input type. Left : type(input),
+    op : ==, comparator : type(output)'
+  target: result type Float can't be cast to the desired output type Int
+  txt: type(input)==type(out)
+time_cost: 610.7649812698364
+title: torch.reciprocal
+tokens_used: 8934
+trained: true

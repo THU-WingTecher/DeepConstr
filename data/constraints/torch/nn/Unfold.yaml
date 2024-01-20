@@ -1,0 +1,120 @@
+alias: torch.nn.Unfold
+constraints:
+  dilation:
+    default: 1
+    dtype: int,list[int]
+    init: true
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  kernel_size:
+    default: null
+    dtype: int,list[int]
+    init: true
+    required: true
+  padding:
+    default: 0
+    dtype: int,list[int]
+    init: true
+    required: false
+  stride:
+    default: 1
+    dtype: int,list[int]
+    init: true
+    required: false
+package: torch
+pass_rate: 0.78
+rules:
+- cot: 'Error is triggered because the kernel size doesn''t meet the expected value.
+    It expects to have kernel size 2, but got size 1. Let''s see what the args were.
+    It seems kernel_size doesn''t meet the requirement, so kernel_size should be corrected.
+    Therefore, Left : len(kernel_size). Op : ==, and Right : 2'
+  target: It is expected kernel_size equals to 2, but got size 1
+  txt: (len(stride) == 2) and ((len(dilation) == 2) and ((len(padding) == 2) and (len(kernel_size)
+    == 2)))
+- cot: 'The error arises because the calculated shape of the array of sliding blocks
+    is negative, which is not possible. The calculated shape is determined by the
+    formula:
+
+
+    (input_size + 2*padding - dilation*(kernel_size-1) - 1) / stride + 1
+
+
+    Here, the formula results in a negative value because the dilation*(kernel_size-1)
+    term is larger than the input_size + 2*padding term. To prevent this, we need
+    to ensure that:
+
+
+    input_size + 2*padding >= dilation*(kernel_size-1)
+
+    Therefore, Left : input_size + 2*padding, op : >=, right : dilation*(kernel_size-1)'
+  target: Given input with spatial size (6, 6), kernel_size=(19, 20), dilation=(500,
+    10), padding=(7, 0), calculated shape of the array of sliding blocks as (-309,
+    -6), but its components must be at least one.
+  txt: stride != 0
+- cot: 'The error is caused because the given dimension is out of the valid range.
+    In this case, we have a 1D tensor (based on the TensorDType.float32:[1] information),
+    meaning the valid range for dimensions should be [-1, 0]. However, the error mentions
+    that a dimension of 1 was provided, which is outside of the valid range.
+
+
+    To prevent this error from occurring, we need to ensure that the dimension provided
+    is always within the valid range for the given tensor. In this case, the dimension
+    should always be either -1 or 0.
+
+
+    The constraint for the ''dim'' parameter can be expressed as:'
+  target: Dimension out of range (expected to be in range of [-1, 0], but got 1)
+  txt: kernel_size <= len(input)
+- cot: 'The error is triggered due to an invalid ''dilation'' value. Let''s see what
+    the args were. It seems ''dilation'' is a list that contains two values: dilation_height
+    and dilation_width. In this case, dilation_height is 5 and dilation_width is 0.
+    But the constraint is that both values should be greater than zero. Therefore,
+    ''dilation'' should be corrected.
+
+
+    We can express the constraints for the ''dilation'' parameter as follows:'
+  target: 'dilation should be greater than zero, but got dilation_height: 5 dilation_width:
+    0'
+  txt: all(i>0 for i in dilation)
+- cot: 'Error is triggered because of the number of dimensions and possible 0 batch
+    size. It expects to have 3D or 4D tensor. Let''s see what the args were. The input
+    has 6 dimensions, which is input.dim(). Therefore, Left : input.dim(). It says
+    that expected 3D or 4D, so Op : ==, and Right : 3 or 4. Also, It implies that
+    batch size can be 0 or non-zero, so Op : >=, and Right : 0. Additionally, for
+    other non-zero dimensions, op : !=, right : 0.'
+  target: 'Expected 3D or 4D (batch mode) tensor with possibly 0 batch size and other
+    non-zero dimensions for input, but got: [7, 1, 7, 8, 4, 10]'
+  txt: input.dim() == 3
+- cot: 'The error "im2col_out_cpu" not implemented for ''Char'' is due to the data
+    type of the input tensor. The data type is ''Char'' or ''int8'' which is not supported
+    for the operation ''im2col_out_cpu''. Therefore, the data type of the input tensor
+    should be corrected. It says that ''Char'' or ''int8'' is not implemented, so
+    Op : !=, and Right : ''Char'' or ''int8''. Also, commonly used data types are
+    ''Float'' or ''Double'' for this operation, so Op : ==, and Right : ''Float''
+    or ''Double''.'
+  target: '"im2col_out_cpu" not implemented for ''Short'''
+  txt: input.dtype == 'Float' or input.dtype == 'Double'
+- cot: 'The error message is saying that the stride values are negative, which is
+    not allowed. The stride values should always be greater than zero for proper operation.
+    Looking at the provided values, it seems ''stride'' has been given as -1, which
+    is causing the error. We need to ensure that the stride value is always greater
+    than zero to prevent this error.
+
+
+    The constraint for the ''stride'' parameter can be expressed as:'
+  target: 'stride should be greater than zero, but got stride_height: -1 stride_width:
+    -1'
+  txt: stride > 0
+- cot: "The error indicates that the 'dilation' value is not acceptable. The 'dilation'\
+    \ is given as a list of two values: 'dilation_height' and 'dilation_width'. It\
+    \ appears that 'dilation_height' is 0 and 'dilation_width' is 3. Since dilation\
+    \ must be greater than zero, both 'dilation_height' and 'dilation_width' must\
+    \ be greater than zero. \n\nThe constraint can be expressed as:"
+  target: 'dilation should be greater than zero, but got dilation_height: 0 dilation_width:
+    3'
+  txt: dilation[0] > 0 and dilation[1] > 0
+title: torch.nn.Unfold

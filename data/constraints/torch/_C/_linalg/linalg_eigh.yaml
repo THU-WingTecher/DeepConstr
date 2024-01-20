@@ -1,0 +1,42 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 4
+package: torch
+pass_rate: 0.85
+rules:
+- cot: 'The error is triggered because the function "linalg_eigh_cpu" is not implemented
+    for ''Long'' data type. From the values, the input tensor is of type ''Long''.
+    It means the Dtype of the input tensor must be corrected. So, the Dtype of the
+    tensor (input.dtype) should not be ''Long''. Therefore, Left : input.dtype. It
+    says that ''linalg_eigh_cpu'' is not implemented for ''Long'', so Op : !=, and
+    Right : ''Long''.'
+  target: '"linalg_eigh_cpu" not implemented for ''Long'''
+  txt: input.dtype != 'Long'
+- cot: 'The error is triggered because the input matrix is not square. Let''s see
+    what the args were. The input matrix was a 10 by 9 matrix. In linear algebra,
+    Eigenvalues and Eigenvectors can only be computed for square matrices. Therefore,
+    to prevent this error from occurring again, we need to ensure that the input matrix
+    is always square.
+
+
+    The constraint for the ''input'' parameter can be expressed as:'
+  target: 'linalg.eigh: A must be batches of square matrices, but they are 10 by 9
+    matrices'
+  txt: input.shape[-1] == input.shape[-2]
+- cot: 'The error is due to the input tensor A not having the required minimum of
+    2 dimensions. Looking at the given values, the ''input'' tensor has no dimensions,
+    as indicated by the empty brackets. Therefore, the number of dimensions of the
+    ''input'' tensor should be corrected. This is represented by `input.ndims()`.
+    Therefore, Left : input.ndims(). It says that it must have at least 2 dimensions,
+    so Op : >=, and Right : 2.'
+  target: 'linalg.eigh: The input tensor A must have at least 2 dimensions.'
+  txt: input.ndims() >= 2
+time_cost: 175.87140035629272
+title: torch._C._linalg.linalg_eigh
+tokens_used: 2352
+trained: true

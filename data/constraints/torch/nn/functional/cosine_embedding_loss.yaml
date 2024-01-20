@@ -1,0 +1,67 @@
+constraints:
+  input1:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  input2:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  margin:
+    default: 0
+    dtype: float
+    init: false
+    required: false
+  reduce:
+    default: null
+    dtype: bool
+    init: false
+    required: false
+  reduction:
+    default: mean
+    dtype: Literal["none", "mean", "sum"]
+    init: false
+    required: false
+  size_average:
+    default: null
+    dtype: bool
+    init: false
+    required: false
+  target:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+package: torch
+pass_rate: 0.03
+rules:
+- cot: 'The error is triggered because the size of tensor a (input1) is not matching
+    the size of tensor b (input2) at non-singleton dimension 0. Let''s see what the
+    args were. Tensor ''input1'' has size 9, and ''input2'' has size 8. These sizes
+    should match to avoid the error. Therefore, Left : input1.shape[0], op : ==, right
+    : input2.shape[0].'
+  target: The size of tensor a (9) must match the size of tensor b (8) at non-singleton
+    dimension 0
+  txt: input1.shape[0] == input2.shape[0]
+- cot: The error is caused due to the use of a multi-dimensional tensor as target,
+    while the function expects a 0D or 1D tensor. Let's see what the args were. The
+    target tensor seems to have more than one dimension, which is not supported. We
+    need to ensure that the target tensor is either 0D (a single value) or 1D (a list
+    of values). Therefore, the constraint to be added would be that the rank or number
+    of dimensions of target tensor should be less than or equal to 1.
+  target: 0D or 1D target tensor expected, multi-target not supported
+  txt: len(target.shape) <= 1
+- cot: 'Error is triggered because of the discrepancy in dimensions between target
+    tensor and input tensors. It expects 2D input tensors while the input tensors
+    provided are 1D. Let''s see what the args were. It seems that input1 and input2
+    have 1D tensors but target tensor is 1D and also of different size. Therefore,
+    Left : len(input1.shape), len(input2.shape). Op : ==, Right : 2 and Left : len(target.shape).
+    Op : ==, Right : 2.'
+  target: 1D target tensor expects 2D input tensors, but found inputs with sizes [10]
+    and [10].
+  txt: (input1.dim == target.dim + 1) and (len(input1.shape) == 2)
+title: torch.nn.functional.cosine_embedding_loss
+skipped: true 
+skipped_reason: bug(core dumped)

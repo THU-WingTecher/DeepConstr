@@ -1,0 +1,38 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  name:
+    default: null
+    dtype: str
+    init: false
+    required: false
+infered_history:
+- 4
+- 3
+infered_times: 9
+package: tf
+pass_rate: 1.0
+rules:
+- cot: 'The error is due to the ''input'' argument to ''shape_n'' Op expecting a list,
+    but it''s not getting one. Therefore, the ''input'' value needs to be corrected.
+    In this case, ''input'' is a tensor. The expected type is list, which is type(input)
+    should be list. Therefore, Left : type(input). As stated, the expected type is
+    list, so Op : ==, and Right : list.'
+  target: Expected list for 'input' argument to 'shape_n' Op, not .
+  txt: type(input) == list.
+- cot: 'The error is triggered because the ''ShapeN'' operator has a constraint on
+    attribute ''T'' which is not in NodeDef. In this case, the input tensor seems
+    to be empty, which might be the problem. There are two constraints to fix this
+    error. First, the attribute ''T'' must be defined in the NodeDef. Second, the
+    input tensor must not be empty. Therefore, Left : input.len, Ops : ''!='', Right
+    : 0.'
+  target: 'OpKernel ''ShapeN'' has constraint on attr ''T'' not in NodeDef ''[N=0,
+    out_type=DT_INT32]'', KernelDef: ''op: "ShapeN" device_type: "GPU" constraint
+    constraint host_memory_arg: "input" host_memory_arg: "output"'' [Op:ShapeN] name:'
+  txt: input.len != 0
+time_cost: 103.01781249046326
+title: tf.raw_ops.ShapeN
+tokens_used: 4760

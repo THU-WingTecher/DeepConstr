@@ -1,0 +1,135 @@
+constraints:
+  input:
+    default: null
+    description: right-hand side tensor of shape `(*, n, k)` where :math:`*` is zero
+      or more batch dimensions
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  input2:
+    default: null
+    description: tensor of shape `(*, n, n)` where `*` is zero or more batch dimensions
+      consisting of lower or upper triangular Cholesky decompositions of symmetric
+      or Hermitian positive-definite matrices.
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    description: the output tensor
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+  upper:
+    default: false
+    description: flag that indicates whether :math:`L` is lower triangular or upper
+      triangular.
+    dtype: bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 58
+package: torch
+pass_rate: 0.45
+rules:
+- cot: 'The error is triggered because the result data type Float cannot be safely
+    casted from ComplexDouble dtype. Let''s see what the args were. The dtype of ''out''
+    is float32 while ''input'' and ''input2'' have dtype complex128. Therefore, the
+    dtypes of all arguments should be consistent. Left : type(input), op : ==, comparator
+    : type(input2) or type(out)'
+  target: 'cholesky_solve: Expected result to be safely castable from ComplexDouble
+    dtype, but got result with dtype Float'
+  txt: type(input2)==type(out)
+- cot: 'The error is due to the data type of the tensors being ''Half'' or float16,
+    while the "cholesky_solve_cpu" function does not support this data type. Therefore,
+    the data type of input, input2, and out tensors need to be checked and corrected.
+    All tensors type() should be != ''Half'' or float16. So, for input, input2, and
+    out, Op : !=, and Right : ''Half''.'
+  target: '"cholesky_solve_cpu" not implemented for ''Half'''
+  txt: (type(input) != 'Half') or (type(out) != 'Half')
+- cot: 'The error is due to the mismatch of the data type in input tensors and the
+    ''cholesky_solve_cpu'' function. The function ''cholesky_solve_cpu'' does not
+    support ''Int'' data type for the input tensors, but ''input'', ''input2'' and
+    ''out'' are all of type int32. Therefore, the data type of the input tensors should
+    not be int32. So, Left : type(input), Op : !=, Right : int32, and similarly for
+    ''input2'' and ''out''.'
+  target: '"cholesky_solve_cpu" not implemented for ''Int'''
+  txt: (type(input2) != int32) or (type(input) != int32)
+- cot: 'The error refers to the CPU implementation of the "cholesky_solve" operation
+    not being supported for ''Long'' data types. In the given values, all tensors
+    (input, input2, and out) have the integer (Long) data type. So, to prevent this
+    error, we need to ensure that the data type of these tensors is not ''Long''.
+    Therefore, Left : type(input), type(input2), type(out). It says that dtype should
+    not be ''Long'', so Op : !=, and Right : ''Long''.'
+  target: '"cholesky_solve_cpu" not implemented for ''Long'''
+  txt: type(out) != 'Long'
+- cot: 'The error is because the function "cholesky_solve_cpu" is not implemented
+    for ''Bool''. This suggests that the type of input, input2, and out should not
+    be Bool. Therefore, Left : type(input), type(input2), and type(out). It says that
+    cannot be Bool, so Op : !=, and Right : Bool. Also, these tensors should be of
+    a type that is acceptable by the function "cholesky_solve_cpu", but since the
+    acceptable types are not specified in the question, we cannot provide the exact
+    types.'
+  target: '"cholesky_solve_cpu" not implemented for ''Bool'''
+  txt: type(input) != "Bool"
+- cot: 'The error is caused by the fact that the ''cholesky_solve_cpu'' function is
+    not implemented for ''BFloat16'' data type. Looking at the arguments, both ''input'',
+    ''input2'', and ''out'' are tensors of type ''BFloat16''. Therefore, the data
+    types of ''input'', ''input2'', and ''out'' should be corrected. The data types
+    should not be ''BFloat16'', so Op : !=, and Right : ''BFloat16''.'
+  target: '"cholesky_solve_cpu" not implemented for ''BFloat16'''
+  txt: type(out) != 'BFloat16'
+- cot: "The error is caused because the input matrix 'A' is not a square matrix. Let's\
+    \ see what the args were. The 'A' is a tensor of float32 with shape [6, 6, 1,\
+    \ 3, 4, 1, 3, 2, 9, 2] and 'input2' is a tensor of float32 with shape [6, 6, 4,\
+    \ 1, 7]. To prevent this error, we need to ensure that the matrices are square.\
+    \ A square matrix is one where the number of rows equals the number of columns.\
+    \ \n\nThe constraint for 'input' and 'input2' can be expressed as:"
+  target: A must be batches of square matrices, but they are 1 by 7 matrices
+  txt: len(input2.shape) == 2 and input2.shape[0] == input2.shape[1]
+- cot: 'Error is triggered because ''u'' has only 1 dimension. It expects to have
+    at least 2 dimensions. Let''s see what the args were. ''u'' seems to be ''input2''
+    and has 1 dimension, and is the problem. So, the number of dimensions of ''input2''
+    should be corrected, which is input2.ndims(). Therefore, Left : input2.ndims().
+    It says that ''u'' should have at least 2 dimensions, so Op : >=, and Right :
+    2.'
+  target: u should have at least 2 dimensions, but has 1 dimensions instead
+  txt: (input.ndims() >= 2) and (input2.ndims() >= 2)
+- cot: 'The error is triggered because incompatible matrix sizes with A and b. From
+    the given values, ''input2'' is the A matrix with dimension 9 by 9 and ''input''
+    represents the b matrix. However, the error message states that b matrix is 4
+    by 2. Therefore, the last two dimensions of the ''input'' tensor should be corrected.
+    In matrix calculation, last dimension of first matrix and first dimention of second
+    matrix should be same, therefore, Left : input2[-1], op : ==, right : input[-2]
+    and also, Left : len(input[-1]), op : ==, right : 2.'
+  target: 'Incompatible matrix sizes for cholesky_solve: each A matrix is 9 by 9 but
+    each b matrix is 4 by 2'
+  txt: input2[-1] == input[-2]
+- cot: 'The error occurs because it expects ''b'' and ''A'' to have the same data
+    type, but ''b'' is of type Short and ''A'' is of type Float. Looking at the arguments,
+    ''input'' (which we can assume is ''b'') is of type int16, and ''input2'' and
+    ''out'' (which can be assumed are ''A'') are of type float32. Therefore, the data
+    types of ''input'' and ''input2''/''out'' should be consistent. Left : type(input),
+    op : ==, comparator : type(input2) or type(out)'
+  target: Expected b and A to have the same dtype, but found b of type Short and A
+    of type Float instead.
+  txt: type(input)==type(out)
+- cot: "The error is due to trying to resize a storage that is not resizable. This\
+    \ could be due to incorrect dimensions or data types of the input tensors. Let's\
+    \ examine the provided values.\n\n1. 'input': Tensor:TensorDType.float32:[1, 3,\
+    \ 4, 1, 3, 2, 8, 2]\n2. 'input2': Tensor:TensorDType.float32:[8, 8]\n3. 'out':\
+    \ Tensor:TensorDType.float32:[2, 1]\n4. 'upper': False\n\nIt seems these tensors\
+    \ are trying to be resized but their storage is not resizable. Therefore, the\
+    \ dimensions of the tensors should match to prevent the need for resizing. We\
+    \ can also check if 'upper' is False, as this may determine whether resizing is\
+    \ attempted or not. \n\nTherefore, Left : input.shape == input2.shape or input.shape\
+    \ == out.shape or input2.shape == out.shape. It implies that matching dimensions\
+    \ will prevent the need for resizing, so Op : ==, and Right : True. Additionally,\
+    \ 'upper' should be False to prevent resizing, so Left : upper, Op : ==, and Right\
+    \ : False."
+  target: Trying to resize storage that is not resizable
+  txt: input.shape == out.shape
+time_cost: 13105.03091788292
+title: torch.cholesky_solve
+tokens_used: 41259
+trained: true

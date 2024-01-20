@@ -1,0 +1,24 @@
+constraints:
+  dx:
+    default: 'null'
+    dtype: float
+    init: false
+    required: false
+  x:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+  y:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 4
+package: torch
+pass_rate: 0.0
+rules: {}
+time_cost: 78.45276713371277
+title: torch.cumulative_trapezoid
+tokens_used: 3452

@@ -1,0 +1,71 @@
+constraints:
+  alpha:
+    default: null
+    dtype: float32,float64
+    init: false
+    required: true
+  name:
+    default: 'null'
+    dtype: str
+    init: false
+    required: false
+  sample:
+    default: null
+    dtype: float32,float64
+    init: false
+    required: true
+infered_history:
+- 4
+- 6
+- 1
+- 6
+infered_times: 18
+package: tf
+pass_rate: 0.98
+rules:
+- cot: 'The error arises because the function is trying to compute RandomGammaGrad
+    on a double tensor and a float tensor. However, both tensors in generated args
+    must have the same data type. Let''s see what the args were. The ''alpha'' tensor
+    is float64 (double), but the ''sample'' tensor is of type flot32. Therefore, Left
+    : type(sample), which is the type of tensor sample, should be corrected. It says
+    that should be equal to the datatype of tensor alpha, so Op : ==, and Right :
+    type(alpha).'
+  target: 'cannot compute RandomGammaGrad as input #1(zero-based) was expected to
+    be a double tensor but is a float tensor [Op:RandomGammaGrad] name:'
+  txt: type(sample)==type(alpha)
+- cot: 'The error is because of the incompatible shapes of the tensors during the
+    operation ''RandomGammaGrad''. The tensors involved here are ''alpha'' and ''sample''.
+    The shape of ''alpha'' is [6, 8, 6, 6, 1] and the shape of ''sample'' is [8, 1,
+    6, 6, 8]. The incompatible shapes are [2] vs. [1,2,9,7,10]. We need to make sure
+    that the shapes of ''alpha'' and ''sample'' are compatible with the operation.
+    This means that the dimensions of ''alpha'' and ''sample'' should either be equal
+    or should be 1 (for broadcasting). Therefore, the constraints can be revised as
+    follows:'
+  target: 'Incompatible shapes: [2] vs. [1,2,9,7,10] [Op:RandomGammaGrad] name:'
+  txt: all(alpha.shape[i] == sample.shape[i] or alpha.shape[i] == 1 or sample.shape[i]
+    == 1 for i in range(-1, -min(len(alpha.shape), len(sample.shape))-1, -1))
+- cot: The error arises because the attribute 'T' of 'alpha' and 'sample' is an int32,
+    but it is expected to be either float or double. Therefore, the types of 'alpha'
+    and 'sample' should be corrected to match one of the allowed types. The operation
+    is 'in', and the right values are [float, double].
+  target: "Value for attr 'T' of int32 is not in the list of allowed values: float,\
+    \ double\n ; NodeDef: ; Op output:T; attr=T:type,allowed=[DT_FLOAT, DT_DOUBLE]>\
+    \ [Op:RandomGammaGrad] name:"
+  txt: type(alpha) in ["float", "double"] and type(sample) in ["float", "double"]
+- cot: The error is caused by invalid broadcasting between two tensors 'alpha' and
+    'sample'. In order for broadcasting to occur, the dimensions of the tensors must
+    be compatible. Dimensions are compatible if they are equal or if one of them is
+    1. However, broadcasting between [3,3,2,2,9,3,10,1,4,1] and [1,1,2,1,1,3,1,2,1,3]
+    is not supported because the dimensions are not compatible in all positions. Specifically,
+    in the 3rd, 6th, 8th, and 10th positions, the dimensions of 'alpha' are not 1
+    and do not match the corresponding dimension in 'sample'. Therefore, the constraints
+    should be that for every dimension i, alpha.shape[i] should be equal to sample.shape[i]
+    or alpha.shape[i] should be 1.
+  target: 'Broadcast between [1,8,1,2,1,6,8,2,10,8] and [9,1,4,2,5,6,8,2,1,1] is not
+    supported yet. [Op:RandomGammaGrad] name:'
+  txt: ((all(alpha.shape[i] == sample.shape[i] or alpha.shape[i] == 1 for i in range(len(alpha.shape)))))
+    or ((all(sample.shape[i] == 1 for i in range(len(sample.shape))))) or ((all(alpha.shape[i]
+    == sample.shape[i] or alpha.shape[i] == 1 for i in range(len(alpha.shape)))))
+time_cost: 771.3115088939667
+title: tf.raw_ops.RandomGammaGrad
+tokens_used: 13364

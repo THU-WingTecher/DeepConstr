@@ -1,0 +1,33 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  other:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 18
+package: torch
+pass_rate: 0.13
+rules:
+- cot: The error is generated due to an attempt to resize a storage that is not resizable.
+    The tensors 'input', 'other' and 'out' have different shapes. It's likely that
+    one of these tensors is trying to be manipulated to match the shape of another.
+    To avoid this error, we should ensure that the tensors are correctly ordered and
+    that their dimensions align as expected. Therefore, the shapes of 'input', 'other',
+    and 'out' should be the same or compatible depending on the operation.
+  target: Trying to resize storage that is not resizable
+  txt: '''out''.shape'
+time_cost: 1849.577398300171
+title: torch.kron
+tokens_used: 9951
+trained: true

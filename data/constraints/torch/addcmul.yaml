@@ -1,0 +1,65 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+  tensor1:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  tensor2:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  value:
+    default: 1
+    dtype: int
+    init: false
+    required: false
+infered_history: []
+infered_times: 58
+package: torch
+pass_rate: 0.93
+rules:
+- cot: 'Error is triggered because we are trying to resize storage that is not resizable.
+    Let''s see what the args were. The ''out'' tensor shape does not match the operation''s
+    result shape. In this operation, the result shape is input.shape. Therefore, left
+    : out.shape, out.rank op : == right : input.shape, input.rank'
+  target: Trying to resize storage that is not resizable
+  txt: ((input.shape == out.shape)) and ((len(tensor1) > 0 and len(out) == value)
+    and ((out.rank==input.rank and all(out.shape[i]==input.shape[i] for i in range(out.rank))
+    or out.rank==tensor1.rank and all(out.shape[i]==tensor1.shape[i] for i in range(out.rank))
+    or out.rank==tensor2.rank and all(out.shape[i]==tensor2.shape[i] for i in range(out.rank)))
+    and ((all(out.shape[i]==tensor1.shape[i] for i in range(out.rank))) and ((input.shape
+    == value and tensor1.shape == value and tensor2.shape == value and out.shape ==
+    value) and (out.rank==input.rank and all(out.shape[i]==input.shape[i] for i in
+    range(out.rank)))))))
+- cot: 'The error is triggered because the type Long cannot be cast to the type Bool.
+    Let''s see what the args were. The dtype of ''tensor1'' is Long and the dtype
+    of ''out'' is Bool. Therefore, the dtypes of ''tensor1'' and ''out'' should be
+    consistent. Also, the dtype of ''input'' and ''tensor2'' are Bool, which is consistent.
+    Therefore, the dtype of all arguments should be consistent. Left : type(tensor1),
+    op : ==, Right : type(out), type(input), type(tensor2)'
+  target: result type Float can't be cast to the desired output type Long
+  txt: (type(tensor2) == type(out)) and (type(tensor1)==type(out))
+- cot: 'Error is triggered because of dynamic casting failure in PyTorch''s internal
+    operation. Let''s see what the args were. It seems that ''input'', ''tensor1'',
+    ''tensor2'', and ''out'' tensors have different datatypes, which might cause the
+    casting error. Therefore, left : input.dtype, tensor1.dtype, tensor2.dtype, out.dtype.
+    It implies that all these tensor''s datatypes should be same, so Op : ==. Hence,
+    tensor1.dtype == input.dtype, tensor2.dtype == input.dtype, out.dtype == input.dtype'
+  target: '!needs_dynamic_casting<func_t>::check(iter) INTERNAL ASSERT FAILED at "../aten/src/ATen/native/cpu/Loops.h":349,
+    please report a bug to PyTorch.'
+  txt: (type(tensor1) == type(out)) and (tensor2.dtype == input.dtype)
+time_cost: 54053.03339552879
+title: torch.addcmul
+tokens_used: 41154
+trained: true

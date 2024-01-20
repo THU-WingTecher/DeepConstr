@@ -22,7 +22,7 @@ import tempfile
 from copy import deepcopy
 from dataclasses import dataclass
 from os import PathLike
-from typing import Dict, List, Optional, Type
+from typing import Callable, Dict, List, Optional, Type
 
 import z3
 from appdirs import user_cache_dir
@@ -234,7 +234,7 @@ def dump_topset(topset: Dict[str, OpConfig], path: PathLike):
 
 
 def auto_opconfig(
-    model_cls: Model, factory: Optional[BackendFactory]
+    model_cls: Model, factory: Optional[BackendFactory],
 ) -> Dict[str, OpConfig]:
     cache_path = os.path.join(
         NNSMITH_CACHE_DIR, get_cache_name(model_cls, factory) + ".yaml"
@@ -254,18 +254,26 @@ def auto_opconfig(
         dump_topset(opset, cache_path)
         return opset
 
+def load_api_name(op : AbsOpBase, gen_code : Callable) : 
+    return gen_code(op(
+        *[0 for _ in range(op.get_num_var_param())]
+    ))[0].split('(')[0]
 
 def auto_opset(
     model_cls: Type[Model],
     factory: Optional[BackendFactory] = None,
     vulops: bool = False,
+    test_pool: List[str] = [],
 ) -> List[Type[AbsOpBase]]:
     # None means only test model exportation.
     topset_config = auto_opconfig(model_cls, factory)
     opset = []
     for op in model_cls.operators():
-        if op.name() not in topset_config or (vulops == False and op.limit_domain):
+        if op.name() not in topset_config or (vulops == False and op.limit_domain) :
             continue
+        if test_pool and load_api_name(op, model_cls().gen_code) not in test_pool:
+            continue
+
         op.in_dtypes = topset_config[op.name()].in_dtypes
         op.out_dtypes = topset_config[op.name()].out_dtypes
 

@@ -1,0 +1,50 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  mode:
+    default: null
+    dtype: str
+    init: false
+    required: true
+  name:
+    default: null
+    dtype: str
+    init: false
+    required: false
+  paddings:
+    default: null
+    dtype: list[int]
+    init: false
+    required: true
+infered_history:
+- 3
+- 3
+infered_times: 6
+package: tf
+pass_rate: 0.0
+rules:
+- cot: The error message indicates that the 'mode' attribute value is "not defined",
+    which is not an allowed value. The allowed values for 'mode' are "REFLECT" or
+    "SYMMETRIC".
+  target: "Value for attr 'mode' of \"not defined\" is not in the list of allowed\
+    \ values: \"REFLECT\", \"SYMMETRIC\"\n ; NodeDef: ; Op output:T; attr=T:type;\
+    \ attr=Tpaddings:type,default=DT_INT32,allowed=[DT_INT32, DT_INT64]; attr=mode:string,allowed=[\"\
+    REFLECT\", \"SYMMETRIC\"]> [Op:MirrorPad]"
+  txt: type(mode) in ["REFLECT", "SYMMETRIC"].
+- cot: 'The error is due to the rank of the input tensor being not in the range [0,5].
+    The function is trying to pad a tensor of rank 10, but the allowed ranks are between
+    0 and 5. Therefore, a condition ensuring that the rank of the input tensor is
+    less than or equal to 5 should be added. Therefore, Left : input.rank should be
+    corrected. It says that cannot be 10, so Op : !=, and Right : 10. Also, it should
+    be less than or equal to 5, so Op : <=, and Right : 5. Furthermore, considering
+    the padding dimensions, each padding should be less than the corresponding dimension
+    in the input tensor for proper execution. So, for each padding in paddings, Left:
+    padding[i], Op: <, Right: input.shape[i].'
+  target: 'inputs rank not in [0,5]: 10 [Op:MirrorPad]'
+  txt: (input.rank <= 5)
+time_cost: 322.0732762813568
+title: tf.raw_ops.MirrorPad
+tokens_used: 3638

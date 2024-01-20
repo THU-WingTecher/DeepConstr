@@ -1,0 +1,56 @@
+alias: torch.sub
+constraints:
+  alpha:
+    default: 1
+    dtype: int,float
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  other:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 33
+package: torch
+pass_rate: 0.95
+rules:
+- cot: The error is due to attempting to resize a storage that is not resizable. This
+    might be caused by the mismatched dimensions of 'input', 'out' and 'other'. The
+    dimension of 'input' is [7], 'out' is [1,7] and 'other' is [6,2,1]. Therefore,
+    the dimensions of these variables should be checked and corrected to ensure they
+    are compatible for any operations that may be taking place.
+  target: Trying to resize storage that is not resizable
+  txt: len(input).shape == len(out).shape and len(input).shape == len(other).shape
+    and len(out).shape == len(other).shape
+- cot: 'The error is triggered because result type Float cannot be cast to the Bool.
+    Looking at the arguments, ''input'' and ''other'' are of type Float and ''out''
+    is of type Bool. So, we must ensure that the type of ''out'' is consistent with
+    the type of ''input'' and ''other''. Therefore, the dtype of ''out'' should be
+    changed from ''Bool'' to ''Float''. Left : type(out), op : ==, comparator : type(input)
+    or type(other)'
+  target: result type Float can't be cast to the desired output type Bool
+  txt: (type(out)==type(input)) and (type(out)==type(other))
+- cot: 'The error indicates that the argument ''alpha'' should not be a floating point
+    number when the input tensors are integral. The provided alpha value is 1.17428,
+    which is a floating point number, and the input tensors are of int64 type. So,
+    the type of alpha must be corrected. Therefore, Left : type(alpha), Op : !=, and
+    Right : float. Also, alpha should be an integer when input is integral, so Left
+    : type(alpha), Op : ==, and Right : int when type(input) == int.'
+  target: For integral input tensors, argument alpha must not be a floating point
+    number.
+  txt: type(alpha) != float
+time_cost: 16184.411197662354
+title: torch.sub
+tokens_used: 22798
+trained: true

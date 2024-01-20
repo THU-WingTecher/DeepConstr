@@ -1,0 +1,80 @@
+constraints:
+  dim:
+    default: -1
+    dtype: int
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  n:
+    default: 2*(input.size(dim) - 1)
+    dtype: int
+    init: false
+    required: false
+  norm:
+    default: null
+    dtype: Literal['backward', 'forward', 'ortho']
+    init: false
+    required: false
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 31
+package: torch
+pass_rate: 0.37
+rules:
+- cot: 'The error occurs because the ''dim'' value is set to -1 while the ''input''
+    tensor has no dimensions. The ''dim'' value refers to the dimension of the tensor
+    that we want to perform operations on, and -1 usually refers to the last dimension.
+    But in this case, the ''input'' tensor is zero-dimensional, so there is no last
+    dimension. Therefore, Left : len(input.shape), which is the number of dimensions
+    of the input tensor. Op: >, because it should be greater than 0 to have any dimension.
+    Right : 0, because we compare it with zero.'
+  target: Dimension specified as -1 but tensor has no dimensions
+  txt: len(input.shape)>0
+- cot: "The error is due to trying to resize storage that is not resizable. The values\
+    \ indicate that 'input' and 'out' are tensors with specific shapes. In this case,\
+    \ the 'out' tensor appears to have a different shape than 'input'. Also, 'dim'\
+    \ and 'n' values seem to exceed the dimensions of the 'input' tensor. So, the\
+    \ constraint could be that the 'dim' and 'n' should be less than or equal to the\
+    \ dimensions of the 'input' tensor. The 'input' and 'out' tensors need to have\
+    \ the same shape or 'out' tensor needs to be resizable. \n\nTherefore, \n- Left:\
+    \ len(input.shape), Op: >=, Right: dim\n- Left: len(input.shape), Op: >=, Right:\
+    \ n\n- Left: input.shape, Op: ==, Right: out.shape"
+  target: Trying to resize storage that is not resizable
+  txt: (len(out) >= dim) or (input.shape == out.shape)
+- cot: "The error arises because the function 'hfft' expects a floating point output\
+    \ tensor, but got Long. It seems 'out' tensor is of type Long (TensorDType.int64).\
+    \ Therefore, the data type of 'out' should be corrected. \n\nThe Left : type(out).\
+    \ It says that it should be a floating point tensor, so Op : ==, and Right : float.\
+    \ Therefore, the corrected logical relationship constraint is:"
+  target: hfft expects a floating point output tensor, but got Char
+  txt: type(out)==float
+- cot: 'The error occurs because the dimension provided is out of the valid range.
+    Let''s see what the args were. It appears the given dimension is 7 which is out
+    of this range. To prevent this error in the future and generate constraints that
+    do not trigger it, we need to ensure that the "dim" value is always within the
+    valid range for the given tensor. If we denote the shape of the tensor as n, the
+    valid range for the dimension would be [-n, n-1].
+
+
+    The constraint for the ''dim'' parameter can be expressed as:'
+  target: Dimension out of range (expected to be in range of [-6, 5], but got 7)
+  txt: dim >= -len(input.shape) and dim < len(input.shape)
+- cot: 'The error is due to an invalid number of data points specified for the operation.
+    From the args, we can see that ''n'' is set to 0 which is invalid as it should
+    be greater than 0 to specify valid data points. To prevent this error from occurring
+    again, we need to ensure that ''n'' is always greater than 0. Therefore, the constraint
+    for ''n'' can be expressed as:'
+  target: Invalid number of data points (0) specified
+  txt: n > 0
+time_cost: 8790.256421089172
+title: torch._C._fft.fft_hfft
+tokens_used: 21751
+trained: true

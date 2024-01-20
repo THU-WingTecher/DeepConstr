@@ -1,0 +1,64 @@
+constraints:
+  name:
+    default: null
+    dtype: str
+    init: false
+    required: false
+  x:
+    default: null
+    dtype: bfloat16,float16,float32,float64,uint8,int8,uint16,int16,int32,uint32,uint64,int64,complex64,complex128
+    init: false
+    required: true
+  y:
+    default: null
+    dtype: bfloat16,float16,float32,float64,uint8,int8,uint16,int16,int32,uint32,uint64,int64,complex64,complex128
+    init: false
+    required: true
+infered_history: []
+infered_times: 23
+package: tf
+pass_rate: 0.97
+rules:
+- cot: 'It looks like the issue here is with the types of the ''x'' and ''y'' values.
+    They are currently Tensors of type ''uint8'', and the error suggests that there''s
+    an issue with the ''complex32'' attribute from the tensorflow module. Let''s check
+    what the args were. As the ''complex32'' is not supported by tensorflow, the dtype
+    of ''x'' and ''y'' should be changed to a supported type such as ''float32'' or
+    ''int32''. So, the constraints would be Left : type(x) and type(y). Op : == Right
+    : ''float32'' or ''int32'''
+  target: 'rror: module ''tensorflow'' has no attribute ''complex32'''
+  txt: type(y)=='float32' or type(y)=='int32'
+- cot: 'The error is caused because the operation is trying to perform multiplication
+    on tensors ''x'' and ''y'' that have ranks greater than 5. Let''s see what the
+    ranks were. The ''x'' tensor has a rank of 8 and the ''y'' tensor has a rank of
+    10. Therefore, Left : len(x), which is the rank of tensor x, should be corrected.
+    Ops : ''<='', and Right : 5. Similarly, for tensor ''y'', Left : len(y), Ops :
+    ''<='', and Right : 5.'
+  target: 'rror: Input for dynamic binary or n-ary op lowering was of a rank greater
+    than 5 [Op:Mul] name:'
+  txt: (len(x) <= 5) or (len(y) <= 5)
+- cot: 'The error is indicating that the shapes of ''x'' and ''y'' are not broadcastable
+    for the multiplication operation. In this case, ''x'' is a tensor of shape [9]
+    and ''y'' is a tensor of shape [4]. The broadcasting rules in tensor operations
+    require that the trailing dimensions of the tensors should be either 1 or the
+    same. Therefore, the constraint should be that for each dimension starting from
+    the last, the size of the dimension in ''x'' should be equal to the size of the
+    dimension in ''y'' or one of them should be 1. However, here neither of the dimensions
+    of ''x'' and ''y'' are 1 and they are not the same either. Hence, the error. Therefore,
+    we can revise the constraints as follows:'
+  target: 'rror: required broadcastable shapes [Op:Mul] name:'
+  txt: all(x.shape[i] == y.shape[i] or x.shape[i] == 1 or y.shape[i] == 1 for i in
+    range(-1, -min(len(x.shape), len(y.shape))-1, -1))
+- cot: 'This error is due to mismatch in data types of the tensors ''x'' and ''y''
+    while performing multiplication operation. Tensor ''x'' is of float32 type and
+    tensor ''y'' is of float16 type. The operation requires both tensors to be of
+    same data type. Let''s see what the args were. Therefore, the constraint should
+    be that the data type of tensor ''y'' must be equal to the data type of tensor
+    ''x''. The logical constraint will be:'
+  target: 'rror: cannot compute Mul as input #1(zero-based) was expected to be a float
+    tensor but is a half tensor [Op:Mul] name:'
+  txt: type(y) == type(x)
+time_cost: 1747.096974849701
+title: tf.raw_ops.Mul
+tokens_used: 14697
+trained: true

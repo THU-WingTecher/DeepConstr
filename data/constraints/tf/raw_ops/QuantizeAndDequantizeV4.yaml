@@ -1,0 +1,83 @@
+constraints:
+  axis:
+    default: -1
+    dtype: list[int]
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64
+    init: false
+    required: true
+  input_max:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  input_min:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  name:
+    default: null
+    dtype: str
+    init: false
+    required: false
+  narrow_range:
+    default: false
+    dtype: bool
+    init: false
+    required: false
+  num_bits:
+    default: 8
+    dtype: int
+    init: false
+    required: false
+  range_given:
+    default: false
+    dtype: bool
+    init: false
+    required: false
+  round_mode:
+    default: HALF_TO_EVEN
+    dtype: str
+    init: false
+    required: false
+  signed_input:
+    default: true
+    dtype: bool
+    init: false
+    required: false
+package: tf
+pass_rate: 0.0
+skipped: True 
+skipped_reason: Bug
+rules:
+- &id001
+  cot: 'The error is due to incorrect values for ''round_mode''. For ''round_mode'',
+    the value provided is ''not defined'' which is not in the allowed values: "HALF_TO_EVEN",
+    "HALF_UP". Therefore, type(args[''round_mode'']) should be corrected to be either
+    "HALF_TO_EVEN" or "HALF_UP", which is Literal["HALF_TO_EVEN", "HALF_UP"]. Op :
+    ==, and Right : Literal["HALF_TO_EVEN", "HALF_UP"].'
+  target: 'Value for attr ''round_mode'' of "not defined" is not in the list of allowed
+    values: "HALF_TO_EVEN", "HALF_UP"'
+  txt: type(round_mode)==Literal["HALF_TO_EVEN", "HALF_UP"]
+- *id001
+- cot: 'The error is due to incompatible data type for the QuantizeAndDequantizeV4
+    operation. The operation is attempted on a tensor of type DT_HALF, but the available
+    kernels only support DT_FLOAT and DT_DOUBLE on all devices, DT_BFLOAT16 on XLA_GPU_JIT
+    and XLA_CPU_JIT, and no support for DT_HALF. Therefore, Left : type(input), which
+    is the data type of the input tensor should be corrected. It says that should
+    be DT_FLOAT or DT_DOUBLE or DT_BFLOAT16, so Op : in, and Right : ["DT_FLOAT",
+    "DT_DOUBLE", "DT_BFLOAT16"]. Also, axis is 4 but the length of the input tensor
+    shape is 7, so axis should be less than 7, Left : axis, Op : <, and Right : len(input.shape).'
+  target: "Could not find device for node:  = QuantizeAndDequantizeV4[T=DT_HALF, axis=4,\
+    \ narrow_range=false, num_bits=1, range_given=true, round_mode=\"HALF_UP\", signed_input=false]\n\
+    All kernels registered for op QuantizeAndDequantizeV4:\n  device='XLA_GPU_JIT';\
+    \ T in [DT_FLOAT, DT_DOUBLE, DT_BFLOAT16, DT_HALF]\n  device='XLA_CPU_JIT'; T\
+    \ in [DT_FLOAT, DT_DOUBLE, DT_BFLOAT16, DT_HALF]\n  device='GPU'; T in [DT_DOUBLE]\n\
+    \  device='GPU'; T in [DT_FLOAT]\n  device='CPU'; T in [DT_DOUBLE]\n  device='CPU';\
+    \ T in [DT_FLOAT]"
+  txt: type(input) in ["DT_FLOAT", "DT_DOUBLE", "DT_BFLOAT16"]
+title: tf.raw_ops.QuantizeAndDequantizeV4

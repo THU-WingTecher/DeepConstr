@@ -1,0 +1,57 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  mask:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 26
+package: torch
+pass_rate: 0.03
+rules:
+- cot: 'Based on given values, Error is triggered because the size of tensor a (6)
+    must match the size of tensor b (8) at non-singleton dimension 3. Let''s see what
+    the args were. It seems dimensions of ''input'', ''mask'', and ''out'' are not
+    same, so ''input.dim'', ''mask.dim'', and ''out.dim'' should be corrected. Therefore,
+    Left : input.shape[3], mask.shape[3] or out.shape[3]. op : ==. right : each other''s
+    corresponding shape[3].'
+  target: The size of tensor a (6) must match the size of tensor b (8) at non-singleton
+    dimension 3
+  txt: (input.shape[2] == mask.shape[2]) or ((input.shape[9] == out.shape[9]) or (input.shape[3]
+    == mask.shape[3]))
+- cot: 'The error seems to be raised because we are trying to resize a tensor (''out'')
+    that is not resizable. In this case, the ''mask'' tensor has a different shape
+    than ''input'' and ''out'' tensor. So instead of comparing the ''out'' tensor
+    shape with ''input'', we should compare the ''out'' tensor shape with the ''mask''.
+    Therefore, left : out.shape, out.rank op : == right : mask.shape, mask.rank'
+  target: Trying to resize storage that is not resizable
+  txt: (out.rank == input.rank) and (out.rank==mask.rank)
+- cot: 'The error is due to the data type of the ''mask'' tensor. The function ''masked_select''
+    expects a BoolTensor, but the ''mask'' tensor is of type float32. Therefore, the
+    data type of the ''mask'' tensor should be bool. So, Left : mask.dtype, Op : ==,
+    Right : bool.'
+  target: 'masked_select: expected BoolTensor for mask'
+  txt: mask.dtype == bool
+- cot: 'The error is triggered because ''self'' and ''result'' don''t have the same
+    scalar type in the masked_select() function. From the input values, we can see
+    that ''input'' is of type float32, ''mask'' is of type bool, and ''out'' is of
+    type int64. The ''mask'' should have the same type as the ''input'' for the masked_select()
+    function or ''out'' should have the same type as ''input''. Therefore, the Left
+    : type(input), Ops : ''=='', Right : type(mask) or type(out).'
+  target: 'masked_select(): self and result must have the same scalar type'
+  txt: type(input) == type(out)
+
+time_cost: 3570.8500230312347
+title: torch.masked_select
+tokens_used: 17538
+trained: true

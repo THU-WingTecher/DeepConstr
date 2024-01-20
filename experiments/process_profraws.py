@@ -194,7 +194,7 @@ if __name__ == "__main__":
 
     merged_cov_path = os.path.join(cov_root, "merged_cov.pkl")
 
-    with tempfile.TemporaryDirectory(dir="/coconut/jinjun-data/tmp") as tmpdirname:
+    with tempfile.TemporaryDirectory(dir="/artifact/") as tmpdirname:
 
         def process_one_profraw(profraw_path: Path):
             profdata_path = os.path.join(tmpdirname, profraw_path.name + ".profdata")

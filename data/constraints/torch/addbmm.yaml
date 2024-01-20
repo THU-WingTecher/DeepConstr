@@ -1,0 +1,68 @@
+constraints:
+  alpha:
+    default: 1
+    dtype: float
+    init: false
+    required: false
+  batch1:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  batch2:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  beta:
+    default: 1
+    dtype: float
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 8
+package: torch
+pass_rate: 0.0
+rules:
+- cot: "The error indicates that the 'expand' function in PyTorch is trying to expand\
+    \ a tensor of 10 dimensions with a size of 2 dimensions, which is not allowed.\
+    \ The number of sizes provided must be greater or equal to the number of dimensions\
+    \ in the tensor. The tensor 'input' has 10 dimensions and the size provided is\
+    \ [7, 7]. \n\nTherefore, we can establish the following constraints: \n\n1. The\
+    \ length of the size list provided should be greater than or equal to the number\
+    \ of dimensions in the tensor."
+  target: 'expand(torch.FloatTensor{[9, 5, 1, 3, 4, 1, 3, 2, 10, 2]}, size=[7, 7]):
+    the number of sizes provided (2) must be greater or equal to the number of dimensions
+    in the tensor (10)'
+  txt: len(size) >= len(input.shape)
+- cot: 'The error "Dimension specified as 2 but tensor has no dimensions" implies
+    that there is some operation being performed on a 2-dimensional tensor. But, the
+    tensor doesn''t have enough dimensions. In the given values, ''batch2'' is the
+    only tensor with no dimensions. But ''input'' and ''out'' are tensors that do
+    not have sufficient dimensions. Therefore, the constraint should be that ''batch2''
+    should have at least 1 dimension, and ''input'' and ''out'' should have at least
+    2 dimensions. Therefore, Left: len(batch2.shape), Op: >=, Right: 1, and Left:
+    len(input.shape) and len(out.shape), Op: >=, Right: 2.'
+  target: Dimension specified as 2 but tensor has no dimensions
+  txt: len(out.shape)>=2
+- cot: 'The error is due to an invalid dimension index. The function is trying to
+    access the dimension at index 2 of the ''out'' tensor, but the rank of the ''out''
+    tensor is only 2 (valid indices are in the range [-2, 1]). Therefore, the index
+    should be less than the rank of the ''out'' tensor and greater than or equal to
+    the negative of the rank. So, Left : 2, Op : <, Right : len(out.shape) and Left
+    : 2, Op : >=, Right : -len(out.shape).'
+  target: Dimension out of range (expected to be in range of [-1, 0], but got 1)
+  txt: 2 >= -len(out.shape)
+time_cost: 427.61591601371765
+title: torch.addbmm
+tokens_used: 6395

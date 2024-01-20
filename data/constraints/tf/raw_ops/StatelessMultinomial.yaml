@@ -1,0 +1,80 @@
+constraints:
+  logits:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  name:
+    default: null
+    dtype: str
+    init: false
+    required: false
+  num_samples:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  seed:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history:
+- 5
+- 3
+- 4
+- 3
+infered_times: 17
+package: tf
+pass_rate: 0.0
+rules:
+- cot: 'The error is caused by the attribute ''T'' of ''logits'' being of type complex128,
+    which is not in the allowed list of types: float, double, int32, uint8, int16,
+    int8, int64, bfloat16, uint16, half, uint32, uint64. Therefore, the type of ''logits''
+    must be corrected to match one of these allowed types. Op : in, and Right : [float,
+    double, int32, uint8, int16, int8, int64, bfloat16, uint16, half, uint32, uint64].'
+  target: "Value for attr 'Tseed' of float is not in the list of allowed values: int32,\
+    \ int64\n ; NodeDef: ; Op output:output_dtype; attr=T:type,allowed=[DT_FLOAT,\
+    \ DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16, DT_INT8, DT_INT64, DT_BFLOAT16, DT_UINT16,\
+    \ DT_HALF, DT_UINT32, DT_UINT64]; attr=Tseed:type,default=DT_INT64,allowed=[DT_INT32,\
+    \ DT_INT64]; attr=output_dtype:type,default=DT_INT64,allowed=[DT_INT32, DT_INT64]>\
+    \ [Op:StatelessMultinomial] name:"
+  txt: (type(logits) in [float, double, int32, uint8, int16, int8, int64, bfloat16,
+    uint16, half, uint32, uint64]) and (type(seed) in ["int32", "int64"]) and (type(logits)
+    in [float, double, int32, uint8, int16, int8, int64, bfloat16, uint16, half, uint32,
+    uint64])
+- cot: 'The error is occurring because there''s a float tensor where an int32 tensor
+    is expected. It appears that ''num_samples'' is the problem as it is float32 while
+    it should be int32. So, we need to ensure that ''num_samples'' is of type int32.
+    Therefore, Left : type(num_samples). It says that should be equal to int32, so
+    Op : ==, and Right : int32.'
+  target: 'cannot compute StatelessMultinomial as input #1(zero-based) was expected
+    to be a int32 tensor but is a float tensor [Op:StatelessMultinomial] name:'
+  txt: (type(seed) in [int32, int64]) and (type(num_samples)==int32.)
+- cot: 'The error is due to the mismatch in the data types of logits, num_samples,
+    and seed with the StatelessMultinomial op. The op StatelessMultinomial expects
+    Tseed to be in [DT_INT32], T (logits) to be in [DT_FLOAT, DT_DOUBLE, DT_BFLOAT16],
+    and output_dtype to be in [DT_INT32, DT_INT64]. However, logits is provided with
+    dtype int64, num_samples with dtype int32, and seed with dtype int64, which are
+    not fully compatible with the requirements. '
+  target: "Could not find device for node: = StatelessMultinomial[T=DT_INT32, Tseed=DT_INT32,\
+    \ output_dtype=DT_INT64]\nAll kernels registered for op StatelessMultinomial:\n\
+    \ device='XLA_CPU_JIT'; output_dtype in [DT_INT32, DT_INT64]; Tseed in [DT_INT32];\
+    \ T in [DT_FLOAT, DT_DOUBLE, DT_BFLOAT16]\n device='XLA_GPU_JIT'; output_dtype\
+    \ in [DT_INT32, DT_INT64]; Tseed in [DT_INT32]; T in [DT_FLOAT, DT_DOUBLE, DT_BFLOAT16]\n\
+    \ device='GPU'; T in [DT_DOUBLE]; output_dtype in [DT_INT64]\n device='GPU'; T\
+    \ in [DT_DOUBLE]; output_dtype in [DT_INT32]\n device='GPU'; T in [DT_FLOAT];\
+    \ output_dtype in [DT_INT64]\n device='GPU'; T in [DT_FLOAT]; output_dtype in\
+    \ [DT_INT32]\n device='GPU'; T in [DT_HALF]; output_dtype in [DT_INT64]\n device='GPU';\
+    \ T in [DT_HALF]; output_dtype in [DT_INT32]\n device='CPU'; T in [DT_DOUBLE];\
+    \ output_dtype in [DT_INT64]\n device='CPU'; T in [DT_DOUBLE]; output_dtype in\
+    \ [DT_INT32]\n device='CPU'; T in [DT_FLOAT]; output_dtype in [DT_INT64]\n device='CPU';\
+    \ T in [DT_FLOAT]; output_dtype in [DT_INT32]\n device='CPU'; T in [DT_BFLOAT16];\
+    \ output_dtype in [DT_INT64]\n device='CPU'; T in [DT_BFLOAT16]; output_dtype\
+    \ in [DT_INT32]\n device='CPU'; T in [DT_HALF]; output_dtype in [DT_INT64]\n device='CPU';\
+    \ T in [DT_HALF]; output_dtype in [DT_INT32]\n [Op:StatelessMultinomial] name:"
+  txt: (type(logits) in ["float", "double", "bfloat16"]) and (type(num_samples) in
+    ["int32", "int64"]) and (type(logits) in ["float", "double", "bfloat16"])
+time_cost: 1866.3525104522705
+title: tf.raw_ops.StatelessMultinomial
+tokens_used: 15054

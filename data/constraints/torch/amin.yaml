@@ -1,0 +1,56 @@
+constraints:
+  dim:
+    default: null
+    dtype: int
+    init: false
+    required: true
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  keepdim:
+    default: false
+    dtype: bool
+    init: false
+    required: false
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 8
+package: torch
+pass_rate: 0.97
+rules:
+- cot: "The error is due to the 'dim' value being out of the valid range for the dimension\
+    \ of the 'input' tensor. The dimension of the 'input' tensor is 1 (since its shape\
+    \ is [0]), so the valid range for 'dim' is between -1 and 0 (inclusive). However,\
+    \ the provided 'dim' value is 2, which is outside this range. \n\nTo prevent this\
+    \ error, we need to ensure that the 'dim' value is always within the valid range\
+    \ for the given tensor. The constraint for the 'dim' parameter can be expressed\
+    \ as:"
+  target: Dimension out of range (expected to be in range of [-1, 0], but got 2)
+  txt: dim >= -len(input.shape) and dim < len(input.shape)
+- cot: 'The error is due to the mismatch in dimensions between the ''out'' tensor
+    and the ''input'' tensor. The ''out'' tensor is of dimension [3, 2] while the
+    ''input'' tensor is of dimension [9, 8]. The operation attempts to resize the
+    ''out'' tensor to match the ''input'' tensor, but the ''out'' tensor is not resizable.
+    To prevent this error, the dimensions of the ''out'' tensor should match the dimensions
+    of the ''input'' tensor when the operation is performed. Therefore, the logical
+    relationship constraint would be:'
+  target: Trying to resize storage that is not resizable
+  txt: out.shape == input.shape
+- cot: 'The error message indicates that the input and output tensor data types do
+    not match. The input tensor is of type Float32, while the output tensor is of
+    type Float64. Therefore, the constraint is that the data type of the input tensor
+    and the output tensor must be the same. Therefore, Left : input.dtype, Op : ==,
+    Right : out.dtype'
+  target: Expected the dtype for input and out to match, but got Float for input's
+    dtype and Double for out's dtype.
+  txt: input.dtype == out.dtype
+time_cost: 883.8752708435059
+title: torch.amin
+tokens_used: 5184
+trained: true

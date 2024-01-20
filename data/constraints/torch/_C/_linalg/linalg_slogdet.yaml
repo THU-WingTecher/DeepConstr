@@ -1,0 +1,42 @@
+constraints:
+  A:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 8
+package: torch
+pass_rate: 1.0
+rules:
+- cot: 'The error is triggered because the input matrix is not square. Let''s see
+    what the args were. Here, the dimensions of matrix A are 8 by 6. For a matrix
+    to be square, the number of rows and columns must be equal. Therefore, to prevent
+    this error from occurring in the future, we need to ensure that the last two dimensions
+    of A are equal.
+
+
+    The constraint for the ''A'' parameter can be expressed as:'
+  target: 'linalg.slogdet: A must be batches of square matrices, but they are 8 by
+    6 matrices'
+  txt: A.shape[-2] == A.shape[-1]
+- cot: 'Error is triggered because the input tensor A does not have at least 2 dimensions.
+    Looking at the arguments, Tensor A is a zero-dimensional tensor as it has an empty
+    shape. linalg.slogdet requires at least a 2D tensor. Therefore, the constraint
+    is:'
+  target: 'linalg.slogdet: The input tensor A must have at least 2 dimensions.'
+  txt: len(A.shape) >= 2
+- cot: Error is triggered because the input tensor is of type int16, while the linalg.slogdet
+    function expects a tensor of floating point or complex type. Let's see what the
+    args were. Here, the tensor 'A' is the problem. It should be converted to a floating
+    point or complex tensor before being passed to the linalg.slogdet function. Therefore,
+    the constraint should be that the dtype of 'A' must be floating point or complex.
+    Hence,
+  target: 'linalg.slogdet: Expected a floating point or complex tensor as input. Got
+    Short'
+  txt: A.dtype == tf.float32 or A.dtype == tf.float64 or A.dtype == tf.complex64 or
+    A.dtype == tf.complex128
+time_cost: 411.1429657936096
+title: torch._C._linalg.linalg_slogdet
+tokens_used: 4647
+trained: true

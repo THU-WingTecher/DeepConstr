@@ -1,0 +1,7 @@
+package: torch
+pass_rate: 0.0
+rules: {}
+title: torch.split_with_sizes
+skipped: true 
+skipped_reason: dupe
+dupe_with: torch.split

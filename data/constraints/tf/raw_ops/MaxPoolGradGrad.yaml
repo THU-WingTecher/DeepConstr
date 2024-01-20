@@ -1,0 +1,98 @@
+constraints:
+  data_format:
+    default: NHWC
+    dtype: str
+    init: false
+    required: false
+  grad:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  ksize:
+    default: null
+    dtype: list[int]
+    init: false
+    required: true
+  name:
+    default: null
+    dtype: str
+    init: false
+    required: false
+  orig_input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  orig_output:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  padding:
+    default: null
+    dtype: str
+    init: false
+    required: true
+  strides:
+    default: null
+    dtype: list[int]
+    init: false
+    required: true
+infered_history:
+- 4
+- 4
+infered_times: 8
+package: tf
+pass_rate: 0.0
+rules:
+- cot: 'The error is due to incorrect values for ''ksize'' from args. For ''ksize'',
+    the length provided is 1 which is less than the minimum length of 4. Therefore,
+    len(ksize) should be corrected to be >= 4. Op: >=, and Right: 4.'
+  target: "Length for attr 'ksize' of 1 must be at least minimum 4\n ; NodeDef: ;\
+    \ Op output:T; attr=ksize:list(int),min=4; attr=strides:list(int),min=4; attr=padding:string,allowed=[\"\
+    SAME\", \"VALID\"]; attr=data_format:string,default=\"NHWC\",allowed=[\"NHWC\"\
+    , \"NCHW\"]; attr=T:type,allowed=[DT_FLOAT, DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16,\
+    \ DT_INT8, DT_INT64, DT_BFLOAT16, DT_UINT16, DT_HALF, DT_UINT32, DT_UINT64]> [Op:MaxPoolGradGrad]\
+    \ name:"
+  txt: ((len(strides) >= 4) and (type(data_format) in ["NHWC", "NCHW"])) and ((len(ksize)
+    >= 4 and padding in ["SAME", "VALID"]) and (type(data_format) in ["NHWC", "NCHW"]))
+    and ((len(strides) >= 4) and (type(data_format) in ["NHWC", "NCHW"]))
+- cot: 'The error arises because the function is trying to perform an operation on
+    a float tensor and an int32 tensor. However, both tensors in generated args must
+    have the same data type. From the given values, ''orig_input'' tensor is of type
+    int32, but the operation ''MaxPoolGradGrad'' expects a float tensor. Therefore,
+    Left : type(orig_input), which is the type of tensor ''orig_input'', should be
+    corrected. It says that should be equal to float, so Op : ==, and Right : float.'
+  target: 'cannot compute MaxPoolGradGrad as input #1(zero-based) was expected to
+    be a float tensor but is a int32 tensor [Op:MaxPoolGradGrad] name:'
+  txt: type(orig_input)==float
+- cot: "The error is due to trying to perform pooling on the batch dimension, which\
+    \ is not supported. In this case, the batch dimension is the first dimension of\
+    \ the 'grad' tensor and the 'orig_input' tensor when 'data_format' is 'NCHW'.\
+    \ \n\nTherefore, Left : ksize[0], which is the kernel size for the batch dimension,\
+    \ should be corrected. It says that cannot be more than 1, so Op : ==, and Right\
+    \ : 1. Also, Left : strides[0], which is the stride for the batch dimension, should\
+    \ also be corrected. It says that cannot be more than 1, so Op : ==, and Right\
+    \ : 1."
+  target: 'Pooling is not yet supported on the batch dimension. [Op:MaxPoolGradGrad]
+    name:'
+  txt: (((ksize[0] == 1) and (strides[0] == 1) and (data_format == 'NHWC'))) and ((strides[0]
+    == 1))
+- cot: 'The error is caused by tensor_out not being 4-dimensional. According to the
+    arguments, tensor_out is derived from orig_output, which is currently 2-dimensional.
+    Therefore, the Left : orig_output.dim needs to be corrected. It should be 4-dimensional,
+    so Ops : ''=='', and Right : 4.'
+  target: 'tensor_out must be 4-dimensional [Op:MaxPoolGradGrad] name:'
+  txt: orig_output.dim == 4
+- cot: 'The error is related to the ''strides'' field. According to the error message,
+    the ''strides'' field must specify 4 dimensions, but currently, it has 7 dimensions.
+    Therefore, the Left : len(strides) should be corrected to 4. Ops : ''=='', Right
+    : 4.'
+  target: 'Sliding window strides field must specify 4 dimensions [Op:MaxPoolGradGrad]
+    name:'
+  txt: len(strides) == 4
+time_cost: 874.8933942317963
+title: tf.raw_ops.MaxPoolGradGrad
+tokens_used: 4628
+trained: true

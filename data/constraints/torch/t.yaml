@@ -1,0 +1,22 @@
+alias: torch.t
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 2
+package: torch
+pass_rate: 1.0
+rules:
+- cot: 'The error occurs because the tensor operation ''t()'' only supports tensors
+    with 2 or fewer dimensions, but the input tensor has 5 dimensions. To prevent
+    this error, we need to ensure that the tensor passed into ''t()'' operation has
+    2 or fewer dimensions. This can be expressed as the following constraint:'
+  target: t() expects a tensor with <= 2 dimensions, but self is 5D
+  txt: len(input.shape) <= 2
+time_cost: 36.13069415092468
+title: torch.t
+tokens_used: 644
+trained: true

@@ -1,0 +1,123 @@
+constraints:
+  data_format:
+    default: NHWC
+    dtype: str
+    init: false
+    required: false
+  explicit_paddings:
+    default: []
+    dtype: list[int]
+    init: false
+    required: false
+  grad:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  ksize:
+    default: null
+    dtype: list[int]
+    init: false
+    required: true
+  name:
+    default: null
+    dtype: str
+    init: false
+    required: false
+  orig_input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  orig_output:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  padding:
+    default: null
+    dtype: str
+    init: false
+    required: true
+  strides:
+    default: null
+    dtype: list[int]
+    init: false
+    required: true
+infered_history:
+- 4
+- 5
+- 5
+- 4
+- 8
+infered_times: 26
+package: tf
+pass_rate: 0.0
+rules:
+- cot: The error is due to the length of 'ksize' from args . The length of 'ksize'
+    provided is 1, which is less than the minimum requirement of 4. Therefore, len(ksize)
+    should be corrected to be at least 4.
+  target: "Length for attr 'strides' of 3 must be at least minimum 4\n ; NodeDef:\
+    \ ; Op output:T; attr=ksize:list(int),min=4; attr=strides:list(int),min=4; attr=padding:string,allowed=[\"\
+    SAME\", \"VALID\", \"EXPLICIT\"]; attr=explicit_paddings:list(int),default=[];\
+    \ attr=data_format:string,default=\"NHWC\",allowed=[\"NHWC\", \"NCHW\"]; attr=T:type,default=DT_FLOAT,allowed=[DT_FLOAT,\
+    \ DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16, DT_INT8, DT_INT64, DT_BFLOAT16, DT_UINT16,\
+    \ DT_HALF, DT_UINT32, DT_UINT64]> [Op:MaxPoolGrad] name:"
+  txt: (len(ksize) >= 4) and (len(strides) >= 4 and padding in ["SAME", "VALID", "EXPLICIT"]
+    and data_format in ["NHWC", "NCHW"]) and (len(ksize) >= 4)
+- cot: 'The error arises because the function is trying to perform an operation on
+    an int16 tensor and a float tensor. However, both tensors in generated args must
+    have the same data type. Let''s see what the args were. The ''orig_input'' tensor
+    is float32, but the ''grad'' tensor is of type int32. Therefore, Left : type(grad),
+    which is the type of tensor grad, should be corrected. It says that should be
+    equal to the datatype of tensor orig_input, so Op : ==, and Right : type(orig_input).'
+  target: 'cannot compute MaxPoolGrad as input #1(zero-based) was expected to be a
+    int16 tensor but is a float tensor [Op:MaxPoolGrad] name:'
+  txt: (type(orig_output)==type(grad)) and (type(grad)==type(orig_input))
+- cot: The error message indicates that pooling is not supported on the batch dimension.
+    In the given values, the 'data_format' is 'NCHW', which means the input tensor
+    is expected in the order of [batch, channel, height, width]. The error suggests
+    that the operation is attempting to perform pooling over the batch dimension,
+    which is not supported.
+  target: 'Pooling is not yet supported on the batch dimension. [Op:MaxPoolGrad] name:'
+  txt: (ksize[0] == 1), (strides[0] == 1), (len(grad) == len(orig_input)), (len(grad)
+    == len(orig_output)), (len(explicit_paddings) == 2*len(orig_input))
+- cot: 'The error is caused because the MaxPoolingGrad operation is not supported
+    on the depth dimension in this case. The data_format is ''NCHW'', which means
+    the shape of the tensor is [batch, channels, height, width]. MaxPoolingGrad operation
+    is not yet supported on the channels (depth) dimension. The ''ksize'' parameter
+    indicates the size of the windows for each dimension of the input tensor. In this
+    case, ksize is [1, 20, 21, 22], which means the operation is applied on the channels.
+    The constraints to prevent the error would be to ensure that ksize[1] == 1, ksize[0]
+    == 1 (batch size must be 1), and ksize[3] != 1 (to ensure the operation is not
+    applied on the width dimension). '
+  target: 'Sliding window ksize field must specify 4 dimensions [Op:MaxPoolGrad] name:'
+  txt: ksize[0] == 1
+- cot: 'The error is triggered because MaxPoolingGrad is not yet supported on the
+    depth dimension. Let''s see what the ars were. data_format, explicit_paddings,
+    grad, ksize, orig_input, orig_output, padding, strides were None. Therefore, the
+    Left : data_format should be corrected to a supported format. Ops : ''!='', Right
+    : None. Similarly, explicit_paddings, grad, ksize, orig_input, orig_output, padding,
+    strides should not be None.'
+  target: 'tensor_in must be 4-dimensional 4 [Op:MaxPoolGrad] name:'
+  txt: data_format != None, explicit_paddings != None, grad != None, ksize != None,
+    orig_input != None, orig_output != None, padding != None, strides != None.
+- cot: 'The error message indicates that the MaxPoolingGradOp only supports the data
+    format ''NHWC'' on CPU device type. However, the current data_format is ''NCHW'',
+    which is not supported. Therefore, the constraint should be that the Left : data_format
+    is ''NHWC''. Ops : ''=='', Right : ''NHWC''.'
+  target: 'Default MaxPoolingGradOp only supports NHWC on device type CPU [Op:MaxPoolGrad]
+    name:'
+  txt: data_format == 'NHWC'
+- cot: 'The error is triggered because the explicit_paddings attribute does not contain
+    the correct number of values. The operation expects 8 values, but instead got
+    10. Therefore, Left : len(explicit_paddings) should be corrected. Ops : ''=='',
+    Right : 8.'
+  target: 'explicit_paddings attribute must contain 8 values, but got: 10 [Op:MaxPoolGrad]
+    name:'
+  txt: (orig_input.dim != 2 and orig_output.dim != 2) or ((ksize[1] == 1 and ksize[2]
+    == 1 and strides[1] == 1 and strides[2] == 1) or (len(explicit_paddings) == 8))
+time_cost: 5038.467885017395
+title: tf.raw_ops.MaxPoolGrad
+tokens_used: 18087
+trained: true

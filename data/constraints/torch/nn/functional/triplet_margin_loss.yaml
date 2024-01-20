@@ -1,0 +1,78 @@
+constraints:
+  anchor:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  eps:
+    default: 1e-06
+    dtype: float
+    init: false
+    required: false
+  margin:
+    default: '1.0'
+    dtype: float
+    init: false
+    required: false
+  negative:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  p:
+    default: '2'
+    dtype: int
+    init: false
+    required: false
+  positive:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  reduce:
+    default: 'null'
+    dtype: bool
+    init: false
+    required: false
+  reduction:
+    default: mean
+    dtype: Literal['mean', 'sum', 'none']
+    init: false
+    required: false
+  size_average:
+    default: 'null'
+    dtype: bool
+    init: false
+    required: false
+  swap:
+    default: 'false'
+    dtype: bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 29
+package: torch
+pass_rate: 0.17
+rules:
+- cot: 'The error is due to the inconsistent dimensions of anchor, positive, and negative
+    tensors. Let''s see what the args were. It appears that ''anchor'' is 5D, ''positive''
+    is 1D, and ''negative'' is 1D. The error message suggests that all these tensors
+    should have the same number of dimensions. Therefore, left : anchor.dim, positive.dim,
+    negative.dim; op : ==, and right : each other respectively.'
+  target: 'The anchor, positive, and negative tensors are expected to have the same
+    number of dimensions, but got: anchor 5D, positive 1D, and negative 1D inputs'
+  txt: (anchor.dim == positive.dim) and (anchor.dim == negative.dim)
+- cot: 'Error is triggered because we are trying to subtract a boolean tensor. It
+    appears that the ''positive'' tensor is of type bool and is being involved in
+    a subtraction operation. Subtracting boolean tensors is not supported in most
+    frameworks, and the typical way to invert a boolean tensor is by using the `~`
+    or `logical_not()` operator. Therefore, we must ensure that any tensor involved
+    in a subtraction operation is not a boolean tensor. Let''s revise the constraints
+    as follows:'
+  target: Subtraction, the `-` operator, with a bool tensor is not supported. If you
+    are trying to invert a mask, use the `~` or `logical_not()` operator instead.
+  txt: positive.dtype != bool
+time_cost: 9022.048773527145
+title: torch.nn.functional.triplet_margin_loss
+tokens_used: 22702
+trained: true

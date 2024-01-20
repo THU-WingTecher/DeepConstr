@@ -1,0 +1,37 @@
+alias: torch.nn.functional.log_softmax
+constraints:
+  dim:
+    default: 1
+    dtype: int
+    init: false
+    required: true
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 7
+package: torch
+pass_rate: 0.95
+rules:
+- cot: 'Error is due to the dimension being out of range. The input tensor is of rank
+    2, but a dimension of 3 has been provided which is clearly out of range. Therefore,
+    dimension should be less than the rank of input tensor and should be in the range
+    of valid negative indices. Here, dim : 3, Op : <, Right : len(input.shape) = 2.
+    Also, dim, Op : >=, Right : -len(input.shape) = -2.'
+  target: Dimension out of range (expected to be in range of [-2, 1], but got 3)
+  txt: dim < len(input.shape)
+- cot: The error is due to the function "log_softmax_lastdim_kernel_impl" not being
+    implemented for the 'Short' data type. Therefore, the data type of the input tensor
+    should not be 'Short'. Also, we need to ensure that the input tensor has more
+    than one dimension because the function is trying to apply softmax to the last
+    dimension. Therefore, input.dtype should not be 'Short', which is input.dtype
+    != 'Short'. Also, the number of dimensions of input should be more than one, which
+    is input.ndims() > 1.
+  target: '"log_softmax_lastdim_kernel_impl" not implemented for ''Short'''
+  txt: (input.dtype != 'Short')
+time_cost: 178.25577688217163
+title: torch.nn.functional.log_softmax
+tokens_used: 3882
+trained: true

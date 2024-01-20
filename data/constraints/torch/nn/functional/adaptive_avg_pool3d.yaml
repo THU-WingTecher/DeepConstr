@@ -1,0 +1,39 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  output_size:
+    default: null
+    dtype: int
+    init: false
+    required: true
+infered_history: []
+infered_times: 15
+package: torch
+pass_rate: 0.97
+rules:
+- cot: 'The error is caused because the ''input'' tensor is a 0-dimensional ([]) tensor,
+    while the function ''adaptive_avg_pool3d'' expects a 4D or 5D tensor. Let''s see
+    what the args were. The ''input'' tensor is 0-dimensional, which is causing the
+    error. Therefore, to generate constraints that do not trigger this error, we need
+    to ensure that the ''input'' tensor is either 4D or 5D.
+
+
+    The constraint for the ''input'' tensor can be formulated as follows:'
+  target: 'adaptive_avg_pool3d(): Expected 4D or 5D tensor, but got []'
+  txt: len(input.shape) == 4 or len(input.shape) == 5
+- cot: 'The error is due to the fact that the function "adaptive_avg_pool3d_cpu" is
+    not implemented for ''Int'' type. What the args were? The input tensor is of dtype
+    ''Int32'' which is causing trouble. Therefore, we need to make sure that the dtype
+    of ''input'' must not be ''Int''. Left : input.dtype, Op : !=, Right : ''Int''.
+    Moreover, it has been observed that adaptive pooling functions generally work
+    with ''Float'' tensors. Therefore, it can be a good practice to ensure that the
+    dtype of ''input'' should be ''Float''. Left : input.dtype, Op : ==, Right : ''Float''.'
+  target: '"adaptive_avg_pool3d_cpu" not implemented for ''Int'''
+  txt: input.dtype == 'Float'
+time_cost: 757.0251395702362
+title: torch.nn.functional.adaptive_avg_pool3d
+tokens_used: 8485
+trained: true

@@ -1,0 +1,32 @@
+constraints:
+  approximate:
+    default: false
+    dtype: bool
+    init: false
+    required: false
+  features:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  name:
+    default: null
+    dtype: str
+    init: false
+    required: false
+infered_history: []
+infered_times: 5
+package: tf
+pass_rate: 1.0
+rules:
+- cot: 'The error occurs because the ''features'' tensor is of bool data type, but
+    it should be a floating point tensor. Let''s see what the constraints were. The
+    ''features'' tensor had bool type. Therefore, Left: type(features), which indicates
+    the data type of ''features'', should be corrected. Op: ''=='', and Right: ''float''.'
+  target: 'rror: `features.dtype` must be a floating point tensor.Received:features.dtype='
+  txt: type(features) == 'float'
+skipped: uncompatiable type
+time_cost: 58.870954751968384
+title: tf.nn.gelu
+tokens_used: 2406
+trained: true

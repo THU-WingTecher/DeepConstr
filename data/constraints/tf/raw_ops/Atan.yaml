@@ -1,0 +1,20 @@
+constraints:
+  name:
+    default: null
+    dtype: str
+    init: false
+    required: false
+  x:
+    default: null
+    dtype: bfloat16,float16,float32,float64,complex64,complex128
+    init: false
+    required: true
+infered_history: []
+infered_times: 1
+package: tf
+pass_rate: 0.92
+rules: {}
+time_cost: 5.05878758430481
+title: tf.raw_ops.Atan
+tokens_used: 442
+trained: true

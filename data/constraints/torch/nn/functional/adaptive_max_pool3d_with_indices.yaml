@@ -1,0 +1,41 @@
+alias: torch.nn.functional.adaptive_max_pool3d_with_indices
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  output_size:
+    default: null
+    dtype: int
+    init: false
+    required: true
+  return_indices:
+    default: false
+    dtype: bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 8
+package: torch
+pass_rate: 0.98
+rules:
+- cot: 'The error is caused by the input tensor having the wrong number of dimensions.
+    The function adaptive_max_pool3d() expects a 4D or 5D tensor, but the input tensor
+    has only 2 dimensions. Let''s see what the args were. The ''input'' tensor is
+    float32 of shape [8, 3]. Therefore, the number of dimensions of the ''input''
+    tensor should be corrected, which is input.ndims(). It says that expected 4 or
+    5, so Op : ==, and Right : 4 or 5.'
+  target: 'adaptive_max_pool3d(): Expected 4D or 5D tensor, but got: [8, 3]'
+  txt: input.ndims() == 5
+- cot: 'The error is triggered because ''adaptive_max_pool3d_cpu'' is not implemented
+    for ''Int'' . In the given values, ''input'' is a Tensor with TensorDType.int32.
+    This means that the ''input'' is not compatible with the ''adaptive_max_pool3d_cpu''
+    function as it only accepts float types. The ''input'' value of TensorDType should
+    be changed from ''int32'' to ''float32'' or ''float64''. Hence, the type of ''input''
+    should be ''float32'' or ''float64''. Let''s generate the constraint. Left : type(input).
+    Op : in. Right : [''float32'', ''float64'']'
+  target: '"adaptive_max_pool3d_cpu" not implemented for ''Int'''
+  txt: type(input) in ['float32', 'float64']
+time_cost: 398.7554404735565
+title: torch.nn.functional.adaptive_max_pool3d_with_indices

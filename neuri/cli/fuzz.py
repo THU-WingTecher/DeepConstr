@@ -1,5 +1,5 @@
-import os
 import random
+import os
 import time
 import traceback
 from importlib.util import module_from_spec, spec_from_file_location
@@ -10,14 +10,14 @@ from typing import Tuple, Type
 import hydra
 from omegaconf import DictConfig
 
-from neuri.autoinf import make_record_finder
+
 from neuri.backends.factory import BackendFactory
 from neuri.cli.model_exec import verify_testcase
 from neuri.error import InternalError
 from neuri.filter import FILTERS
 from neuri.gir import GraphIR
 from neuri.graph_gen import model_gen
-from neuri.logger import FUZZ_LOG
+from neuri.logger import FUZZ_LOG, AUTOINF_LOG
 from neuri.macro import NNSMITH_BUG_PATTERN_TOKEN
 from neuri.materialize import Model, TestCase
 from neuri.narrow_spec import auto_opset
@@ -220,17 +220,38 @@ class FuzzingLoop:
             model_cfg["type"], backend_target=cfg["backend"]["target"]
         )
         self.ModelType.add_seed_setter()
-        self.opset = auto_opset(
-            self.ModelType, self.factory, vulops=cfg["mgen"]["vulops"]
-        )
-
         self.record_finder = None
-        if "neuri" in cfg["mgen"]["method"]:
+
+        if cfg["mgen"]["test_pool"] : 
+            AUTOINF_LOG.info(f"Using test pool: {cfg['mgen']['test_pool']}")
+
+        if "constrinf" in cfg["mgen"]["method"]:
+            from neuri.constrinf import make_record_finder
+            self.opset = auto_opset(
+            self.ModelType, 
+            self.factory, 
+            vulops=cfg["mgen"]["vulops"],
+            test_pool=cfg["mgen"]["test_pool"],
+            ) 
+            self.record_finder = make_record_finder(
+                path=cfg["mgen"]["record_path"],
+                pass_rate=cfg["mgen"]["pass_rate"],
+                test_pool=cfg["mgen"]["test_pool"],
+            )
+        else :
+            from neuri.autoinf import make_record_finder
+            self.opset = auto_opset(
+            self.ModelType, 
+            self.factory, 
+            vulops=cfg["mgen"]["vulops"],
+            test_pool=cfg["mgen"]["test_pool"],
+        )
             self.record_finder = make_record_finder(
                 path=cfg["mgen"]["record_path"],
                 max_elem_per_tensor=cfg["mgen"]["max_elem_per_tensor"],
+                test_pool=cfg["mgen"]["test_pool"],
             )
-
+            
         seed = cfg["fuzz"]["seed"] or random.getrandbits(32)
         set_seed(seed)
 
@@ -263,6 +284,10 @@ class FuzzingLoop:
             max_elem_per_tensor=mgen_cfg["max_elem_per_tensor"],
             max_nodes=mgen_cfg["max_nodes"],
             timeout_ms=mgen_cfg["timeout_ms"],
+            noise=mgen_cfg["noise"],
+            allow_zero_length_rate=mgen_cfg["allow_zero_length_rate"],
+            allow_zero_rate=mgen_cfg["allow_zero_rate"],
+            model=self.ModelType
         )
         ir = gen.make_concrete()
 
@@ -270,7 +295,7 @@ class FuzzingLoop:
             model = self.ModelType.from_gir(ir)
             if self.cfg["debug"]["viz"]:
                 model.attach_viz(ir)
-            model.refine_weights()  # either random generated or gradient-based.
+            # model.refine_weights()  # DType enum error: either random generated or gradient-based.
             oracle = model.make_oracle()
         except Exception as e:
             self.status.rej_inst(ir)
@@ -302,52 +327,54 @@ class FuzzingLoop:
             stat = {}
 
             gen_start = time.time()
-            try:
-                testcase, tsmt = self.make_testcase(seed)
-            except Exception:
-                FUZZ_LOG.error(
-                    f"`make_testcase` failed with seed {seed}. It can be NNSmith or Generator ({self.cfg['model']['type']}) bug."
-                )
-                FUZZ_LOG.error(traceback.format_exc())
+            try :
+                try:
+                    testcase, tsmt = self.make_testcase(seed)
+                except Exception:
+                    FUZZ_LOG.error(
+                        f"`make_testcase` failed with seed {seed}. It can be NNSmith or Generator ({self.cfg['model']['type']}) bug."
+                    )
+                    FUZZ_LOG.error(traceback.format_exc())
+
+                    self.status.record(
+                        seed=seed,
+                        stat="fail",
+                        tgen=round((time.time() - gen_start) * 1000),
+                        **stat,
+                    )
+                    continue
+                stat["tgen"] = round((time.time() - gen_start) * 1000)
+
+                test_pass = True
+                eval_start = time.time()
+                if not self.validate_and_report(testcase):
+                    test_pass = False
+                    FUZZ_LOG.warning(f"Failed model seed: {seed}")
+                stat["trun"] = round((time.time() - eval_start) * 1000)
+
+                if self.save_test:
+                    save_start = time.time()
+                    testcase_dir = os.path.join(
+                        self.save_test, f"{self.status.elapsed_s:.3f}"
+                    )
+                    mkdir(testcase_dir)
+                    tmp, testcase.model.dotstring = testcase.model.dotstring, None
+                    testcase.dump(testcase_dir)
+                    testcase.model.dotstring = tmp
+                    stat["tsave"] = round((time.time() - save_start) * 1000)
 
                 self.status.record(
                     seed=seed,
-                    stat="fail",
-                    tgen=round((time.time() - gen_start) * 1000),
+                    stat="ok" if test_pass else "bug",
+                    tsmt=tsmt,
                     **stat,
                 )
-                continue
-            stat["tgen"] = round((time.time() - gen_start) * 1000)
-
-            test_pass = True
-            eval_start = time.time()
-            if not self.validate_and_report(testcase):
-                test_pass = False
-                FUZZ_LOG.warning(f"Failed model seed: {seed}")
-            stat["trun"] = round((time.time() - eval_start) * 1000)
-
-            if self.save_test:
-                save_start = time.time()
-                testcase_dir = os.path.join(
-                    self.save_test, f"{self.status.elapsed_s:.3f}"
-                )
-                mkdir(testcase_dir)
-                tmp, testcase.model.dotstring = testcase.model.dotstring, None
-                testcase.dump(testcase_dir)
-                testcase.model.dotstring = tmp
-                stat["tsave"] = round((time.time() - save_start) * 1000)
-
-            self.status.record(
-                seed=seed,
-                stat="ok" if test_pass else "bug",
-                tsmt=tsmt,
-                **stat,
-            )
+            except : 
+                pass 
 
         FUZZ_LOG.info(f"Total {self.status.n_testcases} testcases generated.")
         FUZZ_LOG.info(f"Total {self.status.n_bugs} bugs found.")
         FUZZ_LOG.info(f"Total {self.status.n_fail_make_test} failed to make testcases.")
-
 
 @hydra.main(version_base=None, config_path="../config", config_name="main")
 def main(cfg: DictConfig):

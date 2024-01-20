@@ -1,0 +1,44 @@
+alias: torch.gt
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  other:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool,float32
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 40
+package: torch
+pass_rate: 0.93
+rules:
+- cot: The error is due to trying to resize a Tensor that is not resizable. The input,
+    other, and output tensors are all of different dimensions. Here, the 'out' tensor
+    has a dimension of [2,1] which is not aligned with the dimensions of 'input' and
+    'other' tensors. Therefore, the dimensions of 'out' tensor should match with the
+    dimensions of 'input' or 'other' tensor. Let's set the 'out' tensor's dimensions
+    to be equal to the 'input' tensor's dimensions.
+  target: Trying to resize storage that is not resizable
+  txt: (out.rank==other.rank and all(out.shape[i]==other.shape[i] for i in range(out.rank)))
+    and ((all(out.shape[i] == input.shape[i] for i in range(out.rank))) and (len(out)
+    == len(input)))
+- cot: 'The error arises due to the "gt_cpu" operation not being implemented for ''ComplexDouble''
+    types. Looking at the variables, it appears the ''other'' tensor is of type ''ComplexDouble''.
+    Therefore, the dtype of ''other'' tensor should be corrected. The Left : other.dtype
+    should not be ''ComplexDouble'', so the Op : !=, and the Right : ''ComplexDouble''.
+    Also, it implies that ''other'' tensor should be of the same type as ''input''
+    or ''out'' tensor, so the Op : ==, and Right : ''float32''.'
+  target: '"gt_cpu" not implemented for ''ComplexDouble'''
+  txt: other.dtype != 'ComplexDouble'
+time_cost: 8499.035855770111
+title: torch.gt
+tokens_used: 26152
+trained: true

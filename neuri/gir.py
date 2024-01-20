@@ -225,6 +225,7 @@ class GraphIR:
 
         min_user_idx = 0
         # update users
+        # output value did not decided.
         for arg in set(iexpr.args):
             assert arg in self.vars, "Variable not defined: " + arg
             inst_id, ret_idx = InstIR.var_inst_idx(arg)
@@ -414,7 +415,7 @@ class GraphIR:
         for inst in self.insts:
             if inst.iexpr.op.__class__.__name__ == "AutoInfOpBase":
                 ainst = inst.iexpr.op.inst
-                has_inferred |= not ainst.infer_failed()
+                # has_inferred |= not ainst.infer_failed()
                 print(
                     inst.retvals(),
                     "<-",

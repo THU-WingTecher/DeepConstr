@@ -28,14 +28,19 @@ model:
 
 mgen: # model gen.
   max_nodes: 5
-  timeout_ms: 10000
+  pass_rate: 0.8 # 0 ~ 1 
+  timeout_ms: 100000 #10000
   vulops: False
-  method: "symbolic"
+  method: "constrinf"
   save: "neuri_output"
   seed: null
   max_elem_per_tensor: 65536 # 2^16
   record_path: null # path to load records for ConcolicGenWithRecords
-
+  test_pool: []
+  noise: 0.15 # 0 ~ 1
+  allow_zero_length_rate: 0.1 # 0 ~ 1
+  allow_zero_rate: 0.1 # 0 ~ 1
+  num_of_try: 10
 # backend config
 backend:
   type: null
@@ -46,7 +51,7 @@ cache:
   topset: true # Run dtype test with automatically maintained cache
 
 debug:
-  viz: false
+  viz: true
   viz_fmt: "png" # or "svg" for much smaller figure size and precision;
   gir_path: null
 
@@ -56,7 +61,7 @@ fuzz:
   seed: null
   crash_safe: false
   test_timeout: null
-  save_test: null
+  save_test: true
   resume: false
 
 filter:
@@ -82,6 +87,15 @@ cmp:
   bug_presence: "report" # or "crash"
   save: null # path to save the bug report if `bug_presence` is "report"
 
+test:
+  task:
+    type: 4 
+  paths:
+    rule: 'tests/test_rules.txt'
+  package: 'tf'
+  func: 'raw_ops/QuantizeAndDequantizeV4'
+  model_type: 'tensorflow' 
+  backend_type: 'xla'
 defaults:
   - override hydra/job_logging: file
   - override hydra/hydra_logging: colorlog

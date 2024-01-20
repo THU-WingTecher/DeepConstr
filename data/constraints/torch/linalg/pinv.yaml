@@ -1,0 +1,28 @@
+alias: torch.linalg.pinv
+constraints:
+  input:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  rcond:
+    default: 'null'
+    dtype: float
+    init: false
+    required: false
+infered_history: []
+infered_times: 1
+package: torch
+pass_rate: 1.0
+rules:
+- cot: 'The error arises because the input tensor has only one dimension (length 10),
+    but the pseudoinverse operation requires a tensor with 2 or more dimensions, and
+    the data type of the tensor must be float, double, cfloat or cdouble. The constraints
+    for the args can be:'
+  target: 'linalg.pinv(Float{[10]}): expected a tensor with 2 or more dimensions of
+    float, double, cfloat or cdouble types'
+  txt: len(input.shape) >= 2 and input.dtype in ["float", "double", "cfloat", "cdouble"]
+time_cost: 45.68601655960083
+title: torch.linalg.pinv
+tokens_used: 697
+trained: true

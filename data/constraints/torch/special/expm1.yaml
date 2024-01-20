@@ -1,0 +1,36 @@
+alias: torch.special.expm1
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 24
+package: torch
+pass_rate: 1.0
+rules:
+- cot: 'The values provided indicate that the input tensor is of type float32 and
+    the output tensor is of type int32. The error is triggered because type Float
+    cannot be cast to the Int. In order to prevent this error, we need to ensure that
+    the input and output tensor types are consistent. The constraint that needs to
+    be generated is:'
+  target: result type Float can't be cast to the desired output type Int
+  txt: (type(out)==float) and (type(input)==type(out))
+- cot: "The error is triggered because the program is trying to resize a storage that\
+    \ is not resizable. The 'input' and 'out' tensors have different dimensions, therefore\
+    \ the resizing operation is failing. \n\nThe constraints should ensure that the\
+    \ 'input' and 'out' tensors have the same dimensions for the resizing operation\
+    \ to succeed. \n\nTherefore, Left: 'dimensions of input and out tensors', Op:\
+    \ '==', and Right: 'same dimensions'."
+  target: Trying to resize storage that is not resizable
+  txt: (len(input.shape) == len(out.shape) or input.is_resizable() == True) and (all(input.shape[i]
+    == out.shape[i] for i in range(len(input.shape))))
+time_cost: 1183.664718389511
+title: torch.special.expm1
+tokens_used: 13270

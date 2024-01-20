@@ -1,0 +1,71 @@
+alias: torch.bitwise_xor
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  other:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 66
+package: torch
+pass_rate: 0.07
+rules:
+- cot: 'The error is due to a mismatch in the Tensor dimensions when trying to resize
+    storage. The dimensions of ''input'' and ''out'' tensors do not match the ''other''
+    tensor. The ''other'' tensor has dimensions of [3, 10, 3], while the ''input''
+    tensor has [3] and ''out'' tensor has [2]. Therefore, we need to ensure that the
+    dimensions of the tensors are compatible for the operation. This means that the
+    dimension of ''input'' and ''out'' should either match or be broadcastable to
+    the dimension of ''other''. Therefore, Left : len(input.shape) == len(other.shape)
+    and len(out.shape) == len(other.shape), Op : ==, and Right : True.'
+  target: Trying to resize storage that is not resizable
+  txt: (input.dtype == 'float32') or ((input.shape[0] == 3) and ((out.rank==input.rank
+    and all(out.shape[i]==input.shape[i] for i in range(out.rank))) and ((out.rank==3)
+    and ((len(out.shape) == len(other.shape)) or (len(input.shape) == len(other.shape))))))
+- cot: 'The error message indicates that the ScalarType BFloat16 is not supported.
+    Looking at the args, ''input'', ''other'', and ''out'' are all tensors of type
+    BFloat16. Therefore, the data type of these tensors should be corrected. It says
+    that BFloat16 is unsupported, so Op : !=, and Right : BFloat16.'
+  target: Got unsupported ScalarType BFloat16
+  txt: out.dtype != 'BFloat16'
+- cot: 'Based on given values, Error is triggered because size of tensors at non-singleton
+    dimension 1 doesn''t match. What the args were? the two tensors matching problem
+    at non-singleton dimension looks like broadcasting request. Broadcasting in tensor
+    operations requires that the trailing dimensions of the tensors are either 1 or
+    the same. We start from the last dimension because broadcasting aligns dimensions
+    from the end. Therefore, we can revise the constraints as follows:'
+  target: The size of tensor a (6) must match the size of tensor b (8) at non-singleton
+    dimension 1
+  txt: all(input.shape[i] == other.shape[i] or input.shape[i] == 1 or other.shape[i]
+    == 1 for i in range(-1, -min(len(input.shape), len(other.shape))-1, -1))
+- cot: 'The error is due to the incompatibility of the ''Float'' data type with the
+    ''bitwise_xor_cpu'' operation. The ''bitwise_xor_cpu'' operation is not defined
+    for ''Float'' data type. So, the data type of ''input'' and ''other'' should not
+    be ''Float''. Therefore, dtype of ''input'' and ''other'' can not be float. Therefore,
+    Op : !=, and Right : float for ''input'' and ''other''. Also, the output tensor''s
+    shape is not relevant here as the error is due to the datatype and not the dimensions
+    or size.'
+  target: '"bitwise_xor_cpu" not implemented for ''Float'''
+  txt: (input.dtype != float)
+- cot: 'The error is caused because the result type Float can''t be cast to the desired
+    output type Int. The output tensor type is int32 and the other tensor type is
+    float32. Therefore, the other tensor type should be changed to int32 to match
+    the output tensor type. What the args were? The ''other'' tensor type is float32
+    which should be changed to int32. Therefore, Left : other.dtype, Op : ==, Right
+    : out.dtype'
+  target: result type Float can't be cast to the desired output type Int
+  txt: (other.dtype == out.dtype) or (other.dtype == 'int32')
+time_cost: 16559.625633001328
+title: torch.bitwise_xor
+tokens_used: 40760
+trained: true

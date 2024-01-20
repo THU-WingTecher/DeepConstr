@@ -1,0 +1,30 @@
+constraints:
+  dtype:
+    default: '<dtype: "uint64">'
+    dtype: int32,int64,uint32,uint64
+    init: false
+    required: false
+  name:
+    default: 'null'
+    dtype: str
+    init: false
+    required: false
+  seed:
+    default: null
+    dtype: int32,int64,uint32,uint64
+    init: false
+    required: true
+  shape:
+    default: null
+    dtype: int32,int64
+    init: false
+    required: true
+infered_history:
+- 3
+infered_times: 4
+package: tf
+pass_rate: 0.0
+rules: {}
+time_cost: 33.01065397262573
+title: tf.raw_ops.StatelessRandomUniformFullInt
+tokens_used: 3640

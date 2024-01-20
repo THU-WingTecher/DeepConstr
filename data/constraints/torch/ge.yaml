@@ -1,0 +1,52 @@
+alias: torch.ge
+constraints:
+  input:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  other:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool,float32
+    init: false
+    required: true
+  out:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: falsep
+infered_history: []
+infered_times: 28
+package: torch
+pass_rate: 0.97
+rules:
+- cot: 'The error occurs because the size of tensor ''a'' does not match the size
+    of tensor ''b'' at non-singleton dimension 4. It appears there''s a mismatch in
+    the size of the 4th dimension between tensor ''input'' and tensor ''other''. To
+    prevent this error, the dimensions of the tensors need to match. Therefore, Left
+    : input.shape[i]. Op : ==, Right : other.shape[i] for all i in range(len(input.shape)).'
+  target: The size of tensor a (8) must match the size of tensor b (6) at non-singleton
+    dimension 4
+  txt: (len(input.shape) == len(other.shape)) and (all(input.shape[i]==other.shape[i]
+    for i in range(len(input.shape))))
+- cot: 'Error is triggered because of attempting to resize a non-resizable storage.
+    This usually occurs when the output tensor ''out'' is not of the same shape as
+    the input tensor ''input''. Let''s see what the args were. The args indicate that
+    the ''out'' tensor shape is not matching with the ''input'' or ''other'' tensor
+    shape. Therefore, the constraints should ensure that the ''out'' tensor shape
+    is always equal to the ''input'' or ''other'' tensor shape. So, left : out.shape,
+    out.rank op : == right : input.shape, input.rank or other.shape, other.rank'
+  target: Trying to resize storage that is not resizable
+  txt: (all(out.shape[i]==other.shape[i] for i in range(out.rank))) or ((out.rank==other.rank)
+    and (out.rank==input.rank and all(out.shape[i]==input.shape[i] for i in range(out.rank))
+    or out.rank==other.rank and all(out.shape[i]==other.shape[i] for i in range(out.rank))))
+- cot: 'The error is due to the use of ''ge_cpu'' operation on ''ComplexFloat'' from
+    args. The operation ''ge_cpu'' is not implemented for ''ComplexFloat''. Therefore,
+    the tensor type for ''other'' should be corrected, which is ''other''.dtype. It
+    says that it cannot be ''ComplexFloat'', so Op : !=, and Right : ''ComplexFloat''.'
+  target: '"ge_cpu" not implemented for ''ComplexFloat'''
+  txt: (input.dtype != 'complex64') and ((other.dtype != 'ComplexFloat'))
+time_cost: 11546.258504152298
+title: torch.ge
+tokens_used: 17394
+trained: true

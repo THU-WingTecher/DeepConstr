@@ -1,0 +1,146 @@
+constraints:
+  bias:
+    default: true
+    dtype: bool
+    init: true
+    required: false
+  dilation:
+    default: 1
+    dtype: int
+    init: true
+    required: false
+  groups:
+    default: 1
+    dtype: int
+    init: true
+    required: false
+  in_channels:
+    default: null
+    dtype: int
+    init: true
+    required: true
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  kernel_size:
+    default: null
+    dtype: int,list[int]
+    init: true
+    required: true
+  out_channels:
+    default: null
+    dtype: int
+    init: true
+    required: true
+  padding:
+    default: 0
+    dtype: list[int]
+    init: true
+    required: false
+  padding_mode:
+    default: zeros
+    dtype: Literal['zeros', 'reflect', 'replicate', 'circular']
+    init: true
+    required: false
+  stride:
+    default: 1
+    dtype: int,list[int]
+    init: true
+    required: false
+infered_history: []
+infered_times: 54
+package: torch
+pass_rate: 0.0
+rules:
+- cot: 'The error is caused because the padding values are too large, resulting in
+    more than one wrap around. This can be avoided by ensuring that the padding values
+    are less than the size of the input tensor in the corresponding dimensions. In
+    this case, the input tensor has dimensions [4, 1, 3, 2], and the padding is [29,
+    30]. To avoid the error, the padding values should be less than 3 and 2 respectively.
+    Therefore, the constraints can be expressed as:'
+  target: Padding value causes wrapping around more than once.
+  txt: padding[0] < input.shape[2] and padding[1] < input.shape[3]
+- cot: 'The error occurs because the number of channels in the input tensor doesn''t
+    match the expected number of channels based on the convolution parameters. Let''s
+    see what the args were. It appears the given number of input channels is 8 which
+    is not equal to the expected 500 channels. To prevent this error in the future
+    and generate constraints that do not trigger it, we need to ensure that the "in_channels"
+    value is equal to the second dimension of the input tensor.
+
+
+    The constraint for the ''in_channels'' parameter can be expressed as:'
+  target: Given groups=1, weight of size [500, 500, 1, 1], expected input[4, 8, 4,
+    13] to have 500 channels, but got 8 channels instead
+  txt: in_channels == input.shape[1]
+- cot: 'Error is triggered because of negative padding values. Let''s see what the
+    args were. The padding has negative value. It does not inform us which padding
+    to correct, so <symbol> or all(<symbol>) should be corrected, which is padding
+    or all(padding). Therefore, Left : padding or all(padding). It implies that negative
+    values are problem., so Op : >=, and Right : 0.'
+  target: negative padding is not supported
+  txt: all(padding[i] >= 0 for i in range(len(padding)))
+- cot: 'The error is generated because the ''in_channels'' value is not divisible
+    by the ''groups'' value. From the values, ''in_channels'' is 500 and ''groups''
+    is 7. To prevent this error, ''in_channels'' must be divisible by ''groups''.
+    Therefore, Left : in_channels, Op : %, Right : groups. The remainder should be
+    0, so Op : ==, Right : 0.'
+  target: in_channels must be divisible by groups
+  txt: in_channels % groups == 0 and out_channels % groups == 0
+- cot: 'The error is due to trying to create a tensor with a negative dimension. The
+    ''in_channels'' argument is -500, which is invalid because dimensions of a tensor
+    must be non-negative integers. The constraint that needs to be enforced here is
+    that ''in_channels'' must be greater than or equal to 0. Therefore, the logical
+    constraint would look like this:'
+  target: 'Trying to create tensor with negative dimension -500: [5, -500]'
+  txt: ((out_channels >= 0)) and ((in_channels >= 0))
+- cot: 'The error is due to the incorrect value of ''stride''. The expected value
+    for ''stride'' is a single integer or a list containing only one integer to match
+    the convolution dimensions. However, in the given values, stride is provided as
+    1. This means that stride is considered as [1, 1] which is not matching the expected
+    condition.
+
+
+    To prevent this error, we need to ensure that stride has only one value. We can
+    express this constraint as:'
+  target: expected padding to be a single integer value or a list of 1 values to match
+    the convolution dimensions, but got padding=[9, 8, 1, 1, 1]
+  txt: len(stride) == 1
+- cot: 'The error is due to unsupported padding dimensions or padding mode. Let''s
+    see what the args were. The padding mode is ''circular'' which might not be supported.
+    Therefore, Left : padding_mode, op : !=, right : ''circular''. From the error
+    message, we can assume the padding size should be 2D, 3D, 4D or 5D. Therefore,
+    Left : len(padding), op : in, right : [2, 3, 4, 5].'
+  target: Only 2D, 3D, 4D, 5D padding with non-constant padding are supported for
+    now
+  txt: ((groups == in_channels)) and (padding_mode != 'circular')
+- cot: 'The error message indicates that the input type and bias type should be the
+    same, but in the given values, the input type is "c10::complex<double>" and the
+    bias type is "float". What the args were? If we look at the provided arguments,
+    we can see that ''input'' is a tensor of type TensorDType.complex128 and ''bias''
+    is a float. Therefore, either the ''input'' should be changed to float or ''bias''
+    should be changed to complex. Therefore, Left : type(input) or type(bias). Op
+    : ==, Right : float or complex.'
+  target: Input type (c10::complex<double>) and bias type (float) should be the same
+  txt: (len(kernel_size) > 0) or (type(input)==float)
+- cot: 'The error is due to the ''groups'' parameter which must be a positive integer.
+    From the given values, groups value is 0. Therefore, Left : groups, Op : >, Right
+    : 0. Additionally, it must be an integer, so Op: == , and Right : int(groups).'
+  target: groups must be a positive integer
+  txt: groups > 0
+- cot: 'The error is due to the input tensor having more dimensions than expected.
+    The conv2d function expects either a 3D or 4D tensor, where the first dimension
+    is typically the batch size. However, the provided input tensor was of 5 dimensions.
+    To prevent this error from happening again, we need to ensure that the input tensor
+    has either 3 or 4 dimensions.
+
+
+    We can express this constraint as follows:'
+  target: 'Expected 3D (unbatched) or 4D (batched) input to conv2d, but got input
+    of size: [3, 2, 8, 2, 6]'
+  txt: len(input.shape) in [3, 4]
+time_cost: 4662.371613502502
+title: torch.nn.Conv2d
+tokens_used: 40470
+trained: true

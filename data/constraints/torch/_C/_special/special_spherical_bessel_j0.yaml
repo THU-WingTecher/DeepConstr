@@ -1,0 +1,37 @@
+constraints:
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+  x:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 13
+package: torch
+pass_rate: 0.95
+rules:
+- cot: The error indicates that there is an attempt to resize storage that is not
+    resizable. The values provided include a 'x' tensor with shape [6, 8, 6, 6, 1,
+    3, 4, 1, 3, 2] and 'out' tensor with shape [8, 2, 1]. This could be due to a mismatch
+    between the shape of 'x' and 'out' tensor, or attempting to change the size of
+    a tensor that is already defined and not supposed to be changed. Therefore, one
+    constraint could be that the dimensions of 'x' and 'out' must be compatible for
+    the operation being performed. Additionally, the size of a tensor should not be
+    changed after it has been defined if it is not designed to be resizable.
+  target: Trying to resize storage that is not resizable
+  txt: len(x.shape) == len(out.shape) and all(x[i] == out[i] for i in range(len(x.shape)))
+- cot: 'The error message states that a value of type ''Float'' cannot be cast to
+    ''Int''. This means that the output type is ''Int'' but the function is trying
+    to assign a ''Float'' value to it. Therefore, the output type should be ''Float''
+    or the input type should be ''Int''. Hence, Left : type(out) or type(x), Op :
+    ==, Right : Float or Int'
+  target: result type Float can't be cast to the desired output type Short
+  txt: type(out)==Float
+time_cost: 1553.4538407325745
+title: torch._C._special.special_spherical_bessel_j0
+tokens_used: 7906
+trained: true

@@ -1,0 +1,44 @@
+constraints:
+  chunks:
+    default: null
+    dtype: int
+    init: false
+    required: true
+  dim:
+    default: 0
+    dtype: int
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 7
+package: torch
+pass_rate: 0.9
+rules:
+- cot: 'The error is due to an invalid dimension size. The function is trying to operate
+    on dimension 7 of the input tensor; however, the valid range is between -4 and
+    3. Let''s see what the args were. The ''dim'' argument value is 7, and the ''chunks''
+    argument value is 3. The ''dim'' should be less than the rank of the tensor, and
+    greater than or equal to negative of the tensor rank. Therefore, left : dim, op
+    : <, right : len(input.shape), and left : dim, op : >=, right : -len(input.shape).
+    Also, to chunk the tensor, the size of the dimension ''dim'' in the input tensor
+    should be divisible by ''chunks''. So left : len(input.shape[dim]) % chunks, Op
+    : ==, right : 0.'
+  target: Dimension out of range (expected to be in range of [-4, 3], but got 7)
+  txt: dim < len(input.shape)
+- cot: 'The error arises because the ''chunk'' function expects at least a 1-dimensional
+    tensor. However, the ''input'' tensor is a 0-dimensional tensor. Let''s see what
+    the args were. It appears ''input'' tensor has 0 dimension, and is the problem.
+    Therefore, the number of dimensions of ''input'' tensor should be corrected, which
+    is ''input''.ndims(). Therefore, Left : ''input''.ndims(). It says that should
+    be at least 1, so Op : >=, and Right : 1.'
+  target: chunk expects at least a 1-dimensional tensor
+  txt: '''input''.ndims() >= 1'
+time_cost: 640.2630579471588
+title: torch.chunk
+tokens_used: 4331
+trained: true

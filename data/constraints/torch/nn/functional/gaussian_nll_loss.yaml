@@ -1,0 +1,46 @@
+constraints:
+  eps:
+    default: 1.0e-06
+    dtype: float
+    init: false
+    required: false
+  full:
+    default: false
+    dtype: bool
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  reduction:
+    default: mean
+    dtype: Literal['none', 'mean', 'sum']
+    init: false
+    required: false
+  target:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  var:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 18
+package: torch
+pass_rate: 0.05
+rules:
+- cot: 'The error is triggered because the size of ''var'' tensor does not match the
+    expected size. It seems like ''var'' is expected to have the same size as ''target''
+    or ''input''. Hence, the logical relationship constraints can be defined as:'
+  target: var is of incorrect size
+  txt: (len(var) == len(target)) and (var.shape == input.shape)
+time_cost: 1245.7912652492523
+title: torch.nn.functional.gaussian_nll_loss
+tokens_used: 12946
+skipped: true
+skipped_reason: unsupport constraints ( positive tensor elements)

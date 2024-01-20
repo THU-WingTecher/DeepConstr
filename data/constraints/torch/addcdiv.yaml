@@ -1,0 +1,83 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+  tensor1:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  tensor2:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  value:
+    default: 1
+    dtype: int
+    init: false
+    required: false
+infered_history: []
+infered_times: 27
+package: torch
+pass_rate: 0.05
+rules:
+- cot: 'The error is caused because the program is trying to cast a complex float
+    type to a float type, which is not allowed. The related values are ''input'',
+    ''out'', ''tensor1'', ''tensor2'', and ''value''. The tensor ''tensor1'' is of
+    type ComplexFloat while ''input'' and ''out'' are of type Float. The operation
+    cannot be performed due to this type mismatch. Therefore, Left : tensor1.dtype,
+    Op : ==, Right : "TensorDType.float32". Also, Left : out.dtype, Op : ==, Right
+    : "TensorDType.float32". The ''tensor2'' and ''value'' do not seem to be directly
+    related to this error.'
+  target: result type ComplexFloat can't be cast to the desired output type Float
+  txt: tensor1.dtype == "TensorDType.float32"
+- cot: 'The error occurs because of the integer division with addcdiv, which is no
+    longer supported. The error message also suggests how the operation can be implemented
+    for both integer and float inputs. The constraint can be extracted from this information.
+    Considering the input types, type(''tensor1'') and type(''tensor2'') should be
+    float. This is because the future addcdiv behavior only supports float inputs.
+    Hence, if we want to use addcdiv, we should ensure that tensor1 and tensor2 are
+    float tensors. Therefore, Left : type(tensor1) and type(tensor2), Op : ==, Right
+    : float.'
+  target: 'Integer division with addcdiv is no longer supported, and in a future  release
+    addcdiv will perform a true division of tensor1 and tensor2. The historic addcdiv
+    behavior can be implemented as (input + value * torch.trunc(tensor1 / tensor2)).to(input.dtype)
+    for integer inputs and as (input + value * tensor1 / tensor2) for float inputs.
+    The future addcdiv behavior is just the latter implementation: (input + value
+    * tensor1 / tensor2), for all dtypes.'
+  txt: type(tensor2)=="float"
+- cot: 'Error is triggered because the size of tensors a and b at non-singleton dimension
+    6 doesn''t match. Looking at the provided tensors, tensor ''input'' has size 9
+    and tensor ''tensor1'' has size 2 at dimension 6. Broadcasting would require these
+    to be equal or one of them to be 1. Since neither is the case, the operation that
+    led to this error cannot proceed. We can prevent this error in the future by ensuring
+    the sizes match or that one of them is 1. This constraint can be expressed as:'
+  target: The size of tensor a (9) must match the size of tensor b (2) at non-singleton
+    dimension 6
+  txt: (all(input.shape[i] == tensor2.shape[i] or input.shape[i] == 1 or tensor2.shape[i]
+    == 1 for i in range(-1, -min(len(input.shape), len(tensor2.shape))-1, -1)) and
+    input.shape[6] == tensor2.shape[6]) or ('input'.shape[6] == 1)
+- cot: "The error suggests that there is an attempt to resize a tensor that isn't\
+    \ resizable. A tensor's size is determined by its dimensions, and not all tensors\
+    \ can be resized. The provided values indicate that 'input', 'out', 'tensor1'\
+    \ and 'tensor2' are all tensors with different dimensions. The 'value' is an integer\
+    \ 3. To prevent this error, it is important to ensure that the operations applied\
+    \ to the tensors do not attempt to change their dimensions. Therefore, the constraints\
+    \ should ensure that tensor dimensions stay the same. \n\nFor example, the constraint\
+    \ for 'input' tensor could be:"
+  target: Trying to resize storage that is not resizable
+  txt: (len(tensor2.shape) > 0) or (tensor2.shape[0] == 1)
+time_cost: 3092.934909105301
+title: torch.addcdiv
+tokens_used: 17088
+trained: true
+skipped_reason: bug 
+skipped: true 

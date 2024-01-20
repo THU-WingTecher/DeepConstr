@@ -1,0 +1,82 @@
+constraints:
+  alpha:
+    default: 1
+    dtype: float
+    init: false
+    required: false
+  batch1:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  batch2:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  beta:
+    default: 1
+    dtype: float
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 40
+package: torch
+pass_rate: 0.0
+rules:
+- cot: "The error is related to attempting to access a dimension that does not exist\
+    \ on a tensor. Let's examine the dimensions of the tensors.\n\n'input': Tensor\
+    \ has 8 dimensions,\n'batch1': Tensor has 1 dimension,\n'batch2': Tensor has 5\
+    \ dimensions and \n'out': Tensor has 1 dimension.\n\nIt seems that the code is\
+    \ trying to access the second dimension (indexed as 1) of a tensor which has only\
+    \ one or less dimensions (indexed as -1 or 0). The tensors that could be in violation\
+    \ are 'batch1' and 'out' as they have only 1 dimension.\n\nTherefore, the constraint\
+    \ should be that each tensor must have at least 2 dimensions to access the second\
+    \ one. So, the number of dimensions of batch1 and out should be corrected, which\
+    \ is batch1.ndims() and out.ndims(). \n\nThe constraints would thus be:"
+  target: Dimension out of range (expected to be in range of [-1, 0], but got 1)
+  txt: out.ndims() > 1
+- cot: 'The error suggests that the number of sizes provided (3) is less than the
+    number of dimensions in the tensor (5). This information is referring to the ''expand''
+    function attempting to reshape a tensor of size [4,4,4,7,5] to [10,9,9]. The dimensions
+    of the target size is less than the dimensions of the original tensor. Therefore,
+    Left: len(size), Op: ''>='', Right: input.dim.'
+  target: 'expand(torch.FloatTensor{[4, 4, 4, 7, 5]}, size=[10, 9, 9]): the number
+    of sizes provided (3) must be greater or equal to the number of dimensions in
+    the tensor (5)'
+  txt: len(size) >= input.dim
+- cot: 'Based on the error, it seems that the tensor sizes are not matching at non-singleton
+    dimension 2. The expanded size of the tensor (6) needs to match the existing size
+    (2). Therefore, the tensor''s dimensions should be checked and made the same where
+    necessary. Here are the constraints:'
+  target: 'The expanded size of the tensor (6) must match the existing size (2) at
+    non-singleton dimension 2.  Target sizes: [9, 8, 6].  Tensor sizes: [8, 2]'
+  txt: batch1[0] == input[0]
+- cot: 'The error is caused because the ''batch2'' tensor is not a 3D tensor. Looking
+    at the args, batch2 was a tensor of float32. To be a 3D tensor, it should have
+    exactly 3 dimensions. However, batch2 had 7 dimensions. So, Left : batch2.dim
+    needs to be corrected. It says it should be equal to 3, so Op : ''=='', and Right
+    : 3.'
+  target: batch2 must be a 3D tensor
+  txt: batch2.dim == 3
+- cot: 'The error suggests that a tensor is expected to have dimensions but was given
+    a tensor with no dimensions. Looking at the provided arguments, ''input'', ''batch1'',
+    and ''batch2'' are tensors with no dimensions. Therefore, the constraint should
+    be that these tensors must have dimensions. So, Left : len(input.shape), len(batch1.shape),
+    len(batch2.shape). op : >, right : 0.'
+  target: Dimension specified as 0 but tensor has no dimensions
+  txt: ('batch2'.ndims() != 0) and (len(batch1.shape)>0)
+time_cost: 1903.5569174289703
+title: torch.baddbmm
+tokens_used: 25842
+trained: true

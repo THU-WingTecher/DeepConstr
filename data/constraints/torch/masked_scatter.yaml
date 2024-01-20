@@ -1,0 +1,71 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  mask:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  source:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+infered_history: []
+infered_times: 35
+package: torch
+pass_rate: 0.68
+rules:
+- cot: 'The error is due to the mismatch in the data types of ''self'' and ''source''.
+    Let''s see what the args were. It seems ''self'' and ''source'' should have the
+    same data types. Currently, ''self'' has dtype Long and ''source'' has dtype ComplexDouble.
+    Therefore, the data types of ''self'' and ''source'' should be corrected. It says
+    it should have the same dtype, so Operation : ==, and Right : dtype of ''self''.'
+  target: 'masked_scatter: expected self and source to have same dtypes but gotLong
+    and ComplexDouble'
+  txt: input.dtype == source.dtype
+- cot: "The error states that the number of elements in 'source' is less than the\
+    \ number of ones in 'mask'. This means that the 'source' tensor does not have\
+    \ enough elements to match the 'true' values in the 'mask'. \n\nThe 'mask' tensor\
+    \ is a boolean tensor which is typically used to select elements from the 'source'\
+    \ tensor where the mask is True. In this case, the 'mask' tensor is empty, which\
+    \ implies that it does not have any elements, so the number of ones in 'mask'\
+    \ should be zero. \n\nHowever, the 'source' tensor is non-empty with shape [0,\
+    \ 8, 8, 8, 8, 8, 9, 6] which means it has elements. \n\nSo, looking at the error,\
+    \ there seems to be a contradiction as it says number of elements of source is\
+    \ less than number of ones in mask, which is not possible as per the given values.\
+    \ \n\nThe constraints should be:\n1. The number of elements in 'source' should\
+    \ be greater than or equal to the number of ones in 'mask'.\n2. The 'mask' tensor\
+    \ shape should match with 'source' tensor shape or be broadcastable to 'source'\
+    \ tensor shape."
+  target: Number of elements of source < number of ones in mask
+  txt: mask.shape == source.shape
+- cot: 'Error is triggered because size of tensors at non-singleton dimension 6 doesn''t
+    match. What the args were? the two tensors matching problem at non-singleton dimension
+    looks like broadcasting request. Broadcasting in tensor operations requires that
+    the trailing dimensions of the tensors are either 1 or the same. Therefore, we
+    can revise the constraints as follows:'
+  target: The size of tensor a (2) must match the size of tensor b (3) at non-singleton
+    dimension 6
+  txt: (all(input.shape[i] == mask.shape[i] or input.shape[i] == 1 or mask.shape[i]
+    == 1 for i in range(-1, -min(len(input.shape), len(mask.shape))-1, -1)) and all(input.shape[i]
+    == source.shape[i] or input.shape[i] == 1 or source.shape[i] == 1 for i in range(-1,
+    -min(len(input.shape), len(source.shape))-1, -1))) and ((all(mask.shape[i] ==
+    source.shape[i] or mask.shape[i] == 1 or source.shape[i] == 1 for i in range(-1,
+    -min(len(mask.shape), len(source.shape))-1, -1))) and ((input.dim(i) == 1) and
+    ((input[6] == source[6]) and (all(input.shape[i] == source.shape[i] or input.shape[i]
+    == 1 or source.shape[i] == 1 for i in range(-1, -min(len(input.shape), len(source.shape))-1,
+    -1))))))
+- cot: "The error is due to the usage of a mask of float datatype in the function\
+    \ 'masked_scatter_', which only supports boolean masks. Let's see what the args\
+    \ were. The mask provided is of type 'float32'. To prevent this error from occurring\
+    \ again, we need to ensure that the mask is always of boolean type. \n\nThe constraint\
+    \ for the 'mask' parameter can be expressed as:"
+  target: masked_scatter_ only supports boolean masks, but got mask with dtype Float
+  txt: mask.dtype == torch.bool
+time_cost: 2764.2176723480225
+title: torch.masked_scatter
+tokens_used: 25966
+trained: true

@@ -1,0 +1,40 @@
+constraints:
+  Tout:
+    default: 'null'
+    dtype: float32,float64,int16,int32,int64,complex64
+    init: false
+    required: false
+  adj_x:
+    default: 'false'
+    dtype: bool
+    init: false
+    required: false
+  adj_y:
+    default: 'false'
+    dtype: bool
+    init: false
+    required: false
+  name:
+    default: 'null'
+    dtype: str
+    init: false
+    required: false
+  x:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,int8,int16,int32,int64,complex64
+    init: false
+    required: true
+  y:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,int8,int16,int32,int64,complex64
+    init: false
+    required: true
+infered_history:
+- 3
+infered_times: 5
+package: tf
+pass_rate: 0.0
+rules: {}
+time_cost: 599.9520573616028
+title: tf.raw_ops.BatchMatMulV3
+tokens_used: 5370

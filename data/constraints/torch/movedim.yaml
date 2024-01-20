@@ -1,0 +1,32 @@
+alias: torch.movedim
+constraints:
+  destination:
+    default: null
+    dtype: int
+    init: false
+    required: true
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  source:
+    default: null
+    dtype: int
+    init: false
+    required: true
+infered_history: []
+infered_times: 8
+package: torch
+pass_rate: 1.0
+rules:
+- cot: 'The error is due to the ''source'' value being out of the expected range.
+    The ''source'' value is 7 which exceeds the valid range of [-3, 2]. Therefore,
+    the ''source'' value should be within this range. So, Left : source, Op : >=,
+    and Right : -3. Also, Left : source, Op : <=, and Right : 2.'
+  target: Dimension out of range (expected to be in range of [-3, 2], but got 7)
+  txt: (source < len(input.shape)) and (destination < len(input.shape) and destination
+    >= -len(input.shape))
+time_cost: 208.14305925369263
+title: torch.movedim
+tokens_used: 5991

@@ -1,0 +1,69 @@
+constraints:
+  data_format:
+    default: NHWC
+    dtype: str
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  ksize:
+    default: null
+    dtype: int32
+    init: false
+    required: true
+  name:
+    default: null
+    dtype: str
+    init: false
+    required: false
+  padding:
+    default: null
+    dtype: str
+    init: false
+    required: true
+  strides:
+    default: null
+    dtype: int32
+    init: false
+    required: true
+infered_history:
+- 4
+- 7
+- 4
+infered_times: 16
+package: tf
+pass_rate: 0.0
+rules:
+- cot: The error occurs due to an incorrect value for 'padding' in the input dictionary.
+    The value provided is 'not defined', while the allowed values are "SAME", "VALID".
+    Therefore, the attribute 'padding' should be corrected to either "SAME" or "VALID".
+    Also, the 'data_format' attribute has a value of 'not defined', whereas the allowed
+    values are "NHWC", "NCHW", "NCHW_VECT_C". Hence, it should be corrected as well.
+  target: "Value for attr 'padding' of \"not defined\" is not in the list of allowed\
+    \ values: \"SAME\", \"VALID\"\n ; NodeDef: ; Op output:T; attr=T:type,default=DT_FLOAT,allowed=[DT_HALF,\
+    \ DT_BFLOAT16, DT_FLOAT, DT_DOUBLE, DT_INT32, DT_INT64, DT_UINT8, DT_INT16, DT_INT8,\
+    \ DT_UINT16, DT_QINT8]; attr=padding:string,allowed=[\"SAME\", \"VALID\"]; attr=data_format:string,default=\"\
+    NHWC\",allowed=[\"NHWC\", \"NCHW\", \"NCHW_VECT_C\"]> [Op:MaxPoolV2] name:"
+  txt: padding in ["SAME", "VALID"] and data_format in ["NHWC", "NCHW", "NCHW_VECT_C"]
+- cot: 'The error occurs because the function MaxPoolV2 is trying to perform a operation
+    on a int32 tensor and a float tensor. According to the error message, input#1
+    (which is ''ksize'' based on zero-indexing) is expected to be int32 but is a float.
+    Therefore, to correct this, the type of ''ksize'' must be int32. So the Left :
+    type(ksize). It needs to be equal to ''int32'', so Op : ==, and Right : int32.'
+  target: 'cannot compute MaxPoolV2 as input #1(zero-based) was expected to be a int32
+    tensor but is a float tensor [Op:MaxPoolV2] name:'
+  txt: (type(strides) in [half, bfloat16, float, double, int32, int64, uint8, int16,
+    int8, uint16, qint8]) and (type(ksize) == int32)
+- cot: 'The error is generated because the ksize field does not specify 4 dimensions,
+    which is required for the Sliding window in MaxPoolV2 operation. The input tensor
+    ''ksize'' has a length of 10, but it must be 4. Therefore, Left : len(ksize) must
+    be corrected. Operator : ''=='', Right : 4.'
+  target: 'Sliding window ksize field must specify 4 dimensions [Op:MaxPoolV2] name:'
+  txt: len(ksize) == 4
+time_cost: 2203.748382091522
+title: tf.raw_ops.MaxPoolV2
+tokens_used: 14437
+trained: true

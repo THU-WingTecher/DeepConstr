@@ -1,0 +1,39 @@
+constraints:
+  n:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  x:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 13
+package: torch
+pass_rate: 1.0
+rules:
+- cot: 'The error is due to an operation "hermite_polynomial_he_cpu" which is not
+    implemented for ''ComplexFloat''. The operation is attempted on the tensor ''n''
+    which has a dtype of complex64. From the error message, it appears that the operation
+    is not compatible with this dtype. Hence, the dtype of ''n'' should be corrected
+    to be compatible with the operation. Therefore, Left : n.dtype should be corrected.
+    It says that cannot be complex64 for hermite_polynomial_he_cpu, so Op : !=, and
+    Right : complex64.'
+  target: '"hermite_polynomial_he_cpu" not implemented for ''ComplexFloat'''
+  txt: (x.dtype != 'complex64') and (n.dtype != complex64)
+- cot: 'Error is triggered because the size of tensor ''x'' and tensor ''n'' at non-singleton
+    dimension 2 doesn''t match. What the args were? the two tensors matching problem
+    at non-singleton dimension looks like broadcasting request. Broadcasting in tensor
+    operations requires that the trailing dimensions of the tensors are either 1 or
+    the same. We start from the last dimension because broadcasting aligns dimensions
+    from the end. Therefore, we can revise the constraints as follows:'
+  target: The size of tensor a (6) must match the size of tensor b (8) at non-singleton
+    dimension 2
+  txt: all(x.shape[i] == n.shape[i] or x.shape[i] == 1 or n.shape[i] == 1 for i in
+    range(-1, -min(len(x.shape), len(n.shape))-1, -1))
+time_cost: 40716.27569770813
+title: torch._C._special.special_hermite_polynomial_he
+tokens_used: 9155
+trained: true

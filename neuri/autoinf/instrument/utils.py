@@ -1,5 +1,5 @@
 import hashlib
-from typing import Any, Callable, Dict, List, Tuple
+from typing import Any, Callable, Dict, List, Tuple, Union
 
 import numpy as np
 
@@ -31,6 +31,9 @@ def get_ret_list(ret):
         ret_list = ret
     return ret_list
 
+def tensor_to_abs(tensor, abs_from_dtype : Callable) : 
+    from neuri.abstract.tensor import AbsTensor
+    return AbsTensor(list(tensor.shape), abs_from_dtype(tensor.dtype))
 
 def data_type_str(x: Any, keep_int_value: bool = True, dtype_class: Any = None) -> str:
     """To distinguish operator instances in one API.
@@ -72,7 +75,11 @@ def data_type_str(x: Any, keep_int_value: bool = True, dtype_class: Any = None) 
     #     embed()
 
 
-def numpy_random(shape: List[int], str_dtype: str) -> np.ndarray:
+def numpy_random(shape: List[int], str_dtype: str) -> Union[np.ndarray, Tuple[List[int], str]]:
+    """ 
+    generate random numpy array.
+    If numpy doesn't support the dtype, return the shape and dtype.(Tuple)
+    """
     if np.prod(shape) > 2 * 1024**3 / 16:
         raise ValueError(f"Too large tensor shape: {shape = }")
     # print(f"Generating random tensor: {shape = }, {str_dtype = }", flush=True)
@@ -80,7 +87,10 @@ def numpy_random(shape: List[int], str_dtype: str) -> np.ndarray:
     # rand_float = lambda size: np.random.uniform(0, 1, size)
     ret: np.ndarray = None
     if "float" in str_dtype:
-        ret = np.array(rand_float(shape)).astype(str_dtype)
+        if "bfloat" in str_dtype:
+            ret = (shape, str_dtype)
+        else :
+            ret = np.array(rand_float(shape)).astype(str_dtype)
     elif "complex" in str_dtype:
         complex_2_float = {
             "complex64": "float32",
@@ -93,8 +103,10 @@ def numpy_random(shape: List[int], str_dtype: str) -> np.ndarray:
             + 1j * np.array(rand_float(shape)).astype(float_dtype)
         )
     elif "int" in str_dtype:
-        ret = np.array(np.random.randint(-1000_000, 1000_000, shape)).astype(str_dtype)
-        # ret = np.random.randint(0, 100, shape, dtype=str_dtype)
+        if "qint" in str_dtype or "uint" in str_dtype:
+            ret = (shape, str_dtype)
+        else:
+            ret = np.array(np.random.randint(-1000_000, 1000_000, shape)).astype(str_dtype)
     elif "bool" in str_dtype:
         ret = np.array(np.random.randint(0, 2, shape)).astype(str_dtype)
     else:

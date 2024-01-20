@@ -1,0 +1,35 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 18
+package: torch
+pass_rate: 1.0
+rules:
+- cot: 'Looking at the values, the ''input'' tensor has a shape of [4] while the ''out''
+    tensor has a shape of [3]. The error is triggered because we are trying to resize
+    the ''out'' tensor to match the ''input'' tensor, but the ''out'' tensor is not
+    resizable. So, the constraint should be that the ''out'' tensor''s shape should
+    match the ''input'' tensor''s shape. Therefore, Left : out.shape, Right : input.shape,
+    and Op : ==.'
+  target: Trying to resize storage that is not resizable
+  txt: out.shape == input.shape
+- cot: 'The error arises due to a mismatch in the type of values. The ''input'' tensor
+    is of the float32 type, while the ''out'' tensor is of the bool type. As per the
+    exception, the float type can''t be cast to bool. Therefore, Left : out.dtype
+    or input.dtype. Op : ==, Right : tf.float32. This is because the type of ''input''
+    and ''out'' should be same and they should be of float32 type.'
+  target: result type Float can't be cast to the desired output type Bool
+  txt: out.dtype == tf.float32
+time_cost: 981.5151455402374
+title: torch.deg2rad
+tokens_used: 9221
+trained: true

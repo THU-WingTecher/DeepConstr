@@ -1,0 +1,36 @@
+alias: torch.special.expit
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 17
+package: torch
+pass_rate: 1.0
+rules:
+- cot: 'The error indicates that there was an attempt to resize storage that is not
+    resizable. The values provided in the ''input'' and ''out'' tensors may be the
+    cause of this problem. To prevent this error to occur, the shape of the ''input''
+    tensor should match the shape of the ''out'' tensor. Therefore, Left: ''input''.shape,
+    Op: ''=='', and Right: ''out''.shape.'
+  target: Trying to resize storage that is not resizable
+  txt: '''input''.shape == ''out''.shape'
+- cot: 'The error is due to the mismatch between the output tensor data type and the
+    desired data type. Let''s see what the args were. The output tensor is of type
+    ''Short'' and the input tensor is of type ''Float''. Therefore, the type of the
+    input tensor must be the same as the type of the output tensor. Thus, Left : input.dtype.
+    Op : == Right : out.dtype. Also, it says that ''Float'' can''t be cast to ''Short'',
+    so Left : input.dtype. Op : != Right : ''Float''.'
+  target: result type Float can't be cast to the desired output type Short
+  txt: (type(out)==float32) and (input.dtype == out.dtype)
+time_cost: 750.5635969638824
+title: torch.special.expit
+tokens_used: 9164
+trained: true

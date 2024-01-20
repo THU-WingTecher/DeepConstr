@@ -1,0 +1,38 @@
+alias: torch.unbind
+constraints:
+  dim:
+    default: 0
+    dtype: int
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 2
+package: torch
+pass_rate: 0.95
+rules:
+- cot: 'The error occurs because the dimension provided is out of the valid range.
+    The given dimension is 4, which is out of the range of [-4, 3]. To prevent this
+    error in the future and generate constraints that do not trigger it, we need to
+    ensure that the "dim" value is always within the valid range for the given tensor.
+    If we denote the shape of the tensor as n, the valid range for the dimension would
+    be [-n, n-1].
+
+
+    However, there is a special case for tensors with no dimensions (empty tensors),
+    where the dim value can be -1 (default value when none specified) and it won''t
+    trigger the error.
+
+
+    So the complete constraints can be expressed as:'
+  target: Dimension out of range (expected to be in range of [-4, 3], but got 4)
+  txt: (dim >= -len(input.shape) and dim < len(input.shape)) or (dim == -1 and len(input.shape)
+    == 0)
+time_cost: 340.4532661437988
+title: torch.unbind
+tokens_used: 1331
+trained: true

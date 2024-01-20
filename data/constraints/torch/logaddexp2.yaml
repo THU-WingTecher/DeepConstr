@@ -1,0 +1,66 @@
+constraints:
+  input:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  other:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 25
+package: torch
+pass_rate: 0.37
+rules:
+- cot: 'The error is due to the unsupported ''BFloat16'' data type of the input tensor.
+    Let''s see what the args were. It appears that ''input'' is a tensor with data
+    type ''BFloat16'', which is not supported. Therefore, ''input'' data type should
+    be corrected. It says it''s unsupported, so Operation : !=; and Right : ''BFloat16''.'
+  target: Got unsupported ScalarType BFloat16
+  txt: input.dtype != 'BFloat16'
+- cot: The error occurs because the program is trying to resize a storage that is
+    not resizable. The values provided are 'input', 'other', and 'out'. The tensors
+    provided have different dimensions and it seems that the 'other' tensor has more
+    dimensions compared to 'input' and 'out'. The storage might be trying to accommodate
+    the dimensions of 'other' tensor which is causing the error. Therefore, the dimensions
+    of 'other' tensor should either match with 'input' and 'out' or should be less
+    than that. Hence the constraint would be that the dimensions of 'other' tensor
+    should be less than or equal to the dimensions of 'input' and 'out' tensor.
+  target: Trying to resize storage that is not resizable
+  txt: (out.rank == input.rank) or ((input.is_resizable == True) and (len(other.shape)
+    <= len(input.shape) and len(other.shape) <= len(out.shape)))
+- cot: 'The error is triggered because the result type Half (float16) cannot be cast
+    to the desired output type Int. Looking at the args, the dtype of ''input'' is
+    float16, the dtype of ''other'' is float64, and the dtype of ''out'' is int32.
+    Therefore, the dtypes of all arguments should be consistent to prevent this error.
+    Left : type(input), op : ==, comparator : type(other), type(out)'
+  target: result type Half can't be cast to the desired output type Int
+  txt: (type(other)==type(out)) and (type(input)==type(other))
+- cot: 'The error arises because the "logaddexp2_cpu" operation is not implemented
+    for ''Bool'' type tensors. Let''s check the inputs. The input tensors ''input'',
+    ''other'', and ''out'' are all of boolean type. Therefore, the Left : type(input)
+    or type(other) or type(out) should be corrected to match a type that supports
+    "logaddexp2_cpu" operation. So, Op : !=, and Right : "Bool".'
+  target: '"logaddexp2_cpu" not implemented for ''Bool'''
+  txt: type(out) != "Bool"
+- cot: 'Error is triggered because the size of tensor a doesn''t match the size of
+    tensor b at non-singleton dimension 7. Let''s see what the args were. It seems
+    that the sizes of ''input'' tensor at dimension 7 and ''other'' tensor at dimension
+    7 are not matching. Therefore, Left : input.shape[7]. Op : ==. Right : other.shape[7].'
+  target: The size of tensor a (3) must match the size of tensor b (6) at non-singleton
+    dimension 7
+  txt: (input.shape[2] == other.shape[2]) and ((all(input.shape[i] == other.shape[i]
+    or input.shape[i] == 1 or other.shape[i] == 1 for i in range(-1, -min(len(input.shape),
+    len(other.shape))-1, -1))) and ((input.shape[6] == other.shape[6]) and (input.shape[7]
+    == other.shape[7])))
+time_cost: 17284.541882038116
+title: torch.logaddexp2
+tokens_used: 17241
+trained: true

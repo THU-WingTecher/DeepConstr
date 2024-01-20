@@ -1,0 +1,20 @@
+constraints:
+  name:
+    default: 'null'
+    dtype: str
+    init: false
+    required: false
+  x:
+    default: null
+    dtype: bfloat16,float16,float32,float64,int8,int16,int32,int64
+    init: false
+    required: true
+infered_history: []
+infered_times: 1
+package: tf
+pass_rate: 0.97
+rules: {}
+time_cost: 0.001491546630859375
+title: tf.raw_ops.Abs
+tokens_used: 458
+trained: true

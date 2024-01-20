@@ -1,0 +1,37 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  lambd:
+    default: 0.5
+    dtype: float
+    init: false
+    required: false
+infered_history: []
+infered_times: 8
+package: torch
+pass_rate: 1.0
+rules:
+- cot: 'The error is due to the invalid ''lambd'' value. Let''s see what the args
+    were. It appears that ''lambd'' is the lambda value and it''s currently -0.4333994,
+    which is less than 0. Therefore, ''lambd'' should be corrected. It says it should
+    be greater or equal to 0.
+
+
+    The constraint for the ''lambd'' parameter can be expressed as:'
+  target: lambda must be greater or equal to 0, but found to be -0.433399.
+  txt: lambd >= 0
+- cot: 'The error message "softshrink_cpu" not implemented for ''Int'' implies that
+    the function softshrink_cpu does not work with ''Int'' type. Therefore, the input
+    type should not be ''Int''. Instead, it should be a type that softshrink_cpu can
+    handle. The type of input should be ''float'' or ''double'' in order to prevent
+    the error. Thus, the constraint should be : type(input) == ''float'' or type(input)
+    == ''double''.'
+  target: '"softshrink_cpu" not implemented for ''Int'''
+  txt: type(input) in ['float', 'double']
+time_cost: 137.88998222351074
+title: torch._C._nn.softshrink
+tokens_used: 4561
+trained: true

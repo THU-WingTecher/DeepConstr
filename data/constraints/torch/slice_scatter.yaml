@@ -1,0 +1,59 @@
+constraints:
+  dim:
+    default: '0'
+    dtype: int
+    init: false
+    required: true
+  end:
+    default: 'null'
+    dtype: int
+    init: false
+    required: false
+  input:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  src:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  start:
+    default: 'null'
+    dtype: int
+    init: false
+    required: false
+  step:
+    default: '1'
+    dtype: int
+    init: false
+    required: true
+infered_history: []
+infered_times: 30
+package: torch
+pass_rate: 0.0
+rules:
+- cot: 'Error is caused due to an invalid ''dim'' value. The error message suggests
+    that the ''dim'' value should be within the range [-4, 3], but it got 8. Therefore,
+    the ''dim'' value should satisfy the following constraints: Left : dim, Op : >=,
+    Right : -4 and Left : dim, Op : <=, Right : 3'
+  target: Dimension out of range (expected to be in range of [-4, 3], but got 8)
+  txt: (dim < len(input.shape)) or (dim >= -4 and dim <= 3)
+- cot: 'The error is due to the ''step'' value in the slice function is not satisfying
+    the requirement of being positive. The received ''step'' value is -1, which is
+    not positive. Thus, the ''step'' value needs to be corrected. Therefore, Left:
+    step, Op: ''>'', and Right: 0.'
+  target: slice step must be positive
+  txt: step > 0
+- cot: 'The error is due to applying the slice function to a 0-dimension tensor. The
+    slice function can only be applied to tensors with at least one dimension. Therefore,
+    we should ensure that the input tensor has at least one dimension. The constraints
+    can be defined as follows:'
+  target: slice() cannot be applied to a 0-dim tensor.
+  txt: len(input.shape) >= 1
+time_cost: 1323.5251815319061
+title: torch.slice_scatter
+tokens_used: 19211
+skipped: true 
+skipped_reason: infer failed (expected src to have a size equal to the slice of self. src size = [1, 3, 2], slice size = [0, 8, 6, 8, 6, 6, 1])

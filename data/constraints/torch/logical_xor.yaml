@@ -1,0 +1,44 @@
+alias: torch.logical_xor
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  other:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 21
+package: torch
+pass_rate: 1.0
+rules:
+- cot: "The error is triggered because the size of tensors at non-singleton dimension\
+    \ 5 doesn't match. 'input' tensor has a size of 6 at the 5th dimension, while\
+    \ 'other' tensor has a size of 3 at the 5th dimension. \n\nTo prevent this error,\
+    \ we need to ensure that the sizes of 'input' and 'other' at the 5th dimension\
+    \ match. If we consider 'input' as tensor a and 'other' as tensor b, then their\
+    \ sizes at the 5th dimension should be equal.\n\nTherefore, the constraint to\
+    \ prevent this error would be:"
+  target: The size of tensor a (6) must match the size of tensor b (3) at non-singleton
+    dimension 5
+  txt: (input.shape[1]==out.shape[0]) and ((all(input.shape[i] == other.shape[i] for
+    i in range(len(input.shape)))) and (len(input.shape) == len(other.shape)))
+- cot: 'The error is triggered because the ''out'' tensor is not resizable and its
+    shape does not match with the shape of ''input'' or ''other'' tensors. To prevent
+    this error, the ''out'' tensor should have the same shape as the ''input'' and
+    ''other'' tensors before the operation is performed. The constraints that do not
+    trigger the error could be generated as follows:'
+  target: Trying to resize storage that is not resizable
+  txt: (out.is_resizable == True) and (out.rank==input.rank and all(out.shape[i]==input.shape[i]
+    for i in range(out.rank)))
+time_cost: 4374.895068645477
+title: torch.logical_xor
+tokens_used: 11595

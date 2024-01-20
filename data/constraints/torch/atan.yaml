@@ -1,0 +1,38 @@
+alias: torch.atan
+constraints:
+  input:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 16
+package: torch
+pass_rate: 1.0
+rules:
+- cot: 'The error occurs because the input and output tensor sizes do not match, causing
+    a resizing error. The input tensor has a size of [10, 9] and the output tensor
+    has a size of [4, 1]. The constraint should ensure that the output tensor size
+    matches the input tensor size. Therefore, Left: input.size(), Op: ''=='', and
+    Right: out.size().'
+  target: Trying to resize storage that is not resizable
+  txt: input.size() == out.size()
+- cot: 'The error is caused because the result type is Float which cannot be casted
+    to the desired output type Long. The dictionary values provided are of type TensorDType.int64,
+    which suggests the output type should be an integer, not a float. Therefore, we
+    can impose a constraint that the output type must be an integer. Looking at the
+    inputs and outputs, we could infer that ''input'' and ''out'' should be of the
+    same type and specifically, they should be integers. Hence, Left : type(''input''),
+    type(''out''). Op : ==. Right : int. Also, the output type should be Long, not
+    Float. So, Left : type(''out''). Op : !=. Right : float.'
+  target: result type Float can't be cast to the desired output type Long
+  txt: (type(out) == Float) and ((type(input)==Long) or (type(out)!=float))
+time_cost: 835.9593477249146
+title: torch.atan
+tokens_used: 8231
+trained: true

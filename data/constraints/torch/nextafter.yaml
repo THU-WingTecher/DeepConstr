@@ -1,0 +1,42 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  other:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 34
+package: torch
+pass_rate: 0.75
+rules:
+- cot: 'The error is triggered because the output type is set as Bool while the result
+    type is Float. What the args were? The input and other tensors are of type Float32,
+    and the desired output is Bool. So, I guess the output type should be matched
+    with the result type. Therefore, Left : out.dtype, which is the output type should
+    be corrected. It says that cannot be ''Bool'', so Op : !=, and Right : Bool. Also,
+    it should be ''Float'', so Op : ==, and Right : Float.'
+  target: result type Float can't be cast to the desired output type Bool
+  txt: (out.dtype==input.dtype) or ((type(input)==type(other)) or (out.dtype!=bool))
+- cot: 'Error is triggered because of trying to resize ''out'' tensor which is not
+    resizable. The current shape of ''out'' tensor is [1, 1, 4, 3, 6, 3, 6, 9, 10].
+    But the operation might be trying to resize it to match the shape of ''input''
+    tensor, which is [6, 9, 2, 2, 7, 1, 6, 2, 1, 3]. Therefore, to prevent this error,
+    we should ensure that the shape of ''out'' tensor matches the shape of ''input''
+    tensor before the operation. Thus, the constraint would be:'
+  target: Trying to resize storage that is not resizable
+  txt: (out.rank == other.rank and all(out.shape[i] == other.shape[i] for i in range(out.rank)))
+    and (out.rank==input.rank and all(out.shape[i]==input.shape[i] for i in range(out.rank)))
+time_cost: 5311.565580844879
+title: torch.nextafter
+tokens_used: 19718
+trained: true

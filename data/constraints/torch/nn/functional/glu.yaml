@@ -1,0 +1,43 @@
+constraints:
+  dim:
+    default: -1
+    dtype: int
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 21
+package: torch
+pass_rate: 0.93
+rules:
+- cot: 'The error is due to the halving dimension being not even. Based on the given
+    values, It seems that ''dim'' is set to 8 and the size of dimension 8 in ''input''
+    tensor is 1. To avoid this error, the dimension selected for halving should be
+    even. Therefore, Left : input.shape[dim], which is the size of the selected dimension
+    should be corrected. It should be even, so Op : %, and Right : 2 == 0'
+  target: Halving dimension must be even, but dimension 8 is size 1
+  txt: (input.shape[dim] % 2 == 0)
+- cot: "The error occurs because the 'dim' value is out of the valid range for the\
+    \ given tensor. The 'dim' value is -5, but the allowable range for the tensor\
+    \ with shape [8, 6, 8, 6] is from -4 to 3. To prevent this error, it should be\
+    \ ensured that the 'dim' value is always within the valid range for the given\
+    \ tensor. The valid range is from -n to n-1, where n is the number of dimensions\
+    \ in the tensor. \n\nThe constraint for the 'dim' parameter can be expressed as:"
+  target: Dimension out of range (expected to be in range of [-4, 3], but got -5)
+  txt: ((dim >= -len(input.shape) and dim < len(input.shape)) or len(input.shape)
+    == 0) and (dim >= -len(input.shape))
+- cot: 'The error is due to the ''glu_cpu'' function not being implemented for ''Int''
+    type. The ''input'' tensor is of type int32. Therefore, the tensor should not
+    be of type int. The function is trying to operate on ''dim'' 3 which the tensor
+    has. So, the ''dim'' value is valid but the tensor type is not. Therefore, Left
+    : type(input), Op : !=, Right : ''Int'''
+  target: '"glu_cpu" not implemented for ''Int'''
+  txt: type(input) != 'Int'
+time_cost: 817.7180304527283
+title: torch.nn.functional.glu
+tokens_used: 13508
+trained: true

@@ -1,0 +1,128 @@
+constraints:
+  data_format:
+    default: NHWC
+    dtype: str
+    init: false
+    required: false
+  dilations:
+    default:
+    - 1
+    - 1
+    - 1
+    - 1
+    dtype: list[int]
+    init: false
+    required: false
+  explicit_paddings:
+    default: []
+    dtype: list[int]
+    init: false
+    required: false
+  filter:
+    default: null
+    dtype: float16,bfloat16,float32,float64,int32
+    init: false
+    required: true
+  input_sizes:
+    default: null
+    dtype: int32
+    init: false
+    required: true
+  name:
+    default: null
+    dtype: str
+    init: false
+    required: false
+  out_backprop:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  padding:
+    default: null
+    dtype: str
+    init: false
+    required: true
+  strides:
+    default: null
+    dtype: int,list[int]
+    init: false
+    required: true
+  use_cudnn_on_gpu:
+    default: true
+    dtype: bool
+    init: false
+    required: false
+infered_history:
+- 4
+- 4
+- 4
+- 4
+- 4
+infered_times: 20
+package: tf
+pass_rate: 0.0
+rules:
+- cot: 'The error occurs because the ''strides'' argument in the ''conv2d_backprop_input''
+    operation is expected to be a list, but a single integer value ''2'' is provided.
+    So the type of ''strides'' should be a list, which can be checked with type(strides).
+    Therefore, Left : type(strides), Op : == and Right : list. Moreover, the error
+    message says "not 0", implying that the list cannot be empty. This can be checked
+    with len(strides). Therefore, Left : len(strides), Op : != and Right : 0.'
+  target: Expected list for 'strides' argument to 'conv2d_backprop_input' Op, not
+    0.
+  txt: type(strides) == list
+- cot: 'The error is due to incorrect values for ''padding'' and ''data_format'' from
+    args. For ''padding'', the value provided is ''not defined'' which is not in the
+    allowed values: "SAME", "VALID", "EXPLICIT". For ''data_format'', the value provided
+    is ''not defined'' which is not in the allowed values: "NHWC", "NCHW". Therefore,
+    type(padding) should be corrected to be either "SAME", "VALID", or "EXPLICIT",
+    which is ["SAME", "VALID", "EXPLICIT"], and type(data_format) should be corrected
+    to be either "NHWC" or "NCHW", which is ["NHWC", "NCHW"]. Op : in, and Right :
+    ["SAME", "VALID", "EXPLICIT"], ["NHWC", "NCHW"].'
+  target: "Value for attr 'padding' of \"not defined\" is not in the list of allowed\
+    \ values: \"SAME\", \"VALID\", \"EXPLICIT\"\n ; NodeDef: ; Op output:T; attr=T:type,allowed=[DT_HALF,\
+    \ DT_BFLOAT16, DT_FLOAT, DT_DOUBLE, DT_INT32]; attr=strides:list(int); attr=use_cudnn_on_gpu:bool,default=true;\
+    \ attr=padding:string,allowed=[\"SAME\", \"VALID\", \"EXPLICIT\"]; attr=explicit_paddings:list(int),default=[];\
+    \ attr=data_format:string,default=\"NHWC\",allowed=[\"NHWC\", \"NCHW\"]; attr=dilations:list(int),default=[1,\
+    \ 1, 1, 1]> [Op:Conv2DBackpropInput] name:"
+  txt: type(padding) in ["SAME", "VALID", "EXPLICIT"], type(data_format) in ["NHWC",
+    "NCHW"]
+- cot: 'The error is caused because the Conv2DBackpropInput operation expects an int32
+    tensor but receives a float tensor. Looking at the inputs, it appears ''input_sizes''
+    is the problematic tensor, as it''s a float32 tensor. Therefore, the type of ''input_sizes''
+    needs to be corrected. Left: type(input_sizes). It should be equal to int32, so
+    Op: ==, and Right: int32. '
+  target: 'cannot compute Conv2DBackpropInput as input #0(zero-based) was expected
+    to be a int32 tensor but is a float tensor [Op:Conv2DBackpropInput] name:'
+  txt: type(input_sizes)==int32
+- cot: 'The error is triggered because the ''strides'' field does not specify 4 dimensions.
+    Let''s examine the arguments. ''strides'' is a list of integers and it has 5 dimensions.
+    However, for the operation ''Conv2DBackpropInput'', ''strides'' is required to
+    have exactly 4 dimensions. Therefore, the Left : len(strides) should be corrected
+    to 4. Ops : ''=='', Right : 4.'
+  target: 'Sliding window strides field must specify 4 dimensions [Op:Conv2DBackpropInput]
+    name:'
+  txt: len(strides) == 4
+- cot: 'The error message indicates that the current implementation does not support
+    strides in the batch and depth dimensions. The strides value provided is [500,
+    30, 31, 32]. Therefore, the stride values for the batch and depth dimensions should
+    be 1. In other words, the first and fourth elements of the ''strides'' list should
+    be 1. This can be represented as:
+
+    Left: strides[0] == 1 and strides[3] == 1, Op: ''=='', Right: 1.'
+  target: 'Current implementation does not yet support strides in the batch and depth
+    dimensions. [Op:Conv2DBackpropInput] name:'
+  txt: strides[0] == 1 and strides[3] == 1.
+- cot: 'The error is triggered because row and column strides are not larger than
+    0. Let''s see what the args were. The strides were [1, -1, 30, 1], in which the
+    second value is -1, which is not larger than 0. Therefore, to prevent the error,
+    the second value in strides should be corrected to be larger than 0. Therefore,
+    Left : strides[1], Ops : ''>'', Right : 0.'
+  target: 'Row and column strides should be larger than 0. [Op:Conv2DBackpropInput]
+    name:'
+  txt: strides[1] > 0
+time_cost: 1744.3155465126038
+title: tf.raw_ops.Conv2DBackpropInput
+tokens_used: 12893
+trained: true

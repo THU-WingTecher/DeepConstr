@@ -1,0 +1,93 @@
+constraints:
+  ceil_mode:
+    default: false
+    dtype: bool
+    init: false
+    required: false
+  count_include_pad:
+    default: true
+    dtype: bool
+    init: false
+    required: false
+  divisor_override:
+    default: null
+    dtype: int
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  kernel_size:
+    default: null
+    dtype: int
+    init: false
+    required: true
+  padding:
+    default: 0
+    dtype: int
+    init: false
+    required: false
+  stride:
+    default: kernel_size
+    dtype: int
+    init: false
+    required: false
+infered_history: []
+infered_times: 30
+package: torch
+pass_rate: 0.93
+rules:
+- cot: Error is triggered because a non-empty 4D or 5D tensor is expected for input,
+    but provided tensor is 3D. Let's see what the args were. The input is a 3D tensor,
+    but a 4D or 5D tensor is expected. Therefore, we need to constrain the dimension
+    of the input tensor.
+  target: non-empty 4D or 5D (batch mode) tensor expected for input
+  txt: len(input.shape) in [4,5]
+- cot: 'Error is triggered because the padding is more than half of the kernel size.
+    From the argument values, we can see that the ''kernel_size'' is 6 and ''padding''
+    is 4. The constraint that padding should be at most half of kernel size is violated
+    here. Therefore, the constraint can be revised as follows:'
+  target: pad should be at most half of kernel size, but got pad=4 and kernel_size=6
+  txt: padding <= kernel_size / 2
+- cot: 'Based on given values, Error is triggered because the kernel size is zero.
+    It expects kernel size to be greater than zero. Let''s see what the args were.
+    It seems kernel size is zero, so kernel_size should be corrected. Therefore, Left
+    : kernel_size, Op : >, Right : 0'
+  target: 'kernel size should be greater than zero, but got kT: 0 kH: 0 kW: 0'
+  txt: kernel_size > 0
+- cot: 'The error is due to the kernel size being larger than the input tensor. What
+    the args were? The kernel size is 6 and the input tensor dimensions are T: 8 H:
+    6 W: 4. The kernel shouldn''t be larger than the input tensor in any dimension.
+    Therefore, Left : kernel_size, Op : <=, Right : min(input.shape). Also, Left :
+    kernel_size, Op : >, Right : 0 to ensure kernel size is positive.'
+  target: 'input image (T: 8 H: 6 W: 4) smaller than kernel size (kT: 6 kH: 6 kW:
+    6)'
+  txt: ((kernel_size <= min(input.shape)) and (kernel_size > 0)) or (all(input.shape[i]
+    >= kernel_size for i in range(len(input.shape)))) or ((kernel_size <= min(input.shape))
+    and (kernel_size > 0))
+- cot: 'The error is due to ''avg_pool3d_out_frame'' not being implemented for ''Char''
+    type tensors. The ''input'' tensor is of dtype ''int8'', which corresponds to
+    ''Char''. Therefore, the dtype of ''input'' should be corrected. This means that
+    the dtype of ''input'' should not be ''Char'', so Left : input.dtype, Op : !=,
+    and Right : ''Char''. Also, ''avg_pool3d_out_frame'' function is typically implemented
+    for ''Float'' tensors, so it would be safer to ensure that ''input'' is of dtype
+    ''Float'', so Op : ==, and Right : ''Float''.'
+  target: '"avg_pool3d_out_frame" not implemented for ''Char'''
+  txt: input.dtype == 'Float'
+- cot: 'The error occurs when the ''stride'' value is zero. According to the args,
+    the ''stride'' value is indeed 0, which is not allowed. Therefore, strides, which
+    is the stride value, should be corrected. It cannot be 0, so Op : !=, and Right
+    : 0. Also, it should be greater than 0, so Op : >, and Right : 0.'
+  target: stride should not be zero
+  txt: stride != 0
+- cot: 'The error states that the ''divisor_override'' value should not be zero. In
+    the given values, ''divisor_override'' is indeed zero, which needs to be corrected.
+    Therefore, Left: ''divisor_override'', Op: ''!='', and Right: 0.'
+  target: divisor must be not zero
+  txt: divisor_override != 0
+time_cost: 1398.628010749817
+title: torch._C._nn.avg_pool3d
+tokens_used: 18292
+trained: true

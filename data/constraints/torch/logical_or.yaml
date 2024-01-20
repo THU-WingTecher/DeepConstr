@@ -1,0 +1,38 @@
+alias: torch.logical_or
+constraints:
+  input:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  other:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 20
+package: torch
+pass_rate: 1.0
+rules:
+- cot: 'Error is triggered because we are trying to resize storage. Let''s see what
+    the args were. It seems the storage indicates ''out'' tensor. The operation is
+    probably trying to resize ''out'' tensor to match the shape of ''input'' or ''other''
+    tensor, but it is not resizable. Therefore, ''out'' tensor shape should be pre-defined
+    and matched with the operation results. In this operation, if ''input'' and ''other''
+    are used together, the result shape is the larger one between input.shape and
+    other.shape. Therefore, left : out.shape, out.rank op : == right : max(input.shape,
+    other.shape), max(input.rank, other.rank).'
+  target: Trying to resize storage that is not resizable
+  txt: (len(out.shape) <= len(input.shape) and len(out.shape) <= len(other.shape))
+    and ((out.shape == other.shape) and ((all(out.shape[i] == input.shape[i] for i
+    in range(out.rank))) and (out.rank == max(input.rank, other.rank))))
+time_cost: 10506.998619318008
+title: torch.logical_or
+tokens_used: 13951
+trained: true

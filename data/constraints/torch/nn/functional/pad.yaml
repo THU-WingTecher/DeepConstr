@@ -1,0 +1,73 @@
+alias: torch.nn.functional.pad
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  mode:
+    default: true
+    dtype: Literal['constant', 'reflect', 'replicate', 'circular']
+    init: false
+    required: false
+  pad:
+    default: null
+    dtype: list[int]
+    init: false
+    required: true
+  value:
+    default: false
+    dtype: float
+    init: false
+    required: false
+infered_history: []
+infered_times: 33
+package: torch
+pass_rate: 0.32
+rules:
+- cot: 'The error arises because the ''reflect'' padding mode does not take a ''value''
+    argument. Therefore, the ''value'' argument should not be provided when ''mode''
+    is ''reflect''. This translates into the following constraint: if ''mode'' is
+    ''reflect'', ''value'' should not be defined. Op: ==, and Right: None.'
+  target: Padding mode "replicate" doesn't take in value argument
+  txt: mode != "reflect" or (mode == "reflect" and value == None)
+- cot: 'The error is caused by an excessive memory allocation request. The function
+    is trying to allocate a memory of 32677137305100288 bytes, which is too large.
+    Let''s see what the args were. In padding operation, the ''pad'' list has extremely
+    large values, and the ''input'' tensor has a high rank and large shape, both of
+    which may cause the memory allocation issue. Therefore, the size of the ''input''
+    tensor and the values in ''pad'' list should be reduced. The total memory required
+    for padding should be less than the available memory. Left : product(pad) + product(input.shape),
+    Op : <, Right : available_memory.'
+  target: '[enforce fail at alloc_cpu.cpp:83] err == 0. DefaultCPUAllocator: can''t
+    allocate memory: you tried to allocate 32677137305100288 bytes. Error code 12
+    (Cannot allocate memory)'
+  txt: product(pad) + product(input.shape) < available_memory
+- cot: 'The error is triggered because the padding length is not divisible by 2. Let''s
+    see what the args were. ''pad'' is the tensor of int32, which was [10]. To prevent
+    the error, the number of elements in ''pad'' should be even. Therefore, the Left
+    : len(pad), op : ''%'', right : 2 should be 0.'
+  target: Padding length must be divisible by 2
+  txt: len(pad) % 2 == 0
+- cot: 'The error is due to the wrong padding length. Let''s see what the args were.
+    The padding length is 8 while the input dimension is 1. This is violating the
+    constraint that the padding length should be less than or equal to two times the
+    input dimension. This can be solved by ensuring that the length of the padding
+    is always less than or equal to twice the input dimension.
+
+
+    The constraint for this situation can be expressed as:'
+  target: Padding length should be less than or equal to two times the input dimension
+    but got padding length 8 and input of dimension 1
+  txt: len(pad) <= 2 * len(input.shape)
+- cot: 'Error is triggered because of negative length with the ''narrow()'' function.
+    It expects to have not negative length. Let''s see what the args were. It seems
+    ''pad'' contains negative values. The ''pad'' is the problematic variable here.
+    Therefore, Left : ''pad'' variable. It implies that negative values are problem,
+    so Op : >=, and Right : 0.'
+  target: 'narrow(): length must be non-negative.'
+  txt: all(pad[i] >= 0 for i in range(len(pad)))
+time_cost: 1775.6182851791382
+title: torch.nn.functional.pad
+tokens_used: 24860
+trained: true

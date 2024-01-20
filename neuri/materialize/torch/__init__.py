@@ -1,23 +1,28 @@
 import pickle
 from os import PathLike
 from typing import Dict, List, Tuple, Type
+import numpy as np
 
 import torch
+from neuri.abstract.dtype import DType
 
 from neuri.abstract.op import AbsOpBase, AbsTensor
 from neuri.gir import GraphIR
+from neuri.logger import TORCH_LOG
 from neuri.materialize import Model, Oracle
 from neuri.materialize.torch.forward import ALL_TORCH_OPS
 from neuri.materialize.torch.input_gen import PracticalHybridSearch
 from neuri.materialize.torch.symbolnet import SymbolNet
 from neuri.util import register_seed_setter
-
+from neuri.materialize.torch.code_gen import gen_code
 
 class TorchModel(Model):
     def __init__(self) -> None:
         super().__init__()
+        self.package = "torch"
         self.torch_model: SymbolNet = None
         self.sat_inputs = None
+        self.gen_code = gen_code
 
     @property
     def version(self) -> str:
@@ -32,6 +37,38 @@ class TorchModel(Model):
     @staticmethod
     def gir_name() -> str:
         return "gir.pkl"
+
+    @staticmethod
+    def execute_op(inst : "OpInstance") : 
+        def tensor_from_numpy(x) : 
+            """ 
+            some dtypes are not supported by numpy, so directly gen with tf
+            """
+            if isinstance(x, np.ndarray) : 
+                return torch.from_numpy(x)
+            else : 
+                shape, dtype = x
+                absdtype = DType.from_str(dtype)
+                if "bfloat" in dtype : 
+                    ret = torch.rand(shape, dtype=absdtype.torch())  
+                elif "uint" in dtype :
+                    rng = 2**(8*absdtype.sizeof()-1)
+                    ret = torch.randint(0, rng - 1, size=shape, dtype=absdtype.torch())
+                else :
+                    TORCH_LOG.error(f"Unknown dtype: {dtype = }")
+                    raise NotImplementedError(dtype)
+                return ret
+            
+        numpy_from_tensor = lambda x: x.detach().cpu().numpy()
+        is_tensor = lambda x: isinstance(x, torch.Tensor)
+        output_info = inst.execute(
+            symb_2_value=None,
+            tensor_from_numpy=tensor_from_numpy,
+            abs_from_dtype=DType.from_torch,
+            is_tensor=is_tensor,
+            func=eval(inst.name)
+        )
+        return output_info
 
     def refine_weights(self) -> None:
         self.torch_model.enable_proxy_grad()
@@ -56,13 +93,13 @@ class TorchModel(Model):
             outputs: Tuple[torch.Tensor] = self.torch_model.forward(**inputs)
 
         # numpyify
-        input_dict = {k: v.cpu().detach().numpy() for k, v in inputs.items()}
+        input_dict = {k: v.cpu().detach() for k, v in inputs.items()}
         output_dict = {}
         for oname, val in zip(self.output_like.keys(), outputs):
             if val.is_conj():
-                output_dict[oname] = val.cpu().detach().resolve_conj().numpy()
+                output_dict[oname] = val.cpu().detach().resolve_conj()
             else:
-                output_dict[oname] = val.cpu().detach().numpy()
+                output_dict[oname] = val.cpu().detach()
 
         return Oracle(input_dict, output_dict, provider="torch[cpu] eager")
 

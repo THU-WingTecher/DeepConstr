@@ -1,0 +1,56 @@
+constraints:
+  n:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+  x:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 28
+package: torch
+pass_rate: 1.0
+rules:
+- cot: 'The error occurs because the ''out'' tensor is not resizable and we are trying
+    to resize it. Looking at the values provided, it''s clear that the shape of ''n''
+    tensor is different, which might be the cause of resizing attempt. Hence, to prevent
+    this error, the shape of ''n'' tensor should match with the shape of ''x'' tensor.
+    Also, the ''out'' tensor should have the same shape as ''x'' tensor because it
+    is supposed to hold the result of the operation. Therefore, the constraints could
+    be defined as follows:
+
+
+    1. The type of ''n'' and ''x'' should be the same.
+
+    2. The shape and rank of ''n'' and ''x'' should be the same.
+
+    3. The type of ''out'' and ''x'' should be the same.
+
+    4. The shape and rank of ''out'' and ''x'' should be the same.
+
+
+    This can be written in code as:'
+  target: Trying to resize storage that is not resizable
+  txt: (type(n) == type(x)) and ((n.shape == x.shape) and ((n.rank==x.rank and all(n.shape[i]==x.shape[i]
+    for i in range(n.rank))))) and (type(out) == type(x)) and ((out.shape == x.shape)
+    and ((out.rank==x.rank and all(out.shape[i]==x.shape[i] for i in range(out.rank)))))
+- cot: 'The error is caused because the result of the operation is a float type but
+    it''s trying to be cast to a boolean type which is not possible. So, we need to
+    ensure the output type is float and not boolean. Therefore, Left : type(out),
+    Op : ==, Right : float. Also, we need to ensure that the output type matches the
+    type of ''x'' and ''n''. Therefore, Left : type(out), Op : ==, Right : type(x)
+    or type(n).'
+  target: result type Float can't be cast to the desired output type Char
+  txt: type(out)==float
+time_cost: 14196.7093667984
+title: torch._C._special.special_chebyshev_polynomial_t
+tokens_used: 18059
+trained: true

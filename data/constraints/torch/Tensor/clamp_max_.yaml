@@ -1,0 +1,7 @@
+package: torch
+pass_rate: 0.0
+rules: {}
+title: torch.Tensor.clamp_max_
+skipped: True
+skipped_reason: dup
+dupe_with: torch.clamp

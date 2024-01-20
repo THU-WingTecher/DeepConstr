@@ -159,6 +159,7 @@ class Program:
 
     def dump(self, path: os.PathLike) -> None:
         os.makedirs(path, exist_ok=True)
+        print(f"dumping at Path({path})")
         with open(os.path.join(path, "prog.py"), "w") as f:
             print(self.code_header, file=f)
             print(self.code_model, file=f)
@@ -167,3 +168,12 @@ class Program:
             pickle.dump(self.params, f)
         with open(os.path.join(path, "inputs.pkl"), "wb") as f:
             pickle.dump(self.inputs, f)
+
+if __name__ == "__main__":
+    import sys 
+    dirpath = sys.argv[1]
+    with open(os.path.join(dirpath, "gir.pkl"), "rb") as f:
+        ir = pickle.load(f)
+    print(ir)
+    prog = Program(ir)
+    prog.dump(dirpath)

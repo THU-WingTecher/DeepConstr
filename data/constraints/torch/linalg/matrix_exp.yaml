@@ -1,0 +1,43 @@
+alias: torch.linalg.matrix_exp
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 8
+package: torch
+pass_rate: 1.0
+rules:
+- cot: 'The error occurs because the input matrix A is not a square matrix. If we
+    look at the given tensor, the last two dimensions are 8 and 6, indicating the
+    shape of the matrix. For a matrix to be square, the number of rows and columns
+    must be equal. To prevent this error in the future and generate constraints that
+    do not trigger it, we need to ensure that the last two dimensions of the input
+    tensor are the same.
+
+
+    The constraint for the ''input'' tensor can be expressed as:'
+  target: 'linalg.matrix_exp: A must be batches of square matrices, but they are 8
+    by 6 matrices'
+  txt: input[-1] == input[-2]
+- cot: 'The error message indicates that the input tensor must have at least 2 dimensions.
+    However, from the given values, we can see that the input tensor only has 1 dimension.
+    Let''s see what the args were. The input tensor only has 1 dimension. Therefore,
+    Left : len(input.shape). Op : >=, and Right : 2.'
+  target: 'linalg.matrix_exp: The input tensor A must have at least 2 dimensions.'
+  txt: len(input.shape) >= 2
+- cot: 'Error is triggered because of the wrong tensor datatype. Let''s see what the
+    args were. The error message implies that the input tensor should be either floating
+    point or complex, not Int. So, the datatype of the input tensor should be corrected,
+    which is input.dtype. Therefore, Left : input.dtype, Op : ==, and Right : float
+    or complex. Also, it implies that datatype cannot be Int, so Op : !=, and Right
+    : Int.'
+  target: 'linalg.matrix_exp: Expected a floating point or complex tensor as input.
+    Got Int'
+  txt: input.dtype == float
+time_cost: 252.28562712669373
+title: torch.linalg.matrix_exp
+tokens_used: 4640
+trained: true

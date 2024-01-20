@@ -1,0 +1,93 @@
+constraints:
+  a:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  b:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  name:
+    default: null
+    dtype: str
+    init: false
+    required: false
+  transpose_a:
+    default: false
+    dtype: bool
+    init: false
+    required: false
+  transpose_b:
+    default: false
+    dtype: bool
+    init: false
+    required: false
+infered_history:
+- 1
+- 3
+infered_times: 4
+package: tf
+pass_rate: 0.54
+rules:
+- cot: 'The error is due to a mismatch in tensor data types during a matrix multiplication
+    operation. From the error message, the ''a'' tensor is of type complex64, but
+    the ''b'' tensor is of type float32. Thus, to carry out the MatMul operation,
+    both tensors need to be of the same data type. Therefore, Left : type(b), which
+    is the type of tensor b, should be corrected. It says that should be equal to
+    the datatype of tensor a, so Op : ==, and Right : type(a).'
+  target: 'cannot compute MatMul as input #1(zero-based) was expected to be a complex64
+    tensor but is a float tensor [Op:MatMul] name:'
+  txt: type(b)==type(a)
+- cot: 'The error is triggered because the number of dimensions of In[0] and In[1]
+    (which are ''a'' and ''b'') are different. Let''s see what the args were. The
+    dimension of ''a'' is 4 and ''b'' is 1. However, they have to be same for ''Op:MatMul''.
+    Therefore, the Left: len(a), len(b), and Right : len(a), len(b) should be corrected.
+    Op : ''==''. In addition, the last dimension of ''a'' (if not transposed) or the
+    second to last dimension of ''a'' (if transposed) must match the first dimension
+    of ''b'' (if not transposed) or the second dimension of ''b'' (if transposed)
+    for ''Op:MatMul''. Therefore, the Left: a.shape[-1] (if not transpose_a) or a.shape[-2]
+    (if transpose_a), b.shape[0] (if not transpose_b) or b.shape[1] (if transpose_b)
+    and Right: a.shape[-1] (if not transpose_a) or a.shape[-2] (if transpose_a), b.shape[0]
+    (if not transpose_b) or b.shape[1] (if transpose_b) should be corrected. Op :
+    ''==''.'
+  target: 'In[0] and In[1] has different ndims: [6,8,6,6,1,3,4,1,3,2] vs. [8,2,6]
+    [Op:MatMul] name:'
+  txt: len(a) == len(b)
+- cot: The error is triggered because the dimensions of the tensors 'a' and 'b' are
+    not 2. MatMul operation requires its inputs to have 2 dimensions. Let's see what
+    the args were. 'a' is a tensor with 5 dimensions and 'b' is also a tensor with
+    5 dimensions. Even though transpose_a and transpose_b are True, it doesn't change
+    the number of dimensions. Therefore, the number of dimensions of both 'a' and
+    'b' must be corrected to 2.
+  target: 'In[0] and In[1] ndims must be == 2: 1 [Op:MatMul] name:'
+  txt: b.dim == 2
+- cot: 'The error is triggered due to incompatible matrix sizes for the MatMul operation.
+    Here, ''a'' has a shape of [9, 8] and ''b'' has a shape of [6, 1]. For matrix
+    multiplication, the inner dimensions should match, but here they do not. Therefore,
+    the Right : b.shape[0] should be corrected to match the Left : a.shape[1]. Ops
+    : ''=='''
+  target: 'Matrix size-incompatible: In[0]: [9,8], In[1]: [6,7] [Op:MatMul] name:'
+  txt: (a.shape[0] == b.shape[1] and a.shape[1] == b.shape[0]) and (a.shape[1] ==
+    b.shape[0])
+- cot: The error occurs because the attribute ''T'' of 'a' and 'b' is an int8, but
+    it needs to be one of bfloat16, half, float, double, int32, int64, uint8, uint16,
+    uint32, uint64, complex64, complex128. The tensors 'a' and 'b' are both given
+    as int8, which is not compatible. Therefore, the type of 'a' and 'b' should be
+    corrected to match one of the allowed types. The operation in this case is 'in',
+    and the right side of the constraint should be [bfloat16, half, float, double,
+    int32, int64, uint8, uint16, uint32, uint64, complex64, complex128].
+  target: "Value for attr 'T' of int8 is not in the list of allowed values: bfloat16,\
+    \ half, float, double, int32, int64, uint8, uint16, uint32, uint64, complex64,\
+    \ complex128\n ; NodeDef: ; Op product:T; attr=transpose_a:bool,default=false;\
+    \ attr=transpose_b:bool,default=false; attr=T:type,allowed=[DT_BFLOAT16, DT_HALF,\
+    \ DT_FLOAT, DT_DOUBLE, DT_INT32, DT_INT64, DT_UINT8, DT_UINT16, DT_UINT32, DT_UINT64,\
+    \ DT_COMPLEX64, DT_COMPLEX128]> [Op:MatMul] name:"
+  txt: type(a) in ["bfloat16", "half", "float", "double", "int32", "int64", "uint8",
+    "uint16", "uint32", "uint64", "complex64", "complex128"] and type(b) in ["bfloat16",
+    "half", "float", "double", "int32", "int64", "uint8", "uint16", "uint32", "uint64",
+    "complex64", "complex128"]
+time_cost: 188.12526655197144
+title: tf.raw_ops.MatMul
+tokens_used: 4322

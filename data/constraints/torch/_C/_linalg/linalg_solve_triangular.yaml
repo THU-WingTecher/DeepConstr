@@ -1,0 +1,84 @@
+constraints:
+  B:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  input:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  left:
+    default: 'true'
+    dtype: bool
+    init: false
+    required: false
+  out:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+  unitriangular:
+    default: 'false'
+    dtype: bool
+    init: false
+    required: false
+  upper:
+    default: 'null'
+    dtype: bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 39
+package: torch
+pass_rate: 1.0
+rules:
+- cot: 'The error is caused because ''A'' must be batches of square matrices, but
+    the provided input is a 4 x 8 matrix. Let''s see what the args were. It seems
+    that the ''input'' tensor and ''B'' tensor are not square matrices. To generate
+    constraints that do not trigger this error, we need to ensure that ''input'' and
+    ''B'' are both square matrices.
+
+
+    The constraint for the ''input'' and ''B'' tensors can be expressed as:'
+  target: 'linalg.solve_triangular: A must be batches of square matrices, but they
+    are 4 by 8 matrices'
+  txt: len(input.shape) == 2 and input.shape[0] == input.shape[1]
+- cot: 'The error is triggered because the input tensor A should have at least 2 dimensions,
+    but it is not the case here. It seems ''B'' is the input tensor A, since it matches
+    the dimensionality requirement. ''input'' can''t be tensor A because it only has
+    one dimension. Therefore, Left : len(input.shape), op : >=, and Right : 2.'
+  target: 'linalg.solve_triangular: The input tensor A must have at least 2 dimensions.'
+  txt: (len(B.shape) >= 2) and (len(input.shape)>=2)
+- cot: 'The error message suggests that the shapes of A and B in the equation AX =
+    B are incompatible. Let''s see what the args were. It seems that the shape of
+    ''B'' is (9,8,6,8) and the shape of ''input'' (which seems to be A in this context)
+    is (1,1). These shapes are inconsistent. Thus, the shapes of A and B should be
+    modified to match. A is a square matrix, so its shape should be (n,n), and B is
+    a matrix with the same number of rows as A, so its shape should be (n,m). So,
+    Op : ==, Right : (n,n) for ''input'' and (n,m) for ''B''.'
+  target: 'linalg.solve_triangular: Incompatible shapes of A and B for the equation
+    AX = B (1x1 and 6x8)'
+  txt: (input.shape[0] == B.shape[0]) and ((left == True) and ((input.shape[-1] ==
+    B.shape[-2]) and ((input.shape[0] == input.shape[1]) or (B.shape[0] == input.shape[0]))))
+- cot: 'The error is due to an attempt to resize a tensor that is not resizable. Judging
+    from the given args, it seems ''out'' tensor is the storage that is attempted
+    to be resized. The shape of ''out'' tensor should match the operation results.
+    In this operation, the resulting shape is ''B''. Therefore, Left : out.shape,
+    out.rank Op : == Right : B.shape, B.rank.'
+  target: Trying to resize storage that is not resizable
+  txt: (out.rank == max(B.rank, input.rank)) and ((all(out.shape[i]==input.shape[i]
+    for i in range(out.rank))) and (out.rank==B.rank and all(out.shape[i]==B.shape[i]
+    for i in range(out.rank))))
+- cot: 'The error message indicates that the computation was expecting a float scalar
+    type but found a half scalar type instead. Looking at the provided values, ''out''
+    tensor is of half type, while ''input'' tensor is of float32 type. This discrepancy
+    is likely the source of the error. Therefore, the Left : type(out) should be corrected
+    to match the type of ''input''. Op : ''=='', Right : Float or type(input).'
+  target: expected scalar type Float but found Half
+  txt: (B.dtype == complex128) and ((type(out) == "Float") and (type(out) == type(input)))
+time_cost: 4932.518354415894
+title: torch._C._linalg.linalg_solve_triangular
+tokens_used: 27147
+trained: true

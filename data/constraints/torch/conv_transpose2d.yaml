@@ -1,0 +1,96 @@
+constraints:
+  bias:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+  dilation:
+    default: 1
+    dtype: int,list[int]
+    init: false
+    required: false
+  groups:
+    default: 1
+    dtype: int
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  output_padding:
+    default: 0
+    dtype: int,list[int]
+    init: false
+    required: false
+  padding:
+    default: 0
+    dtype: int,list[int]
+    init: false
+    required: false
+  stride:
+    default: 1
+    dtype: int,list[int]
+    init: false
+    required: false
+  weight:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 52
+package: torch
+pass_rate: 0.0
+rules:
+- cot: 'The error arises because the ''groups'' value is zero, but it must be a positive
+    integer. We can enforce this by setting Left : groups, Op : >, Right : 0.'
+  target: non-positive groups is not supported
+  txt: groups > 0
+- cot: "The error message indicates that the padding value is not as expected. The\
+    \ convolution operation expects either a single integer value or a list of 1 value\
+    \ for padding, but it received a list with more than one value. Given the inputs,\
+    \ the padding value is 5 which is a single integer but the error message indicates\
+    \ a list with two values [5,5]. \n\nTo prevent this error from occurring again,\
+    \ we need to ensure that the padding value is either a single integer or a list\
+    \ containing one integer. The constraint for the 'padding' parameter can be expressed\
+    \ as:"
+  target: expected stride to be a single integer value or a list of 7 values to match
+    the convolution dimensions, but got stride=[3, 17, 18, 19]
+  txt: (len(padding) == 1) and ((len(dilation) == 1 or len(dilation) == 2) or ((len(stride)
+    == 1) or (len(stride)==7))) and (len(padding) == 1)
+- cot: "The error is triggered because the input tensor to conv_transpose2d is expected\
+    \ to be 3D (unbatched) or 4D (batched), but it got an input tensor of empty size\
+    \ []. Let's see what the args were. \n\nLooking at the provided values, the 'input'\
+    \ tensor seems to be empty, which is causing the error. \n\nTo prevent this error\
+    \ from happening again, we need to ensure that the 'input' tensor is either 3D\
+    \ or 4D. \n\nThe constraint for the 'input' parameter can be expressed as:"
+  target: 'Expected 3D (unbatched) or 4D (batched) input to conv_transpose2d, but
+    got input of size: []'
+  txt: (len(input.shape) == 3) or (len(input.shape) == 4) or (len(input.shape) ==
+    3)
+- cot: 'Error is triggered because the weight tensor does not have at least three
+    dimensions. Let''s see what the args were. It seems that the weight tensor only
+    has 0 dimensions. Therefore, Left : weight.dim(). op : >=, right : 3.'
+  target: weight should have at least three dimensions
+  txt: weight.dim() >= 3
+- cot: 'Error is triggered because of mismatch between input type and weight type.
+    It expects both to be the same. Let''s see what the args were. The type of ''input''
+    is ''TensorDType.complex64'' and the type of ''weight'' is ''TensorDType.float64''.
+    Therefore, Left : type(input), Op : ==, Right : type(weight)'
+  target: Input type (CPUComplexFloatType) and weight type (torch.DoubleTensor) should
+    be the same
+  txt: type(input) == type(weight)
+- cot: 'Based on given values, Error is triggered because Input type (CPUComplexDoubleType)
+    and bias type (torch.FloatTensor) are not the same. It expects to have same type
+    between input and bias. Let''s see what the args were. It seems the type of ''input''
+    and ''bias'' are not same, so input.dtype, bias.dtype should be corrected. Therefore,
+    Left : input.dtype. Op : ==, and Right : bias.dtype'
+  target: Input type (CPUComplexDoubleType) and bias type (torch.FloatTensor) should
+    be the same
+  txt: input.dtype == bias.dtype
+time_cost: 5397.041348695755
+title: torch.conv_transpose2d
+tokens_used: 34065
+trained: true

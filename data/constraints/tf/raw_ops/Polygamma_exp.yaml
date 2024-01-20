@@ -1,0 +1,61 @@
+constraints:
+  a:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  name:
+    default: null
+    dtype: str
+    init: false
+    required: false
+  x:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history:
+- 4
+- 5
+- 4
+- 1
+infered_times: 15
+package: tf
+pass_rate: 1.0
+rules:
+- cot: 'The error is due to the incompatibility of the attribute ''T'' of int32 with
+    the expected type of float or double. Therefore, the type of ''a'' and ''x'' should
+    be corrected to be either float or double. The tensors ''a'' and ''x'' are provided
+    as ''int32'' and ''complex64'' respectively, which is not compatible. So, the
+    Left : type(a) or type(x) should be corrected to match one of the allowed types.
+    Op : in, and Right : ["float", "double"].'
+  target: "Value for attr 'T' of int32 is not in the list of allowed values: float,\
+    \ double\n ; NodeDef: ; Op z:T; attr=T:type,allowed=[DT_FLOAT, DT_DOUBLE]> [Op:Polygamma]\
+    \ name:"
+  txt: type(a) in ["float", "double"] and type(x) in ["float", "double"]
+- cot: 'The error message is saying that the input tensor for the operation has a
+    rank greater than 5. In this case, the tensor ''a'' has a rank of 6, which is
+    too high. Therefore, the rank of ''a'' must be corrected to be less than or equal
+    to 5. The Left : a.dim and the Ops : <= and the Right : 5. Similarly, the tensor
+    ''x'' has a rank of 2, which is acceptable. So, the constraint is only for ''a''.'
+  target: 'Input for dynamic binary or n-ary op lowering was of a rank greater than
+    5 [Op:Polygamma] name:'
+  txt: (x.dim <= 5) and (a.dim <= 5)
+- cot: 'The error is due to the shapes of ''''a'''' and ''''x'''' not being broadcastable
+    in the Polygamma operation. In order for tensors to be broadcastable, the size
+    of each dimension from the trailing end must be either equal or one of them should
+    be 1. Hence, we can generate the constraints as follows:'
+  target: 'required broadcastable shapes [Op:Polygamma] name:'
+  txt: all(a.shape[i] == x.shape[i] for i in range(len(a.shape))) and (len(a.shape) == len(x.shape))
+- cot: 'The error occurs because the function is attempting to execute an operation
+    on a double tensor and a float tensor. However, the tensors should have the same
+    data type. Let''s see what the args were. The ''a'' tensor is a double, but the
+    ''x'' tensor is of type float. Thus, the type of tensor ''x'' should be corrected,
+    which is type(x). Therefore, Left : type(x). It says that should be equal to the
+    datatype of tensor ''a'', so Op : ==, and Right : type(a).'
+  target: 'cannot compute Polygamma as input #1(zero-based) was expected to be a double
+    tensor but is a float tensor [Op:Polygamma] name:'
+  txt: type(x) == type(a)
+time_cost: 687.0247852802277
+title: tf.raw_ops.Polygamma
+tokens_used: 9793

@@ -1,0 +1,35 @@
+constraints:
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+  x:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 18
+package: torch
+pass_rate: 1.0
+rules:
+- cot: 'The error arises due to an attempt to cast a float type Tensor (''x'') to
+    an incompatible type, which is a char type Tensor (''out''). The resulting type
+    is float but the expected output type is char. Therefore, Left : ''x'' TensorDType
+    should be checked. Op : == and Right : Float32. Similarly, Left : ''out'' TensorDType
+    should be checked. Op : == and Right : Float32. Hence, these two types should
+    be the same to prevent the error.'
+  target: result type Float can't be cast to the desired output type Char
+  txt: (x.dtype == out.dtype) and (x.dtype == 'float32')
+- cot: "The error occurs because the 'out' tensor is being resized to a shape that\
+    \ does not match the input tensor 'x'. The 'out' tensor is of shape [1, 3, 2,\
+    \ 8, 2, 6] and the 'x' tensor is of shape [1, 3, 2, 8, 2, 6, 6]. \n\nTo prevent\
+    \ this error from occurring, we must ensure that the shapes of the 'out' tensor\
+    \ and the 'x' tensor are the same. This can be done with the following constraint:"
+  target: Trying to resize storage that is not resizable
+  txt: out.shape == x.shape
+time_cost: 1353.811692237854
+title: torch._C._special.special_airy_ai
+tokens_used: 9050
+trained: true

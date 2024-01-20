@@ -1,0 +1,40 @@
+constraints:
+  A:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  check_errors:
+    default: false
+    dtype: bool
+    init: false
+    required: false
+  pivot:
+    default: true
+    dtype: bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 7
+package: torch
+pass_rate: 0.9
+rules:
+- cot: 'The error is caused because the ''linalg.lu_factor'' function is trying to
+    perform LU factorization without pivoting on the CPU, which is not supported.
+    The ''pivot'' argument is False, which suggests that pivoting is turned off. Therefore,
+    to avoid this error, we must ensure that the ''pivot'' argument is always True
+    when running on the CPU. The parameters ''A'' and ''check_errors'' don''t seem
+    to affect this error. So, the constraint would be:'
+  target: 'linalg.lu_factor: LU without pivoting is not implemented on the CPU'
+  txt: pivot == True
+- cot: 'Error is triggered because the function torch.lu_factor expects a tensor with
+    2 or more dimensions, but got size [] instead. It seems the tensor ''A'' is empty.
+    We need to ensure that the tensor ''A'' has at least 2 dimensions. Therefore,
+    the constraint should be:'
+  target: 'torch.lu_factor: Expected tensor with 2 or more dimensions. Got size: []
+    instead'
+  txt: len(A.shape) >= 2
+time_cost: 126.48293805122375
+title: torch._C._linalg.linalg_lu_factor_ex
+tokens_used: 3547
+trained: true

@@ -1,0 +1,79 @@
+constraints:
+  UPLO:
+    default: L
+    description: controls whether to use the upper or lower triangular part of `A`
+      in the computations.
+    dtype: str
+    init: false
+    required: false
+  input:
+    default: null
+    description: tensor of shape `(*, n, n)` where `*` is zero or more batch dimensions
+      consisting of symmetric or Hermitian matrices.
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    description: This is an output argument. If provided, it must have the same shape
+      as the expected output.
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 26
+package: torch
+pass_rate: 0.95
+rules:
+- cot: "The error seems to be related to the 'UPLO' property, which usually refers\
+    \ to whether a matrix is upper or lower triangular in linear algebra computations.\
+    \ This error might be occurring because of an incorrect size or type of tensor\
+    \ being passed to a function expecting a certain 'UPLO' format. Let's see the\
+    \ given tensors. 'A' is a 7-dimensional tensor with dtype float64, and 'out' is\
+    \ a 7-dimensional tensor with dtype float32. If 'UPLO' is related to these tensors,\
+    \ they should meet the requirements of the function that uses 'UPLO'. Therefore,\
+    \ their dimensions and data types may need to be adjusted to fit the 'UPLO' requirements.\
+    \ \n\nHere are the constraints that may prevent the error:\n\n1. The dtype of\
+    \ 'A' and 'out' should be same if the 'UPLO' function requires same dtype for\
+    \ all tensors. So, dtype of 'A' should be equal to dtype of 'out':"
+  target: '''UPLO'''
+  txt: (UPLO in ['U', 'L'])
+- cot: 'The error occurs because the function `linalg.eigh` expects the input ''A''
+    to be batches of square matrices. However, the given tensor ''input'' is not in
+    the required shape. Let''s see what the args were. The last two dimensions of
+    ''input'' are 1 and 2, that means it''s not a square matrix.
+
+
+    To prevent this error, we need to ensure that the last two dimensions of ''input''
+    are the same, making it a square matrix. If we denote the shape of the tensor
+    as n, the constraint for the ''input'' parameter can be expressed as:'
+  target: 'linalg.eigh: A must be batches of square matrices, but they are 1 by 2
+    matrices'
+  txt: input.shape[-1] == input.shape[-2]
+- cot: 'The error is triggered because the input tensor A should have a minimum of
+    2 dimensions for linalg.eigh operation, but from provided args, the input tensor
+    has only 1 dimension. Therefore, Left : input.ndim, which is the number of dimensions
+    of the input tensor. It says that it should be at least 2, so Op : >=, and Right
+    : 2.'
+  target: 'linalg.eigh: The input tensor A must have at least 2 dimensions.'
+  txt: input.ndim>=2
+- cot: 'The error is triggered because we are trying to resize ''out'' tensor, which
+    is not resizable. Looking at the given values, the ''out'' tensor''s shape [8,
+    2, 6] does not match the ''input'' tensor''s shape [6, 8, 6, 6, 3, 3]. So, the
+    ''out'' tensor''s shape should be matched with the ''input'' tensor''s shape to
+    prevent the error. Therefore, left : out.shape, out.rank op : == right : input.shape,
+    input.rank'
+  target: Trying to resize storage that is not resizable
+  txt: out.rank==input.rank and all(out.shape[i]==input.shape[i] for i in range(out.rank))
+- cot: 'The error arises because the output tensor ''out'' has a different datatype
+    than expected. The expected datatype is double, but the current datatype is float.
+    Let''s see what the args were. It seems ''out'' tensor is of type float32, but
+    it should be of type double. Therefore, Left : ''out''.dtype, which is the data
+    type of ''out'' tensor, should be corrected. It says that should be equal to the
+    datatype of input tensor, so Op : ==, and Right : ''input''.dtype.'
+  target: Expected out tensor to have dtype double, but got float instead
+  txt: ('out'.dtype == float) and ('out'.dtype == 'input'.dtype)
+time_cost: 1934.5867369174957
+title: torch._C._linalg.linalg_eigvalsh
+tokens_used: 16403
+trained: true

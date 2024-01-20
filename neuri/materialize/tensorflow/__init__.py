@@ -7,6 +7,10 @@ from abc import ABC
 from os import PathLike
 from typing import Callable, Dict, List, Type
 
+from neuri.abstract.dtype import DType
+from neuri.logger import TF_LOG
+from neuri.materialize.tensorflow.code_gen import gen_code
+
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 logging.getLogger("tensorflow").setLevel(logging.ERROR)
 logging.getLogger("absl").disabled = True
@@ -76,8 +80,50 @@ class TFModel(Model, ABC):  # Don't directly instantiate this class
 
     def __init__(self, ir: GraphIR) -> None:
         super().__init__()
+        self.package = "tensorflow"
         self.ir = ir
         self.net = TFNet(ir=ir)
+        self.gen_code = gen_code 
+
+    @staticmethod
+    def execute_op(inst : "OpInstance") : 
+        # tensor_from_numpy = tf.convert_to_tensor 
+        def tensor_from_numpy(x) : 
+            """ 
+            some dtypes are not supported by numpy, so directly gen with tf
+            """
+            if isinstance(x, np.ndarray) : 
+                return tf.convert_to_tensor(x)
+            else : 
+                shape, dtype = x
+                absdtype = DType.from_str(dtype)
+                if "bfloat" in dtype : 
+                    ret = tf.random.uniform(shape, -1000_000, 1000_000, dtype=absdtype.tensorflow())
+                elif "qint" in dtype :
+                    rng = 2**(8*absdtype.sizeof()-1)
+                    minval = tf.constant(-rng, dtype=tf.int64)
+                    maxval = tf.constant(rng - 1, dtype=tf.int64)
+                    ret = tf.random.uniform(shape=shape, minval=minval, maxval=maxval, dtype=tf.int64)
+                    ret = tf.cast(ret, dtype=absdtype.tensorflow())   
+                elif "uint" in dtype :
+                    rng = 2**(8*absdtype.sizeof()-1)
+                    maxval = tf.constant(rng - 1, dtype=tf.int64)
+                    ret = tf.random.uniform(shape=shape, minval=0, maxval=maxval, dtype=tf.int64)
+                    ret = tf.cast(ret, dtype=absdtype.tensorflow())    
+                else :
+                    TF_LOG.error(f"Unknown dtype: {dtype = }")
+                    raise NotImplementedError(dtype)
+                return ret
+            
+        is_tensor = lambda x: isinstance(x, tf.Tensor)
+        output_info = inst.execute(
+            symb_2_value=None,
+            tensor_from_numpy=tensor_from_numpy,
+            abs_from_dtype=DType.from_tensorflow,
+            is_tensor=is_tensor,
+            func=eval(inst.name)
+        )
+        return output_info
 
     @classmethod
     def from_gir(cls: Type["TFModel"], ir: GraphIR, **kwargs) -> "TFModel":
@@ -221,4 +267,4 @@ class TFModelGPU(TFModel):
     def device(self) -> tf.device:
         gpus = tf.config.list_logical_devices("GPU")
         assert gpus, "No GPU available"
-        return tf.device(gpus[0].name)
+        return tf.device(gpus[3].name)

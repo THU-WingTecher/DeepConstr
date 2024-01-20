@@ -1,0 +1,49 @@
+alias: torch.rot90
+constraints:
+  dims:
+    default:
+    - 0
+    - 1
+    dtype: list[int],list[int]
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  k:
+    default: 1
+    dtype: int
+    init: false
+    required: false
+infered_history: []
+infered_times: 30
+package: torch
+pass_rate: 0.82
+rules:
+- cot: The error is triggered due to the total rotation dims not equal to 2. From
+    the given values, the dimension list 'dims' is empty, thus its length is 0. In
+    order to prevent this error, the length of 'dims' should be equal to 2. Therefore,
+    the left value is len(dims), the operation is ==, and the right value is 2.
+  target: expected total rotation dims == 2, but got dims = 0
+  txt: (input.rank >= 2) and (len(dims) == 2)
+- cot: 'The error is triggered because the rotation dimensions are identical. The
+    program expects two different dimensions for rotation. In the given values, both
+    dims are -500. The error will not trigger if the two dims values are different.
+    So, the logical relationship can be defined as left : dims[0] op : != right :
+    dims[1]'
+  target: expected rotation dims to be different, but got dim0 = -500 and dim1 = -500
+  txt: dims[0] != dims[1]
+- cot: 'The error is due to dim1 being out of range. Based on the input tensor''s
+    shape, the maximum value of dim1 could be 5, as the length of the tensor is 6
+    (indexed from 0). However, the given dim1 value is 10 which exceeds the maximum
+    permissible value. Therefore, the constraint should be that the ''dims'' list
+    values should be less than the length of the ''input'' tensor shape. Thus, Left
+    : dims[i] for each i in range(len(dims)), Op : <, and Right : len(input.shape).'
+  target: Rotation dim1 out of range, dim1 = 10
+  txt: all(dims[i] < len(input.shape) for i in range(len(dims)))
+time_cost: 658.2665328979492
+title: torch.rot90
+tokens_used: 17757
+trained: true

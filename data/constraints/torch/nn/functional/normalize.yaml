@@ -1,0 +1,69 @@
+constraints:
+  dim:
+    default: 1
+    dtype: int
+    init: false
+    required: false
+  eps:
+    default: 1.0e-12
+    dtype: float
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+  p:
+    default: 2.0
+    dtype: float
+    init: false
+    required: false
+infered_history: []
+infered_times: 29
+package: torch
+pass_rate: 1.0
+rules:
+- cot: "The error is due to the 'dim' parameter being out of range. In this case,\
+    \ the input tensor has a dimension of 1 (shape is [5]). However, the 'dim' provided\
+    \ is 6 which is out of the valid range [-1, 0]. To prevent this error from happening\
+    \ again, we need to ensure that the 'dim' value is always within the valid range\
+    \ for the given tensor. \n\nSo the logical relationship constraint based on the\
+    \ provided values would be: \n'dim' should be greater than or equal to negative\
+    \ of the length of the shape of the input tensor and less than the length of the\
+    \ shape of the input tensor. \n\nExpressed in code, the constraint would be:"
+  target: Dimension out of range (expected to be in range of [-1, 0], but got 6)
+  txt: (dim<=0) or (dim >= -len(input.shape) and dim < len(input.shape))
+- cot: "The error indicates that there is an attempt to resize a storage that is not\
+    \ resizable. This might be due to the dimensions of the 'input' and 'out' tensors\
+    \ not matching, or 'eps' being negative, or 'dim' being greater than the dimensions\
+    \ of 'input' or 'out'. \n\nTo avoid this error, the following constraints should\
+    \ be met:\n\n1. The dimensions of 'input' and 'out' tensors should match. This\
+    \ will ensure that the 'out' tensor can hold the result of the operation performed\
+    \ on 'input'."
+  target: Trying to resize storage that is not resizable
+  txt: input.shape == out.shape and eps >= 0 and dim < len(input.shape)
+- cot: 'The error is caused because the result type Float cannot be cast to the desired
+    output type Long. From the provided values, the ''input'' and ''out'' tensors
+    have different dtypes, float32 and int64 respectively. We should ensure that the
+    dtype of the ''out'' tensor is the same as the dtype of the ''input'' tensor to
+    prevent this error. Therefore, Left : type(input), Op : ==, Right : type(out)'
+  target: result type Float can't be cast to the desired output type Long
+  txt: type(input)==type(out)
+- cot: 'Error is triggered because ''input'' tensor has Boolean data type but linalg.vector_norm
+    expects a floating point or complex tensor as input. Therefore, ''input'' data
+    type should be corrected, which is input.dtype. Therefore, Left : input.dtype.
+    It says that expected a floating point or complex tensor, so Op : ==, and Right
+    : float or complex.'
+  target: 'linalg.vector_norm: Expected a floating point or complex tensor as input.
+    Got Bool'
+  txt: input.dtype == float or input.dtype == complex
+time_cost: 2660.0432703495026
+title: torch.nn.functional.normalize
+tokens_used: 17720
+trained: true

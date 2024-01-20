@@ -1,0 +1,59 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  reduce:
+    default: null
+    dtype: bool
+    init: false
+    required: false
+  reduction:
+    default:
+    - none
+    - mean
+    - sum
+    dtype: Literal["none", "mean", "sum"]
+    init: false
+    required: false
+  size_average:
+    default: null
+    dtype: bool
+    init: false
+    required: false
+  target:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 6
+package: torch
+pass_rate: 1.0
+rules:
+- cot: 'The error is caused because the result type Float can''t be cast to the desired
+    output type Int. What the args were? The ''input'' tensor is of type int32 and
+    the ''target'' tensor is of type float32. When the ''reduce'' is True and ''reduction''
+    is ''mean'', the result is of type float which can''t be converted to int. Therefore,
+    Left : type(input) or type(target). Op : == Right : float.'
+  target: result type Float can't be cast to the desired output type Int
+  txt: type(input)==float
+- cot: 'The error is triggered because the output shape doesn''t match the broadcast
+    shape. The ''reduce'' argument is set to True, which means the output is expected
+    to have a reduced shape, but ''reduction'' is set to ''mean'', which should keep
+    the shape of the tensor. Also, the ''size_average'' argument is set to True, which
+    means the output should be averaged over its sizes, but this contradicts with
+    the ''reduce'' argument. The constraints should address these issues. Let''s see
+    the what''s args were.
+
+
+    For the ''reduce'' argument, if it''s True, the output shape should be reduced.
+    If it''s False, the output shape should be the same as the input shape. Left :
+    reduce, op : ==, comparator : True'
+  target: output with shape [] doesn't match the broadcast shape [8]
+  txt: (len(input.shape) == len(target.shape) and all(input.shape[i] == target.shape[i]
+    for i in range(len(input.shape)))) and (reduce==True)
+time_cost: 251.38014245033264
+title: torch.nn.functional.soft_margin_loss
+tokens_used: 3172

@@ -1,0 +1,42 @@
+constraints:
+  dimension:
+    default: null
+    dtype: int
+    init: false
+    required: true
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  size:
+    default: null
+    dtype: int
+    init: false
+    required: true
+  step:
+    default: 1
+    dtype: int
+    init: false
+    required: false
+infered_history: []
+infered_times: 23
+package: torch
+pass_rate: 0.9
+rules:
+- cot: 'Error is triggered because the maximum size for tensor at dimension 0 is 0
+    but size is 6. What the args were? the tensor size at dimension 0 is larger than
+    the maximum size allowed. Therefore, we can revise the constraints as follows:'
+  target: maximum size for tensor at dimension 0 is 0 but size is 6
+  txt: (size <= input.shape[dimension]) and (input.shape[dimension] <= size)
+- cot: 'The error is due to the ''dimension'' value being out of the valid range.
+    For ''dimension'', the value provided is -2, which is not in the allowed range
+    of [-1, 0]. Therefore, type(dimension) should be corrected to be within the range
+    [-1, 0], which is [-1, 0]. Op : in, and Right : [-1, 0].'
+  target: Dimension out of range (expected to be in range of [-1, 0], but got -2)
+  txt: (dimension >= -input.rank and dimension < input.rank) or (dimension in [-1,
+    0])
+time_cost: 557.6452431678772
+title: torch.unfold_copy
+tokens_used: 13147
+trained: true

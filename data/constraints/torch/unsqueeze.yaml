@@ -1,0 +1,29 @@
+alias: torch.unsqueeze
+constraints:
+  dim:
+    default: null
+    dtype: int
+    init: false
+    required: true
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 6
+package: torch
+pass_rate: 1.0
+rules:
+- cot: "Based on the provided values, the 'input' is a tensor with a shape of [2].\
+    \ This means that valid dimensions are in the range of [-2, 1]. However, 'dim'\
+    \ is currently set to 7, which is outside of the valid range.\n\nTo prevent this\
+    \ error and generate constraints that do not trigger it, we need to ensure that\
+    \ the 'dim' value is always within the valid range for the given tensor. \n\n\
+    The constraint for the 'dim' parameter can be expressed as:"
+  target: Dimension out of range (expected to be in range of [-2, 1], but got 7)
+  txt: dim >= -len(input.shape) and dim < len(input.shape)
+time_cost: 180.35189175605774
+title: torch.unsqueeze
+tokens_used: 3531
+trained: true

@@ -2,12 +2,12 @@
 from collections import Counter
 from dataclasses import dataclass
 from os import PathLike
-from typing import Dict, List, Tuple, Type
+from typing import Any, Dict, List, Tuple, Type
 
 from neuri.abstract.dtype import DTYPE_GEN_ALL, DType
 from neuri.abstract.op import *
 from neuri.abstract.op import __MAX_RANK__
-from neuri.abstract.tensor import AbsTensor
+# from neuri.abstract.tensor import AbsTensor
 from neuri.autoinf.instrument.categorize import gen_inst_with_records
 from neuri.autoinf.instrument.op import OpInstance
 from neuri.logger import AUTOINF_LOG
@@ -81,11 +81,11 @@ class AutoInfOpBase(AbsOpBase):
     def attr_names(self):
         return self.inst.A
 
-    def __init__(self, inst: OpInstance, attrs):
+    def __init__(self, inst: OpInstance, attrs : Dict[str, Any]):
         # super from self
         self.extra_attrs = {}
         self.attrs = attrs
-        self.inst = inst
+        self.inst: OpInstance = inst
         self.inp_ranks = [tuple(x.rank for x in inst.input_tensors)]
         self.out_ranks = [tuple(x.rank for x in inst.output_tensors)]
         assert set(attrs.keys()) == set(inst.A), f"{list(attrs.keys())} != {inst.A}"
@@ -226,6 +226,7 @@ def make_record_finder(
     gen_inst_records: List[Tuple[OpInstance, List[Tuple[Dict]]]] = None,
     path: PathLike = None,
     max_elem_per_tensor=2**16,
+    test_pool: List = [],
 ):
     if gen_inst_records is None:
         assert path is not None, "Either gen_inst_records or path must be provided."
@@ -248,11 +249,14 @@ def make_record_finder(
 
     rank_dist_cnt = Counter()
     dtype_dist_cnt = Counter()
-
+    print(f"testing {test_pool}")
     for inst, records in gen_inst_records:
         total_rec += len(records)
 
-        if special_filter(inst):
+        if test_pool is not None :
+            if inst.name not in test_pool :
+                continue 
+        if special_filter(inst): # exclude errotic cases
             skipped_special += len(records)
             continue
 

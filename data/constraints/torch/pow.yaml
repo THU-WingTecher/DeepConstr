@@ -1,0 +1,57 @@
+alias: torch.pow
+constraints:
+  exponent:
+    default: null
+    dtype: float32,float16,float32,float64,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  input:
+    default: null
+    dtype: float16,float32,float64,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 18
+package: torch
+pass_rate: 0.97
+rules:
+- cot: 'Error is triggered because the size of tensors at non-singleton dimension
+    4 doesn''t match. Given the values, tensors ''exponent'' and ''input'' are not
+    compatible at non-singleton dimension 4. It seems that exponent.shape[4] is 8
+    whereas input.shape[4] is 6. Therefore, we have to revise the constraints as follows:'
+  target: The size of tensor a (6) must match the size of tensor b (8) at non-singleton
+    dimension 4
+  txt: (all(input.shape[i] == exponent.shape[i] or input.shape[i] == 1 or exponent.shape[i]
+    == 1 for i in range(-1, -min(len(input.shape), len(exponent.shape))-1, -1))) and
+    ((all((exponent.shape[i] == input.shape[i]) or (exponent.shape[i] == 1) or (input.shape[i]
+    == 1) for i in range(len(exponent.shape)))) and (exponent.shape[4] == input.shape[4]))
+- cot: "The error is caused because we are trying to resize a non-resizable storage,\
+    \ which in this case appears to be the 'out' tensor. \n\nThe shapes of the 'exponent',\
+    \ 'input' and 'out' tensors are different, this might be causing the error. The\
+    \ 'out' tensor should have the same shape as the 'input' tensor for the operation\
+    \ to be successful. The 'exponent' tensor should also be broadcastable to the\
+    \ 'input' tensor shape.\n\nThe 'out' tensor does not have enough dimensions to\
+    \ hold the output of the operation, so trying to force it to do so is causing\
+    \ the error. \n\nThe constraint therefore should be:\n1. The rank of the 'out'\
+    \ tensor must be equal to the rank of the 'input' tensor.\n2. Each dimension i\
+    \ of the 'out' tensor should be equal to the corresponding dimension i of the\
+    \ 'input' tensor."
+  target: Trying to resize storage that is not resizable
+  txt: (out.rank == input.rank) and ((out.shape == exponent.shape and out.rank ==
+    exponent.rank) and (all(exponent.shape[i]==input.shape[i] for i in range(exponent.rank))))
+- cot: 'The error is triggered because result type Float cannot be cast to the Int.
+    Let''s see what the args were. The dtype of ''exponent'' and ''input'' is float32,
+    and the dtype of ''out'' is int8. Therefore, the dtypes of ''exponent'', ''input'',
+    and ''out'' should be consistent. Left : type(exponent), type(input), type(out).
+    Op : ==. Right : type(exponent), type(input) or type(out).'
+  target: result type Float can't be cast to the desired output type Int
+  txt: (type(exponent)==type(input)) and (type(input)==type(out))
+time_cost: 4302.679625272751
+title: torch.pow
+tokens_used: 9717
+trained: true

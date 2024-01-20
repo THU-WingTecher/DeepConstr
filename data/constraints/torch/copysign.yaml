@@ -1,0 +1,58 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  other:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool,int32,int64,int8,int16
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 27
+package: torch
+pass_rate: 0.1
+rules:
+- cot: 'The error occurs because the "copysign_cpu" function is not implemented for
+    ''ComplexDouble'' type. From the given values, ''other'' and ''out'' are of ''ComplexDouble''
+    type. Therefore, the type of ''other'' and ''out'' should not be ''ComplexDouble''.
+    Thus, Left : type(other), Op : !=, and Right : ''ComplexDouble''. Similarly, Left
+    : type(out), Op : !=, and Right : ''ComplexDouble''.'
+  target: '"copysign_cpu" not implemented for ''ComplexDouble'''
+  txt: type(out) != 'ComplexDouble'
+- cot: 'The error is due to the ''other'' and ''out'' tensors having a ''complex64''
+    type, and the ''input'' tensor having a ''int8'' type. The function ''copysign_cpu''
+    is not implemented for complex types. Therefore, the type of ''other'' and ''out''
+    should not be ''ComplexFloat''. So, type(''other'') and type(''out'') should not
+    be ''ComplexFloat''. Therefore, Op : != , and Right : ''ComplexFloat''. Also,
+    the type of ''input'' should be ''int8'', so Op : == , and Right : ''int8''.'
+  target: '"copysign_cpu" not implemented for ''ComplexFloat'''
+  txt: (type(input) == 'int8')
+- cot: 'The error message indicates a type mismatch between the result and the desired
+    output type. The ''other'' tensor is of type ''ComplexFloat'', but the ''out''
+    tensor is expecting ''Char'' type. To resolve this, we must ensure that the ''other''
+    tensor is also of type ''Char''. So, the constraint could be set as: Left : other.dtype.
+    Op : == Right : out.dtype, Char.'
+  target: result type ComplexFloat can't be cast to the desired output type Char
+  txt: (type(input)!=type(out)) or (other.dtype == out.dtype)
+- cot: 'Given the error, it seems like there is an attempt to resize a tensor that
+    is not resizable. Considering the ''input'', ''other'', and ''out'' tensors, we
+    can infer that the ''out'' tensor should have the same shape as the ''input''
+    tensor or the ''other'' tensor to ensure no resizing is required. Therefore, we
+    can generate the following constraints:
+
+
+    1. The shape of the ''out'' tensor should be the same as the ''input'' tensor.'
+  target: Trying to resize storage that is not resizable
+  txt: (out.rank == input.rank) and (out.rank == other.rank and all(out.shape[i] ==
+    other.shape[i] for i in range(out.rank)))
+time_cost: 6247.828605413437
+title: torch.copysign
+tokens_used: 17707
+trained: true

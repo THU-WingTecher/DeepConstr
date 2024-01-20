@@ -1,0 +1,37 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 32
+package: torch
+pass_rate: 0.97
+rules:
+- cot: 'The error is due to an attempt to resize a storage that is not resizable.
+    The input and output tensors have different shapes, which could be causing the
+    problem. For the error not to occur, the dimensions of the ''input'' tensor should
+    match with the ''out'' tensor. Hence, the constraint is that both tensors should
+    have equal dimensions.
+
+
+    This constraint can be represented as:'
+  target: Trying to resize storage that is not resizable
+  txt: (len(input.shape) == len(out.shape)) and (all(input.shape[i] == out.shape[i]
+    for i in range(len(input.shape))))
+- cot: 'The error is happening because the result type Float cannot be cast to the
+    desired output type Int. The input tensors are of dtype Int32, which means the
+    computations performed on them should also result in an Int32 type to match the
+    ''out'' tensor dtype and prevent the casting error. Therefore, Left : type(input),
+    op : ==, comparator : type(out) or type(computation_result)'
+  target: result type Float can't be cast to the desired output type Int
+  txt: type(input)==type(out)
+time_cost: 1389.9886767864227
+title: torch._C._special.special_ndtri
+tokens_used: 15886

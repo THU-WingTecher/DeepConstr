@@ -1,0 +1,54 @@
+alias: torch.ldexp
+constraints:
+  input:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  other:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 36
+package: torch
+pass_rate: 0.63
+rules:
+- cot: 'The error is due to trying to cast a complex float to a regular float. This
+    operation is not possible as a complex float contains an imaginary part that cannot
+    be represented in a regular float. Therefore, the types of the inputs need to
+    be changed so that the output is not a complex float. Let''s see what the values
+    were. The type of ''input'' and ''other'' are complex float, but we don''t know
+    which one should be changed. Therefore, Left : type(input) or type(other). Op
+    : == Right : float'
+  target: result type ComplexFloat can't be cast to the desired output type Float
+  txt: (type(out)==float) or (type(input)==float)
+- cot: The error is due to an attempt to resize a storage that is not resizable. This
+    usually occurs when the output tensor 'out' is not of the same shape as the input
+    tensor 'input'. Therefore, the shape of 'out' should match the shape of 'input'.
+    In this case, out.shape == input.shape, out.rank == input.rank.
+  target: Trying to resize storage that is not resizable
+  txt: (len(other) <= input.shape[-1]) and ((all(out.shape[i]==input.shape[i] for
+    i in range(out.rank))) and ((len(input) == 10 and len(other) == 1 and len(out)
+    == 1) or ((len(other) == 1) and (out.rank==input.rank and all(out.shape[i]==input.shape[i]
+    for i in range(out.rank))))))
+- cot: 'The error indicates that the size of tensor ''a'' and tensor ''b'' must match
+    at non-singleton dimension 5. As per the provided values, the size of tensor ''input''
+    at the 5th dimension is 4, and the size of tensor ''other'' at the 5th dimension
+    is 6. So, these sizes need to be equal for the operation to succeed. Therefore,
+    Left: input.shape[5], Op: ''=='', and Right: other.shape[5].'
+  target: The size of tensor a (4) must match the size of tensor b (6) at non-singleton
+    dimension 5
+  txt: (all(input.shape[i] == other.shape[i] or input.shape[i] == 1 or other.shape[i]
+    == 1 for i in range(-1, -min(len(input.shape), len(other.shape))-1, -1))) and
+    (input.shape[5] == other.shape[5])
+time_cost: 6525.266073942184
+title: torch.ldexp
+tokens_used: 20380
+trained: true

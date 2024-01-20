@@ -126,6 +126,8 @@ def gen_code(op: Mul):
 @operator_impl(Div)
 def gen_code(op: Div):
     # TODO
+    if op.input_like[0] is None :
+        return "torch.div", False
     return "torch.div" + braces_template(
         len(op.input_like),
         rounding_mode="floor" if op.input_like[0].dtype in DTYPE_GEN_INTS else None,
@@ -196,6 +198,8 @@ def gen_code(op: Ceil):
 
 @operator_impl(Clip)
 def gen_code(op: Clip):
+    if op.input_like[0] is None :
+        return "torch.clip", False
     if op.input_like[0].dtype in DTYPE_GEN_FLOATS:
         return (
             "torch.clip" + braces_template(len(op.input_like), min=-1.5, max=1.5),
@@ -233,12 +237,16 @@ def gen_code(op: Neg):
 
 @operator_impl(Softmax)
 def gen_code(op: Softmax):
+    if op.input_like[0] is None :
+        return "torch.nn.Softmax", True
     return f"torch.nn.Softmax(dim={op.dim})", True
     return torch.nn.Softmax(dim=op.dim)
 
 
 @operator_impl(MaxPool2d)
 def gen_code(op: MaxPool2d):
+    if op.input_like[0] is None :
+        return "torch.nn.MaxPool2d", True
     return (
         f"torch.nn.MaxPool2d(kernel_size=({op.kernel_h_size}, {op.kernel_w_size}), stride={op.stride}, padding={op.padding})",
         True,
@@ -252,6 +260,8 @@ def gen_code(op: MaxPool2d):
 
 @operator_impl(AvgPool2d)
 def gen_code(op: AvgPool2d):
+    if op.input_like[0] is None :
+        return "torch.nn.AvgPool2d", True
     return (
         f"torch.nn.AvgPool2d(kernel_size=({op.kernel_h_size}, {op.kernel_w_size}), stride={op.stride}, padding={op.padding})",
         True,
@@ -265,6 +275,8 @@ def gen_code(op: AvgPool2d):
 
 @operator_impl(Slice)
 def gen_code(op: Slice):
+    if op.input_like[0] is None :
+        return "Slice", False
     reg = op.extra_attrs["region"]
 
     shape = op.input_like[0].shape
@@ -285,6 +297,8 @@ def gen_code(op: Slice):
 
 @operator_impl(Pad)
 def gen_code(op: Pad):
+    if op.input_like[0] is None :
+        return "torch.nn.functional.pad", False
     if op.extra_attrs["type"] == "constant":
         # 0 easily cause division by zero...
         # 1 easily cause false positives (sqrt(1) = 0.99999... != 1 in ORT, so floor(sqrt(1))=0)
@@ -309,6 +323,8 @@ def gen_code(op: Pad):
 
 @operator_impl(Expand)
 def gen_code(op: Expand):
+    if op.input_like[0] is None :
+        return "torch.Tensor.expand", False
     return (
         "{}.expand" + braces_template(0, *op.type_transfer(op.input_like)[0].shape),
         False,
@@ -317,12 +333,16 @@ def gen_code(op: Expand):
 
 @operator_impl(BatchNorm2d)
 def gen_code(op: BatchNorm2d):
+    if op.input_like[0] is None :
+        return "torch.nn.BatchNorm2d", True
     return f"torch.nn.BatchNorm2d(num_features={op.nfeat})", True
     return torch.nn.BatchNorm2d(num_features=op.nfeat)
 
 
 @operator_impl(Conv1d)
 def gen_code(op: Conv1d):
+    if op.input_like[0] is None :
+        return "torch.nn.Conv1d", True
     return (
         f"torch.nn.Conv1d(in_channels={op.in_channels}, out_channels={op.out_channels}, kernel_size={op.kernel_size}, stride={op.stride}, padding={op.padding}, dilation={op.dilation})",
         True,
@@ -339,6 +359,8 @@ def gen_code(op: Conv1d):
 
 @operator_impl(NCHWConv2d)
 def gen_code(op: NCHWConv2d):
+    if op.input_like[0] is None :
+        return "torch.nn.Conv2d", True
     return (
         f"torch.nn.Conv2d(in_channels={op.in_channels}, out_channels={op.out_channels}, kernel_size=({op.kernel_h_size}, {op.kernel_w_size}), stride={op.stride}, padding={op.padding}, dilation=({op.dilation_h}, {op.dilation_w}))",
         True,
@@ -355,18 +377,24 @@ def gen_code(op: NCHWConv2d):
 
 @operator_impl(Reshape)
 def gen_code(op: Reshape):
+    if op.input_like[0] is None :
+        return "torch.Tensor.reshape", False
     return "{}.reshape" + braces_template(0, *op.target_shape), False
     return lambda x: x.reshape(*op.target_shape)
 
 
 @operator_impl(Flatten)
 def gen_code(op: Flatten):
+    if op.input_like[0] is None :
+        return "torch.Tensor.flatten", False
     return "{}.flatten()", False
     return lambda x: x.flatten()
 
 
 @operator_impl(Transpose)
 def gen_code(op: Transpose):
+    if op.input_like[0] is None :
+        return "torch.Tensor.transpose", False
     dim0, dim1 = op._init_swap_dims(op.input_like[0].shape)
     return "{}.transpose" + braces_template(0, dim0, dim1), False
 
@@ -380,6 +408,8 @@ def gen_code(op: Transpose):
 # NearestInterp
 @operator_impl(NearestInterp)
 def gen_code(op: NearestInterp):
+    if op.input_like[0] is None :
+        return "torch.nn.functional.interpolate", False
     return (
         "torch.nn.functional.interpolate"
         + braces_template(1, size=op.size, mode="nearest"),
@@ -391,6 +421,8 @@ def gen_code(op: NearestInterp):
 # LinearInterp
 @operator_impl(LinearInterp)
 def gen_code(op: LinearInterp):
+    if op.input_like[0] is None :
+        return "torch.nn.functional.interpolate", False
     return (
         "torch.nn.functional.interpolate"
         + braces_template(1, size=op.size, mode="linear"),
@@ -402,6 +434,8 @@ def gen_code(op: LinearInterp):
 # BilinearInterp
 @operator_impl(BilinearInterp)
 def gen_code(op: BilinearInterp):
+    if op.input_like[0] is None :
+        return "torch.nn.functional.interpolate", False
     return (
         "torch.nn.functional.interpolate"
         + braces_template(1, size=op.size, mode="bilinear"),
@@ -412,6 +446,8 @@ def gen_code(op: BilinearInterp):
 
 @operator_impl(BicubicInterp)
 def gen_code(op: BicubicInterp):
+    if op.input_like[0] is None :
+        return "torch.nn.functional.interpolate", False
     return (
         "torch.nn.functional.interpolate"
         + braces_template(1, size=op.size, mode="bicubic"),
@@ -423,6 +459,8 @@ def gen_code(op: BicubicInterp):
 # TrilinearInterp
 @operator_impl(TrilinearInterp)
 def gen_code(op: TrilinearInterp):
+    if op.input_like[0] is None :
+        return "torch.nn.functional.interpolate", False
     return (
         "torch.nn.functional.interpolate"
         + braces_template(1, size=op.size, mode="trilinear"),
@@ -433,6 +471,8 @@ def gen_code(op: TrilinearInterp):
 
 @operator_impl(Squeeze)
 def gen_code(op: Squeeze):
+    if op.input_like[0] is None :
+        return "torch.Tensor.squeeze", False
     if op.extra_attrs["reduce_dim"] is not None:
         return "{}.squeeze" + braces_template(0, op.extra_attrs["reduce_dim"]), False
         return lambda x: x.squeeze(op.extra_attrs["reduce_dim"])
@@ -443,6 +483,8 @@ def gen_code(op: Squeeze):
 
 @operator_impl(TorchReduceSum)
 def gen_code(op: TorchReduceSum):
+    if op.input_like[0] is None :
+        return "torch.Tensor.sum", False
     if op.extra_attrs["reduce_dim"] is not None:
         return "{}.sum" + braces_template(0, op.extra_attrs["reduce_dim"]), False
         return lambda x: x.sum(op.extra_attrs["reduce_dim"])
@@ -453,6 +495,9 @@ def gen_code(op: TorchReduceSum):
 # ReduceMin
 @operator_impl(ReduceMin)
 def gen_code(op: ReduceMin):
+    if op.input_like[0] is None :
+        return "torch.Tensor.min", False
+
     if op.extra_attrs["reduce_dim"] is not None:
         return (
             "{}.min" + braces_template(0, op.extra_attrs["reduce_dim"]) + ".values",
@@ -466,6 +511,8 @@ def gen_code(op: ReduceMin):
 # ReduceMax
 @operator_impl(ReduceMax)
 def gen_code(op: ReduceMax):
+    if op.input_like[0] is None :
+        return "torch.Tensor.max", False
     if op.extra_attrs["reduce_dim"] is not None:
         return (
             "{}.max" + braces_template(0, op.extra_attrs["reduce_dim"]) + ".values",
@@ -479,6 +526,8 @@ def gen_code(op: ReduceMax):
 # ReduceMean
 @operator_impl(ReduceMean)
 def gen_code(op: ReduceMean):
+    if op.input_like[0] is None :
+        return "torch.Tensor.mean", False
     if op.extra_attrs["reduce_dim"] is not None:
         return "{}.mean" + braces_template(0, op.extra_attrs["reduce_dim"]), False
         return lambda x: x.mean(op.extra_attrs["reduce_dim"])
@@ -489,6 +538,8 @@ def gen_code(op: ReduceMean):
 # ArgMin
 @operator_impl(ArgMin)
 def gen_code(op: ArgMin):
+    if op.input_like[0] is None :
+        return "torch.Tensor.argmin", False
     if op.extra_attrs["reduce_dim"] is not None:
         return "{}.argmin" + braces_template(0, op.extra_attrs["reduce_dim"]), False
         return lambda x: x.argmin(op.extra_attrs["reduce_dim"])
@@ -499,6 +550,8 @@ def gen_code(op: ArgMin):
 # ArgMax
 @operator_impl(ArgMax)
 def gen_code(op: ArgMax):
+    if op.input_like[0] is None :
+        return "torch.Tensor.argmax", False
     if op.extra_attrs["reduce_dim"] is not None:
         return "{}.argmax" + braces_template(0, op.extra_attrs["reduce_dim"]), False
         return lambda x: x.argmax(op.extra_attrs["reduce_dim"])
@@ -509,6 +562,8 @@ def gen_code(op: ArgMax):
 # Tril
 @operator_impl(Tril)
 def gen_code(op: Tril):
+    if op.input_like[0] is None :
+        return "torch.Tensor.tril", False
     return "{}.tril" + braces_template(0, op.diagonal), False
     return lambda x: x.tril(op.diagonal)
 
@@ -516,6 +571,8 @@ def gen_code(op: Tril):
 # Triu
 @operator_impl(Triu)
 def gen_code(op: Triu):
+    if op.input_like[0] is None :
+        return "torch.Tensor.triu", False
     return "{}.triu" + braces_template(0, op.diagonal), False
     return lambda x: x.triu(op.diagonal)
 
@@ -523,12 +580,16 @@ def gen_code(op: Triu):
 # Linear
 @operator_impl(Linear)
 def gen_code(op: Linear):
+    if op.input_like[0] is None :
+        return "torch.nn.Linear", True
     return f"torch.nn.Linear(in_features={op.ifeat}, out_features={op.ofeat})", True
     return torch.nn.Linear(in_features=op.ifeat, out_features=op.ofeat)
 
 
 @operator_impl(Concat)
 def gen_code(op: Concat):
+    if op.input_like[0] is None :
+        return "torch.cat", False
     axis = op.extra_attrs["axis"]
     return (
         "torch.cat" + "([" + ", ".join(["{}"] * len(op.input_like)) + f"], dim={axis})",
@@ -539,12 +600,16 @@ def gen_code(op: Concat):
 
 @operator_impl(Cast)
 def gen_code(op: Cast):
+    if op.input_like[0] is None :
+        return "torch.Tensor.to", False
     return "{}.to" + braces_template(0, op.extra_attrs["to"].torch()), False
     return lambda x: x.to(dtype=op.extra_attrs["to"].torch())
 
 
 @operator_impl(MatMul)
 def gen_code(op: MatMul):
+    if op.input_like[0] is None :
+        return "torch.matmul", False
     return "torch.matmul" + braces_template(len(op.input_like)), False
     return torch.matmul
 

@@ -1,0 +1,44 @@
+constraints:
+  hermitian:
+    default: false
+    dtype: bool
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 8
+package: torch
+pass_rate: 1.0
+rules:
+- cot: 'The error is triggered because the input matrix A is not a square matrix as
+    required by the ldl_factor_ex function. The dimensions of the matrix are 8 by
+    6. For a matrix to be square, the number of rows should be equal to the number
+    of columns. Let''s see what the args were. The last two dimensions of the input
+    tensor represent the matrix sizes. Therefore, Left : input[-2], Op : ==, Right
+    : input[-1]'
+  target: 'torch.linalg.ldl_factor_ex: A must be batches of square matrices, but they
+    are 8 by 6 matrices'
+  txt: input[-2] == input[-1]
+- cot: 'Error is triggered because the input tensor A doesn''t have at least 2 dimensions.
+    What the args were? It seems dimension of input tensor is not enough. Therefore,
+    input tensor should have at least 2 dimensions. Hence, we should correct this
+    by checking the dimension of the input tensor. We can revise the constraints as
+    follows:'
+  target: 'torch.linalg.ldl_factor_ex: The input tensor A must have at least 2 dimensions.'
+  txt: len(input.shape) >= 2
+- cot: 'The error is due to the input tensor data type. The function ''torch.linalg.ldl_factor_ex''
+    expects a tensor of floating point or complex data type, but the input tensor
+    is of type int32. Therefore, the constraint should be that the data type of the
+    input tensor needs to be a floating point or complex. So, Left : input.dtype,
+    Op : ==, Right : torch.float32 or torch.complex64'
+  target: 'torch.linalg.ldl_factor_ex: Expected a floating point or complex tensor
+    as input. Got Int'
+  txt: input.dtype == torch.float32 or input.dtype == torch.complex64
+time_cost: 210.4213535785675
+title: torch._C._linalg.linalg_ldl_factor
+tokens_used: 4871
+trained: true

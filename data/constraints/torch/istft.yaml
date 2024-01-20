@@ -1,0 +1,119 @@
+constraints:
+  center:
+    default: true
+    dtype: bool
+    init: false
+    required: false
+  hop_length:
+    default: null
+    dtype: int
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  length:
+    default: null
+    dtype: int
+    init: false
+    required: false
+  n_fft:
+    default: null
+    dtype: int
+    init: false
+    required: true
+  normalized:
+    default: false
+    dtype: bool
+    init: false
+    required: false
+  onesided:
+    default: null
+    dtype: bool
+    init: false
+    required: false
+  return_complex:
+    default: false
+    dtype: bool
+    init: false
+    required: false
+  win_length:
+    default: null
+    dtype: int
+    init: false
+    required: false
+  window:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 62
+package: torch
+pass_rate: 0.0
+rules:
+- cot: 'Based on the values provided, the error is triggered because the window tensor
+    has an invalid shape. The window tensor should be 1D and have a length equal to
+    ''win_length''. Let''s see what the args were. We have ''window'' as a tensor
+    of shape [8, 6] and ''win_length'' as 2. Therefore, the ''window'' tensor does
+    not meet the required conditions. Therefore, ''window'' should be corrected. The
+    length of the ''window'' tensor should match ''win_length'', so Left : len(window).
+    Operation : ==. Right : win_length.'
+  target: 'istft(CPUComplexDoubleType[2, 2, 9], n_fft=2, hop_length=2, win_length=2,
+    window=torch.FloatTensor{[8, 6]}, center=0, normalized=0, onesided=1, length=1,
+    return_complex=0) : Invalid window shape. window has to be 1D and length of `win_length`'
+  txt: len(window) == win_length
+- cot: "The error message indicates that the frequency dimension of the input tensor\
+    \ (3rd to the last) should match n_fft when onesided is False, but in the given\
+    \ case, they do not match. The input tensor has a frequency dimension of 8, but\
+    \ n_fft is 4, and onesided is False. \n\nThe constraint should therefore be:"
+  target: 'istft(CPUComplexFloatType[5, 3], n_fft=6, hop_length=1, win_length=6, window=torch.FloatTensor{[10,
+    9, 3, 8, 4, 4]}, center=1, normalized=1, onesided=1, length=2, return_complex=0)
+    : expected the frequency dimension (3rd to the last) of the input tensor to match
+    n_fft / 2 + 1 when onesided=True, but got 5'
+  txt: input.shape[-3]==n_fft
+- cot: 'Error is triggered because of 5-dimensional tensor. It expects to have 3 or
+    4 dimensions. Let''s see what the args were. It seems input tensor has 5 dimensions,
+    and is the problem. Therefore, The dimension of input tensor should be corrected,
+    which is input.dim(). Therefore, Left : input.dim(). It says that expected 3 to
+    4, so Op : ==, and Right : 3 or 4. Also, It implies that dimension cannot be 5,
+    so Op : !=, and Right : 5.'
+  target: 'istft(CPUComplexDoubleType[6, 8, 5, 6, 8], n_fft=5, hop_length=0, win_length=2,
+    window=torch.FloatTensor{[2, 8]}, center=1, normalized=0, onesided=1, length=5,
+    return_complex=1) : expected a tensor with 3 or 4 dimensions, but got 6'
+  txt: (hop_length > 0) and ((hop_length <= win_length) and (input.dim() == 3))
+- cot: 'Based on the error message, the function `istft` is expected a complex-valued
+    input tensor. The input tensor is currently of type `float16` which is not complex-valued.
+    Also, the function `stft` needs to be called with `return_complex=True` to return
+    a complex-valued output tensor. Therefore, the relationship constraint would be
+    as follows:'
+  target: istft requires a complex-valued input tensor matching the output from stft
+    with return_complex=True.
+  txt: input.dtype == complex
+- cot: "The error is occurring due to invalid arguments passed to the inverse short\
+    \ time Fourier Transform (iSTFT) function. It expects the window length to be\
+    \ greater than 0 and less than or equal to the number of FFT points (n_fft). However,\
+    \ in the provided arguments, the window length is 8 and n_fft is 1, which violates\
+    \ the constraint. \n\nThe constraints that should be satisfied to avoid the error\
+    \ are as follows:\n\n1) Window length should be greater than 0:"
+  target: 'istft(CPUComplexFloatType[1, 1, 10], n_fft=1, hop_length=1, win_length=8,
+    window=torch.FloatTensor{[7]}, center=1, normalized=1, onesided=1, length=2, return_complex=0)
+    : expected 0 < win_length <= n_fft'
+  txt: win_length <= n_fft
+- cot: 'Based on given values, the error occurs because the input tensor is empty.
+    It expects a non-empty tensor. The number of dimensions in the ''input'' tensor
+    is not zero, but the size of one or more dimensions is zero. Therefore, Left :
+    input.shape[i], for all i in the range of len(input.shape), should be corrected.
+    The size of each dimension should not be equal to zero, so Op : !=, and Right
+    : 0.'
+  target: 'istft(CPUComplexFloatType[10, 6, 0], n_fft=10, hop_length=1, win_length=4,
+    window=torch.FloatTensor{[8, 8, 8, 8]}, center=0, normalized=1, onesided=1, length=1,
+    return_complex=0) : input tensor cannot be empty.'
+  txt: ((len(input.shape) > 0)) and ((win_length > 0 and win_length <= n_fft) and
+    (all(input.shape[i]!=0 for i in range(len(input.shape)))))
+time_cost: 14314.18219256401
+title: torch.istft
+tokens_used: 51434
+trained: true

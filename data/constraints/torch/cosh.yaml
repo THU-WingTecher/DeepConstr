@@ -1,0 +1,35 @@
+alias: torch.cosh
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 10
+package: torch
+pass_rate: 0.87
+rules:
+- cot: 'The error is triggered because result type Float cannot be cast to the Int.
+    Let''s see the what''s args were. The dtype of ''input'' and ''out'' is int32,
+    but the result type is Float. Therefore, the dtypes of ''input'' and ''out'' should
+    be consistent with the result type. Left : type(input), op : ==, Right : type(out),
+    and also the output type should be float. Left : type(out), op : ==, Right : float'
+  target: result type Float can't be cast to the desired output type Int
+  txt: type(out)==float
+- cot: "The error indicates that a non-resizable storage is being attempted to be\
+    \ resized. Based on the values provided, the 'out' tensor has a different dimension\
+    \ size from the 'input' tensor. \n\nFirstly, we could enforce a constraint that\
+    \ the dimension sizes of 'out' must be less than or equal to the dimension sizes\
+    \ of 'input'."
+  target: Trying to resize storage that is not resizable
+  txt: all(out[i]==input[i] for i in range(len(out))) and len(out)==len(input)
+time_cost: 465.3994221687317
+title: torch.cosh
+tokens_used: 5117
+trained: true

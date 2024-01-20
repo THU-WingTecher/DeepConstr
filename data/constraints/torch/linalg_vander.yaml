@@ -1,0 +1,35 @@
+constraints:
+  N:
+    default: null
+    dtype: int
+    init: false
+    required: false
+  x:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history:
+- 1
+- 1
+infered_times: 2
+package: torch
+pass_rate: 1.0
+rules:
+- cot: 'The error is coming from N not being greater than 1. From the given values,
+    we see that N is 0. Therefore, Left : N, which is the value of N, should be corrected.
+    It should be greater than 1, so Op : ''>'', and Right : 1.'
+  target: N must be greater than 1.
+  txt: N > 1
+- cot: 'The error is caused because the function linalg.vander only supports floating
+    point, complex, and integer tensors, but it received a Bool type tensor. Let''s
+    see what the args were. It seems that x, which is a tensor, is of the type TensorDType.float16,
+    which is a floating point type and therefore should be acceptable. However, the
+    error message indicates that it received a Bool type. Therefore, the type of x
+    should be checked. So, Op : !=, and Right : Bool.'
+  target: linalg.vander supports floating point, complex, and integer tensors, but
+    got Bool
+  txt: type(x) != Bool
+time_cost: 47.99843645095825
+title: torch._C._linalg.linalg_vander
+tokens_used: 1126

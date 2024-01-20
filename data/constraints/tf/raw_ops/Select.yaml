@@ -1,0 +1,110 @@
+constraints:
+  condition:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool,bool
+    init: false
+    required: true
+  name:
+    default: null
+    dtype: str
+    init: false
+    required: false
+  x:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  y:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history:
+- 4
+- 4
+- 4
+- 6
+- 6
+- 4
+- 6
+infered_times: 35
+package: tf
+pass_rate: 0.0
+rules:
+- cot: 'The error occurs because the function is trying to perform a operation with
+    a bool tensor and a float tensor. However, both tensors in generated args must
+    have the same data type. Looking at the given values, ''x'' tensor is complex128,
+    but the ''y'' tensor is bool. Therefore, Left : type(y), which is the type of
+    tensor y, should be corrected. It''s supposed to be equal to the datatype of tensor
+    x, so Op : ==, and Right : type(x).'
+  target: 'cannot compute Select as input #0(zero-based) was expected to be a bool
+    tensor but is a float tensor [Op:Select] name:'
+  txt: type(y)==type(x)
+- cot: 'The error is related to the ''then'' and ''else'' values not having the same
+    size. In this case, ''then'' could be ''x'' and ''else'' could be ''y''. So, the
+    lengths of ''x'' and ''y'' need to be equal. Left : len(x), Right : len(y)'
+  target: '''then'' and ''else'' must have the same size. but received: [10] vs. [1]
+    [Op:Select] name:'
+  txt: len(x) == len(y)
+- cot: 'The error is triggered due to a negative dimension value, which is not valid.
+    Dimension sizes must be non-negative. The ''condition'' tensor contains a negative
+    value (-2435), which seems to be causing the problem. Therefore, the Left : condition,
+    should be corrected such that all its elements are non-negative. Ops : ''>='',
+    Right : 0.'
+  target: "Dimension -2429 must be >= 0\n [[]] [Op:RandomUniformInt] name:"
+  txt: all(condition[i] >= 0 for i in range(len(condition)))
+- cot: 'The error is triggered because the size of ''condition'' tensor is too large.
+    The product of its size and data type size is larger than the maximum possible
+    size. To solve this, we can reduce the size of the ''condition'' tensor. So the
+    constraints can be: len(condition) < max_size / condition.dtype.itemsize where
+    max_size is the maximum possible size. As ''x'' and ''y'' tensors do not seem
+    to contribute to the error, no constraints are generated for them.'
+  target: array is too big; `arr.size * arr.dtype.itemsize` is larger than the maximum
+    possible size.
+  txt: len(condition) < max_size / condition.dtype.itemsize
+- cot: 'The error is because the ''condition'' attribute is expected to be a boolean
+    tensor but a float tensor has been provided. Hence, the Left : type(condition)
+    should be corrected to bool. Op : ==, and Right : bool.'
+  target: "Could not find device for node: = Select[T=DT_QINT8]\nAll kernels registered\
+    \ for op Select:\n device='XLA_GPU_JIT'; T in [DT_FLOAT, DT_DOUBLE, DT_INT32,\
+    \ DT_UINT8, DT_INT16, DT_INT8, DT_COMPLEX64, DT_INT64, DT_BOOL, DT_QINT8, DT_QUINT8,\
+    \ DT_QINT32, DT_BFLOAT16, DT_UINT16, DT_COMPLEX128, DT_HALF, DT_UINT32, DT_UINT64,\
+    \ DT_FLOAT8_E5M2, DT_FLOAT8_E4M3FN, DT_INT4, DT_UINT4]\n device='XLA_CPU_JIT';\
+    \ T in [DT_FLOAT, DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16, DT_INT8, DT_COMPLEX64,\
+    \ DT_INT64, DT_BOOL, DT_QINT8, DT_QUINT8, DT_QINT32, DT_BFLOAT16, DT_UINT16, DT_COMPLEX128,\
+    \ DT_HALF, DT_UINT32, DT_UINT64, DT_FLOAT8_E5M2, DT_FLOAT8_E4M3FN, DT_INT4, DT_UINT4]\n\
+    \ device='GPU'; T in [DT_BFLOAT16]\n device='GPU'; T in [DT_COMPLEX128]\n device='GPU';\
+    \ T in [DT_COMPLEX64]\n device='GPU'; T in [DT_INT64]\n device='GPU'; T in [DT_INT32]\n\
+    \ device='GPU'; T in [DT_DOUBLE]\n device='GPU'; T in [DT_FLOAT]\n device='GPU';\
+    \ T in [DT_HALF]\n device='GPU'; T in [DT_BOOL]\n device='CPU'; T in [DT_VARIANT]\n\
+    \ device='CPU'; T in [DT_RESOURCE]\n device='CPU'; T in [DT_STRING]\n device='CPU';\
+    \ T in [DT_BOOL]\n device='CPU'; T in [DT_COMPLEX128]\n device='CPU'; T in [DT_COMPLEX64]\n\
+    \ device='CPU'; T in [DT_DOUBLE]\n device='CPU'; T in [DT_FLOAT]\n device='CPU';\
+    \ T in [DT_BFLOAT16]\n device='CPU'; T in [DT_HALF]\n device='CPU'; T in [DT_INT32]\n\
+    \ device='CPU'; T in [DT_INT8]\n device='CPU'; T in [DT_UINT8]\n device='CPU';\
+    \ T in [DT_INT16]\n device='CPU'; T in [DT_UINT16]\n device='CPU'; T in [DT_UINT32]\n\
+    \ device='CPU'; T in [DT_INT64]\n device='CPU'; T in [DT_UINT64]\n [Op:Select]\
+    \ name:"
+  txt: type(condition) == bool
+- cot: 'The error is caused because the number of batches of ''then'' (which can be
+    x or y) does not match the size of ''cond''. So, the first dimension of ''then''
+    and ''cond'' should be the same. Therefore, Left : condition.shape[0], x.shape[0]
+    or y.shape[0]'
+  target: 'Number of batches of ''then'' must match size of ''cond'', but saw: 4 vs.
+    1797 [Op:Select] name:'
+  txt: condition.shape[0] == x.shape[0]
+- cot: 'Error is triggered because input #0 was expected to be a bool tensor but is
+    a float tensor. Given the context, it seems the ''Select'' operation was attempted
+    with a float tensor when it required a bool tensor. The mentioned tensors in the
+    error message, ''condition'', ''x'', and ''y'', all have different dimensions,
+    hence there is a need to ensure the ''condition'' tensor is a bool tensor and
+    it has the same shape as ''x'' and ''y''. Therefore, Left : type(condition). Op
+    : ==, and Right : bool. And, condition.shape == x.shape; condition.shape == y.shape'
+  target: 'Inputs to operation Select of type Select must have the same size and shape.
+    Input 0: [10,9,10] != input 1: [10,4] [Op:Select] name:'
+  txt: condition.shape==x.shape
+time_cost: 2926.134003639221
+title: tf.raw_ops.Select
+tokens_used: 27126
+skipped: true 
+skipped_reason: unsupport constraints (tensor element)

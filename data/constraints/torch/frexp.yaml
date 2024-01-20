@@ -1,0 +1,22 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 7
+package: torch
+pass_rate: 1.0
+rules:
+- cot: "The error message indicates that the torch.frexp() function only supports\
+    \ floating-point dtypes. This means that the tensor input to this function must\
+    \ be of a floating-point dtype. The floating-point dtypes in PyTorch are torch.float16,\
+    \ torch.float32, and torch.float64. \n\nTherefore, the logical relationship constraint\
+    \ to prevent this error would be:"
+  target: torch.frexp() only supports floating-point dtypes
+  txt: input.dtype in [torch.float16, torch.float32, torch.float64]
+time_cost: 127.5805344581604
+title: torch.frexp
+tokens_used: 2979
+trained: true

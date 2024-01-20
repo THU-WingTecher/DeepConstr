@@ -1,0 +1,94 @@
+constraints:
+  bias:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+  dilation:
+    default: 1
+    dtype: int
+    init: false
+    required: false
+  groups:
+    default: 1
+    dtype: int
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  padding:
+    default: 0
+    dtype: list[int]
+    init: false
+    required: false
+  stride:
+    default: 1
+    dtype: list[int]
+    init: false
+    required: false
+  weight:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 37
+package: torch
+pass_rate: 0.0
+rules:
+- cot: 'The error is due to mismatched channel sizes. The number of channels in the
+    input tensor (8) is not equal to the number of channels specified in the weight
+    tensor (6). The group parameter is 1, which means Convolution is not grouped.
+    Given groups = 1, the number of channels in the input tensor should be equal to
+    the second dimension of the weight tensor. Therefore, Left : input.shape[1] (8),
+    Op : ==, Right : weight.shape[1] (6)'
+  target: Given groups=1, weight of size [1, 6, 9, 7], expected input[2, 8, 2, 6]
+    to have 6 channels, but got 8 channels instead
+  txt: input.shape[1] == weight.shape[1]
+- cot: 'The error occurs because the ''groups'' value is 0. Groups value should be
+    positive and not zero in tensor operations. So, the Left : ''groups'', Op : should
+    be ''>'', Right : 0.'
+  target: non-positive groups is not supported
+  txt: groups > 0
+- cot: 'In this case, the stride of the convolution has an incorrect size. The stride
+    is set to [500, 500, 500, 500, 500, 500], which is a list of 6 values. The error
+    message suggests that the stride should be a single integer or a list of exactly
+    5 values to match the convolution dimensions. So, the length of the stride list,
+    which is len(stride), should be corrected. Therefore, Left : len(stride). It says
+    that stride length should be 5, so Op : ==, and Right : 5. Also, it could be a
+    single integer, so Op : ==, and Right : 1.'
+  target: expected stride to be a single integer value or a list of 5 values to match
+    the convolution dimensions, but got stride=[500, 500, 500, 500, 500, 500]
+  txt: (len(dilation) == 1) and ((len(padding) == 1) and (len(stride) == 1))
+- cot: 'The error is due to the wrong dimension of the input tensor. In the given
+    values, input tensor is 2D with size [8, 2] which is not suitable for the conv2d
+    function as it requires the input tensor to be 3D (unbatched) or 4D (batched).
+    Therefore, the dimension of the input tensor should be checked against 3 or 4.
+    So, input.dim should be 3 or 4, Op : ==, and Right : 3 or 4.'
+  target: 'Expected 3D (unbatched) or 4D (batched) input to conv2d, but got input
+    of size: [8, 2]'
+  txt: (input.dim == 3) or (input.dim == 4)
+- cot: 'Error is triggered because weight tensor should have at least three dimensions
+    but in the given values it has only two dimensions. Therefore, the number of dimensions
+    of weight should be corrected, which is weight.ndims(). Therefore, Left : weight.ndims().
+    It says that weight should have at least three dimensions, so Op : >=, and Right
+    : 3.'
+  target: weight should have at least three dimensions
+  txt: weight.ndims() >= 3
+- cot: 'The error is triggered because the input type and weight type are not the
+    same. It expects the input and weight to be of same type. Let''s see what the
+    args were. The ''input'' type is ''CPUComplexFloatType'' and the ''weight'' type
+    is ''torch.HalfTensor''. Therefore, the types of ''input'' and ''weight'' should
+    be the same. Left : type(input), op : ==, comparator : type(weight)'
+  target: Input type (CPUComplexFloatType) and weight type (torch.HalfTensor) should
+    be the same
+  txt: type(input)==type(weight)
+time_cost: 2856.9025099277496
+title: torch.conv2d
+tokens_used: 26716
+skipped: true 
+skipped_reason: dupe 
+dupe_with: torch.nn.Conv2d

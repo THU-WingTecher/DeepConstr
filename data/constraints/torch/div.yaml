@@ -1,0 +1,71 @@
+alias: torch.div
+constraints:
+  input:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  other:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool,int
+    init: false
+    required: true
+  out:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+  rounding_mode:
+    default: 'null'
+    dtype: Literal["trunc", "floor"]
+    init: false
+    required: false
+package: torch
+pass_rate: 0.88
+rules:
+- cot: "The error implies that the storage dimension for certain Tensors is trying\
+    \ to be resized which is not allowed. Looking at the values, 'input', 'other'\
+    \ and 'out', the dimensions mismatch. For the operation, it is assumed that the\
+    \ dimensions of 'input' and 'other' tensors should match, and the output tensor\
+    \ 'out' might be of different dimensions. Therefore, to prevent this error from\
+    \ happening again, we need to ensure that the dimensions of the 'input' and 'other'\
+    \ tensors match. The constraints extraction steps are as follows,\n\nLeft : dimensions\
+    \ of 'input', \nOp : '==', \nRight : dimensions of 'other'."
+  target: Trying to resize storage that is not resizable
+  txt: (all(out.shape[i] == other.shape[i] for i in range(other.rank))) and ((out.rank==input.rank
+    and out.rank==other.rank and all(out.shape[i]==input.shape[i] for i in range(out.rank))
+    and all(out.shape[i]==other.shape[i] for i in range(out.rank))) or (out.is_resizeable()
+    == False))
+- cot: 'The ZeroDivisionError occurs when a division or modulo operation is performed
+    with 0 as the divisor. Let''s see what the args were. It seems the tensors ''input'',
+    ''other'', and ''out'' are involved in some mathematical operation that could
+    involve division. The ''rounding_mode'' is set to ''trunc'', which means the operation
+    truncates the decimal part. However, this error would only occur if there is a
+    division by zero somewhere in the operation. Therefore, we should ensure that
+    ''other'' tensor should not contain any zero if it''s used as divisor in any operation.
+
+
+    The constraint can be expressed as:'
+  target: ZeroDivisionError
+  txt: all(x != 0 for x in other.flatten())
+- cot: 'The error is caused because the result type is ''ComplexFloat'' and it cannot
+    be cast to the desired output type ''Float''. From the given values, ''input''
+    and ''other'' are ''complex64'' type and ''out'' is ''float32'' type. The ''rounding_mode''
+    is ''floor''. Therefore, Left : type(input) and type(other), Op : ==, Right :
+    ComplexFloat, which means the types of ''input'' and ''other'' should be ''ComplexFloat''.
+    And Left : type(out), Op : ==, Right : Float, which means the type of ''out''
+    should be ''Float''.'
+  target: result type ComplexDouble can't be cast to the desired output type Float
+  txt: type(out)==Float
+- cot: "Error is triggered because the size of tensors at non-singleton dimension\
+    \ 5 doesn't match. In the given values, 'input' tensor and 'other' tensor's dimension\
+    \ 5 sizes are 4 and 8 respectively, which is causing the error. \n\nFor non-singleton\
+    \ dimensions, the size of the tensors should match or one of them should be 1\
+    \ to perform broadcasting. \n\nTherefore, we can revise the constraints as:"
+  target: The size of tensor a (4) must match the size of tensor b (8) at non-singleton
+    dimension 5
+  txt: (input.shape[5] == other.shape[5]) and (all(input.shape[i] == other.shape[i]
+    or input.shape[i] == 1 or other.shape[i] == 1 for i in range(-1, -min(len(input.shape),
+    len(other.shape))-1, -1)))
+title: torch.div
+trained: true

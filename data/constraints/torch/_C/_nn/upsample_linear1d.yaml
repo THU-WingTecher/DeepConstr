@@ -1,0 +1,7 @@
+package: torch
+pass_rate: 0.0
+rules: {}
+title: torch._C._nn.upsample_linear1d
+skipped: true 
+skipped_reason: dupe
+dupe_with: torch.nn.functional.upsample

@@ -1,0 +1,32 @@
+constraints:
+  features:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  name:
+    default: null
+    dtype: str
+    init: false
+    required: false
+infered_history:
+- 2
+infered_times: 3
+package: tf
+pass_rate: 1.0
+rules:
+- cot: 'The error is due to incorrect value for the attribute ''T'' from args. The
+    attribute ''T'' is ''complex64'' which is not allowed. The allowed data types
+    for ''T'' are float, double, int32, uint8, int16, int8, int64, bfloat16, uint16,
+    half, uint32, uint64. Therefore, the type of ''features'' should be corrected
+    to one in the list of allowed data types. So, Left : type(features), Op : in,
+    and Right : [''float'', ''double'', ''int32'', ''uint8'', ''int16'', ''int8'',
+    ''int64'', ''bfloat16'', ''uint16'', ''half'', ''uint32'', ''uint64''].'
+  target: "Value for attr 'T' of complex64 is not in the list of allowed values: float,\
+    \ double, int32, uint8, int16, int8, int64, bfloat16, uint16, half, uint32, uint64\n\
+    \ ; NodeDef: ; Op activations:T; attr=T:type,allowed=> name:"
+  txt: type(features) in ['float', 'double', 'int32', 'uint8', 'int16', 'int8', 'int64',
+    'bfloat16', 'uint16', 'half', 'uint32', 'uint64']
+time_cost: 27.753568172454834
+title: tf.raw_ops.Relu6
+tokens_used: 1866

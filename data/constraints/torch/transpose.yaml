@@ -1,0 +1,34 @@
+alias: torch.transpose
+constraints:
+  dim0:
+    default: null
+    dtype: int
+    init: false
+    required: true
+  dim1:
+    default: null
+    dtype: int
+    init: false
+    required: true
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 3
+package: torch
+pass_rate: 1.0
+rules:
+- cot: "The error is due to the dimension provided is out of the valid range. Let's\
+    \ see what the args were. It appears the given dimension is 6 which is out of\
+    \ the expected range of [-5, 4]. To prevent this error in the future and generate\
+    \ constraints that do not trigger it, we need to ensure that the \"dim0\" or \"\
+    dim1\" value is always within the valid range for the given tensor. \n\nThe constraint\
+    \ for the 'dim0' and 'dim1' parameter can be expressed as:"
+  target: Dimension out of range (expected to be in range of [-5, 4], but got 6)
+  txt: (dim1 < len(input.shape)) and (dim0 < len(input.shape))
+time_cost: 213.60432815551758
+title: torch.transpose
+tokens_used: 2342
+trained: true

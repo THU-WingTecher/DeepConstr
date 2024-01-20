@@ -1,0 +1,70 @@
+alias: torch.bitwise_or
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  other:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 39
+package: torch
+pass_rate: 0.73
+rules:
+- cot: 'The error is due to the ''input'' tensor being of type BFloat16, which is
+    unsupported. Given the values, ''input'' is a tensor with dtype BFloat16 and the
+    same dimensions as ''other'' and ''out'', which are int32. Therefore, the dtype
+    of ''input'' should be corrected. So, Left : input.dtype. It should not be BFloat16,
+    so Op : !=, and Right : BFloat16.'
+  target: Got unsupported ScalarType BFloat16
+  txt: input.dtype != BFloat16
+- cot: 'The error occurs because the operation is trying to cast a float16 (Half)
+    data type to an int32 (Int) data type which is not possible. From the values,
+    it looks like ''other'' tensor has float16 data type but ''input'' and ''out''
+    tensors have int32 data type. Therefore, Left : ''other''.dtype, Op : ==, Right
+    : ''input''.dtype, ''out''.dtype. Also, it should match with int32, so Left :
+    ''other''.dtype, Op : ==, Right : TensorDType.int32'
+  target: result type Half can't be cast to the desired output type Int
+  txt: (input.dtype in [out.dtype, 'bool', 'int8']) and ('other'.dtype == 'out'.dtype)
+- cot: "The error message suggests that there's a mismatch in the dimension sizes\
+    \ of the tensors. Specifically, the 4th non-singleton dimension of tensor 'input'\
+    \ (with size 6) doesn't match the corresponding dimension of tensor 'other' (with\
+    \ size 8). \n\nThe first step to fix this error is to ensure that the dimensions\
+    \ of all tensors should match. The dimensions of the 'input', 'other', and 'out'\
+    \ tensors should be the same at each index. \n\nConsidering the provided dimensions:\
+    \ 'input' tensor has dimensions [8, 6, 6], 'other' tensor has dimensions [8, 7,\
+    \ 6, 6, 8, 1], and 'out' tensor has dimensions [8, 4, 8, 1]. \n\nTo avoid the\
+    \ error, we need to ensure the following constraints:"
+  target: The size of tensor a (6) must match the size of tensor b (8) at non-singleton
+    dimension 4
+  txt: input.size(4) == other.size(4)
+- cot: 'The error is triggered because we are trying to resize storage that is not
+    resizable. From the values provided, the ''out'' tensor seems to be the storage
+    we are trying to resize. The ''out'' tensor should have the same shape as the
+    ''input'' and ''other'' tensors for the operation to be successful. Therefore,
+    left : out.shape, out.rank; op : ==; right : input.shape, input.rank'
+  target: Trying to resize storage that is not resizable
+  txt: out.rank==input.rank and all(out.shape[i]==input.shape[i] for i in range(out.rank))
+- cot: 'The error message indicates that the bitwise_or operation is not implemented
+    for Float tensor types. Looking at the input values, it seems that all the tensors
+    are of type float32. Hence, the constraints should be that the type of data in
+    the tensors should not be float for the bitwise_or operation. Therefore, Left
+    : input.dtype, other.dtype, out.dtype. It says that cannot be float, so Op : !=,
+    and Right : float32.'
+  target: '"bitwise_or_cpu" not implemented for ''Float'''
+  txt: (out.dtype != float32) and ((type(input) != 'Float' and type(other) != 'Float'
+    and type(out) != 'Float') or (type(input) in ["int8", "int16", "int32", "int64",
+    "uint8", "uint16", "uint32", "uint64"])) and (out.dtype != float32)
+time_cost: 3335.0507202148438
+title: torch.bitwise_or
+tokens_used: 21968
+trained: true

@@ -1,0 +1,29 @@
+constraints:
+  features:
+    default: null
+    dtype: bfloat16,float32,float64
+    init: false
+    required: true
+  name:
+    default: null
+    dtype: str
+    init: false
+    required: false
+infered_history:
+- 2
+infered_times: 2
+package: tf
+pass_rate: 1.0
+rules:
+- cot: 'The error is due to incorrect type for ''T'' from features. For ''T'', the
+    value provided is ''int32'' which is not in the allowed types: "half", "bfloat16",
+    "float", "double". Therefore, the type of ''features'' should be corrected to
+    be either "half", "bfloat16", "float" or "double", which is ["half", "bfloat16",
+    "float", "double"].  So, Op : in, and Right : ["half", "bfloat16", "float", "double"].'
+  target: "Value for attr 'T' of int32 is not in the list of allowed values: half,\
+    \ bfloat16, float, double\n ; NodeDef: ; Op activations:T; attr=T:type,allowed=>\
+    \ name:"
+  txt: type(features) in ["half", "bfloat16", "float", "double"]
+time_cost: 28.36713433265686
+title: tf.raw_ops.Softsign
+tokens_used: 1204

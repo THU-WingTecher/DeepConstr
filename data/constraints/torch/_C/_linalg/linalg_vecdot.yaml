@@ -1,0 +1,78 @@
+constraints:
+  dim:
+    default: '-1'
+    dtype: int
+    init: false
+    required: false
+  out:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+  x:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  y:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 45
+package: torch
+pass_rate: 0.63
+rules:
+- cot: 'The error is generated because the linalg.vecdot operation expects x and y
+    to have the same dtype. However, x has type ComplexDouble and y has type Float.
+    Let''s see what the args were. The dtype of x and y is inconsistent. It says should
+    be same with x and y. so Op : ==, and Right : type(x), type(y)'
+  target: 'linalg.vecdot: Expected x and y to have the same dtype, but found x of
+    type ComplexDouble and y of type Float instead'
+  txt: type(x) == type(y)
+- cot: "The error is due to the 'dim' value being out of range for the given tensors\
+    \ 'x' and 'y'. The valid range for the 'dim' value, given the shapes of 'x' and\
+    \ 'y', is [-1, 0]. However, the provided 'dim' value is 1, which is out of this\
+    \ range. To prevent this error from occurring in the future, we need to ensure\
+    \ that the 'dim' value is always within the valid range for the given tensors.\
+    \ \n\nTherefore, the constraints for the 'dim' parameter can be expressed as:"
+  target: Dimension out of range (expected to be in range of [-1, 0], but got 1)
+  txt: dim < len(y.shape)
+- cot: "From the given values, it seems like the 'out' tensor is trying to be resized\
+    \ to a size it cannot accommodate. The 'out' tensor has dimensions [3, 5], but\
+    \ the operation might be trying to resize it to match the 'x' or 'y' tensor, which\
+    \ have larger dimensions. \n\nTherefore, we need to generate a constraint ensuring\
+    \ that the 'out' tensor is not resized beyond its original size. \n\nThe generated\
+    \ constraint would be:"
+  target: Trying to resize storage that is not resizable
+  txt: out.rank >= max(x.rank, y.rank)
+- cot: 'The error occurs because the function ''linalg.vecdot'' expects a floating
+    point or complex tensor as input, but it received a Boolean tensor. Let''s see
+    what the args were. Tensors ''x'' and ''y'' are of type Bool. Therefore, the data
+    types of ''x'' and ''y'' should be changed to a floating point or complex type.
+    So, Left : type(x) and type(y), Op : ==, and Right : float or complex.'
+  target: 'linalg.vecdot: Expected a floating point or complex tensor as input. Got
+    Bool'
+  txt: (type(x) == float) or (type(y) == complex) or (type(x) == float)
+- cot: 'The error occurs because the ''out'' object has a datatype of ''Int'', but
+    the linalg.vecdot operation expects it to be ''ComplexFloat''. In order to ensure
+    that this error does not occur, the type of the ''out'' object should be ''ComplexFloat''.
+    The constraint for the ''out'' parameter can therefore be expressed as:'
+  target: 'linalg.vecdot: Expected out of dtypeComplexFloat but found Int'
+  txt: x.dtype == out.dtype and y.dtype == out.dtype
+- cot: 'Error is triggered because size of tensors at non-singleton dimension 6 doesn''t
+    match. What the args were? the two tensors matching problem at non-singleton dimension
+    looks like broadcasting request. Broadcasting in tensor operations requires that
+    the trailing dimensions of the tensors are either 1 or the same. We start from
+    the last dimension because broadcasting aligns dimensions from the end. Therefore,
+    we can revise the constraints as follows:'
+  target: The size of tensor a (5) must match the size of tensor b (2) at non-singleton
+    dimension 1
+  txt: (x.shape[1] == y.shape[1]) and (all(x.shape[i] == y.shape[i] or x.shape[i]
+    == 1 or y.shape[i] == 1 for i in range(-1, -min(len(x.shape), len(y.shape))-1,
+    -1)))
+time_cost: 23869.586395025253
+title: torch._C._linalg.linalg_vecdot
+tokens_used: 33192
+trained: true

@@ -1,18 +1,15 @@
-from typing import Dict
-
-import numpy as np
-from numpy import testing
-
+from typing import Any, Dict
 
 def assert_allclose(
-    actual: Dict[str, np.ndarray],
-    desired: Dict[str, np.ndarray],
+    actual: Dict[str, Any],
+    desired: Dict[str, Any],
     actual_name: str,
     oracle_name: str,
     equal_nan=False,
     rtol=1e-2,
     atol=1e-3,
 ):
+    # Unified assert allclose -> choose function by the tensor type
     akeys = set(actual.keys())
     dkeys = set(desired.keys())
     if akeys != dkeys:
@@ -23,18 +20,39 @@ def assert_allclose(
         rhs = desired[key]
 
         # check if lhs is np.ndarray
-        if not isinstance(lhs, np.ndarray):
-            raise TypeError(f"{actual_name}[{key}] is not np.ndarray but {type(lhs)}")
+        import numpy as np
+        if isinstance(lhs, np.ndarray) and isinstance(rhs, np.ndarray):
+            np.testing.assert_allclose(
+                lhs,
+                rhs,
+                equal_nan=equal_nan,
+                rtol=rtol,
+                atol=atol,
+                err_msg=f"{actual_name} != {oracle_name} at {key}",
+            )
+        else :
+            import torch
+            if isinstance(lhs, torch.Tensor) and isinstance(rhs, torch.Tensor):
+                is_same = torch.allclose(
+                    lhs,
+                    rhs,
+                    equal_nan=equal_nan,
+                    rtol=rtol,
+                    atol=atol,
+                )
+                if not is_same :
+                    raise ValueError(f"{actual_name} != {oracle_name} at {key}")
+            else :
+                import tensorflow as tf 
+                if isinstance(lhs, tf.Tensor) and isinstance(rhs, tf.Tensor):
+                    tf.test.TestCase().assertAllClose(
+                        lhs,
+                        rhs,
+                        equal_nan=equal_nan,
+                        rtol=rtol,
+                        atol=atol,
+                        err_msg=f"{actual_name} != {oracle_name} at {key}",
+                    )
+                else :
+                    raise NotImplementedError(f"Unknown type: {type(lhs)}")
 
-        # check if rhs is np.ndarray
-        if not isinstance(rhs, np.ndarray):
-            raise TypeError(f"{oracle_name}[{key}] is not np.ndarray but {type(rhs)}")
-
-        testing.assert_allclose(
-            lhs,
-            rhs,
-            equal_nan=equal_nan,
-            rtol=rtol,
-            atol=atol,
-            err_msg=f"{actual_name} != {oracle_name} at {key}",
-        )

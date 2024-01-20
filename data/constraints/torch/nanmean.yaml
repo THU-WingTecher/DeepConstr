@@ -1,0 +1,45 @@
+constraints:
+  dim:
+    default: 'null'
+    dtype: int
+    init: false
+    required: false
+  input:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  keepdim:
+    default: 'false'
+    dtype: bool
+    init: false
+    required: false
+  out:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 13
+package: torch
+pass_rate: 0.77
+rules:
+- cot: 'The error suggests that an attempt was made to resize a storage tensor (''out'')
+    that is not resizable. According to the provided values, the ''dim'' is 0 and
+    ''input'' tensor size is [7, 8], while the ''out'' tensor size is [2, 1]. This
+    indicates that the ''out'' tensor size does not match the ''input'' tensor size.
+    Therefore, the dimensions of ''input'' and ''out'' must be equal to prevent this
+    error. Hence, Left: input.shape, Op: ==, and Right: out.shape.'
+  target: Trying to resize storage that is not resizable
+  txt: input.shape == out.shape
+- cot: "The error occurs because the dimension provided (6) is out of the valid range.\
+    \ Given the tensor shape is [], the valid range for dimensions is between -1 and\
+    \ 0 (inclusive). \n\nTo prevent this error, we should ensure the 'dim' value is\
+    \ always within the valid range for the given tensor. If we denote the shape of\
+    \ the tensor as 'n', the constraint for the 'dim' parameter can be expressed as:"
+  target: Dimension out of range (expected to be in range of [-1, 0], but got 6)
+  txt: dim >= -len(input.shape) and dim < len(input.shape)
+time_cost: 1039.4130268096924
+title: torch.nanmean
+tokens_used: 8825
+trained: true

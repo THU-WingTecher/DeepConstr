@@ -1,0 +1,59 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  norm:
+    default: null
+    dtype: Literal['backward', 'forward', 'ortho']
+    init: false
+    required: false
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 32
+package: torch
+pass_rate: 0.95
+rules:
+- cot: 'The error is due to an invalid configuration in the FFT function. To prevent
+    this error, the constraints need to be set on the input tensor and the output
+    tensor. The input tensor should have the same dimension as the output tensor for
+    the FFT to work properly. There are also constraints on the type of the tensors.
+    The input tensor type is float32 and the output tensor type is complex128 which
+    is valid for FFT. The normalisation mode is ''forward'' which is a valid mode.
+    Therefore, the constraints are:'
+  target: 'MKL FFT error: Intel MKL DFTI ERROR: Invalid configuration parameters'
+  txt: (input.dim == out.dim) or (((input.size > 0)) and (((input.dtype == out.dtype))
+    and ((norm in ['forward', 'backward', 'none']))))
+- cot: 'The error occurs because fftn function expects a complex output tensor, but
+    a Float tensor is provided. Examining the given values, ''input'' and ''out''
+    tensors are both of type Float32. However, for ''fftn'' function, the output tensor
+    has to be of a complex type. Therefore, the dtype of output tensor ''out'' must
+    be corrected. It should be equal to a complex datatype. So the constraints can
+    be revised as follows:'
+  target: fftn expects a complex output tensor, but got Float
+  txt: type(out) == complex
+- cot: "The error is due to trying to resize a storage that is not resizable. There\
+    \ are three variables involved: 'input', 'norm', and 'out'. \nThe 'input' and\
+    \ 'out' are tensors with different shapes, and 'norm' is a normalization constant.\
+    \ It is important to ensure that the 'out' tensor has the same shape as the 'input'\
+    \ tensor to avoid the resizing error. \n\nFor 'input', the tensor shape should\
+    \ be the same as 'out'. Therefore, `input.shape == out.shape`, which are both\
+    \ [10, 9, 8]. \n\nFor 'norm', it should be a non-negative value. Therefore, `norm\
+    \ >= 0`.\n\nSo, the constraints are,"
+  target: Trying to resize storage that is not resizable
+  txt: input.shape == out.shape
+- cot: 'Based on given values, the error is triggered because the dtype of ''input''
+    is float16 (Half), which is not supported. It expects a supported dtype. It seems
+    the ''input'' tensor dtype is float16, so type(input) should be corrected. Therefore,
+    Left : type(input). Op : !=, and Right : ''Half''.'
+  target: Unsupported dtype Half
+  txt: type(input) != "Half"
+time_cost: 7513.185723543167
+title: torch._C._fft.fft_fftn
+tokens_used: 19772
+trained: true

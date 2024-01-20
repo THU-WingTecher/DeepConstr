@@ -1,0 +1,26 @@
+alias: torch.mean
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 7
+package: torch
+pass_rate: 1.0
+rules:
+- cot: 'The error is due to the input data type for the ''mean()'' function. What
+    the args were? The ''mean()'' function expects a floating point or complex data
+    type, but the input is of type ''Long''. Therefore, Left : input.dtype, which
+    is the data type of the input should be corrected. It says that cannot be ''Long''
+    for the ''mean()'' function, so Op : !=, and Right : ''Long''. Also, it should
+    be either a floating point or complex dtype, so Op : in, and Right : [''float'',
+    ''complex''].'
+  target: 'mean(): could not infer output dtype. Input dtype must be either a floating
+    point or complex dtype. Got: Long'
+  txt: (input.dtype in ['float', 'complex'])
+time_cost: 213.19419598579407
+title: torch.mean
+tokens_used: 4076
+trained: true

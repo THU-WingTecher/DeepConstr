@@ -1,0 +1,39 @@
+alias: torch.rsqrt
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 19
+package: torch
+pass_rate: 1.0
+rules:
+- cot: 'The error indicates that there''s an attempt to resize a tensor that is non-resizable.
+    Looking at the ''input'' and ''output'' tensors, they have different shapes. The
+    ''input'' tensor has a shape of [8, 10, 1, 10, 1, 10, 8, 1] and the ''output''
+    tensor has a shape of [3, 5, 2, 3, 6, 2]. For operations that require matching
+    tensor shapes, this discrepancy could lead to the error. Therefore, the shape
+    of the ''output'' tensor, (i.e., Left : out.shape) should be equal to the shape
+    of the ''input'' tensor, (i.e., Right : input.shape), and the operation (Op) is
+    equivalence (==).'
+  target: Trying to resize storage that is not resizable
+  txt: out.shape == input.shape
+- cot: 'The error is caused by a type mismatch between the ''input'' and ''out'' tensors.
+    The ''input'' tensor is a float32 type, while the ''out'' tensor is an int16 type.
+    The value of the ''input'' tensor can''t be cast to the ''out'' type because the
+    ''out'' type is Short and the ''input'' type is Float. What the args were? They
+    are ''input'' and ''out''. Therefore, Left : type(input) should be corrected to
+    match the type of ''out''. Op : ==, and Right : type(out).'
+  target: result type Float can't be cast to the desired output type Short
+  txt: (out.dtype == 'float32') and (type(input)==type(out))
+time_cost: 1026.675061225891
+title: torch.rsqrt
+tokens_used: 9786
+trained: true

@@ -1,0 +1,32 @@
+constraints:
+  inplace:
+    default: false
+    dtype: bool
+    init: true
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  negative_slope:
+    default: 0.01
+    dtype: float
+    init: true
+    required: false
+infered_history: []
+infered_times: 2
+package: torch
+pass_rate: 0.92
+rules:
+- cot: 'The error is triggered because the "leaky_relu_cpu" operation is not implemented
+    for integer (''Int'') data type. From the provided values, ''input'' is a tensor
+    of ''Int'' type which might be causing the issue. To prevent this error from recurring,
+    the ''input'' tensor data type should be changed to a type that is compatible
+    with "leaky_relu_cpu" operation. The constrain will be:'
+  target: '"leaky_relu_cpu" not implemented for ''Int'''
+  txt: input.dtype != int32
+time_cost: 56.69633769989014
+title: torch.nn.LeakyReLU
+tokens_used: 803
+trained: true

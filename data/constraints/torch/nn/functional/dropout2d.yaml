@@ -1,0 +1,36 @@
+constraints:
+  inplace:
+    default: false
+    dtype: bool
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  p:
+    default: 0.5
+    dtype: float
+    init: false
+    required: false
+  training:
+    default: true
+    dtype: bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 3
+package: torch
+pass_rate: 1.0
+rules:
+- cot: 'The error is because the ''p'' value is outside the valid range of 0 to 1.
+    From the arguments, it''s clear that ''p'' is the dropout probability and currently
+    has a value of 6.71625848841518. Therefore, ''p'' should be corrected. It has
+    to be between 0 and 1, so Operation : >= and <=; Right : 0 and 1 respectively.'
+  target: dropout probability has to be between 0 and 1, but got 6.71625848841518
+  txt: 0<=p and p<=1
+time_cost: 40.79189872741699
+title: torch.nn.functional.dropout2d
+tokens_used: 1650
+trained: true

@@ -1,0 +1,35 @@
+alias: torch.squeeze
+constraints:
+  dim:
+    default: null
+    dtype: int
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 6
+package: torch
+pass_rate: 1.0
+rules:
+- cot: 'The error occurs because the ''dim'' value provided is outside of the valid
+    range for the size of the ''input'' tensor. The ''input'' tensor has a shape of
+    [10, 9, 8, 6], which means it has 4 dimensions. The valid range for the ''dim''
+    value should be between -4 (the negative of the total number of dimensions) and
+    3 (the total number of dimensions minus 1). However, the ''dim'' value provided
+    is 8, which is outside of this range.
+
+
+    To avoid triggering this error, we should ensure that the ''dim'' value is always
+    within the valid range for the given ''input'' tensor. This can be expressed as
+    the following constraints:'
+  target: Dimension out of range (expected to be in range of [-4, 3], but got 8)
+  txt: (dim >= -len(input.shape) and dim < len(input.shape)) or ((dim in [-1,0]) and
+    (dim < len(input.shape)))
+time_cost: 280.18558168411255
+title: torch.squeeze
+tokens_used: 3298
+trained: true

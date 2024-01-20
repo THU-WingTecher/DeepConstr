@@ -1,0 +1,36 @@
+alias: torch.msort
+constraints:
+  input:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 17
+package: torch
+pass_rate: 0.92
+rules:
+- cot: "From the given values, it appears that the 'out' tensor does not match the\
+    \ shape of the 'input' tensor. Resizing the 'out' tensor is causing an error because\
+    \ the tensor is not resizable. Therefore, the constraints should ensure that the\
+    \ 'out' tensor matches the shape of the 'input' tensor.\n\nTherefore, left : out.shape,\
+    \ out.rank \nop : == \nright : input.shape, input.rank"
+  target: Trying to resize storage that is not resizable
+  txt: out.rank==input.rank and all(out.shape[i]==input.shape[i] for i in range(out.rank))
+- cot: 'Based on given values, the error arises because the output tensor ''out''
+    is of type float32, but it is expected to be of type int16. Let''s see what the
+    args were. The ''out'' tensor is float32, but expected to be int16. Therefore,
+    Left : type(out), which is the type of tensor out, should be corrected. It says
+    that should be equal to the datatype of tensor input, so Op : ==, and Right :
+    type(input).'
+  target: Expected out tensor to have dtype short int, but got float instead
+  txt: type(out) == type(input)
+time_cost: 610.3215565681458
+title: torch.msort
+tokens_used: 10273
+trained: true

@@ -48,16 +48,20 @@ class TorchJITFactory(BackendFactory):
                 if self.target == "cpu" and TORCH_JIT_OPT_MOBILE:
                     exported = optimize_for_mobile(exported)
 
-        def closure(inputs: Dict[str, np.ndarray]) -> Dict[str, np.ndarray]:
+        # def closure(inputs: Dict[str, np.ndarray]) -> Dict[str, np.ndarray]:
+        #     input_ts = {
+        #         k: torch.from_numpy(v).to(self.device) for k, v in inputs.items()
+        #     }
+        def closure(inputs: Dict[str, torch.Tensor]) -> Dict[str, np.ndarray]:
             input_ts = {
-                k: torch.from_numpy(v).to(self.device) for k, v in inputs.items()
+                k: v.to(self.device) for k, v in inputs.items()
             }
             with torch.no_grad():
                 output: Tuple[torch.Tensor] = exported(*input_ts.values())
             return {
-                k: v.cpu().detach().resolve_conj().numpy()
+                k: v.cpu().detach().resolve_conj()
                 if v.is_conj()
-                else v.cpu().detach().numpy()
+                else v.cpu().detach()
                 for k, v in zip(torch_net.output_like.keys(), output)
             }
 

@@ -1,0 +1,22 @@
+constraints:
+  approximate:
+    default: none
+    dtype: Literal['none', 'tanh']
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 8
+package: torch
+pass_rate: 0.0
+rules: {}
+time_cost: 197.68341708183289
+title: torch._C._nn.gelu
+tokens_used: 4845
+skipped: true 
+skipped_reason: dupe
+dupe_with: torch.nn.GELU

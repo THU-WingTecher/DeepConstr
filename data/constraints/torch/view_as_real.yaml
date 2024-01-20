@@ -1,0 +1,20 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 7
+package: torch
+pass_rate: 1.0
+rules:
+- cot: The error is triggered because 'view_as_real' function is only supported for
+    complex tensors. In this case, 'input' tensor dtype is 'float32' which is not
+    a complex type. Therefore, to avoid the same error with the previous answer, we
+    should ensure that 'input' has a complex type.
+  target: view_as_real is only supported for complex tensors
+  txt: input.dtype in [complex64, complex128]
+time_cost: 63.41027617454529
+title: torch.view_as_real
+tokens_used: 2711

@@ -1,0 +1,70 @@
+constraints:
+  indices:
+    default: null
+    dtype: int16,int32,int64
+    init: false
+    required: true
+  name:
+    default: null
+    dtype: str
+    init: false
+    required: false
+  params:
+    default: null
+    dtype: int16,int32,int64
+    init: false
+    required: true
+infered_history:
+- 1
+- 3
+infered_times: 4
+package: tf
+pass_rate: 0.16
+rules:
+- cot: 'Based on the given information, the error occurs because the attribute ''Tindices''
+    is provided as a float but it is expected to be one of int16, int32, int64. The
+    tensor ''indices'' is provided as a float32, which is not compatible. Therefore,
+    the type of ''indices'' should be corrected to match one of the allowed types.
+    Op : in, and Right : [int16, int32, int64].'
+  target: "Value for attr 'Tindices' of float is not in the list of allowed values:\
+    \ int16, int32, int64\n ; NodeDef: ; Op output:Tparams; attr=Tparams:type; attr=Tindices:type,allowed=[DT_INT16,\
+    \ DT_INT32, DT_INT64]> [Op:GatherNd] name:"
+  txt: type(indices) in ["int16", "int32", "int64"]
+- cot: 'The error occurs because the innermost dimension length of the indices tensor
+    is greater than the rank of the params tensor. The innermost dimension length
+    of indices is 8 while the rank of params is 1. To avoid this error, we need two
+    constraints. Firstly, the dimension length of the indices tensor should be less
+    than or equal to the rank of the params tensor. Therefore, Left : len(indices[-1]).
+    Ops : ''<='', Right : len(params). Secondly, the rank of the params tensor should
+    be greater than or equal to 1 to avoid a rank error. Therefore, Left : len(params).
+    Ops : ''>='', Right : 1.'
+  target: 'index innermost dimension length must be <= params rank; saw: 8 vs. 1 [Op:GatherNd]
+    name:'
+  txt: len(params) >= 1.
+- cot: 'The error is due to the indices being out of the range of the params shape.
+    The indices tensor has a shape of [10], and it is used to index into the params
+    tensor of shape [8, 2, 6, 6]. When the 7th index is used, it generates an index
+    that is out of the shape of the params tensor. Therefore, the Left : indices[i],
+    where i is the index position, should be corrected. It should be less than the
+    corresponding dimension in the params tensor. So, Ops : ''<'', and Right : params.shape[i],
+    where i is the corresponding dimension in the params tensor. Also, it should be
+    greater than or equal to 0, so Ops : ''>='', and Right : 0.'
+  target: 'indices[7] = [177565, -547753, -314336, 191560, 601039, 747918] does not
+    index into param shape [3,2,8,2,6,6], node name: GatherNd [Op:GatherNd] name:'
+  txt: (indices[i] >= 0 for i in range(len(indices)))
+- cot: 'The error is triggered because the ''indices'' is not a vector. In the given
+    values, ''indices'' is a scalar tensor of int16. To be at least a vector, it should
+    have at least one dimension. Therefore, the Left : indices.dim should be corrected
+    to at least 1. Ops : ''>='', Right : 1.'
+  target: 'indices must be at least a vector [Op:GatherNd] name:'
+  txt: indices.dim >= 1
+- cot: 'The error is caused because the total number of elements in ''params'' is
+    too large for int16 indexing. The maximum number of elements that can be indexed
+    by int16 is 32767, but ''params'' has 72000 elements. Therefore, Left : len(params),
+    Op : <=, Right : maximum value for int16 which is 32767.'
+  target: 'params.NumElements() too large for int16 indexing: 72000 > 32767 [Op:GatherNd]
+    name:'
+  txt: len(params) <= 32767
+time_cost: 64.03934454917908
+title: tf.raw_ops.GatherNd
+tokens_used: 2365

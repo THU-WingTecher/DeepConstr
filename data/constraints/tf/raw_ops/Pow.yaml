@@ -1,0 +1,78 @@
+constraints:
+  name:
+    default: null
+    dtype: str
+    init: false
+    required: false
+  x:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  y:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 19
+package: tf
+pass_rate: 1.0
+rules:
+- cot: 'The error is caused due to a power operation being performed on an integer
+    with a negative exponent. In the given case, the tensor ''x'' and ''y'' are both
+    of integer types. The power operation in question seems to be on the elements
+    of ''x'' and ''y''. However, negative powers of integers are not allowed. Therefore,
+    there are two constraints to be satisfied here. First, the elements in ''y'' should
+    not be negative to avoid negative exponentiation. Second, ''x'' should not be
+    an integer to allow for negative exponentiation. Therefore:
+
+
+    1) All the elements in ''y'' must be non-negative. It means every element ''i''
+    of ''y'' should satisfy the condition i >= 0. This can be represented as'
+  target: 'rror: Integers to negative integer powers are not allowed [Op:Pow] name:'
+  txt: type(x) != int
+- cot: 'The error suggests that the operation is expecting a complex64 tensor but
+    is receiving a complex128 tensor. The problem lies in the fact that ''y'' tensor
+    is a complex64 tensor with no values (empty tensor), whereas ''x'' tensor is a
+    complex64 tensor with values. Therefore, the new constraints should not only ensure
+    that both tensors have the same datatype, but also that both tensors should have
+    values. Here''s the revised constraint:'
+  target: 'rror: cannot compute Pow as input #1(zero-based) was expected to be a complex128
+    tensor but is a complex64 tensor [Op:Pow] name:'
+  txt: (type(y) == type(x) and len(y) != 0 and len(x) != 0) or ((x.dtype == tf.complex128)
+    and (type(y)==type(x))) or (type(y) == type(x) and len(y) != 0 and len(x) != 0)
+- cot: 'The error arises because the input for dynamic binary or n-ary op lowering
+    was of a rank greater than 5. What were the arguments? The arguments were tensors
+    ''x'' and ''y'' which have a rank of 10. Therefore, we need to correct the Left
+    : x.rank and y.rank to be less than or equal to 5. Ops : ''<='', and Right : 5.'
+  target: 'rror: Input for dynamic binary or n-ary op lowering was of a rank greater
+    than 5 [Op:Pow] name:'
+  txt: x.rank <= 5
+- cot: 'The error is due to the shapes of ''''x'''' and ''''y'''' not being broadcastable
+    when performing the power operation. Broadcasting in tensor operations requires
+    that the trailing dimensions of the tensors are either 1 or the same. So, the
+    constraint should be that for each dimension starting from the last, the size
+    of the dimension in ''''x'''' should be equal to the size of the dimension in
+    ''''y'''' or one of them should be 1. We start from the last dimension because
+    broadcasting aligns dimensions from the end. Therefore, we can revise the constraints
+    as follows:'
+  target: 'required broadcastable shapes [Op:Pow] name:'
+  txt: all(x.shape[i] == y.shape[i] or x.shape[i] == 1 or y.shape[i] == 1 for i in
+    range(-1, -min(len(x.shape), len(y.shape))-1, -1))
+- cot: 'The error has occurred because the tensors ''x'' and ''y'' are provided as
+    bool, which is not in the list of allowed types: bfloat16, float, half, double,
+    int8, int16, int32, int64, complex64, complex128. To solve this, the data type
+    of ''x'' and ''y'' should be corrected to match one of the allowed types. This
+    can be done using the following constraints:'
+  target: "rror: Value for attr 'T' of bool is not in the list of allowed values:\
+    \ bfloat16, float, half, double, int8, int16, int32, int64, complex64, complex128\n\
+    \ ; NodeDef: ; Op z:T; attr=T:type,allowed=[DT_BFLOAT16, DT_FLOAT, DT_HALF, DT_DOUBLE,\
+    \ DT_INT8, DT_INT16, DT_INT32, DT_INT64, DT_COMPLEX64, DT_COMPLEX128]> [Op:Pow]\
+    \ name:"
+  txt: type(y) in ["bfloat16", "float", "half", "double", "int8", "int16", "int32",
+    "int64", "complex64", "complex128"]
+time_cost: 1993.0315971374512
+title: tf.raw_ops.Pow
+tokens_used: 14774
+trained: true

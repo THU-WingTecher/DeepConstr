@@ -1,0 +1,58 @@
+constraints:
+  _stacklevel:
+    default: 3
+    dtype: int
+    init: false
+    required: false
+  dim:
+    default: null
+    dtype: int
+    init: false
+    required: true
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 13
+package: torch
+pass_rate: 0.33
+rules:
+- cot: 'The error occurred due to the ''dim'' value which is 4. The dimension value
+    is expected to be in the range of [-3, 2] as per the error message. Therefore,
+    the ''dim'' value should be corrected to fall within this range. So, left: ''dim'',
+    op: ''in'', right: range(-3, 3).'
+  target: Dimension out of range (expected to be in range of [-3, 2], but got 4)
+  txt: '''dim'' in range(-3, 3)'
+- cot: "The error arises because the negative operator '-' is not supported on a boolean\
+    \ tensor. Instead, the bitwise negation operator '~' or the function 'logical_not()'\
+    \ can be used to invert a boolean tensor. Let's see what the args were. We have\
+    \ a boolean tensor as input and dim = 7. The error message suggests that we should\
+    \ use the '~' operator or 'logical_not()' function for boolean tensors.\nTherefore,\
+    \ \n\n1. If 'input' is of boolean type, we should use '~' operator or 'logical_not()'\
+    \ function instead of '-' operator."
+  target: Negation, the `-` operator, on a bool tensor is not supported. If you are
+    trying to invert a mask, use the `~` or `logical_not()` operator instead.
+  txt: dim < len(input.shape)
+- cot: 'The error is triggered because the softmax_lastdim_kernel_impl function doesn''t
+    support ''ComplexDouble'' data type. Looking at the input values, the ''input''
+    tensor has a data type of complex128, which is equivalent to ''ComplexDouble''.
+    Therefore, the data type of the ''input'' tensor should be corrected. Let''s denote
+    it as input.dtype(). Therefore, Left : input.dtype(). The operation should not
+    equal ComplexDouble, so Op : !=, and Right : ComplexDouble.'
+  target: '"softmax_lastdim_kernel_impl" not implemented for ''ComplexDouble'''
+  txt: input.dtype() != ComplexDouble
+- cot: "The error is because the 'softmax_lastdim_kernel_impl' is not implemented\
+    \ for integer type. Looking at the args, the 'input' tensor is of 'Int' dtype\
+    \ which is not supported. Therefore, the dtype of 'input' tensor needs to be corrected.\
+    \ So, Left : input.dtype. And since the function is not implemented for 'Int',\
+    \ it implies Op : !=, and Right : 'Int'. It should be some type which is supported\
+    \ by 'softmax_lastdim_kernel_impl', let\u2019s say 'Float'. Therefore, Op : ==,\
+    \ and Right : 'Float'."
+  target: '"softmax_lastdim_kernel_impl" not implemented for ''Int'''
+  txt: input.dtype == 'Float'
+time_cost: 306.2776448726654
+title: torch.nn.functional.softmin
+tokens_used: 6910
+trained: true

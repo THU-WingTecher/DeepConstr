@@ -1,0 +1,53 @@
+alias: torch.special.xlogy
+constraints:
+  input:
+    default: 'null'
+    dtype: int32,int64,int8,int16,float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  other:
+    default: 'null'
+    dtype: int32,int64,int8,int16,float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 26
+package: torch
+pass_rate: 0.9
+rules:
+- cot: 'The error is due to the ''xlogy_cpu'' function not being implemented for ''ComplexFloat''.
+    Looking at the values, the ''input'' tensor is of type ''complex64'', which seems
+    to be causing the issue. Therefore, the type of the ''input'' tensor should not
+    be ''complex64''. Hence, Left : type(input), Op : !=, and Right : ''complex64''.'
+  target: '"xlogy_cpu" not implemented for ''ComplexFloat'''
+  txt: type(input) != 'complex64'
+- cot: 'Looking at the values provided, it seems that ''out'' tensor has a shape of
+    [0] which is not matching either ''input'' or ''other'' tensor shape of [5]. Therefore,
+    the ''out'' tensor is trying to resize to match the input and causing the error.
+    To prevent this error, ''out'' tensor shape should be matched with the ''input''
+    or ''other'' tensor shape. Therefore, left : out.shape op : == right : input.shape
+    or other.shape'
+  target: Trying to resize storage that is not resizable
+  txt: out.shape == other.shape
+- cot: 'The error is triggered because the ''other'' input is of complex64 type, but
+    the function is expecting a float32 type and can''t cast the complex64 to float32.
+    Therefore, the dtype of ''other'' should match the dtype of ''input'' and ''out''.
+    Left : type(other), Op : ==, Right : type(input) or type(out)'
+  target: result type Float can't be cast to the desired output type Int
+  txt: type(input)==type(other)
+- cot: 'Based on given values, Error is triggered because size of tensors at non-singleton
+    dimension 3 doesn''t match. It seems that ''input'' with size 9 and ''other''
+    with size 13 on 3rd dim are not matching, so input.shape[3] or other.shape[3]
+    should be corrected. Therefore, Left : input.shape[3]. Op : ==, and Right : other.shape[3].'
+  target: The size of tensor a (9) must match the size of tensor b (13) at non-singleton
+    dimension 3
+  txt: input.shape==other.shape
+time_cost: 1325.7863221168518
+title: torch.special.xlogy
+tokens_used: 15312
+trained: true

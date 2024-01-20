@@ -1,0 +1,57 @@
+constraints:
+  input:
+    default: null
+    description: tensor of shape (*, n, n) where * is zero or more batch dimensions.
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    description: The output tensor.
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 13
+package: torch
+pass_rate: 0.9
+rules:
+- cot: 'The error is because the input matrix is not square. In linear algebra, eigenvalues
+    require square matrices. Let''s see what the args were. The input tensor is of
+    shape [10, 9, 8], which means it''s a batch of 10 matrices of size 9x8. To avoid
+    this error and generate constraints for it, we need to ensure that the ''input''
+    tensor contains square matrices. The constraint for the ''input'' tensor can be
+    expressed as:'
+  target: 'linalg.eigvals: A must be batches of square matrices, but they are 9 by
+    8 matrices'
+  txt: input.shape[-2] == input.shape[-1]
+- cot: 'The error message indicates that the linalg.eigvals function requires an input
+    tensor with at least two dimensions. In the provided values, the ''input'' tensor
+    is one-dimensional. Thus, let''s generate the constraint. Left : len(input.shape),
+    op : >=, right : 2.'
+  target: 'linalg.eigvals: The input tensor A must have at least 2 dimensions.'
+  txt: len(input.shape)>=2
+- cot: 'The error indicates that the eigenvalues of the input tensor are expected
+    to be safely castable from ComplexFloat to the dtype of the output tensor, but
+    in this case, the dtype of the output tensor is Float. This means that the dtype
+    of the output tensor should be ComplexFloat or other types that can safely cast
+    ComplexFloat.
+
+
+    The constraint for the ''out'' parameter can be expressed as:'
+  target: 'torch.linalg.eigvals: Expected eigenvalues to be safely castable from ComplexFloat
+    dtype, but got eigenvalues with dtype Float'
+  txt: out.dtype == ComplexFloat
+- cot: The error seems to be occurring due to an attempt to resize a storage that
+    is not resizable. Given the tensors 'input' and 'out' as context, it seems that
+    the shape of 'out' (2, 8, 2) may not be compatible with the shape of 'input' (6,
+    10, 10). One constraint could be that the dimensions of 'input' and 'out' need
+    to be compatible for a certain operation. Hence, a potential constraint could
+    be to ensure that the dimensions of 'input' and 'out' are compatible. For this,
+    we need to check the dimensions of both 'input' and 'out'.
+  target: Trying to resize storage that is not resizable
+  txt: input.shape == out.shape
+time_cost: 1282.9858059883118
+title: torch._C._linalg.linalg_eigvals
+tokens_used: 8620
+trained: true

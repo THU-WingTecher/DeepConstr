@@ -1,0 +1,37 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 8
+package: torch
+pass_rate: 1.0
+rules:
+- cot: "The error occurs because the matrix provided is not a square matrix. Let's\
+    \ see what the args were. Here, the input tensor is of shape [4, 1, 9, 3, 10,\
+    \ 1]. From the error message, we can see that the last two dimensions should be\
+    \ identical to form a square matrix, but in this case, they are 10 and 1.\n\n\
+    To generate constraints that prevent this error from occurring, the condition\
+    \ should ensure that the last two dimensions of the input tensor are identical.\
+    \ \n\nThe constraint for the 'input' tensor can be expressed as:"
+  target: 'logdet: A must be batches of square matrices, but they are 10 by 1 matrices'
+  txt: input.shape[-1] == input.shape[-2]
+- cot: 'The error is being raised because the logdet operation requires the input
+    tensor to have at least 2 dimensions. However, the given ''input'' tensor is 1-dimensional.
+    This indicates that the input tensor''s dimensions are inadequate. Therefore,
+    Left : len(input.shape), op : >=, Right : 2.'
+  target: 'logdet: The input tensor A must have at least 2 dimensions.'
+  txt: len(input.shape) >= 2
+- cot: 'The error message indicates that the function is expecting a tensor with data
+    type of either floating point or complex, but the provided input tensor is of
+    type Boolean. So, the input tensor type needs to be corrected. Therefore, let''s
+    define a constraint where the type of the input tensor, should be floating point
+    or complex. Therefore, Left : type(input), Op : in, Right : [float, complex]'
+  target: 'logdet: Expected a floating point or complex tensor as input. Got Bool'
+  txt: type(input) in [float, complex]
+time_cost: 203.56251311302185
+title: torch.logdet
+tokens_used: 4552
+trained: true

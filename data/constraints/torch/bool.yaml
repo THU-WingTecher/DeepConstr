@@ -1,0 +1,6 @@
+package: torch
+pass_rate: 0.0
+rules: {}
+title: torch.bool
+skipped: true 
+skipped_reason: not function

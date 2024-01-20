@@ -1,0 +1,68 @@
+constraints:
+  axis:
+    default: null
+    dtype: int32
+    init: false
+    required: true
+  name:
+    default: 'null'
+    dtype: str
+    init: false
+    required: false
+  num_split:
+    default: null
+    dtype: int
+    init: false
+    required: true
+  value:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history:
+- 4
+- 4
+- 3
+- 1
+infered_times: 13
+package: tf
+pass_rate: 0.0
+rules:
+- cot: 'The error arises because the function is trying to perform a Split operation
+    on a float tensor while it expects an integer tensor. Given the context, the ''axis''
+    tensor is a float32, which is causing the error. The ''axis'' tensor should be
+    corrected to be integer type. Therefore, Left : type(axis). It should be equal
+    to ''int32'', so Op : ==, and Right : ''int32''.'
+  target: 'cannot compute Split as input #0(zero-based) was expected to be a int32
+    tensor but is a float tensor [Op:Split] name:'
+  txt: type(axis) == 'int32'
+- cot: 'The error is due to the ''split_dim'' not being a scalar but having rank 9.
+    From the given values, ''num_split'' is a scalar and could be the intended ''split_dim''.
+    However, it seems like ''axis'' is currently being used as ''split_dim'', as it
+    has rank 7. To correct this, the rank of ''split_dim'' should be 0. Therefore,
+    the Left : len(axis), which is the length of tensor axis, should be corrected.
+    The Ops : ''=='', and Right : 0.'
+  target: 'split_dim must be a scalar but has rank 9 [Op:Split] name:'
+  txt: len(axis) == 0
+- cot: 'The error is due to the ''split_dim'' value being outside the valid range
+    for the input rank. The split_dim value should be within the range of -input.rank
+    to input.rank-1. In this case, the input rank appears to be 2, hence valid split_dim
+    values would be -2, -1, 0, 1. The value -632345 falls outside this range, hence
+    triggering the error. Therefore, Left : num_split, which is the split dimension,
+    should be corrected. It says that it must be greater than or equal to -input.rank,
+    so Op : >=, and Right : -len(value). Also, it should be less than input.rank,
+    so Op : <, and Right : len(value).'
+  target: '-input rank(-2) <= split_dim < input rank (2), but got -632345 [Op:Split]
+    name:'
+  txt: ((num_split <= len(value))) or ((num_split >= -len(value)))
+- cot: 'The error is happening because the attribute ''num_split'' has a value of
+    0 which is less than the minimum required value of 1. The num_split value is obtained
+    from the args. Hence, the attribute ''num_split'' should be greater than or equal
+    to 1. Therefore, Left : num_split, Op : ''>='', and Right : 1.'
+  target: "Value for attr 'num_split' of 0 must be at least minimum 1\n ; NodeDef:\
+    \ ; Op output:num_split*T; attr=num_split:int,min=1; attr=T:type> [Op:Split] name:"
+  txt: num_split >= 1
+time_cost: 1321.191528558731
+title: tf.raw_ops.Split
+tokens_used: 7969
+trained: true

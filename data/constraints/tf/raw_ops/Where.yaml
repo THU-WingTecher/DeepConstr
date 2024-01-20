@@ -1,0 +1,38 @@
+constraints:
+  condition:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  name:
+    default: null
+    dtype: str
+    init: false
+    required: false
+infered_history:
+- 1
+infered_times: 1
+package: tf
+pass_rate: 1.0
+rules:
+- cot: 'The error occurs because the operation ''WhereOp'' is not supported for ''float16''
+    type on the CPU. To avoid this error, the type of the tensor should be changed
+    to a type that the CPU supports for ''WhereOp''. Therefore, Left : type(condition),
+    since ''condition'' is the tensor having the unsupported type. Op : !=, as the
+    type should not be ''float16''. Right : float16. Also, the type should be one
+    that is supported by ''WhereOp'' on CPU.'
+  target: ' No WhereOp available for float16/half type on CPU; dying in CPU WhereOp
+    to avoid silently creating costly copies from device. [Op:Where] name:'
+  txt: type(condition)!=float16
+- cot: 'The error message indicates that the ''WhereOp'' is not able to handle the
+    input dimensions. The argument `condition` has dimensions of size 9, but the function
+    cannot handle this size. Therefore, the size of `condition` needs to be adjusted.
+    I''m going to assume that the maximum valid dimension for `condition` would be
+    less than 9. Therefore, Left : len(condition.dim). It says that the dimension
+    of condition cannot be 9, so Op : !=, and Right : 9. Also, it should be less than
+    9, so Op : <, and Right : 9.'
+  target: 'WhereOp: Unhandled input dimensions: 9 name:'
+  txt: len(condition.dim) < 9
+time_cost: 144.68882846832275
+title: tf.raw_ops.Where
+tokens_used: 682

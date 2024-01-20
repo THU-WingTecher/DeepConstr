@@ -1,0 +1,46 @@
+alias: torch.special.erfinv
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 22
+package: torch
+pass_rate: 1.0
+rules:
+- cot: 'The error is due to the ''erfinv_vml_cpu'' function not being implemented
+    for ''ComplexDouble''. The args show that ''input'' and ''out'' tensors are of
+    type ''complex128'', which is ''ComplexDouble''. Therefore, the dtype of ''input''
+    and ''out'' tensors should not be ''complex128''. So, Left : input.dtype and out.dtype,
+    Op : !=, and Right : ''complex128''.'
+  target: '"erfinv_vml_cpu" not implemented for ''ComplexDouble'''
+  txt: out.dtype != 'complex128'
+- cot: 'The error is triggered because the result type Float cannot be cast to Long.
+    From the provided values, the input is of type int8 and the output is of type
+    int64. This indicates a possible inconsistency in the data types. Therefore, the
+    data type of ''input'' should be consistent with the data type of ''out''. Left
+    : type(input), Op : ==, Right : type(out)'
+  target: result type Float can't be cast to the desired output type Long
+  txt: (input.dtype == 'Float') and (type(input)==type(out))
+- cot: 'The error suggests that there is an attempt to resize a storage that is not
+    resizable. The input tensor has a dimension of [9, 8, 6, 8, 6, 6, 1] and the output
+    tensor has a dimension of [3, 2, 8]. It is likely that the error is triggered
+    when trying to fit the input tensor into the output tensor''s dimensions. Hence,
+    the dimensions of ''input'' and ''out'' tensors must be compatible for resizing.
+    Let''s define the constraint: ''input'' tensor''s dimensions should be less than
+    or equal to ''out'' tensor''s dimensions. Therefore, Left : len(input), Op : <=,
+    Right : len(out).'
+  target: Trying to resize storage that is not resizable
+  txt: (all(out.shape[i]==input.shape[i] for i in range(out.rank))) and (len(input)
+    <= len(out))
+time_cost: 942.8846919536591
+title: torch.special.erfinv
+tokens_used: 11943
+trained: true

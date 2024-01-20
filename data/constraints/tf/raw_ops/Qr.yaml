@@ -1,0 +1,42 @@
+constraints:
+  full_matrices:
+    default: false
+    dtype: bool
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  name:
+    default: null
+    dtype: str
+    init: false
+    required: false
+infered_history:
+- 2
+- 1
+infered_times: 4
+package: tf
+pass_rate: 1.0
+rules:
+- cot: 'The error occurs because the attribute ''T'' of tensor ''input'' is provided
+    as uint8, but it is expected to be one of the types: double, float, half, complex64,
+    complex128. Therefore, the type of ''input'' should be corrected to match one
+    of the allowed types. Op : in, and Right : [double, float, half, complex64, complex128].'
+  target: "Value for attr 'T' of uint8 is not in the list of allowed values: double,\
+    \ float, half, complex64, complex128\n ; NodeDef: ; Op q:T, r:T; attr=full_matrices:bool,default=false;\
+    \ attr=T:type,allowed=[DT_DOUBLE, DT_FLOAT, DT_HALF, DT_COMPLEX64, DT_COMPLEX128]>\
+    \ [Op:Qr] name:"
+  txt: type(input) in ["double", "float", "half", "complex64", "complex128"]
+- cot: 'The error arises because the input tensor''s rank is less than 2. Let''s see
+    what the arguments were. The input was a tensor of complex128, however, the tensor
+    had a rank of 1. The qr operation requires that the rank of the tensor be greater
+    or equal to 2. Therefore, Left : input.dim, which refers to the rank of the tensor,
+    should be corrected. The operation is ''>='', and Right : 2.'
+  target: "Input tensor 0 must have rank >= 2, got 1\n [[]] [Op:Qr] name:"
+  txt: input.dim >= 2
+time_cost: 79.44967079162598
+title: tf.raw_ops.Qr
+tokens_used: 2572

@@ -1,0 +1,36 @@
+constraints:
+  alpha:
+    default: '0.2'
+    dtype: float
+    init: false
+    required: false
+  features:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  name:
+    default: null
+    dtype: str
+    init: false
+    required: false
+infered_history:
+- 2
+infered_times: 3
+package: tf
+pass_rate: 1.0
+rules:
+- cot: 'The error is due to the attribute ''T'' having a value of ''int16'', which
+    is not in the list of allowed values: half, bfloat16, float, double. The ''features''
+    tensor is of dtype uint8 and ''alpha'' is a float32. This means that the type
+    of ''features'' needs to be corrected to one of the allowed types: half, bfloat16,
+    float, double. So, the Left: type(features) should be corrected to match one of
+    the allowed types. Op: in, and Right: [half, bfloat16, float, double].'
+  target: "Value for attr 'T' of int16 is not in the list of allowed values: half,\
+    \ bfloat16, float, double\n ; NodeDef: ; Op activations:T; attr=alpha:float,default=0.2;\
+    \ attr=T:type,default=DT_FLOAT,allowed=[DT_HALF, DT_BFLOAT16, DT_FLOAT, DT_DOUBLE]>\
+    \ [Op:LeakyRelu] name:"
+  txt: type(features) in ["half", "bfloat16", "float", "double"]
+time_cost: 51.840163230895996
+title: tf.raw_ops.LeakyRelu
+tokens_used: 2018

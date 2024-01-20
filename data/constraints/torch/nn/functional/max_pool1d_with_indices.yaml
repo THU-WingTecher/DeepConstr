@@ -1,0 +1,107 @@
+constraints:
+  ceil_mode:
+    default: false
+    dtype: bool
+    init: false
+    required: false
+  dilation:
+    default: 1
+    dtype: int
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  kernel_size:
+    default: null
+    dtype: int,list[int]
+    init: false
+    required: true
+  padding:
+    default: 0
+    dtype: int
+    init: false
+    required: false
+  return_indices:
+    default: false
+    dtype: bool
+    init: false
+    required: false
+  stride:
+    default: kernel_size
+    dtype: int,list[int]
+    init: false
+    required: false
+infered_history: []
+infered_times: 22
+package: torch
+pass_rate: 0.58
+rules:
+- cot: 'Error is triggered because the ''stride'' argument in max_pool1d() function
+    is expected to contain one integer, but it contains 3. Let''s see what the args
+    were. The ''stride'' arg contains 3 values [16, 17, 18], which is the problem.
+    So the length of ''stride'' should be corrected, which is len(stride). Therefore,
+    Left : len(stride). It says that should contain one int, so Op : ==, and Right
+    : 1.'
+  target: max_pool1d() argument 'stride' should contain one int (got 3)
+  txt: len(stride) == 1
+- cot: "In addition to the stride being greater than 0, we must also ensure that the\
+    \ kernel_size is greater than 0. The kernel_size cannot be 0 as it defines the\
+    \ number of units to be pooled together at a time. Furthermore, the stride, which\
+    \ defines the step size over the input that the pooling operation is performed,\
+    \ cannot be an empty list as it was in the provided values. \n\nTherefore, the\
+    \ constraints to prevent the error are as follows:\n\n1. Kernel_size must be greater\
+    \ than 0, so Op : >, and Right : 0.\n2. Stride must not be an empty list, so Op\
+    \ : !=, and Right : []."
+  target: stride should not be zero
+  txt: ((stride != 0) and ((len(stride)>0) or (kernel_size > 0))) or (stride > 0)
+    or ((stride != 0) and ((len(stride)>0) or (kernel_size > 0)))
+- cot: Error is triggered because of the calculated output size being too small. Let's
+    see what the args were. The input size is (2x1x6) and kernel_size is [39] and
+    output size is (2x1x0). So the problem is that the kernel size is greater than
+    the input size, causing the output size to be 0. Therefore,
+  target: 'Given input size: (2x1x6). Calculated output size: (2x1x0). Output size
+    is too small'
+  txt: kernel_size <= input_size
+- cot: 'Error is triggered because of 0-dimensional tensor. It expects to have 2 or
+    3 dimensions. Let''s see what the args were. It seems ''input'' has 0 dimension,
+    and is the problem. So, the number of dimensions of ''input'' should be corrected,
+    which is ''input''.ndims(). Therefore, Left : ''input''.ndims(). It says that
+    expected 2 to 3, so Op : ==, and Right : 2 or 3. Also, It implies that dimension
+    cannot be 0, so Op : !=, and Right : 0.'
+  target: 'Expected 2 to 3 dimensions, but got 0-dimensional tensor for argument #1
+    ''self'' (while checking arguments for max_pool1d)'
+  txt: ('input'.ndims() == 2) or (input.ndims() == 3) or ('input'.ndims() == 2)
+- cot: 'Based on the error message, the error is triggered because the padding is
+    more than half of the kernel size. However, it appears there is an additional
+    error because the kernel size is negative which is not acceptable. The rules to
+    be generated are as follows. Let''s see what the args were. The kernel size is
+    ''-500'' and padding is ''4''. So, the kernel size should be corrected to be greater
+    than zero and to be at least twice of padding. Therefore, Left : kernel_size.
+    Op : >, Right : 0. and Left : kernel_size. Op: >=. Right : padding * 2'
+  target: pad should be at most half of kernel size, but got pad=4 and kernel_size=-500
+  txt: kernel_size >= padding * 2
+- cot: 'The error is related to the ''padding'' value, which is -1, but it is expected
+    to be non-negative. So, looking at the args, the Left : padding. The operator
+    should be ''>='', and Right : 0. This means that the padding must be greater or
+    equal to 0.'
+  target: 'pad must be non-negative, but got pad: -1'
+  txt: padding>=0
+- cot: 'The error arises because the dilation value is not as expected. Let''s take
+    a look at the args. The error message indicates that dilation should be greater
+    than zero, but got a dilation value of 0. Therefore, Left : dilation. It says
+    the dilation value should be greater than 0, so Op : >, and Right : 0.'
+  target: 'dilation should be greater than zero, but got dilationH: 1 dilationW: 0'
+  txt: dilation > 0
+- cot: 'The error is due to an invalid value for ''kernel_size''. Let''s see what
+    the args were. It appears that ''kernel_size'' is 0, which is not greater than
+    zero. Therefore, ''kernel_size'' should be corrected. It says it should be greater
+    than zero, so Operation : >; and Right : 0.'
+  target: 'kernel size should be greater than zero, but got kH: 1 kW: 0'
+  txt: kernel_size>0
+time_cost: 920.8337666988373
+title: torch.nn.functional.max_pool1d_with_indices
+tokens_used: 13129
+trained: true

@@ -1,0 +1,106 @@
+constraints:
+  ceil_mode:
+    default: false
+    dtype: bool
+    init: false
+    required: false
+  count_include_pad:
+    default: true
+    dtype: bool
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  kernel_size:
+    default: null
+    dtype: int,list[int]
+    init: false
+    required: true
+  padding:
+    default: 0
+    dtype: int,list[int]
+    init: false
+    required: false
+  stride:
+    default: kernel_size
+    dtype: int,list[int]
+    init: false
+    required: false
+infered_history: []
+infered_times: 51
+package: torch
+pass_rate: 0.33
+rules:
+- cot: 'The error is due to the ''input'' tensor having 4 dimensions, whereas a 3D
+    or 4D tensor is expected. Let''s look at what the args were. The ''input'' tensor
+    has 4 dimensions, but the last dimension is of size 1, which seems to be the issue.
+    Therefore, the number of dimensions in ''input'' tensor should be checked, which
+    is input.ndims(). The expected number of dimensions are 3 or 4, so Op : ==, and
+    Right : 3 or 4. The size of the last dimension should not be 1, so input[-1].dim
+    should not be 1, Op : !=, and Right : 1.'
+  target: Expected 3D or 4D (batch mode) tensor with optional 0 dim batch size for
+    input, but got:[0, 0, 1, 1]
+  txt: input.ndims() == 3 or input.ndims() == 4
+- cot: 'The error is triggered because the input tensor is of dtype Short and the
+    "avg_pool2d" operation is not implemented for dtype Short. Looking at the args,
+    the problem is with ''input'' and its dtype. Therefore, the dtype of ''input''
+    should be corrected, which is input.dtype. Therefore, Left : input.dtype. It says
+    that ''avg_pool2d'' not implemented for ''Short'', so Op : !=, and Right : Short.'
+  target: '"avg_pool2d" not implemented for ''Short'''
+  txt: input.dtype != 'Short'
+- cot: 'The error is due to the padding size being larger than half of the kernel
+    size. Looking at the arguments, it seems ''padding'' and ''kernel_size'' should
+    be corrected. The padding should be at most half of the kernel size. Therefore,
+    Left: ''padding'', Op: ''<='', Right: ''kernel_size''/2.'
+  target: pad should be at most half of kernel size, but got pad=2 and kernel_size=1
+  txt: (ceil_mode == False) and ((stride <= kernel_size) and (padding <= kernel_size
+    / 2))
+- cot: The error is related to the 'kernel_size' argument in the avg_pool1d() function.
+    This function expects 'kernel_size' to be a single integer. However, a list of
+    6 integers is provided, hence the error. To prevent the error, a constraint must
+    be set to ensure that 'kernel_size' is a single integer.
+  target: avg_pool1d() argument 'kernel_size' should contain one int (got 6)
+  txt: (len(padding) > 0) and (len(kernel_size) == 1)
+- cot: 'Error is triggered because the input tensor has only 1 dimension. It expects
+    to have 2 or 3 dimensions. Let''s see what the args were. It seems ''input'' has
+    1 dimension, and is the problem. Therefore, The number of dimensions of ''input''
+    should be corrected, which is ''input''.ndims(). Left : ''input''.ndims(). It
+    says that expected 2 to 3, so Op : ==, and Right : 2 or 3. Also, It implies that
+    dimension cannot be 1, so Op : !=, and Right : 1.'
+  target: 'Expected 2 to 3 dimensions, but got 1-dimensional tensor for argument #1
+    ''self'' (while checking arguments for avg_pool1d)'
+  txt: '''input''.ndims() == 3'
+- cot: 'Error is triggered because kernel size is not greater than zero, Let''s see
+    what the args were. Kernel size in the values is 0, which is not acceptable. Therefore,
+    Left : kernel_size, Op : >, and Right : 0.'
+  target: 'kernel size should be greater than zero, but got kH: 1 kW: 0'
+  txt: kernel_size > 0
+- cot: "The error is triggered because output size is too small. The output size is\
+    \ calculated based on the input size, stride, padding and kernel size. It seems\
+    \ like the stride is too large or the kernel size is too large compared to the\
+    \ input size. Therefore, the stride and kernel size should be smaller or equal\
+    \ to the input size and the padding should be less than or equal to (kernel size\
+    \ - 1)/2. \nLeft : input['stride'][0], op : <=, right : input['input'].shape[2]"
+  target: 'Given input size: (8x1x6). Calculated output size: (8x1x0). Output size
+    is too small'
+  txt: (kernel_size <= input.shape[2]) and (input['stride'][0] <= input['input'].shape[2])
+- cot: 'The error is triggered because of a negative pad value. The padding parameter
+    should be non-negative. Looking at the values, it seems padding received a negative
+    value of -500. Therefore, the Left : padding must be corrected. Since the error
+    message specifies that the pad must be non-negative, so Op : ''>='', and Right
+    : 0.'
+  target: 'pad must be non-negative, but got pad: -500'
+  txt: padding >=0
+- cot: 'The error is caused because the stride value in the dictionary values is not
+    as expected. The ''stride'' value should not be 0. Therefore, Left : stride should
+    be corrected. It says that cannot be 0, so Op : !=, and Right : 0. Also, it should
+    be greater than 0, so Op : >, and Right : 0.'
+  target: stride should not be zero
+  txt: stride!=0
+time_cost: 2617.0998435020447
+title: torch.avg_pool1d
+tokens_used: 28284
+trained: true

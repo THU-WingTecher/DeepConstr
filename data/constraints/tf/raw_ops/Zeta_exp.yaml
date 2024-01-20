@@ -1,0 +1,62 @@
+constraints:
+  name:
+    default: null
+    dtype: str
+    init: false
+    required: false
+  q:
+    default: null
+    dtype: float32,float64
+    init: false
+    required: true
+  x:
+    default: null
+    dtype: float32,float64
+    init: false
+    required: true
+infered_history:
+- 1
+infered_times: 1
+package: tf
+pass_rate: 1.0
+rules:
+- cot: 'The error arises because the function is trying to perform an operation on
+    a double tensor and a float tensor. However, both tensors in generated args must
+    have the same data type. Let''s see what the args were. the ''x'' tensor is double,
+    but the ''q'' tensor is of type float. Therefore, Left : type(q), which is the
+    type of tensor q, should be corrected. It says that should be equal to the datatype
+    of tensor x, so Op : ==, and Right : type(x).'
+  target: 'cannot compute Zeta as input #1(zero-based) was expected to be a double
+    tensor but is a float tensor name:'
+  txt: type(q)==type(x)
+- cot: 'The error appears because the rank of the input tensor for dynamic binary
+    or n-ary operation lowering was greater than 5. However, the function can only
+    handle tensors with a rank of up to 5. Both ''q'' and ''x'' tensors are having
+    more than 5 dimensions. Therefore, Left : len(q.shape), which is the rank of tensor
+    q, should be corrected. It says that should be less than or equal to 5, so Op
+    : <=, and Right : 5. Similarly, Left : len(x.shape), which is the rank of tensor
+    x, should also be corrected. It says that should be less than or equal to 5, so
+    Op : <=, and Right : 5.'
+  target: 'Input for dynamic binary or n-ary op lowering was of a rank greater than
+    5 name:'
+  txt: len(q.shape)<=5 and len(x.shape)<=5
+- cot: 'The error is due to the shapes of ''q'' and ''x'' not being broadcastable.
+    Broadcasting in tensor operations requires that the trailing dimensions of the
+    tensors are either 1 or the same. So, the constraint should be that for each dimension
+    starting from the last, the size of the dimension in ''q'' should be equal to
+    the size of the dimension in ''x'' or one of them should be 1. We start from the
+    last dimension because broadcasting aligns dimensions from the end. Therefore,
+    we can revise the constraints as follows:'
+  target: 'required broadcastable shapes name:'
+  txt: all(q.shape[i] == x.shape[i] for i in range(len(x.shape))) and (len(q.shape) == len(x.shape))
+- cot: 'Based on the given values, the error arises because the attribute of ''q''
+    and ''x'' is an int32, but it is expected to be either float or double. The tensors
+    ''''q'''' and ''''x'''' are both provided as int32, which is not compatible. So,
+    the Left : type(q) or type(x) should be corrected to match either float or double.
+    Op : in, and Right : ["float", "double"].'
+  target: "Value for attr 'T' of int32 is not in the list of allowed values: float,\
+    \ double\n ; NodeDef: ; Op z:T; attr=T:type,allowed=> name:"
+  txt: type(q) in ["float", "double"] and type(x) in ["float", "double"]
+time_cost: 36.83410859107971
+title: tf.raw_ops.Zeta
+tokens_used: 701

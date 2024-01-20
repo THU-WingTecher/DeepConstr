@@ -1,0 +1,35 @@
+alias: torch.tan
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 18
+package: torch
+pass_rate: 0.97
+rules:
+- cot: 'The error is triggered because an attempt is made to resize a storage that
+    is not resizable. Given the values, it seems that the ''out'' tensor shape does
+    not match the ''input'' tensor shape. Therefore, in order to prevent this error,
+    the ''out'' tensor shape should be the same as the ''input'' tensor shape. The
+    constraint can be generated with left : out.shape, out.rank op : == right : input.shape,
+    input.rank'
+  target: Trying to resize storage that is not resizable
+  txt: out.rank==input.rank and all(out.shape[i]==input.shape[i] for i in range(out.rank))
+- cot: 'The error is triggered because result type Float cannot be cast to the Char.
+    Let''s see the what''s args were. The dtype of ''input'' is float32, but the dtype
+    of ''out'' is int8. Therefore, the dtypes of two arguments should be consistent.
+    Left : type(input), op : ==, Right : type(out)'
+  target: result type Float can't be cast to the desired output type Char
+  txt: (out.dtype==Float) and (type(input)==type(out))
+time_cost: 627.6767959594727
+title: torch.tan
+tokens_used: 9421
+trained: true

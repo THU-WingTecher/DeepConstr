@@ -1,0 +1,57 @@
+constraints:
+  contrast_factor:
+    default: null
+    dtype: float32
+    init: false
+    required: true
+  images:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  name:
+    default: null
+    dtype: str
+    init: false
+    required: false
+infered_history: []
+infered_times: 0
+package: tf
+pass_rate: 0.98
+rules:
+- cot: 'The error arises because the attribute ''T'' is a uint8, but it is expected
+    to be one of half or float. The tensors ''images'' and ''contrast_factor'' are
+    provided in incompatible types, complex128 and float32 respectively. Therefore,
+    the Left : type(images) or type(contrast_factor) should be corrected to match
+    one of the allowed types. Op : in, and Right : ["half", "float"].'
+  target: "Value for attr 'T' of uint8 is not in the list of allowed values: half,\
+    \ float\n ; NodeDef: ; Op output:T; attr=T:type,default=DT_FLOAT,allowed=[DT_HALF,\
+    \ DT_FLOAT]> [Op:AdjustContrastv2] name:"
+  txt: type(images) in ["half", "float"] and type(contrast_factor) in ["half", "float"].
+- cot: 'The error arises because the function ''AdjustContrastv2'' is expecting a
+    float tensor as input but it received a ''half'' tensor (float16). Looking at
+    the values given, it appears that the ''contrast_factor'' is the half tensor causing
+    the issue. Therefore, the datatype of ''contrast_factor'' should be corrected.
+    Hence, Left : type(contrast_factor), should be corrected. Expected datatype is
+    float, so Op : ==, and Right : float.'
+  target: 'cannot compute AdjustContrastv2 as input #1(zero-based) was expected to
+    be a float tensor but is a half tensor [Op:AdjustContrastv2] name:'
+  txt: type(contrast_factor)==float
+- cot: 'The error arises because contrast_factor is not scalar. Looking at the given
+    values, contrast_factor was a tensor of float32 type. In order to be scalar, it
+    should not have any dimensions. However, contrast_factor had 10 dimensions. Therefore,
+    the Left : contrast_factor.dim should be corrected to scalar float. Ops : ''=='',
+    Right : 0.'
+  target: 'contrast_factor must be scalar: [8,8,6,6,8,1,7] [Op:AdjustContrastv2] name:'
+  txt: contrast_factor.dim == 0
+- cot: 'The error is triggered because the input ''images'' is not 3-D. From the given
+    values, ''images'' is a tensor of float16 with only 1 dimension. However, the
+    operation ''AdjustContrastv2'' requires the input to be at least 3-D. Therefore,
+    the Left : images.dim should be corrected to be at least 3. Ops : ''>='', Right
+    : 3.'
+  target: 'input must be at least 3-D, got shape[10,9] [Op:AdjustContrastv2] name:'
+  txt: images.dim >= 3
+time_cost: 0.0011174678802490234
+title: tf.raw_ops.AdjustContrastv2
+tokens_used: 0
+trained: true

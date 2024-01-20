@@ -1,0 +1,32 @@
+constraints:
+  N:
+    default: null
+    dtype: int
+    init: false
+    required: false
+  x:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 8
+package: torch
+pass_rate: 1.0
+rules:
+- cot: 'Error is triggered because linalg.vander does not support Boolean type tensors.
+    Let''s see what the args were. It seems ''x'' has a boolean tensor. In order to
+    prevent this error, ''x'' should not be a boolean tensor. Therefore, Left : x.dtype,
+    Op : !=, Right : Bool.'
+  target: linalg.vander supports floating point, complex, and integer tensors, but
+    got Bool
+  txt: x.dtype != Bool
+- cot: 'The error is stating that the value for ''N'' must be greater than 1. The
+    current value for ''N'' is 0, which is not satisfying this condition. So, the
+    constraint that needs to be set is: Left - N, Operation - ''>'', Right - 1.'
+  target: N must be greater than 1.
+  txt: N > 1
+time_cost: 90.17580008506775
+title: torch._C._linalg.linalg_vander
+tokens_used: 4162
+trained: true

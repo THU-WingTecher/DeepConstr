@@ -1,0 +1,50 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  other:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 17
+package: torch
+pass_rate: 1.0
+rules:
+- cot: 'The error is triggered because we are trying to resize a tensor ''out'' that
+    is not resizable. The tensor ''out'' has different dimensions than the tensors
+    ''input'' and ''other''. In this case, the tensors ''input'' and ''other'' have
+    the same shape [3, 2, 8, 2, 6, 6, 8], but the ''out'' tensor has a different shape
+    [6, 7, 8, 4, 2, 1, 6]. Therefore, the shape of ''out'' should be the same as the
+    shape of ''input'' and ''other''. Hence, the constraint should be:'
+  target: Trying to resize storage that is not resizable
+  txt: out.shape == input.shape and out.shape == other.shape
+- cot: 'The error is due to the use of fmin function on complex tensors. What the
+    args were? The function is trying to use ''input'' tensor of complex64 datatype
+    in fmin. Therefore, we need to ensure ''input'' tensor is not of complex datatype.
+    So, Left : ''input''.dtype, and it says that fmin is not implemented for complex
+    tensors, so Op : !=, and Right : complex. Also, ''other'' and ''out'' tensors
+    are of float32 datatype, and these should be the same for ''input'' to prevent
+    the error, so Op : ==, and Right : float.'
+  target: fmin not implemented for complex tensors.
+  txt: (('input'.dtype != complex)) and (other.dtype != complex) and (('input'.dtype
+    != complex))
+- cot: 'The error is caused because the output tensor data type is not compatible
+    with the desired output data type. What the args were? The ''out'' tensor is of
+    data type ''int32'', but the function is trying to cast it to ''float32''. Therefore,
+    the data type of the output tensor ''out'' should be changed to ''float32'' to
+    prevent this error. Left : type(out). Op : == Right : ''float32'''
+  target: result type Float can't be cast to the desired output type Int
+  txt: type(out) == 'float32'
+time_cost: 1262.5828330516815
+title: torch.fmin
+tokens_used: 10093
+trained: true

@@ -1,0 +1,26 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 5
+package: torch
+pass_rate: 0.95
+rules:
+- cot: 'The error is caused by trying to resize a storage that is not resizable. The
+    input and output tensors have different dimensions. Therefore, the constraint
+    should ensure that the dimensions of the ''input'' and ''out'' tensors are the
+    same. This is established by the following constraint: Left: ''input'' dimensions
+    and ''out'' dimensions, Op: ''=='', and Right: same dimensions.'
+  target: Trying to resize storage that is not resizable
+  txt: input.shape == out.shape
+time_cost: 83.23564863204956
+title: torch.conj_physical
+tokens_used: 2324

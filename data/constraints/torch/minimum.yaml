@@ -1,0 +1,62 @@
+alias: torch.minimum
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  other:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 26
+package: torch
+pass_rate: 1.0
+rules:
+- cot: 'The error occurs because the ''out'' tensor is trying to resize a storage
+    that is not resizable. The ''out'' tensor has a shape of [], which is a scalar
+    and cannot be resized. The ''input'' and ''other'' tensors both have a shape of
+    [3], a 1D tensor. To prevent this error, the ''out'' tensor should have the same
+    shape as the ''input'' and ''other'' tensors. Therefore, Left: out.shape, Op:
+    ''=='', and Right: input.shape or other.shape.'
+  target: Trying to resize storage that is not resizable
+  txt: out.shape == input.shape or out.shape == other.shape
+- cot: 'The error is due to the result type Float being unable to be cast to the desired
+    output type Int. So, the type of the result should remain as Float to avoid this
+    issue. In order to ensure this, the dtype of ''input'', ''other'', and ''out''
+    need to be the same. Therefore, the constraints can be written as:'
+  target: result type Float can't be cast to the desired output type Int
+  txt: type(out)==Float
+- cot: 'The error is due to the ''minimum'' operation not being implemented for complex
+    tensors. In the given case, the ''input'' tensor is of type complex128. Therefore,
+    for preventing this error, the type of the ''input'' tensor should not be complex.
+    Therefore, type(input) should be corrected. It says that type(input) cannot be
+    complex128 or any complex types, so Op : !=, and Right : complex128 or any complex
+    types. Also, the dimensions of ''input'', ''other'', and ''out'' tensors should
+    be the same for the ''minimum'' operation to be valid. Therefore, len(input.shape)
+    == len(other.shape) == len(out.shape).'
+  target: minimum not implemented for complex tensors.
+  txt: type(input) != complex
+- cot: 'The error here implies that the first dimension (dimension 0) of tensor ''input''
+    and tensor ''other'' do not match. ''input'' has a size of 7 in dimension 0 while
+    ''other'' has a size of 4. To prevent this error, we need to ensure that these
+    dimensions match. Based on the data you provided, the relationship constraints
+    could be:
+
+
+    1.'
+  target: The size of tensor a (7) must match the size of tensor b (4) at non-singleton
+    dimension 0
+  txt: (len(input.shape) == len(other.shape)) and (all(input.shape[i] == other.shape[i]
+    for i in range(len(input.shape))))
+time_cost: 5164.34988451004
+title: torch.minimum
+tokens_used: 17093
+trained: true

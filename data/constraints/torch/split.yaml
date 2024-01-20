@@ -1,0 +1,34 @@
+alias: torch.split
+constraints:
+  dim:
+    default: 0
+    dtype: int
+    init: false
+    required: false
+  split_size_or_sections:
+    default: null
+    dtype: int
+    init: false
+    required: true
+  tensor:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 8
+package: torch
+pass_rate: 0.9
+rules:
+- cot: "The error is because the 'dim' value provided is 6, which is outside the valid\
+    \ range for the dimension of the tensor. The valid range for the tensor's dimensions\
+    \ is [-4, 3] as the tensor's rank is 4. \n\nTo prevent this error, we need to\
+    \ ensure that the 'dim' value is always within the valid range for the tensor.\
+    \ Based on the tensor's shape, the constraint for the 'dim' parameter can be expressed\
+    \ as:"
+  target: Dimension out of range (expected to be in range of [-4, 3], but got 6)
+  txt: dim >= -len(tensor.shape) and dim < len(tensor.shape)
+time_cost: 145.2942283153534
+title: torch.split
+tokens_used: 5339
+trained: true

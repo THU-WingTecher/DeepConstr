@@ -1,0 +1,36 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  norm:
+    default: null
+    dtype: Literal['forward', 'backward', 'ortho']
+    init: false
+    required: false
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 6
+package: torch
+pass_rate: 0.0
+rules:
+- cot: 'Given the inputs, ''input'' tensor has the shape of [3, 2, 5], and ''out''
+    tensor has the shape of [1, 4]. The error indicates that we are trying to resize
+    a storage (likely the ''out'' tensor) that is not resizable. It seems like we
+    are trying to match the shape of ''out'' tensor with the shape of ''input'' tensor.
+    So, the constraint should ensure that the shape and rank of ''out'' tensor matches
+    with ''input'' tensor. Therefore, left : out.shape, out.rank op : == right : input.shape,
+    input.rank'
+  target: Trying to resize storage that is not resizable
+  txt: (out.resizable == True) and (out.rank==input.rank and all(out.shape[i]==input.shape[i]
+    for i in range(out.rank)))
+time_cost: 134.82671809196472
+title: torch._C._fft.fft_irfft2
+tokens_used: 4073
+skipped: true
+skipped_reason: infer failed

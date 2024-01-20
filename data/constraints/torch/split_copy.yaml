@@ -1,0 +1,45 @@
+constraints:
+  dim:
+    default: null
+    dtype: int
+    init: false
+    required: true
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  split_size:
+    default: 1
+    dtype: int,list[int]
+    init: false
+    required: false
+infered_history: []
+infered_times: 14
+package: torch
+pass_rate: 0.0
+rules:
+- cot: 'Error is triggered because the ''input'' tensor is not at least 1-dimensional.
+    Looking at the arguments, the ''input'' tensor seems to be 0-dimensional. Therefore,
+    we need to ensure that the number of dimensions of ''input'' tensor is at least
+    1. The constraint can be formulated as such:'
+  target: split expects at least a 1-dimensional tensor
+  txt: input.ndims() >= 1
+- cot: 'The error implies that the ''split_size'' argument is expected to be an integer,
+    not a list. The provided ''split_size'' value is [0], which is a list. Therefore,
+    the type of ''split_size'' should be corrected to ''int''. Hence, Left: type(split_size),
+    Op: ''=='', and Right: ''int''.'
+  target: 'split_copy(): argument ''split_size'' must be int, not list'
+  txt: type(split_size) == 'int'
+- cot: 'The error is due to an invalid split size in relation to the dimension size.
+    Looking at the args, split_size is 0 but the dimension size is 9. The split_size
+    can only be 0 if the dimension size is also 0. Therefore, if split_size == 0,
+    then input.shape[dim] should also be 0. Thus, Left : input.shape[dim], Op : ==,
+    Right : 0 if split_size == 0.'
+  target: split_size can only be 0 if dimension size is 0, but got dimension size
+    of 9
+  txt: input.shape[dim]==0
+time_cost: 552.9252655506134
+title: torch.split_copy
+tokens_used: 8028
+trained: true

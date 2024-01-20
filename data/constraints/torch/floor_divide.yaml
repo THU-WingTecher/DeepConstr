@@ -1,0 +1,76 @@
+constraints:
+  input:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool,int32,int64,int8,int16
+    init: false
+    required: true
+  other:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool,int32,int64,int8,int16
+    init: false
+    required: true
+  out:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 21
+package: torch
+pass_rate: 0.52
+rules:
+- cot: 'This error is caused because the operation "div_floor_cpu" is not implemented
+    for ''Bool'' types. Looking at the values, ''input'', ''other'', and ''out'' are
+    all tensors of type bool. So, the types of ''input'', ''other'', and ''out'' need
+    to be checked and corrected. Therefore, Left : type(input), type(other), type(out).
+    Since ''div_floor_cpu'' is not implemented for ''Bool'', these should not be ''Bool''.
+    So, Op : !=, and Right : ''Bool''.'
+  target: '"div_floor_cpu" not implemented for ''Bool'''
+  txt: type(out) != 'Bool'
+- cot: 'Error is due to an unsupported operation for the data type. Here we have complex64
+    data type. The operation "div_floor_cpu" is not implemented for ''ComplexFloat''.
+    So the types of ''input'', ''other'' and ''out'' tensors should be corrected.
+    Therefore, Left : input.dtype, input.dtype and out.dtype. Since "div_floor_cpu"
+    is not implemented for ''ComplexFloat'', so Op : !=, and Right : ''ComplexFloat''.'
+  target: '"div_floor_cpu" not implemented for ''ComplexFloat'''
+  txt: other.dtype != 'ComplexFloat'
+- cot: "The error is occurring because the size of tensors at the non-singleton dimension\
+    \ 7 do not match. \n\nLooking at the given tensors and their dimensions:\n- 'input'\
+    \ tensor has 4 dimensions: [6, 8, 6, 6]\n- 'other' tensor has 8 dimensions: [2,\
+    \ 8, 2, 6, 6, 8, 1, 7]\n- 'out' tensor has 3 dimensions: [7, 8, 1]\n\nThe error\
+    \ message indicates that the size of tensor a (6) must match the size of tensor\
+    \ b (7) at non-singleton dimension 7. This suggests that the 'input' tensor is\
+    \ tensor a (with size 6 at non-singleton dimension 4) and the 'other' tensor is\
+    \ tensor b (with size 7 at non-singleton dimension 7).\n\nSo, the logical constraints\
+    \ to prevent this error from occurring again would be:\n- Adjust the size of the\
+    \ 'input' tensor at non-singleton dimension 4 to match the size of the 'other'\
+    \ tensor at non-singleton dimension 7, i.e., input.shape[3] == other.shape[7]\n\
+    - Ensure that the number of dimensions in the 'input' tensor is at least 7, i.e.,\
+    \ len(input.shape) >= 7\n- Ensure that the 'out' tensor's dimension sizes are\
+    \ correctly defined based on the operations being performed on the 'input' and\
+    \ 'other' tensors. \n\nSo, the constraints can be:"
+  target: The size of tensor a (6) must match the size of tensor b (7) at non-singleton
+    dimension 7
+  txt: (all(input.shape[i] == out.shape[i] for i in range(len(input.shape)))) and
+    ((len(input.shape)==len(other.shape)) and (all(input.shape[i] == other.shape[i]
+    for i in range(len(input.shape)))))
+- cot: 'Error is triggered because of trying to resize a storage that is not resizable.
+    The problem may be due to the mismatch in dimension between the input and output
+    tensors. Let''s see, the ''input'' tensor and ''other'' tensor both have dimensions
+    [3, 2, 5], while the ''out'' tensor has dimensions [3, 2]. This dimension mismatch
+    might be causing the resize error. To prevent this error, the output tensor should
+    have the same dimensions as the input tensors. Therefore, Left : ''out''. It implies
+    that ''out'' tensor''s shape is the problem, so Op : ==, and Right : [3, 2, 5].'
+  target: Trying to resize storage that is not resizable
+  txt: '''out''.shape == ''input''.shape'
+- cot: 'The error is caused by the mismatch between the data types of ''input'' and
+    ''out''. The ''input'' is a float32 type and ''other'' is a float16 type, but
+    ''out'' expects an int32 type. To avoid this, we should ensure that the data types
+    of ''input'', ''other'', and ''out'' are consistent. Thus, the constraint will
+    be:'
+  target: result type Float can't be cast to the desired output type Int
+  txt: (type(input)==int8) and ((out.dtype == input.dtype) and (type(input)==type(other)))
+time_cost: 1465.7916722297668
+title: torch.floor_divide
+tokens_used: 11385
+trained: true

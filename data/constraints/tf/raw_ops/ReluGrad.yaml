@@ -1,0 +1,42 @@
+constraints:
+  features:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  gradients:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  name:
+    default: 'null'
+    dtype: str
+    init: false
+    required: false
+infered_history:
+- 3
+- 4
+infered_times: 8
+package: tf
+pass_rate: 0.02
+rules:
+- cot: 'The error is caused because the ReluGrad operation expects a float tensor
+    as input, but an int8 tensor is being provided. Let''s see what the args were.
+    It seems ''features'' tensor is of int8 type, but the ''gradients'' tensor is
+    of float32 type. Therefore, Left : type(features). It says that expected to be
+    a float tensor. So, Op : ==, and Right : float.'
+  target: 'cannot compute ReluGrad as input #1(zero-based) was expected to be a int8
+    tensor but is a float tensor [Op:ReluGrad] name:'
+  txt: (type(gradients)==type(features)) and (type(features) == float)
+- cot: 'Error is triggered because inputs to operation ReluGrad must have same size
+    and shape but it didn''t. Here, gradients and features can be input0 and input1.
+    It seems both are tensors and the size [9] and [3] are different. Therefore, Left
+    : gradients.len. Op : ==, and Right : features.len.'
+  target: 'Inputs to operation ReluGrad of type ReluGrad must have the same size and
+    shape. Input 0: [9] != input 1: [3] [Op:ReluGrad] name:'
+  txt: len(gradients) == len(features)
+time_cost: 795.1495501995087
+title: tf.raw_ops.ReluGrad
+tokens_used: 5134
+trained: true

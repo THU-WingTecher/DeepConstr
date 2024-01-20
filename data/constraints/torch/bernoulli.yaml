@@ -1,0 +1,27 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 7
+package: torch
+pass_rate: 0.03
+rules:
+- cot: "The error indicates that there's an attempt to resize a storage that is not\
+    \ resizable. Given the values for 'input' and 'out', we can infer that the shapes\
+    \ of these tensors are not compatible for the operation being performed. Therefore,\
+    \ the dimensions of 'input' and 'out' tensors must be equal. \n\nTherefore, Left:\
+    \ input.shape, Op: '==', and Right: out.shape."
+  target: Trying to resize storage that is not resizable
+  txt: input.shape == out.shape
+time_cost: 113.5106770992279
+title: torch.bernoulli
+tokens_used: 4185
+trained: true 

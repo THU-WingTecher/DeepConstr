@@ -1,0 +1,32 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 9
+package: torch
+pass_rate: 0.92
+rules:
+- cot: 'The error is caused because the result is a float type and it''s trying to
+    be cast to an integer type. This means that the output type should be a float
+    type, not an integer type. Therefore, Left : type(out), Op : ==, Right : float.'
+  target: result type ComplexFloat can't be cast to the desired output type Float
+  txt: type(out)==float
+- cot: 'Error is triggered because of we are trying to resize storageLet''s see what
+    the args were. I guess the storage indicates ''out'' tensor. so, it means that
+    ''out'' tensor shape should be matched with the operation results. in this operation,
+    the result shape is input.shape. Therefore, left : out.shape, out.rank op : ==
+    right : input.shape, input.rank'
+  target: Trying to resize storage that is not resizable
+  txt: out.shape == input.shape
+time_cost: 689.3556897640228
+title: torch._C._special.special_bessel_y0
+tokens_used: 5650
+trained: true

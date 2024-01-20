@@ -19,7 +19,7 @@ class XLAFactory(BackendFactory):
         if self.target == "cpu":
             self.device = tf.device(tf.config.list_logical_devices("CPU")[0].name)
         elif self.target == "cuda":
-            self.device = tf.device(tf.config.list_logical_devices("GPU")[0].name)
+            self.device = tf.device(tf.config.list_logical_devices("GPU")[3].name)
         else:
             raise ValueError(
                 f"Unknown device: {self.target}. Only `cpu` and `cuda` are supported."

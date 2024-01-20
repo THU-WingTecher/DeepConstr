@@ -1,0 +1,80 @@
+constraints:
+  constant_values:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  name:
+    default: null
+    dtype: str
+    init: false
+    required: false
+  paddings:
+    default: null
+    dtype: int32,int64
+    init: false
+    required: true
+infered_history:
+- 4
+- 3
+- 4
+- 5
+- 5
+infered_times: 23
+package: tf
+pass_rate: 0.0
+rules:
+- cot: 'The error occurs because the ''Tpaddings'' attribute is of type float, but
+    it should be either int32 or int64. The ''paddings'' tensor provided is of type
+    float32, which is not compatible. The type of ''paddings'' should be corrected
+    to match one of the allowed types. Op : in, and Right : [int32, int64].'
+  target: "Value for attr 'Tpaddings' of float is not in the list of allowed values:\
+    \ int32, int64\n ; NodeDef: ; Op output:T; attr=T:type; attr=Tpaddings:type,default=DT_INT32,allowed=[DT_INT32,\
+    \ DT_INT64]> [Op:PadV2] name:"
+  txt: type(paddings) in ["int32", "int64"]
+- cot: 'The error seems to be triggered because the dimensions of the ''input'' tensor
+    and the dimensions specified in the ''paddings'' tensor do not match. The ''paddings''
+    tensor should contain pairs of integers that represent the padding values for
+    each dimension in the ''input'' tensor. In this case, the ''input'' tensor has
+    1 dimension (len(input.shape)==1), and the ''paddings'' tensor has 6 pairs of
+    padding values (len(paddings.shape)==12). Thus, the length of the padding shape
+    divided by 2 should match the length of the input shape. Therefore, Left : len(input.shape),
+    Op : ==, and Right : len(paddings.shape)/2.
+
+
+    Also, the ''constant_values'' tensor seems to be of a different type (''bool'')
+    than the ''input'' tensor (''float32''). The data type of ''constant_values''
+    should match the type of the ''input'' tensor. Therefore, Left : type(constant_values),
+    Op : ==, and Right : type(input).'
+  target: 'cannot compute PadV2 as input #2(zero-based) was expected to be a float
+    tensor but is a half tensor [Op:PadV2] name:'
+  txt: type(constant_values) == type(input)
+- cot: 'The error is due to invalid dimensions of the padding tensor. The padding
+    tensor should be a matrix with 2 columns, however, it is currently an 8-dimensional
+    tensor. Therefore, the Left : paddings.dim should be corrected to 2. Ops : ''=='',
+    Right : 2. Also, since it''s a matrix, it should have two dimensions. Therefore,
+    Left : len(paddings.shape), Ops : ''=='', Right : 2.'
+  target: "paddings must be a matrix with 2 columns: [8]\n [[]] [Op:PadV2] name:"
+  txt: paddings.dim == 2
+- cot: 'The error is due to the ''input'', ''paddings'', and ''constant_values'' being
+    None. They should not be None for the operation to be successful. Therefore, Left
+    : input, Op : !=, Right : None. This applies to ''paddings'' and ''constant_values''
+    as well.'
+  target: 'inputs rank not in [0,8]: 10 [Op:PadV2] name:'
+  txt: input != None, paddings != None, constant_values != None.
+- cot: 'The error occurs because either the ''input'', ''paddings'' or ''constant_values''
+    is None. To avoid this error, all three variables need to be defined. Therefore,
+    the constraints are: ''input'' should not be None, ''paddings'' should not be
+    None, and ''constant_values'' should not be None.'
+  target: "The first dimension of paddings must be the rank of inputs[10,2] []\n [[]]\
+    \ [Op:PadV2] name:"
+  txt: input != None
+time_cost: 5443.551707029343
+title: tf.raw_ops.PadV2
+tokens_used: 15026
+trained: true

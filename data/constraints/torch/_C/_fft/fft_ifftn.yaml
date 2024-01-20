@@ -1,0 +1,53 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  norm:
+    default: null
+    dtype: Literal["forward", "backward", "ortho"]
+    init: false
+    required: false
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 8
+package: torch
+pass_rate: 0.95
+rules:
+- cot: 'The error is triggered because the ''out'' tensor''s dimensions are not matching
+    with the ''input'' tensor''s dimensions. The ''out'' tensor should be resizable,
+    but its current state is not allowing resizing. In this operation, the output
+    shape should be same as the input shape for the operation to be successful. Therefore,
+    left : out.shape, out.rank op : == right : input.shape, input.rank'
+  target: Trying to resize storage that is not resizable
+  txt: out.rank == input.rank and all(out.shape[i] == input.shape[i] for i in range(out.rank))
+- cot: "The error indicates that the configuration parameters for the MKL FFT function\
+    \ are invalid. This could potentially be caused by the 'norm' parameter being\
+    \ set to 'forward' or the dimensions of the 'input' and 'out' tensors. \n\nFirst,\
+    \ we need to ensure that 'norm' parameter is one of the acceptable values for\
+    \ MKL FFT function. The norm parameter can be set to 'forward', 'backward' or\
+    \ 'ortho'. If 'forward' is not acceptable, then Op : != and Right : 'forward'.\
+    \ \n\nNext, the dimensions of the 'input' and 'out' tensors need to be the same\
+    \ for the FFT operation to be valid. Therefore, Left : input.shape, Op : ==, Right\
+    \ : out.shape. \n\nAdditionally, the data type of 'input' and 'out' tensors could\
+    \ also be a problem. Hence, we need to ensure that 'input' and 'out' tensors have\
+    \ compatible data types. For MKL FFT, the 'input' tensor should be float32 and\
+    \ the 'out' tensor should be complex128. So, Left : input.dtype, Op : ==, Right\
+    \ : 'float32' and Left : out.dtype, Op : ==, Right : 'complex128'\n\nSo the constraints\
+    \ would be:"
+  target: 'MKL FFT error: Intel MKL DFTI ERROR: Invalid configuration parameters'
+  txt: (input.shape == out.shape)
+- cot: 'The error arises because the ''fftn'' function expects a complex output tensor,
+    but receives a Float tensor. To prevent this error, we need to ensure that the
+    ''out'' tensor for the ''fftn'' function is of complex data type. This can be
+    represented by the following constraint:'
+  target: fftn expects a complex output tensor, but got Float
+  txt: type(out)==complex
+time_cost: 82.39538288116455
+title: torch._C._fft.fft_ifftn
+tokens_used: 5535

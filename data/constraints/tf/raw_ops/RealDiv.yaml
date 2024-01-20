@@ -1,0 +1,76 @@
+constraints:
+  name:
+    default: 'null'
+    dtype: str
+    init: false
+    required: false
+  x:
+    default: null
+    dtype: bfloat16,float16,float32,float64,uint8,int8,uint16,int16,int32,uint32,uint64,int64,complex64,complex128
+    init: false
+    required: true
+  y:
+    default: null
+    dtype: bfloat16,float16,float32,float64,uint8,int8,uint16,int16,int32,uint32,uint64,int64,complex64,complex128
+    init: false
+    required: true
+infered_history:
+- 4
+- 5
+- 4
+- 4
+infered_times: 18
+package: tf
+pass_rate: 1.0
+rules:
+- cot: 'The error arises because the function is trying to perform a division operation
+    on a float tensor and an int16 tensor. However, both tensors in generated args
+    must have the same data type. Let''s see what the args were. The ''x'' tensor
+    is float32, but the ''y'' tensor is of type float64. Therefore, Left : type(y),
+    which is the type of tensor y, should be corrected. It says that should be equal
+    to the datatype of tensor x, so Op : ==, and Right : type(x). Also, the function
+    expects a float tensor not int16, so the datatype of tensor should not be int16,
+    so Op : !=, and Right : int16.'
+  target: 'cannot compute RealDiv as input #1(zero-based) was expected to be a float
+    tensor but is a int16 tensor [Op:RealDiv] name:'
+  txt: type(y) == type(x)
+- cot: "The error is due to the 'RealDiv' operation expecting input tensors to be\
+    \ of float type, but receiving int32 tensors instead. The tensors 'x' and 'y'\
+    \ should be of type float to be compatible with the 'RealDiv' operation. Therefore,\
+    \ the type(x) and type(y) should be corrected to be of type float. \nOp : ==,\
+    \ and Right : \"float\""
+  target: "Could not find device for node: = RealDiv[T=DT_UINT8]\nAll kernels registered\
+    \ for op RealDiv:\n device='XLA_CPU_JIT'; T in [DT_FLOAT, DT_DOUBLE, DT_INT32,\
+    \ DT_UINT8, DT_INT16, DT_INT8, DT_COMPLEX64, DT_INT64, DT_BFLOAT16, DT_UINT16,\
+    \ DT_COMPLEX128, DT_HALF, DT_UINT32, DT_UINT64]\n device='XLA_GPU_JIT'; T in [DT_FLOAT,\
+    \ DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16, DT_INT8, DT_COMPLEX64, DT_INT64, DT_BFLOAT16,\
+    \ DT_UINT16, DT_COMPLEX128, DT_HALF, DT_UINT32, DT_UINT64]\n device='GPU'; T in\
+    \ [DT_COMPLEX128]\n device='GPU'; T in [DT_COMPLEX64]\n device='GPU'; T in [DT_DOUBLE]\n\
+    \ device='GPU'; T in [DT_FLOAT]\n device='GPU'; T in [DT_HALF]\n device='GPU';\
+    \ T in [DT_BFLOAT16]\n device='CPU'; T in [DT_COMPLEX128]\n device='CPU'; T in\
+    \ [DT_COMPLEX64]\n device='CPU'; T in [DT_BFLOAT16]\n device='CPU'; T in [DT_DOUBLE]\n\
+    \ device='CPU'; T in [DT_HALF]\n device='CPU'; T in [DT_FLOAT]\n [Op:RealDiv]\
+    \ name:"
+  txt: type(x) == "float" and type(y) == "float"
+- cot: 'The error is due to the rank of the input tensor being greater than 5. The
+    tensors ''x'' and ''y'' are used for the operation ''RealDiv''. However, the tensor
+    ''x'' has a rank of 10 which is greater than 5. Hence, the rank of ''x'' needs
+    to be corrected to be less than or equal to 5. Therefore, the Left : len(x.shape),
+    Ops : ''<='', and Right : 5.'
+  target: 'Input for dynamic binary or n-ary op lowering was of a rank greater than
+    5 [Op:RealDiv] name:'
+  txt: len(x.shape) <= 5.
+- cot: 'The error is due to the shapes of ''''x'''' and ''''y'''' not being broadcastable.
+    Broadcasting in tensor operations requires that the trailing dimensions of the
+    tensors are either 1 or the same. So, the constraint should be that for each dimension
+    starting from the last, the size of the dimension in ''''x'''' should be equal
+    to the size of the dimension in ''''y'''' or one of them should be 1. We start
+    from the last dimension because broadcasting aligns dimensions from the end. Therefore,
+    we can revise the constraints as follows:'
+  target: 'required broadcastable shapes [Op:RealDiv] name:'
+  txt: (type(x) == 'float' and type(y) == 'float') and (all(x.shape[i] == y.shape[i]
+    or x.shape[i] == 1 or y.shape[i] == 1 for i in range(-1, -min(len(x.shape), len(y.shape))-1,
+    -1)))
+time_cost: 1976.0649287700653
+title: tf.raw_ops.RealDiv
+tokens_used: 14083

@@ -8,6 +8,7 @@ import os
 import pickle
 import subprocess
 import sys
+print(sys.path)
 
 from neuri.autoinf.inference.const import ROOT_DIR
 from neuri.util import mkdir

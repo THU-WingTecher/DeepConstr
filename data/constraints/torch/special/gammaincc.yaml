@@ -1,0 +1,54 @@
+alias: torch.special.gammaincc
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  other:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 34
+package: torch
+pass_rate: 0.13
+rules:
+- cot: 'The error is triggered because the result type Float cannot be cast to the
+    desired output type Long. The types of ''input'', ''other'', and ''out'' are inconsistent,
+    being int64, float32, and int64 respectively. Therefore, the types of the arguments
+    should be consistent. Left : type(input), op : ==, comparator : type(other) or
+    type(out)'
+  target: result type Float can't be cast to the desired output type Long
+  txt: type(other)==type(out)
+- cot: 'Error is triggered because size of tensors at non-singleton dimension 0 doesn''t
+    match. What the args were? the two tensors matching problem at non-singleton dimensions
+    looks like a broadcasting request. Broadcasting in tensor operations requires
+    that the leading dimensions of the tensors are either 1 or the same. Therefore,
+    we can revise the constraints as follows:'
+  target: The size of tensor a (9) must match the size of tensor b (2) at non-singleton
+    dimension 0
+  txt: all(input.shape[i] == other.shape[i] or input.shape[i] == 1 or other.shape[i]
+    == 1 for i in range(min(len(input.shape), len(other.shape))))
+- cot: The error message indicates that an attempt has been made to resize a storage
+    that is not resizable. Here, the tensors 'input', 'other' and 'out' are involved.
+    Let's analyze the dimensions of these tensors. The tensor 'input' has a dimension
+    of [1], 'other' has a dimension of [1, 3, 2, 8, 2, 6, 6, 8] and 'out' has a dimension
+    of [2]. The problem might be that the dimension of 'out' is not compatible with
+    the dimensions of 'input' and 'other'. Therefore, we need to ensure that the dimension
+    of 'out' is compatible with the dimensions of 'input' and 'other'. This can be
+    done by creating a constraint that the dimension of 'out' should be equal to the
+    dimension of 'input' or 'other'.
+  target: Trying to resize storage that is not resizable
+  txt: (out.rank==input.rank and all(out.shape[i]==input.shape[i] for i in range(out.rank)))
+    or (len(other) == len(out))
+time_cost: 4368.067108392715
+title: torch.special.gammaincc
+tokens_used: 19129
+trained: true

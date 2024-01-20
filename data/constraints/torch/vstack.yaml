@@ -1,0 +1,6 @@
+package: torch
+pass_rate: 0.0
+rules: {}
+title: torch.vstack
+skipped_reason: unsupport constraints uncompatiable type(sequence tensors)
+skipped: true

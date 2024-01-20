@@ -1,5 +1,7 @@
 import logging
 
+
+LOGGER = logging.getLogger("temp") #FIXME
 VIZ_LOG = logging.getLogger("viz")
 FUZZ_LOG = logging.getLogger("fuzz")
 MGEN_LOG = logging.getLogger("mgen")

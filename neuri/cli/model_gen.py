@@ -14,7 +14,6 @@ from neuri.materialize import Model, TestCase
 from neuri.narrow_spec import auto_opset
 from neuri.util import mkdir
 
-
 @hydra.main(version_base=None, config_path="../config", config_name="main")
 def main(cfg: DictConfig):
     # Generate a random ONNX model

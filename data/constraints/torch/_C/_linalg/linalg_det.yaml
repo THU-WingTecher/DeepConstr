@@ -1,0 +1,58 @@
+constraints:
+  A:
+    default: null
+    description: tensor of shape `(*, n, n)` where `*` is zero or more batch dimensions.
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    description: Optional output tensor
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 17
+package: torch
+pass_rate: 0.77
+rules:
+- cot: 'The error arises because the function linalg.det is expecting a floating point
+    or complex tensor as input, but an integer tensor is being provided. Let''s see
+    what the args were. The ''A'' tensor is of type int32. Therefore, Left : A.dtype,
+    which is the type of tensor A, should be corrected. It says that should be a floating
+    point or complex tensor, so Op : ==, and Right : float or complex.'
+  target: 'linalg.det: Expected a floating point or complex tensor as input. Got Short'
+  txt: A.dtype == float or A.dtype == complex
+- cot: 'The error is triggered because the "A" matrix is not a square matrix, which
+    is required for the operation `linalg.det`. Let''s see what the args were. "A"
+    was a tensor of float32 with dimensions [9, 8, 6, 8]. A square matrix requires
+    that all dimensions be equal, but in this case, the dimensions of "A" are not
+    equal. Therefore, to prevent this error from occurring again, we need to ensure
+    that "A" is always a square matrix when passed to `linalg.det`.
+
+
+    The constraint for the ''A'' parameter can be expressed as:'
+  target: 'linalg.det: A must be batches of square matrices, but they are 6 by 8 matrices'
+  txt: len(A.shape) >= 2 and A.shape[-1] == A.shape[-2]
+- cot: 'The error arises because the function linalg.det requires the input tensor
+    ''A'' to have at least 2 dimensions, but the current tensor ''A'' is of zero dimensions.
+    Let''s see what the args were. The ''A'' tensor is of zero dimensions. Therefore,
+    Left : len(A.shape), op : >=, right : 2.'
+  target: 'linalg.det: The input tensor A must have at least 2 dimensions.'
+  txt: len(A.shape)>=2
+- cot: 'The error happens because the ''out'' tensor is of complex double type, but
+    the function expects a float type. We need to ensure that the datatype of the
+    ''out'' tensor matches the expected output type. So, the constraint for the ''out''
+    tensor can be expressed as:'
+  target: Expected out tensor to have dtype float, but got c10::complex<double> instead
+  txt: out.dtype == A.dtype
+- cot: 'The error is caused by the function "lu_cpu" which is not implemented for
+    ''Half'' data type. The tensors ''A'' and ''out'' are both provided as float16,
+    which is not compatible. So, the data types of ''A'' and ''out'' should be corrected
+    to become compatible with the function. Op : !=, and Right : ''Half''.'
+  target: '"lu_cpu" not implemented for ''Half'''
+  txt: type(out) != 'Half'
+time_cost: 623.3444464206696
+title: torch._C._linalg.linalg_det
+tokens_used: 10984
+trained: true

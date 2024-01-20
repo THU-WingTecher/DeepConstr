@@ -1,0 +1,18 @@
+constraints:
+  dim0:
+    default: null
+    dtype: int
+    init: false
+    required: true
+  dim1:
+    default: null
+    dtype: int
+    init: false
+    required: true
+package: torch
+pass_rate: 0.0
+rules: {}
+title: torch.Tensor.transpose_
+skipped: true
+skipped_reason: dupe
+dupe_with: torch.transpose

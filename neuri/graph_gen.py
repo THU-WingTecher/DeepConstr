@@ -4,7 +4,7 @@ import time
 import traceback
 from abc import abstractmethod
 from itertools import product
-from typing import Dict, List, Optional, Set, Tuple, Type
+from typing import Callable, Dict, List, Optional, Set, Tuple, Type
 
 import z3
 
@@ -22,6 +22,9 @@ from neuri.autoinf import AutoInfOpBase, OpInstance, OpRecordFinder
 from neuri.error import ConstraintCheck, ConstraintError, SanityCheck
 from neuri.gir import GraphIR, InstExpr, InstIR
 from neuri.logger import MGEN_LOG, SMT_LOG
+from neuri.materialize import Model
+from neuri.specloader import Z3TENSOR
+from neuri.specloader.smt import DEFAULT_DTYPE_CONSTR, gen_val
 from neuri.util import HAS_PYGRAPHVIZ, set_seed, viz_dot
 
 
@@ -58,7 +61,7 @@ class BaseGen:
         max_elem_per_tensor=2**16,
         dtype_choices=None,
     ):
-        assert len(opset) > 0, "opset must not be empty"
+        # assert len(opset) > 0, "opset must not be empty"
         if seed is not None:
             set_seed(seed)
 
@@ -90,7 +93,7 @@ class BaseGen:
         )
 
         self.dtype_choices = list(dtype_top.intersection(self.dtype_choices))
-        assert len(self.dtype_choices) > 0, "dtype_choices must not be empty"
+        # assert len(self.dtype_choices) > 0, "dtype_choices must not be empty"
 
     def random_rank(self):
         return random.choice(rank_all())
@@ -116,7 +119,16 @@ class BaseGen:
         )
         self.monotonic_placeholder_id += 1
         return ph
-
+    
+    def make_concrete_placeholder(self, shape : List[int], dtype : str) -> Placeholder:
+        ph = Placeholder(
+            AbsTensor(
+                shape=shape,
+                dtype=dtype
+            )
+        )
+        return ph
+    
     def make_random_concrete_placeholder(self, rank, dtype=None):
         l, r = self.concr_ph_dim_rng
         shape = []
@@ -804,7 +816,7 @@ class NeuriR(ConcolicGen):
     def __init__(
         self,
         opset,
-        record_finder: OpRecordFinder,
+        record_finder: Union[OpRecordFinder, List[Dict]], # ConstrGen -> List[Dict]
         seed=None,
         init_fp=False,
         **kwargs,
@@ -816,7 +828,9 @@ class NeuriR(ConcolicGen):
         # remove records whose tensors violate tensor_type_constraints
         # FIXME: Strictly apply tensor_type_constraints to filter unapplicable tensors.
         self.record_finder = record_finder
+        self.init_first_node(init_fp)
 
+    def init_first_node(self, init_fp) : 
         # Insert the first node.
         self.forward_insert_node(
             self.make_random_concrete_placeholder(
@@ -1123,6 +1137,187 @@ class Neuri(NeuriR):
 
         return False
 
+class ConstrInf(NeuriR):
+    """Complete Constraint-Solving based Generation"""
+    def __init__(
+        self,
+        opset,
+        record_finder: Union[OpRecordFinder, List[Dict]], # ConstrGen -> List[Dict]
+        model : Model, 
+        seed=None,
+        noise : float = 0.0,
+        allow_zero_length_rate : float = 0.5,
+        allow_zero_rate : float = 0.5,
+        num_of_try : int = 3,
+        **kwargs
+    ):
+        NeuriR.__init__(self, opset, record_finder, seed, **kwargs)
+        self.model = model()
+        self.noise = noise
+        self.allow_zero_length_rate = allow_zero_length_rate
+        self.allow_zero_rate = allow_zero_rate
+        self.num_of_try = num_of_try
+        self.err_msg = ""
+        
+    def init_first_node(self, init_fp) :
+        # overload concolicgen
+        pass
+
+    def new_dtype_sym(self, name):
+        return Z3TENSOR.dtype(AbsTensor.z3()(name))
+
+    def pick_next_record(self):
+        return random.choice(self.record_finder)
+    
+    def try_insert(self):
+        if not self.is_inited() : 
+            return self.try_autoinf_insert_forward() 
+        else :
+            meta_selector = random.random()  # [0, 1]
+            if meta_selector < 0.5:
+                return self.try_autoinf_insert_forward()
+            else : 
+                return BaseGen.try_insert(self)
+    
+    def is_inited(self) : 
+        return len(self.ir.vars) > 0
+    
+    def make_random_concrete_placeholder(self, rank, dtype=None):
+        shape = [random.randint(1, 10) for _ in range(rank)]
+        dtype = random.choice(DTYPE_ALL[self.model.package])
+        # FIXME : make uncommon dtype rarely appear
+
+        ph = Placeholder(
+            AbsTensor(
+                shape=shape,
+                dtype=dtype,
+            )
+        )
+        return ph
+    
+    def try_autoinf_insert_forward(self, init=False) -> bool:
+
+        record = self.pick_next_record()
+        chosen_dtype = {}
+        input_tensor_candidates = []
+        input_vars = []
+        temp_vars = []
+        for i_arg, arg_name, in enumerate(record['args']['name']) :
+            if len(record['args']['dtype'][i_arg]) > 0 :
+                chosen_dtype[arg_name] = random.choice(record['args']['dtype'][i_arg])
+            else :
+                chosen_dtype[arg_name] = record['args']['dtype'][i_arg]
+
+            if isinstance(chosen_dtype[arg_name], AbsTensor) :
+                input_tensor_candidates.append(arg_name)
+        
+        assert len(input_tensor_candidates) > 0, "No input tensor candidates"
+        var_indicates = self.ir.vars.keys()
+        var_indicates = list(var_indicates)
+
+        for _ in range(self.num_of_try) :
+
+            connected_key_name = random.choice(input_tensor_candidates)
+
+            if var_indicates : # constrained generation by ir var : k
+                ir_var_k = random.choice(var_indicates)
+                v = self.ir.vars[ir_var_k]
+                
+                consistent_constrs = v.consistent_constr(
+                    other = connected_key_name
+                )
+            else : 
+                ir_var_k = None 
+                consistent_constrs = []
+                
+            default_dtype_generator : Callable = DEFAULT_DTYPE_CONSTR.get(self.model.package)
+            assert default_dtype_generator is not None, "default dtype constraint not defined"
+            default_dtype_constr = default_dtype_generator(connected_key_name)
+
+            values = gen_val(chosen_dtype, 
+                            record['constraints'],
+                            noise_prob=self.noise,
+                            allow_zero_length_rate=self.allow_zero_length_rate,
+                            allow_zero_rate=self.allow_zero_rate,
+                            constraints=consistent_constrs + [default_dtype_constr],
+                            api_name=record['name'],)
+
+            if values is not None : 
+                break 
+
+        if values is None : 
+            return False # failed to find a solution
+        
+        if var_indicates : 
+            # if ir_var is not empty - connected_key must recieve exist tensor value from ir.vars
+            # if ir_var is empty - all connected tensor will be generated and add to ir.vars
+            input_vars.append(ir_var_k)
+            input_tensor_candidates = [k for k in input_tensor_candidates if k != connected_key_name]
+
+        phs = [
+            self.make_concrete_placeholder(values[name].shape, values[name].dtype) 
+            for name in input_tensor_candidates
+            ]
+        
+        for ph in phs : 
+            new_inst = self.forward_insert_node(ph, [])
+            temp_vars.append(new_inst)
+
+        for i_arg, arg_name, in enumerate(record['args']['name']) :
+            record['args']['value'][i_arg] = values[arg_name]
+        
+        inst = OpInstance(record)
+        opbase = AutoInfOpBase(inst, {
+            sym : inst.input_symb_2_value[sym] for sym in inst.A
+        })
+
+        try:
+            if self.execute_try_forward_insert_at(
+                opbase, input_vars + [i.retval() for i in temp_vars]
+            ):
+                return True
+        except:
+            for temp_var in temp_vars : 
+                self.ir.remove_unused(temp_var)
+                self.placeholders.remove(temp_var.retval())
+            
+            self.save_err_msg(traceback.format_exc())
+
+        return False
+    
+    def save_err_msg(self, str_msg : str) :
+        self.err_msg = str_msg
+
+    def load_err_msg(self) -> str :
+        return self.err_msg
+
+    def try_execute_op(self, inst : OpInstance) : 
+        return self.model.execute_op(inst)
+
+    def execute_try_forward_insert_at(
+        self, node: AutoInfOpBase, input_vars: List[str], **kwargs
+    ) -> bool:
+
+        itensors = [self.ir.vars[vname] for vname in input_vars]
+        res = self.try_execute_op(node.inst) # if failed, raise exception
+        output_info = node.inst.output_info(res)
+        node.inst.add_output_arg(*output_info)
+
+        otensors = [
+            AbsTensor(shape, ttype) for shape, ttype in \
+            zip(node.inst.concrete_output_shapes(), node.inst.output_tensor_dtypes)
+        ]
+        
+        if MGEN_LOG.getEffectiveLevel() <= logging.DEBUG:
+            MGEN_LOG.debug(f">> Forward insert: {node}")
+            MGEN_LOG.debug(f"\tinputs:  {itensors}")
+
+        node.bind_input_like(itensors)
+        node.bind_output_like(otensors)
+
+        self.forward_insert_node(node, input_vars)
+        
+        return True
 
 class NeuriI(Neuri):
     def try_insert(self):
@@ -1152,6 +1347,11 @@ def model_gen(
     seed=None,
     timeout_ms=10000,
     record_finder=None,
+    model=None,
+    noise=0.0,
+    allow_zero_length_rate=0.1,
+    allow_zero_rate=0.1,
+    num_of_try=3,
     **kwargs,
 ):
     assert max_nodes > 0, "max_nodes must >= 1"
@@ -1171,6 +1371,10 @@ def model_gen(
     elif "neuri-i" == method:
         assert record_finder is not None, "record_finder must be provided"
         gen = NeuriI(opset, record_finder, seed, **kwargs)
+    elif "constrinf" == method:
+        assert record_finder is not None, "record_finder must be provided"
+        assert model is not None, "model must be provided"
+        gen = ConstrInf(opset, record_finder, model, seed, noise, allow_zero_length_rate, allow_zero_rate, num_of_try, **kwargs)
     else:
         raise ValueError(f"Unknown method {method}. Try `symbolic` or `concolic`.")
 

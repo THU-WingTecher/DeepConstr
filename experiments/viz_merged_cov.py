@@ -84,7 +84,7 @@ class Ploter:
 
         self.cov_maxes.append(df[:, 2].max())
 
-    def plot(self, save="cov", cov_lim=None, loc=0):
+    def plot(self, save="cov", cov_lim=None, loc=0, name='not_defined'):
         for ax in self.axs:
             handles, labels = ax.get_legend_handles_labels()
             # rank by self.cov_maxes argsort
@@ -136,10 +136,10 @@ class Ploter:
         self.axs[1].grid(alpha=0.5, ls=":")
 
         if self.use_pdf:
-            self.fig[0].savefig(save + "-time.pdf")
-            self.fig[1].savefig(save + "-iter.pdf")
-        self.fig[0].savefig(save + "-time.png")
-        self.fig[1].savefig(save + "-iter.png")
+            self.fig[0].savefig(save + f"{name}-time.pdf")
+            self.fig[1].savefig(save + f"{name}-iter.pdf")
+        self.fig[0].savefig(save + f"{name}-time.png")
+        self.fig[1].savefig(save + f"{name}-iter.png")
 
 
 def cov_summerize(data, tlimit=None, gen_time=None):
@@ -179,6 +179,7 @@ def plot_one_round(
     tlimit=None,
     pdf=False,
     scale=1,
+    name=None,
 ):
     branch_ploter = Ploter(use_pdf=pdf, scale=scale)
 
@@ -193,7 +194,7 @@ def plot_one_round(
         branch_ploter.add(data=branch_by_time, name=fuzz_tags[idx])
         bf = max(bf, bf_)
 
-    branch_ploter.plot(save=os.path.join(folder, target_tag + "branch_cov"), cov_lim=bf)
+    branch_ploter.plot(save=os.path.join(folder, target_tag + "branch_cov"), cov_lim=bf, name=name)
 
     plt.close()
 
@@ -205,6 +206,9 @@ if "__main__" == __name__:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-f", "--folders", type=str, nargs="+", help="bug report folder"
+    )
+    parser.add_argument(
+        "-n", "--name", type=str, help="file_name"
     )
     parser.add_argument("--tags", type=str, nargs="+", help="tags")
     parser.add_argument(
@@ -242,4 +246,5 @@ if "__main__" == __name__:
         scale=1000,
         fuzz_tags=args.tags,
         pdf=args.pdf,
+        name=args.name
     )  # no pass

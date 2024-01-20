@@ -1,0 +1,21 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 2
+package: torch
+pass_rate: 0.98
+rules:
+- cot: 'The error arises because the ''clamp'' operation is not supported for complex
+    types. Here, the input tensor is of dtype complex64, which is incompatible with
+    the clamp operation. Therefore, the Left: type(input) should be corrected to not
+    be a complex type. Op: not in, and Right: [complex64, complex128].'
+  target: clamp is not supported for complex types
+  txt: type(input) not in ["complex64", "complex128"]
+time_cost: 53.16748523712158
+title: torch.relu
+tokens_used: 1269
+trained: true

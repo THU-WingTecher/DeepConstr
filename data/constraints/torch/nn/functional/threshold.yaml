@@ -1,0 +1,42 @@
+alias: torch.nn.functional.threshold
+constraints:
+  inplace:
+    default: false
+    dtype: bool
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  threshold:
+    default: 0
+    dtype: float
+    init: false
+    required: true
+  value:
+    default: 0
+    dtype: float
+    init: false
+    required: true
+infered_history: []
+infered_times: 1
+package: torch
+pass_rate: 0.9
+rules:
+- cot: 'The error indicates that the ''threshold_cpu'' function is not implemented
+    for ''Bool'' tensor type. From the provided values, ''input'' is a Bool tensor.
+    The function seems to require a tensor of a different type. Therefore, the type
+    of ''input'' should be corrected. Also, the ''threshold'' value is provided as
+    a float, which is not applicable for ''Bool'' type. So, the constraints should
+    be that ''input'' should not be a ''Bool'' tensor and ''threshold'' should not
+    be a float if ''input'' is ''Bool''. Hence, Left : input.dtype , Op : != , Right
+    : Bool and Left : (input.dtype == Bool and isinstance(threshold, float)), Op :
+    ==, Right : False.'
+  target: '"threshold_cpu" not implemented for ''Bool'''
+  txt: input.dtype != Bool
+time_cost: 54.51085376739502
+title: torch.nn.functional.threshold
+tokens_used: 772
+trained: true

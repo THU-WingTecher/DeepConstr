@@ -1,0 +1,50 @@
+alias: torch.as_strided
+constraints:
+  input:
+    default: 'null'
+    dtype: int32,int64,int8,int16,float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  size:
+    default: null
+    dtype: list[int]
+    init: false
+    required: true
+  storage_offset:
+    default: null
+    dtype: int
+    init: false
+    required: false
+  stride:
+    default: null
+    dtype: list[int]
+    init: false
+    required: true
+infered_history: []
+infered_times: 22
+package: torch
+pass_rate: 0.45
+rules:
+- cot: "The error occurs because the lengths of the strides and the shape of the tensor\
+    \ do not match. Let's see what the args were. It seems the length of strides is\
+    \ 4 and the shape of the tensor is also of length 4. The 'size' parameter is a\
+    \ list of length 2 which is not consistent with the stride length and tensor shape\
+    \ length. To prevent this error in the future, we need to ensure that the length\
+    \ of 'size' matches the length of 'stride' and the shape of 'input'. \n\nThe constraint\
+    \ for the 'size' parameter can be expressed as:"
+  target: mismatch in length of strides and shape
+  txt: len(size) == len(stride)
+- cot: 'Error is triggered because of storage size calculation overflowed. Let''s
+    see what the args were. The sizes are [10, 11, 12, 13, -500] and strides are [282,
+    500, 500, 500, 500]. The negative value in sizes may cause an overflow in storage
+    size calculation. Therefore, all values in sizes should be non-negative. Moreover,
+    each value in strides should be less than or equal to the storage_offset to prevent
+    overflow. Therefore, Left : sizes[i], stride[i], storage_offset. Op : >=, <=,
+    Right : 0, storage_offset.'
+  target: Storage size calculation overflowed with sizes=[10, 11, 12, 13, -500] and
+    strides=[282, 500, 500, 500, 500]
+  txt: all(size[i] >= 0 for i in range(len(size)))
+time_cost: 722.3384261131287
+title: torch.as_strided
+tokens_used: 14828
+trained: true

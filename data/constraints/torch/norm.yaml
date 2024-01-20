@@ -1,0 +1,83 @@
+alias: torch.norm
+constraints:
+  dim:
+    default: null
+    dtype: int,list[int]
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  keepdim:
+    default: false
+    dtype: bool
+    init: false
+    required: false
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+  p:
+    default: fro
+    dtype: Literal['fro', 'nuc']
+    init: false
+    required: false
+infered_history: []
+infered_times: 38
+package: torch
+pass_rate: 0.3
+rules:
+- cot: 'The error occurs because the ''dim'' argument in the ''linalg.matrix_norm''
+    function is not a 2-tuple as expected. The current ''dim'' value is a list with
+    5 elements. So, we should ensure that ''dim'' should be a 2-tuple. Therefore,
+    Left: len(dim), Op: ''=='', Right: 2.'
+  target: 'linalg.matrix_norm: dim must be a 2-tuple. Got 7 5 4 2 3'
+  txt: len(dim) == 2
+- cot: 'The error message suggests that there is an attempt to resize a storage that
+    is not resizable. This could be due to the ''out'' tensor having different dimensions
+    than the ''input'' tensor. Also, the ''dim'' argument has a value of 9, which
+    should be less than or equal to the number of dimensions of the ''input'' tensor.
+    Thus, the constraints would be:
+
+    1. The ''out'' tensor should have the same dimensions as the ''input'' tensor.
+
+    2. The ''dim'' argument should be less than or equal to the number of dimensions
+    of the ''input'' tensor.
+
+
+    Hence, the logical constraints would be:'
+  target: Trying to resize storage that is not resizable
+  txt: (out.rank == input.rank - 1) or (len(input.shape) == len(out.shape))
+- cot: 'The error occurs because the ''out'' tensor has a dtype of complex128, but
+    it is expected to be double. Let''s look at the arguments. The ''out'' tensor
+    is of type complex128 and this is the issue. Therefore, the dtype of ''out'' tensor,
+    which is type(out), should be corrected. It says that dtype should be double,
+    so Op : ==, and Right : double.'
+  target: Expected out tensor to have dtype double, but got c10::complex<double> instead
+  txt: (out.dtype == input.dtype) and (type(out) == double)
+- cot: 'The error is due to the fact that the input tensor A has less than 2 dimensions.
+    From the given values, the ''input'' tensor has only 1 dimension with a size of
+    8. Matrix operations like ''linalg.matrix_norm'' require at least 2 dimensions.
+    Therefore, the constraint should be that the dimensions of the input tensor should
+    be greater than or equal to 2. Hence, Left : len(input.shape), op : >=, right
+    : 2.'
+  target: 'linalg.matrix_norm: The input tensor A must have at least 2 dimensions.'
+  txt: len(input.shape)>=2
+- cot: 'The error is due to the dimension value being out of the valid range. "dim"
+    is provided as 11 which is out of the valid range of [-10, 9]. To prevent this
+    error in the future, we need to ensure that the "dim" value is always within the
+    valid range for the given tensor. The tensor shape is determined by the length
+    of the input list, in this case, it is 10. So, the valid range for the dimension
+    would be [-10, 9].
+
+
+    The constraint for ''dim'' parameter can be expressed as:'
+  target: Dimension out of range (expected to be in range of [-10, 9], but got 11)
+  txt: dim < len(input)
+time_cost: 3674.0150139331818
+title: torch.norm
+tokens_used: 23875
+trained: true

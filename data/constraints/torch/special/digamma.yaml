@@ -1,0 +1,36 @@
+alias: torch.special.digamma
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 10
+package: torch
+pass_rate: 1.0
+rules:
+- cot: 'The error is triggered because the result type Float cannot be cast to the
+    Int. Let''s see what the args were. The dtype of ''input'' is float32 and the
+    dtype of ''out'' is int32. Therefore, the dtypes of ''input'' and ''out'' should
+    be consistent. Left : type(input), op : ==, comparator : type(out)'
+  target: result type Float can't be cast to the desired output type Int
+  txt: (type(out)==float) and (type(input)==type(out))
+- cot: 'The error message indicates that there is an issue with trying to resize a
+    tensor that is not resizable. The values given as input and output tensors are
+    ''input'': Tensor:TensorDType.float32: [9, 8, 6, 8] and ''out'': Tensor:TensorDType.float32:
+    [1, 6, 2, 8]. The dimensions of the input and output tensors should match for
+    tensor operations. Hence, the logical relationship constraints can be expressed
+    as follows:'
+  target: Trying to resize storage that is not resizable
+  txt: (input.is_resizable == True) or ((len(input.shape) == len(out.shape)) and (all(input[i]
+    == out[i] for i in range(len(input)))))
+time_cost: 1019.4050104618073
+title: torch.special.digamma
+tokens_used: 6469
+trained: true

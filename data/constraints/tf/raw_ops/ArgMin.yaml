@@ -1,0 +1,30 @@
+constraints:
+  dimension:
+    default: 'null'
+    dtype: int32,int64
+    init: false
+    required: true
+  input:
+    default: 'null'
+    dtype: float32,float64,int32,uint8,int16,int8,int64,bfloat16,uint16,float16,uint32,uint64,qint8,qint32,qint16,bool
+    init: false
+    required: true
+  name:
+    default: 'null'
+    dtype: str
+    init: false
+    required: false
+  output_type:
+    default: tf.int64
+    dtype: int32,int64
+    init: false
+    required: false
+infered_history:
+- 3
+infered_times: 5
+package: tf
+pass_rate: 0.0
+rules: {}
+time_cost: 132.8796045780182
+title: tf.raw_ops.ArgMin
+tokens_used: 4964

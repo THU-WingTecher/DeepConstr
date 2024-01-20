@@ -1,0 +1,58 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  norm:
+    default: null
+    dtype: Literal['backward', 'forward', 'ortho']
+    init: false
+    required: false
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 11
+package: torch
+pass_rate: 0.0
+rules:
+- cot: "The error is being triggered by invalid configuration parameters in the Fast\
+    \ Fourier Transform (FFT) operation. The 'input' tensor has 10 dimensions, and\
+    \ the 'out' tensor has 4 dimensions. The 'norm' parameter is set to 'ortho'. Since\
+    \ the error is related to Intel's Math Kernel Library (MKL), it could be due to\
+    \ the specific requirements of the FFT function in this library. Thus, the constraints\
+    \ could be as follow: \n\n1. The 'norm' parameter should be one of the valid types\
+    \ accepted by the FFT function in the Intel MKL. If 'ortho' is not accepted, it\
+    \ could be the source of the error. Therefore, Left : norm, Op : ==, and Right\
+    \ : a valid norm type for MKL FFT.\n2. The dimensions of the 'input' and 'out'\
+    \ tensors might need to match, or at least be compatible according to the FFT\
+    \ function requirements in the MKL. Therefore, Left : input.shape, Op : ==, and\
+    \ Right : out.shape.\n3. The data types of the 'input' and 'out' tensors might\
+    \ also need to match or be compatible according to the FFT function requirements\
+    \ in the MKL. Therefore, Left : input.dtype, Op : ==, and Right : out.dtype.\n\
+    \nThe constraints could be:"
+  target: 'MKL FFT error: Intel MKL DFTI ERROR: Invalid configuration parameters'
+  txt: ((input.dtype == out.dtype)) and ((input.shape == out.shape))
+- cot: 'The error arises because the ''out'' tensor is of type Float, but the ihfftn
+    function expects a complex output tensor. Let''s see what the args were. ''out''
+    tensor is of type Float. Therefore, Left : type(out), which is the datatype of
+    ''out'' tensor, should be corrected. It says that should be equal to the datatype
+    of ''Complex'', so Op : ==, and Right : ''Complex''.'
+  target: ihfftn expects a complex output tensor, but got Float
+  txt: type(out) == 'Complex'
+- cot: 'The error occurs because the tensor type is not floating point, but complex.
+    Let''s see what the args were. It appears the tensor type is complex. To prevent
+    this error in the future and generate constraints that do not trigger it, we need
+    to ensure that the "input" tensor is always a floating point tensor.
+
+
+    The constraint for the ''input'' tensor can be expressed as:'
+  target: Expected self.is_floating_point() to be true, but got false.  (Could this
+    error message be improved?  If so, please report an enhancement request to PyTorch.)
+  txt: (out.dtype.is_floating_point() == True) and (type(input) == 'float')
+time_cost: 666.2293553352356
+title: torch._C._fft.fft_ihfftn
+tokens_used: 6786

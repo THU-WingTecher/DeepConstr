@@ -1,0 +1,6 @@
+package: torch
+pass_rate: 0.0
+rules: {}
+title: torch.Tensor.new_full
+skipped: true 
+skipped_reason: no document( unbound)

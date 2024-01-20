@@ -1,0 +1,41 @@
+alias: torch.log1p
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 17
+package: torch
+pass_rate: 0.88
+rules:
+- cot: 'The error indicates that a Float type result can''t be cast to the Long type.
+    Given the input and output data types, it appears that the output data type of
+    int64 (Long) is incompatible with the input data type of int32. Therefore, the
+    data type of input should be consistent with that of output. Left : type(input),
+    Op : ==, Right : type(output)'
+  target: result type Float can't be cast to the desired output type Long
+  txt: type(input)==type(out)
+- cot: "Considering the provided scenario, it seems the error is triggered because\
+    \ we are trying to resize a storage that is not resizable. Given the tensor's\
+    \ dimensions, it seems the 'out' tensor shape should be matched with the operation\
+    \ results. However, there are cases where the 'out' tensor sizes don't match the\
+    \ input tensor sizes and yet the error is not triggered. This could possibly be\
+    \ due to the dtype of the tensors. The 'out' tensor has a dtype of float32, whilst\
+    \ the input tensor has a dtype of float16. Therefore, the constraint should ensure\
+    \ that the 'out' tensor is of the correct dtype and that its shape matches that\
+    \ of the input tensor. \n\nTherefore:\n- The 'out' tensor dtype should be float16.\n\
+    - The 'out' tensor shape should match the input tensor shape."
+  target: Trying to resize storage that is not resizable
+  txt: out.dtype == input.dtype and out.rank==input.rank and all(out.shape[i]==input.shape[i]
+    for i in range(out.rank))
+time_cost: 1415.1822216510773
+title: torch.log1p
+tokens_used: 9607
+trained: true

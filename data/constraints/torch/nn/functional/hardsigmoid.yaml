@@ -1,0 +1,30 @@
+constraints:
+  inplace:
+    default: false
+    dtype: bool
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 4
+package: torch
+pass_rate: 0.92
+rules:
+- cot: 'The error is due to the ''input'' data type being incompatible with the "hardsigmoid_cpu"
+    operation. In this case, the ''input'' tensor data type is ''Int32'', which is
+    not supported by the "hardsigmoid_cpu" operation. The ''inplace'' argument is
+    set to ''True'', which indicates that the operation should be performed in-place
+    on the ''input'' tensor. Therefore, the data type of ''input'' should be changed
+    to a type that is compatible with "hardsigmoid_cpu". The ''inplace'' argument
+    should also be checked to make sure that it is appropriate for the operation and
+    the data type of the ''input'' tensor. The constraint could be:'
+  target: '"hardsigmoid_cpu" not implemented for ''Int'''
+  txt: type(input) != 'Int32'
+time_cost: 218.19507837295532
+title: torch.nn.functional.hardsigmoid
+tokens_used: 1961
+trained: true

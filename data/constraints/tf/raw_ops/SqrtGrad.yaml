@@ -1,0 +1,56 @@
+constraints:
+  dy:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  name:
+    default: null
+    dtype: str
+    init: false
+    required: false
+  y:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history:
+- 4
+- 4
+- 1
+infered_times: 10
+package: tf
+pass_rate: 0.04
+rules:
+- cot: 'The error arises because the function is trying to perform a operation on
+    a float tensor and an int8 tensor. However, both tensors in generated args must
+    have the same data type. Let''s see what the args were. The ''y'' tensor is float32,
+    but the ''dy'' tensor is of type float16. Therefore, Left : type(dy), which is
+    the type of tensor dy, should be corrected. It says that should be equal to the
+    datatype of tensor y, so Op : ==, and Right : type(y).'
+  target: 'cannot compute SqrtGrad as input #1(zero-based) was expected to be a float
+    tensor but is a int8 tensor [Op:SqrtGrad] name:'
+  txt: type(dy)==type(y)
+- cot: 'The error is triggered because ''y'' and ''dy'' don''t have the same number
+    of elements. ''y'' has 1080 elements and ''dy'' has 1024 elements. Therefore,
+    the number of elements of ''y'' should be equal to the number of elements of ''dy''.
+    The Left : len(y) should be corrected to match with the Right : len(dy). The operator,
+    Ops : ''=='', should be used to ensure equality.'
+  target: 'The two arguments to a cwise op must have same number of elements, got
+    1080 and 1024 [Op:SqrtGrad] name:'
+  txt: len(y) == len(dy)
+- cot: 'The error arises because the attribute ''T'' of the tensors ''y'' and ''dy''
+    is int32, but it is expected to be one of the following: bfloat16, half, float,
+    double, complex64, complex128. The tensors ''y'' and ''dy'' are provided as bool
+    type, which is incompatible. Therefore, the types of ''y'' and ''dy'' should be
+    corrected to match one of the allowed types. Op: in, and Right: [bfloat16, half,
+    float, double, complex64, complex128].'
+  target: "Value for attr 'T' of int32 is not in the list of allowed values: bfloat16,\
+    \ half, float, double, complex64, complex128\n ; NodeDef: ; Op z:T; attr=T:type,allowed=[DT_BFLOAT16,\
+    \ DT_HALF, DT_FLOAT, DT_DOUBLE, DT_COMPLEX64, DT_COMPLEX128]> [Op:SqrtGrad] name:"
+  txt: type(y) in ["bfloat16", "half", "float", "double", "complex64", "complex128"]
+    and type(dy) in ["bfloat16", "half", "float", "double", "complex64", "complex128"]
+time_cost: 293.3573248386383
+title: tf.raw_ops.SqrtGrad
+tokens_used: 6343
+trained: true

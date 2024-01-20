@@ -1,0 +1,17 @@
+constraints:
+  from:
+    default: '0'
+    dtype: int,float
+    init: false
+    required: true
+  to:
+    default: '1'
+    dtype: int,float
+    init: false
+    required: true
+package: torch
+pass_rate: 0.0
+rules: {}
+title: torch.Tensor.uniform_
+skipped: true 
+skipped_reason: unbound method unsupported constraint

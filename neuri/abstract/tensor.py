@@ -1,29 +1,74 @@
 from functools import reduce
-from typing import List, Union
+from typing import Any, Callable, Dict, List, Union
 
 import z3
 
 from neuri.abstract.arith import *
 from neuri.abstract.dtype import DType
 from neuri.error import ConstraintCheck, SanityCheck
+from neuri.specloader import Z3TENSOR
 
 
 class AbsTensor:
-    def __init__(self, shape: List[Union[int, z3.ExprRef]], dtype: DType):
+    def __init__(self, 
+                 shape: List[Union[int, z3.ExprRef]] = [], 
+                 dtype: DType = None,
+                 possible_dtypes : List[DType] = []):
         assert isinstance(
             shape, (list, tuple)
         ), f"Shape must be a list/tuple, but got {shape}"
         self.shape = list(shape)
-        self.dtype = DType(dtype)
+        self.rank = len(self.shape)
+        assert possible_dtypes or dtype, "Must provide dtype or possible_dtypes"
+        self.possible_dtypes : List[DType] = possible_dtypes
+        self.dtype = dtype
 
+    @staticmethod
+    def from_numpy(x: "np.ndarray") -> "AbsTensor":
+        return AbsTensor(list(x.shape), str(x.dtype))
+    
     def downcast_rank(self):
         return AbsTensor(shape=[None] * self.ndims, dtype=self.dtype)
+    
+    def concrete_shape(self, symb_2_value: Dict[str, Any]) -> List[int]:
+        return [symb_2_value[s] for s in self.shape]
+    
+    def set_shape(self, shape: List[Union[int, z3.ExprRef]]):
+        self.shape = shape
+        if len(self.shape) != self.rank:
+            self.rank = len(self.shape)
 
+    def concretize(
+        self,
+        symb_2_value: Dict[str, Any],
+        tensor_from_numpy: Callable = lambda x: x,
+        *args,
+        **kwargs,
+    ):
+        from neuri.autoinf.instrument.utils import (
+            numpy_random,
+        )
+        shape = [symb_2_value[s] for s in self.shape]
+        return tensor_from_numpy(numpy_random(shape, str(self.dtype)))
+    
+    def concretize_with_concrete_values(
+        self,
+        tensor_from_numpy: Callable = lambda x: x,
+    ):
+        from neuri.autoinf.instrument.utils import (
+            numpy_random,
+        )
+        return tensor_from_numpy(numpy_random(self.shape, str(self.dtype)))
+    
     def __hash__(self) -> int:
         return hash((tuple(self.shape), self.dtype))
-
+    
     def __repr__(self) -> str:
-        return f"AbsTensor<{self.dtype.short()}>{str(self.shape)}"
+
+        if self.dtype is None :
+            return f"AbsTensor<null[{str(len(self.possible_dtypes))}]>{str(self.shape)}"
+        else :
+            return f"AbsTensor<{self.dtype.short()}>{str(self.shape)}"
 
     def pretty(self) -> str:
         return f"{self.dtype.short()}{self.shape}"
@@ -87,7 +132,33 @@ class AbsTensor:
         import torch
 
         return torch.Size(self.shape)
+    def consistent_constr(self, other : str) -> List[z3.BoolRef] :
+        """ 
+        generate constraints that ensure the shape, rank, and dtype as consistent with
+        the name of $other tensor
+        """
+        ## gen z3 var 
+        other_obj = self.z3()(other)
+        ## rank consistent constr 
+        rank_cons = [Z3TENSOR.rank(other_obj) == self.ndims ]
+        ## shape consistent constr 
+        shape_cons = [
+            Z3TENSOR.shape(other_obj)[i] == self.shape[i] for i in range(self.ndims)
+        ]
+        ## dtype consistent constr
+        dtype_cons = [Z3TENSOR.dtype(other_obj) == self.dtype.z3()]
 
+        return rank_cons + shape_cons + dtype_cons
+    
+    @classmethod
+    def z3(self) -> "z3.Dtype" :
+        def abstensor(arg_name) :
+            from specloader import Z3TENSOR
+            from z3 import Const
+            # Define the abstensor datatype with shape and dtype attributes
+            return Const(arg_name, Z3TENSOR)
+            
+        return abstensor
     def constains_symbol(self) -> bool:
         return any(isinstance(s, z3.ExprRef) for s in self.shape)
 

@@ -1,0 +1,33 @@
+constraints:
+  dim:
+    default: null
+    dtype: int
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 23
+package: torch
+pass_rate: 0.98
+rules:
+- cot: 'The error is because ''dim'' value is out of the valid range. The valid range
+    of ''dim'' is between -3 and 2, but ''dim'' is currently 4. The value of ''dim''
+    should be corrected. It should fall between -3 and 2. Therefore, left : ''dim'',
+    op : >= and <=, right : -3 and 2 respectively.'
+  target: Dimension out of range (expected to be in range of [-3, 2], but got 4)
+  txt: -3 <= dim and dim <= 2
+- cot: 'Error is triggered because the dimension specified as 0 but tensor has no
+    dimensions. Let''s see what the args were. The ''input'' tensor has no dimensions,
+    but ''dim'' is set as 0. Therefore, we need to ensure the ''input'' tensor has
+    at least one dimension for ''dim'' to be 0. Thus, the constraint would be Left
+    : len(input.shape), Op : >, Right : 0.'
+  target: Dimension specified as 0 but tensor has no dimensions
+  txt: len(input.shape) > 0
+time_cost: 476.86852860450745
+title: torch._C._fft.fft_fftshift
+tokens_used: 12615
+trained: true

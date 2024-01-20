@@ -1,0 +1,56 @@
+constraints:
+  name:
+    default: null
+    dtype: str
+    init: false
+    required: false
+  x:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 14
+package: tf
+pass_rate: 0.93
+rules:
+- cot: 'The error is due to the attribute ''T'' of type bool which is not in the list
+    of allowed types. For ''T'', the value provided is TensorDType.bool which is not
+    in the allowed types: bfloat16, half, float, double, int8, int16, int32, int64,
+    complex64, complex128. Therefore, the dtype of ''x'' should be corrected to be
+    one of the allowed types. Op : in, and Right : [''bfloat16'', ''half'', ''float'',
+    ''double'', ''int8'', ''int16'', ''int32'', ''int64'', ''complex64'', ''complex128''].'
+  target: "rror: Value for attr 'T' of bool is not in the list of allowed values:\
+    \ bfloat16, half, float, double, int8, int16, int32, int64, complex64, complex128\n\
+    \ ; NodeDef: ; Op y:T; attr=T:type,allowed=[DT_BFLOAT16, DT_HALF, DT_FLOAT, DT_DOUBLE,\
+    \ DT_INT8, DT_INT16, DT_INT32, DT_INT64, DT_COMPLEX64, DT_COMPLEX128]> [Op:Round]\
+    \ name:"
+  txt: type(x) in ['bfloat16', 'half', 'float', 'double', 'int8', 'int16', 'int32',
+    'int64', 'complex64', 'complex128']
+- cot: 'The error is due to the invalid dtype of the tensor. Let''s see what the args
+    were. It appears that ''x'' is the tensor and its dtype is bfloat16, which is
+    not a valid TensorFlow dtype. Therefore, ''x'' dtype should be corrected. It says
+    it should be a valid TensorFlow dtype, so Operation : in; and Right : valid_tensorflow_dtypes.'
+  target: 'rror: module ''tensorflow'' has no attribute ''complex32'''
+  txt: x.dtype in valid_tensorflow_dtypes and x.dtype != 'bfloat16'
+- cot: 'The error is due to the Tensor ''x'' being of the complex64 type and trying
+    to use the ''Round'' operation on a device that does not support this type. The
+    ''Round'' operation is not supported for complex64 on the current device. The
+    ''Round'' operation is only supported for complex64 on ''XLA_CPU_JIT'' and ''XLA_GPU_JIT''.
+    Therefore, the Round operation should be used with a device that supports the
+    type of the tensor. So, Left : x.device, Op : in, Right : [''XLA_CPU_JIT'', ''XLA_GPU_JIT''].'
+  target: "rror: Could not find device for node: = Round[T=DT_INT16]\nAll kernels\
+    \ registered for op Round:\n device='XLA_CPU_JIT'; T in [DT_FLOAT, DT_DOUBLE,\
+    \ DT_INT32, DT_INT16, DT_INT8, DT_COMPLEX64, DT_INT64, DT_BFLOAT16, DT_COMPLEX128,\
+    \ DT_HALF]\n device='XLA_GPU_JIT'; T in [DT_FLOAT, DT_DOUBLE, DT_INT32, DT_INT16,\
+    \ DT_INT8, DT_COMPLEX64, DT_INT64, DT_BFLOAT16, DT_COMPLEX128, DT_HALF]\n device='GPU';\
+    \ T in [DT_INT64]\n device='GPU'; T in [DT_INT32]\n device='GPU'; T in [DT_DOUBLE]\n\
+    \ device='GPU'; T in [DT_FLOAT]\n device='GPU'; T in [DT_HALF]\n device='GPU';\
+    \ T in [DT_BFLOAT16]\n device='CPU'; T in [DT_INT64]\n device='CPU'; T in [DT_INT32]\n\
+    \ device='CPU'; T in [DT_BFLOAT16]\n device='CPU'; T in [DT_DOUBLE]\n device='CPU';\
+    \ T in [DT_FLOAT]\n device='CPU'; T in [DT_HALF]\n [Op:Round] name:"
+  txt: x.device in ['XLA_CPU_JIT', 'XLA_GPU_JIT']
+time_cost: 259.0152885913849
+title: tf.raw_ops.Round
+tokens_used: 11968
+trained: true

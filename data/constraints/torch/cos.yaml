@@ -1,0 +1,35 @@
+alias: torch.cos
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 14
+package: torch
+pass_rate: 1.0
+rules:
+- cot: 'The error indicates that there is a mismatch in the dimensions of the ''input''
+    and ''out'' tensors. The ''input'' tensor has dimensions [6,8,6] while the ''out''
+    tensor has dimensions [8,2,6]. This issue can be avoided by ensuring that the
+    ''input'' and ''out'' tensors have the same dimensions. Therefore, Left: input.shape,
+    Op: ''=='', and Right: out.shape.'
+  target: Trying to resize storage that is not resizable
+  txt: input.shape == out.shape
+- cot: 'The error is triggered because the result type is ComplexDouble and it can''t
+    be cast to Float. What the args were? We know that the input is of type Complex128
+    and the output is of type Float32. So, the output type should be changed from
+    Float to Complex. Therefore, Left : type(out.TensorDType) Op : == Right : Complex'
+  target: result type Float can't be cast to the desired output type Int
+  txt: (type(out.TensorDType) == complex) or ((type(input)==type(out)) and (type(out.TensorDType)==float))
+    or (type(out.TensorDType) == complex)
+time_cost: 1005.9355082511902
+title: torch.cos
+tokens_used: 9344
+trained: true

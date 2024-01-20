@@ -1,0 +1,96 @@
+constraints:
+  alpha:
+    default: 1
+    dtype: int
+    init: false
+    required: false
+  beta:
+    default: 1
+    dtype: int
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  mat1:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  mat2:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 62
+package: torch
+pass_rate: 0.03
+rules:
+- cot: The error is caused because the data types of 'self' and 'mat2' are inconsistent.
+    Based on the given values, 'self' corresponds to 'input' and its data type is
+    Float, whereas 'mat2' has Bool data type. So, the data types of 'input' and 'mat2'
+    need to be the same in order to avoid the error. Therefore, the operation would
+    be '==', and the right operand would be 'mat2.dtype'.
+  target: mat1 and mat2 must have the same dtype, but got ComplexDouble and Float
+  txt: (input.dtype == mat2.dtype) and (mat1.dtype == mat2.dtype) and (input.dtype
+    == mat2.dtype)
+- cot: 'The error is caused because ''mat1'' is expected to be a matrix, but a 1-D
+    tensor is provided instead. What the args were? The values provided for ''mat1''
+    is a 1-D tensor. However, a matrix is expected. Therefore, Left : mat1.shape which
+    is the shape of ''mat1'', should be corrected. As a matrix is expected, it should
+    have more than one dimension. So, Op : >, and Right : 1.'
+  target: mat1 must be a matrix, got 1-D tensor
+  txt: (len(mat1.shape)==2) and ((len(mat2.shape) >= 2) and (len(mat1.shape)>1))
+- cot: 'The error is indicating that the number of sizes provided for the tensor expansion
+    function is less than the number of dimensions in the tensor. In this case, 2
+    sizes were provided, but the tensor has 7 dimensions. Therefore, the sizes provided
+    for tensor expansion need to be greater or equal to the tensor dimensions. A possible
+    constraint could be: Left: len(size), Op: ''>='', Right: input.ndim.'
+  target: 'expand(torch.FloatTensor{[8, 6, 10, 3, 1, 2, 7]}, size=[10, 9]): the number
+    of sizes provided (2) must be greater or equal to the number of dimensions in
+    the tensor (7)'
+  txt: len(size) >= input.ndim
+- cot: 'The error is raised because the expanded size of the tensor (2) is not matching
+    the existing size (10) at non-singleton dimension 1. So, the constraints are,
+    Left : mat2.shape[1], Op : ==, Right : mat1.shape[1] or input.shape[1]'
+  target: 'The expanded size of the tensor (2) must match the existing size (10) at
+    non-singleton dimension 1.  Target sizes: [10, 2].  Tensor sizes: [10, 10]'
+  txt: (input.shape[1] == 6) and ((out.shape[1] == 6) or ((mat2.shape == out.shape)
+    or (mat2.shape[1] == input.shape[1])))
+- cot: 'The error is due to an attempt to resize storage that is not resizable. Looking
+    into the provided values, it appears that ''input'', ''mat1'', ''mat2'', and ''out''
+    are tensors, that might be attempted to resize. To prevent this error from occurring,
+    we need to ensure that the dimensions of these tensors remain consistent. Hence,
+    we can generate constraints as follows:
+
+
+    1. For ''input'' and ''mat1'', the first dimension size should be the same.'
+  target: Trying to resize storage that is not resizable
+  txt: (len(mat2.shape) == 2) or ((out.shape == [mat1.shape[0], mat2.shape[1]]) or
+    (len(input) == len(mat1)))
+- cot: 'The error occurs because the shapes of mat1 and mat2 are incompatible for
+    multiplication. Let''s see what the args were. We have mat1 with shape (8,9) and
+    mat2 with shape (5,4). In matrix multiplication, the number of columns in the
+    first matrix should be equal to the number of rows in the second matrix. Therefore,
+    mat1.shape[1] should be equal to mat2.shape[0]. So Operation : == and Right :
+    mat2.shape[0].'
+  target: mat1 and mat2 shapes cannot be multiplied (8x9 and 5x4)
+  txt: (mat1.shape[1] != 0) and (mat1.shape[1] == mat2.shape[0])
+- cot: "The error is due to a mismatch in the data type of the 'out' tensor and the\
+    \ expected data type. The 'out' tensor is of type float32, but the function expects\
+    \ a short int data type. Therefore, the data type of the 'out' tensor should be\
+    \ short int. \n\nSo, the logical relationship constraint that can be generated\
+    \ to prevent this error is:"
+  target: Expected out tensor to have dtype short int, but got float instead
+  txt: type(out) == type(input)
+time_cost: 34921.99036860466
+title: torch.addmm
+tokens_used: 44799

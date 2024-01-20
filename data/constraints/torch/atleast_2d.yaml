@@ -1,0 +1,16 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 6
+package: torch
+pass_rate: 0.0
+rules: {}
+time_cost: 43.32863712310791
+title: torch.atleast_2d
+tokens_used: 2960
+skipped: true 
+skipped_reason: unsupported constraints( tensors sequence)

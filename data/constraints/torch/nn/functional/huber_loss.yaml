@@ -1,0 +1,62 @@
+constraints:
+  delta:
+    default: 1.0
+    dtype: float
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  target:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 18
+package: torch
+pass_rate: 0.83
+rules:
+- cot: 'The error is triggered due to the input type of the function ''huber_cpu''
+    not being implemented for ''Long''. It seems that the inputs ''input'' and ''target''
+    are of dtype ''int64'', which corresponds to ''Long'' in PyTorch. Therefore, the
+    data type of ''input'' and ''target'' should be corrected. Left : input.dtype
+    and target.dtype. It says that ''huber_cpu'' is not implemented for ''Long'',
+    so Op : !=, and Right : ''Long''. It implies that the dtype of ''input'' and ''target''
+    cannot be ''Long''.'
+  target: '"huber_cpu" not implemented for ''Long'''
+  txt: target.dtype != 'Long'
+- cot: 'The error is because ''huber_cpu'' is not implemented for ''Int''. It seems
+    that the dtype of ''input'' and ''target'' tensors is int32 while ''huber_cpu''
+    requires float type. Therefore, the dtype of ''input'' and ''target'' should be
+    float. Left : type(input), op : ==, Right : float. Also, the dtype of ''target''
+    should be float. Left: type(target), op : ==, Right : float.'
+  target: '"huber_cpu" not implemented for ''Int'''
+  txt: type(target) == float
+- cot: 'The error is due to the mismatch in the size of the tensors at the non-singleton
+    dimension 2. The size of tensor ''input'' at dimension 2 is 8, while the size
+    of tensor ''target'' at dimension 2 is 2. To avoid this error, the sizes of the
+    tensors at non-singleton dimension 2 should match. The logical constraint can
+    be represented as:'
+  target: The size of tensor a (8) must match the size of tensor b (2) at non-singleton
+    dimension 2
+  txt: input.size(2) == target.size(2)
+- cot: Error is triggered because of non-positive values for delta in huber_loss function.
+    Let's see what the args were. 'delta' is -0.5628493 which is non-positive. Therefore,
+    the constraint should be that delta should be greater than 0.
+  target: huber_loss does not support non-positive values for delta.
+  txt: delta > 0
+- cot: The error is caused by the fact that the result type Float cannot be cast to
+    Char. Looking at the values, the input tensor is of dtype int8, and the target
+    tensor is of dtype float32, while the 'delta' value is a float. As the error suggests,
+    the result type Float (the 'delta' value and 'target' tensor) cannot be converted
+    into Char (which is the dtype of the 'input' tensor). Therefore, a logical constraint
+    could be that the dtypes of 'input', 'target', and 'delta' must be consistent.
+  target: result type Float can't be cast to the desired output type Char
+  txt: type('input')==type('target')
+time_cost: 446.83048963546753
+title: torch.nn.functional.huber_loss
+tokens_used: 9739
+trained: true

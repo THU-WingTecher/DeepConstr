@@ -1,0 +1,91 @@
+constraints:
+  block_size:
+    default: null
+    dtype: int
+    init: false
+    required: true
+  data_format:
+    default: NHWC
+    dtype: str
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  name:
+    default: null
+    dtype: str
+    init: false
+    required: false
+package: tf
+pass_rate: 0.88
+rules:
+- cot: 'The error is due to an invalid or missing ''data_format'' value. For preventing
+    this error, we need to ensure a valid ''data_format'' value is provided. The ''data_format''
+    value should be either ''NHWC'' or ''NCHW''. Moreover, the ''block_size'' should
+    be less than the length of the ''input'' tensor dimensions. So, constraints could
+    be, Left : ''data_format'' in [''NHWC'', ''NCHW''] and Left : block_size < len(input.shape).'
+  target: 'rror: ''data_format'''
+  txt: '''data_format'' in [''NHWC'', ''NCHW'']'
+- cot: 'The error is due to the rank of the input tensor being incorrect. As per the
+    error message, the input tensor should have a rank of 4. However, the input tensor
+    provided has a rank of 5. Let''s see what the args were. The ''input'' tensor
+    has a shape of [10, 9, 8, 6, 8], which is of rank 5. Therefore, the Left : len(input.shape)
+    should be corrected. It says that should be equal to 4, so Op : ==, and Right
+    : 4.'
+  target: 'rror: Input rank should be: 4 instead of: 5 [Op:DepthToSpace] name:'
+  txt: len(input.shape) == 4
+- cot: The error occurs because the input depth dimension, which is 10, should be
+    divisible by block_size*block_size (4 in this case) but it's not. Let's see the
+    generated args. The depth of input tensor is 10 and the block_size is 2. Therefore,
+    to correct this, the left expression would be the depth of the input tensor, which
+    is input.shape[1]. Op is '%', which denotes modulus or remainder of division,
+    and right is block_size*block_size. This should equal to 0, meaning that input.shape[1]
+    should be divisible by block_size*block_size.
+  target: 'rror: Input depth dimension 10 should be divisible by: 4 [Op:DepthToSpace]
+    name:'
+  txt: (input.shape[3] % (block_size*block_size) == 0) and (input.shape[1] % (block_size*block_size)
+    == 0)
+- cot: 'The error is due to a violation of the minimum value constraint for the attribute
+    ''block_size''. It is provided as 0, but it must be at least 2. Therefore, the
+    Left : block_size should be corrected to be greater than or equal to 2. Op : ''>='',
+    Right : 2.'
+  target: "rror: Value for attr 'block_size' of 0 must be at least minimum 2\n ; NodeDef:\
+    \ ; Op output:T; attr=T:type; attr=block_size:int,min=2; attr=data_format:string,default=\"\
+    NHWC\",allowed=[\"NHWC\", \"NCHW\", \"NCHW_VECT_C\"]> [Op:DepthToSpace] name:"
+  txt: block_size >= 2
+- cot: "The error occurs because there is no kernel registered for the operation DepthToSpace\
+    \ with the provided combination of attributes. For the attribute 'T', the given\
+    \ value is DT_BOOL which is acceptable as it is in the list of registered types.\
+    \ However, the 'data_format' is specified as 'NCHW' which is not in the list of\
+    \ allowed formats for the CPU device with type DT_BOOL. The only allowed 'data_format'\
+    \ for the CPU device with type DT_BOOL is 'NHWC'. \n\nThe constraint for the 'data_format'\
+    \ parameter can be expressed as:"
+  target: "rror: Could not find device for node: = DepthToSpace[T=DT_BOOL, block_size=2,\
+    \ data_format=\"NCHW\"]\nAll kernels registered for op DepthToSpace:\n device='XLA_CPU_JIT';\
+    \ T in [DT_FLOAT, DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16, DT_INT8, DT_COMPLEX64,\
+    \ DT_INT64, DT_BOOL, DT_QINT8, DT_QUINT8, DT_QINT32, DT_BFLOAT16, DT_UINT16, DT_COMPLEX128,\
+    \ DT_HALF, DT_UINT32, DT_UINT64, DT_FLOAT8_E5M2, DT_FLOAT8_E4M3FN, DT_INT4, DT_UINT4]\n\
+    \ device='XLA_GPU_JIT'; T in [DT_FLOAT, DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16,\
+    \ DT_INT8, DT_COMPLEX64, DT_INT64, DT_BOOL, DT_QINT8, DT_QUINT8, DT_QINT32, DT_BFLOAT16,\
+    \ DT_UINT16, DT_COMPLEX128, DT_HALF, DT_UINT32, DT_UINT64, DT_FLOAT8_E5M2, DT_FLOAT8_E4M3FN,\
+    \ DT_INT4, DT_UINT4]\n device='CPU'; T in [DT_VARIANT]; data_format in [\"NHWC\"\
+    ]\n device='CPU'; T in [DT_RESOURCE]; data_format in [\"NHWC\"]\n device='CPU';\
+    \ T in [DT_STRING]; data_format in [\"NHWC\"]\n device='CPU'; T in [DT_BOOL];\
+    \ data_format in [\"NHWC\"]\n device='CPU'; T in [DT_COMPLEX128]; data_format\
+    \ in [\"NHWC\"]\n device='CPU'; T in [DT_COMPLEX64]; data_format in [\"NHWC\"\
+    ]\n device='CPU'; T in [DT_DOUBLE]; data_format in [\"NHWC\"]\n device='CPU';\
+    \ T in [DT_FLOAT]; data_format in [\"NHWC\"]\n device='CPU'; T in [DT_BFLOAT16];\
+    \ data_format in [\"NHWC\"]\n device='CPU'; T in [DT_HALF]; data_format in [\"\
+    NHWC\"]\n device='CPU'; T in [DT_INT32]; data_format in [\"NHWC\"]\n device='CPU';\
+    \ T in [DT_INT8]; data_format in [\"NHWC\"]\n device='CPU'; T in [DT_UINT8]; data_format\
+    \ in [\"NHWC\"]\n device='CPU'; T in [DT_INT16]; data_format in [\"NHWC\"]\n device='CPU';\
+    \ T in [DT_UINT16]; data_format in [\"NHWC\"]\n device='CPU'; T in [DT_UINT32];\
+    \ data_format in [\"NHWC\"]\n device='CPU'; T in [DT_INT64]; data_format in [\"\
+    NHWC\"]\n device='CPU'; T in [DT_UINT64]; data_format in [\"NHWC\"]\n device='GPU';\
+    \ T in [DT_QINT8]\n device='GPU'; T in [DT_BFLOAT16]\n device='GPU'; T in [DT_HALF]\n\
+    \ device='GPU'; T in [DT_FLOAT]\n [Op:DepthToSpace] name:"
+  txt: type(input) == "DT_BOOL" and data_format == "NHWC" and block_size == 2
+title: tf.raw_ops.DepthToSpace

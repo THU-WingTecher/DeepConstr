@@ -5,7 +5,7 @@ The intermediate tests can be saved using fuzz.save_test={{DIR_TO_SAVE}}.
 import multiprocessing as mp
 import os
 import subprocess
-
+import sys
 from neuri.util import mkdir
 
 
@@ -78,8 +78,8 @@ if __name__ == "__main__":
     print(f"=> Number of batches: {len(batches)} of size {args.batch_size}")
 
     cov_save = os.path.join(args.root, "coverage")
-
-    mkdir(cov_save)
+    if not os.path.exists(cov_save) :
+        mkdir(cov_save)
 
     def batch_exec(batch):
         batch_paths = [time2path[time] for time in batch]

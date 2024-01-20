@@ -3,7 +3,8 @@ from functools import partial, reduce
 from typing import Any, Callable, Dict, List, Tuple, Union
 
 import numpy as np
-
+from neuri.abstract.dtype import DType
+from neuri.abstract.tensor import AbsTensor
 from neuri.autoinf.inference.rules import (
     gen_nnsmith_rules,
     gen_requires_trees,
@@ -16,6 +17,7 @@ from neuri.autoinf.instrument.utils import (
     hash_list_str,
     is_int_not_bool,
     numpy_random,
+    tensor_to_abs,
 )
 
 
@@ -47,42 +49,6 @@ class AbsInt(AbsValue):
         else:
             return str(self.value)
 
-
-class AbsTensor(AbsValue):
-    def __init__(self, rank: int, shape: List[Union[str, int]], dtype: str):
-        self.rank = rank
-        self.shape = shape
-        self.dtype = dtype
-
-    @staticmethod
-    def from_numpy(x: np.ndarray) -> "AbsTensor":
-        return AbsTensor(x.ndim, list(x.shape), str(x.dtype))
-
-    def concretize(
-        self,
-        symb_2_value: Dict[str, Any],
-        tensor_from_numpy: Callable = lambda x: x,
-        *args,
-        **kwargs,
-    ):
-        shape = [symb_2_value[s] for s in self.shape]
-        return tensor_from_numpy(numpy_random(shape, self.dtype))
-
-    def concrete_shape(self, symb_2_value: Dict[str, Any]) -> List[int]:
-        return [symb_2_value[s] for s in self.shape]
-
-    def __str__(self) -> str:
-        return f"AbsTensor<{self.rank}>({', '.join(self.shape)}, {self.dtype})"
-
-    def concrete_str(self, symb_2_value: Dict[str, Any]) -> str:
-        # AbsTensor<3>([s0=1, s1=2, s2=3], float32)
-        shapes = [f"{s}={symb_2_value[s]}" for s in self.shape]
-        return f"AbsTensor<{self.rank}>({', '.join(shapes)}, {self.dtype})"
-
-    def __repr__(self) -> str:
-        return str(self)
-
-
 class OpInstance:
     def __init__(
         self,
@@ -103,8 +69,8 @@ class OpInstance:
 
         self.names: List[str] = []
         self.is_pos: List[bool] = []
-        self.abs_values: List[AbsValue] = []
-        self.input_types: List[str] = []
+        self.abs_values: List[AbsValue] = [] # [AbsTensor<4>(s0, s1,... s3, bool), 's4', ...)
+        self.input_types: List[str] = [] # parameter types(tensor, int, float, bool, str, ...)
 
         """fill information by parsing the record"""
         record_args = record["args"]
@@ -125,6 +91,9 @@ class OpInstance:
         self.output_symb_2_value, self.output_tensors = self.output_info(
             record["outputs"]["value"]
         )
+    def add_output_arg(self, output_symb_2_value, output_tensors):
+        self.output_symb_2_value = output_symb_2_value
+        self.output_tensors = output_tensors
 
     def _keep_int_value(self, arg_name: str):
         return (
@@ -164,8 +133,16 @@ class OpInstance:
         if isinstance(value, list):
             return [self._add_input_arg(v, arg_name) for v in value]
             # TODO(@Colin) model list with AbsValue to avoid manual recursion every time (like self._value_concrete_str)
-        elif isinstance(value, np.ndarray):
+        elif isinstance(value, np.ndarray): # for neuri
             abs_tensor = AbsTensor.from_numpy(value)
+            for i_s, s in enumerate(abs_tensor.shape):
+                symb = f"s{len(self.input_symb_2_value)}"
+                self.input_symb_2_value[symb] = s
+                abs_tensor.shape[i_s] = symb
+            self.input_tensors.append(abs_tensor)
+            return abs_tensor
+        elif isinstance(value, AbsTensor): # for constrinf 
+            abs_tensor = value
             for i_s, s in enumerate(abs_tensor.shape):
                 symb = f"s{len(self.input_symb_2_value)}"
                 self.input_symb_2_value[symb] = s
@@ -180,6 +157,8 @@ class OpInstance:
             return abs_int
         else:
             abs_value = AbsValue(value)
+            symb = f"s{len(self.input_symb_2_value)}"
+            self.input_symb_2_value[symb] = value
             self.other_attrs.append(abs_value)
             return abs_value
 
@@ -414,6 +393,13 @@ class OpInstance:
             return f"{self.name}({kwargs_str})"
 
     def concrete_input_shapes(self, symb_2_value: Dict[str, Any] = None):
+        """
+        example)
+        symb_2_value:= {'s0': 1024, 's1': 1024}
+
+        return : 
+        [[1024], [1024]]
+        """
         if symb_2_value is None:
             symb_2_value = self.input_symb_2_value
         return [
@@ -452,8 +438,11 @@ class OpInstance:
             return [
                 self._parse_output_value(v, symb_2_value, output_tensors) for v in value
             ]
-        elif isinstance(value, np.ndarray):
-            abs_tensor = AbsTensor.from_numpy(value)
+        elif isinstance(value, np.ndarray) or isinstance(value, AbsTensor):
+            if isinstance(value, np.ndarray):
+                abs_tensor = AbsTensor.from_numpy(value)
+            else:
+                abs_tensor = value
             for i_s, s in enumerate(abs_tensor.shape):
                 symb = f"o{len(symb_2_value)}"
                 symb_2_value[symb] = s
@@ -526,18 +515,20 @@ class OpInstance:
 
         return [ATTR_FREE_RULES[i] for i in self.nnsmith_rules_list]
 
-    # def execute(
-    #     self,
-    #     symb_2_value: Dict[str, Any] = None,
-    #     tensor_from_numpy: Callable = lambda x: x,
-    #     numpy_from_tensor: Callable = lambda x: x,
-    #     is_tensor: Callable = lambda x: False,
-    # ) -> Tuple[Dict[str, Any], List[AbsTensor]]:
-    #     if symb_2_value is None:
-    #         symb_2_value = self.input_symb_2_value
-    #     func = eval(self.name)
-    #     args, kwargs = self.input_args(symb_2_value, tensor_from_numpy)
-    #     ret = func(*args, **kwargs)
-    #     ret_list = get_ret_list(ret)
-    #     ret_list = [numpy_from_tensor(r) if is_tensor(r) else r for r in ret_list]
-    #     return self.output_info(ret_list)
+    def execute(
+        self,
+        symb_2_value: Dict[str, Any] = None,
+        tensor_from_numpy: Callable = lambda x: x,
+        abs_from_dtype: Callable = lambda x: x,
+        is_tensor: Callable = lambda x: False,
+        func : Callable = None,
+    ) -> Tuple[Dict[str, Any], List[AbsTensor]]:
+        if symb_2_value is None:
+            symb_2_value = self.input_symb_2_value
+        if func is None:
+            func = eval(self.name)
+        args, kwargs = self.input_args(symb_2_value, tensor_from_numpy)
+        ret = func(*args, **kwargs)
+        ret_list = get_ret_list(ret)
+        abs_ret_list = [tensor_to_abs(tensor, abs_from_dtype) for tensor in ret_list if is_tensor(tensor)]
+        return abs_ret_list

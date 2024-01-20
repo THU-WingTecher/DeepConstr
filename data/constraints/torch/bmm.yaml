@@ -1,0 +1,55 @@
+alias: torch.bmm
+constraints:
+  input:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  mat2:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: 'null'
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 20
+package: torch
+pass_rate: 0.5
+rules:
+- cot: 'The error arises because batch1 is expected to be a 3D tensor. Let''s see
+    what the args were. ''input'' tensor is a 1D tensor, but for batch1, we require
+    a 3D tensor. Therefore, Left : input.dim, which is the dimension of tensor input,
+    should be corrected. It says that should be equal to 3, so Op : ==, and Right
+    : 3.'
+  target: batch1 must be a 3D tensor
+  txt: (input.dim == 3) and (len(mat2.shape)==3) and (input.dim == 3)
+- cot: 'The error is triggered because trying to resize a non-resizable storage. The
+    value for ''input'' is a tensor with dimensions [4, 6, 8] and ''mat2'' is a tensor
+    with dimensions [4, 8, 2]. Meanwhile, ''out'' is a tensor with dimensions [8].
+    In this situation, It seems like ''out'' tensor is trying to be resized with incompatible
+    dimensions. Therefore, the dimensions of ''out'' should match the result of the
+    multiplication of the last dimension of ''input'' and the last dimension of ''mat2'',
+    which is 8*2=16. Therefore, Left : len(out), Op : ==, and Right : len(input)*len(mat2).'
+  target: Trying to resize storage that is not resizable
+  txt: len(out) == len(input)*len(mat2)
+- cot: 'Based on the provided values, the error is being triggered because the first
+    two dimensions of the ''mat2'' tensor do not match the expected size of [4, 10].
+    Let''s look at the args: the ''input'' tensor has a shape of [4, 7, 10], the ''mat2''
+    tensor has a shape of [1, 5, 10], and the ''out'' tensor has a shape of [].
+
+
+    The first two dimensions of ''mat2'' should be equal to the first and third dimensions
+    of ''input'' for the operation to be successful. Therefore, the following constraints
+    can be used:'
+  target: 'Expected size for first two dimensions of batch2 tensor to be: [4, 10]
+    but got: [1, 5].'
+  txt: (mat2.shape[0] == input.shape[0] and mat2.shape[1] == input.shape[2]) and ('mat2'.shape[0]
+    == 4)
+time_cost: 1550.6120595932007
+title: torch.bmm
+tokens_used: 11945
+trained: true

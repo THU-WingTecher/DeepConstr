@@ -1,0 +1,41 @@
+alias: torch.abs
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 19
+package: torch
+pass_rate: 0.95
+rules:
+- cot: The error is triggered because we are trying to resize a storage that is not
+    resizable. This suggests that the 'out' tensor size should be equal to the operation
+    result size at the time of the operation. The operation result size is given by
+    `input.shape`. Therefore, the 'out' tensor shape should be set to be equal to
+    `input.shape` before the operation. Also, the rank (number of dimensions) of the
+    'out' tensor should be equal to the rank of 'input'. Therefore, the constraints
+    should be `out.rank == input.rank` and `all(out.shape[i] == input.shape[i] for
+    i in range(out.rank))`. However, as pointed out that there are cases where the
+    sizes do not need to be identical, it is also important that the 'out' tensor
+    is resizable. Therefore, an additional constraint should be `out.is_resizable
+    == True`.
+  target: Trying to resize storage that is not resizable
+  txt: out.rank == input.rank and all(out.shape[i] == input.shape[i] for i in range(out.rank))
+    and out.is_resizable == True
+- cot: 'The error is due to the mismatch in the data types of the ''input'' tensor
+    and the expected input data type. The ''input'' tensor is of type int8 (Char),
+    but the function expects a float data type. Therefore, the data type of the ''input''
+    tensor should be float. So, Left : input.dtype, Op : ==, Right : type(out)'
+  target: Found dtype Float but expected Char
+  txt: type(input) == type(out)
+time_cost: 858.631599187851
+title: torch.abs
+tokens_used: 11015
+trained: true

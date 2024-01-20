@@ -1,0 +1,21 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history: []
+infered_times: 2
+package: torch
+pass_rate: 1.0
+rules:
+- cot: 'The error is due to using a non-complex dtype for a function that requires
+    a complex dtype. The input tensor is of dtype float32, which is not a complex
+    dtype. Therefore, the dtype of the input tensor should be corrected to be a complex
+    dtype (complex64 or complex128). Therefore, from the args, the Left: input.dtype,
+    Op: in, Right: [complex64, complex128].'
+  target: imag is not implemented for tensors with non-complex dtypes.
+  txt: input.dtype in [complex64, complex128]
+time_cost: 18.253901481628418
+title: torch.imag
+tokens_used: 966

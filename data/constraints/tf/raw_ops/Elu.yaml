@@ -1,0 +1,30 @@
+constraints:
+  features:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  name:
+    default: null
+    dtype: str
+    init: false
+    required: false
+infered_history:
+- 2
+infered_times: 2
+package: tf
+pass_rate: 1.0
+rules:
+- cot: 'The error is due to a type mismatch. The attribute ''T'' is of type complex128,
+    which is not allowed. The allowed data types are half, bfloat16, float, and double.
+    Therefore, the data type of ''T'' should be corrected. The data type of ''T''
+    is derived from the data type of ''features'' which is int32 in this case. Therefore,
+    type(features) should be among half, bfloat16, float, and double. Therefore, Op:
+    in, and Right: ["half", "bfloat16", "float", "double"].'
+  target: "Value for attr 'T' of complex128 is not in the list of allowed values:\
+    \ half, bfloat16, float, double\n ; NodeDef: ; Op activations:T; attr=T:type,allowed=>\
+    \ name:"
+  txt: type(features) in ["half", "bfloat16", "float", "double"]
+time_cost: 35.70127272605896
+title: tf.raw_ops.Elu
+tokens_used: 1222

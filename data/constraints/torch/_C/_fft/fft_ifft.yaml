@@ -1,0 +1,79 @@
+constraints:
+  dim:
+    default: -1
+    dtype: int
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  n:
+    default: null
+    dtype: int
+    init: false
+    required: false
+  norm:
+    default: null
+    dtype: Literal['forward', 'backward', 'ortho']
+    init: false
+    required: false
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 15
+package: torch
+pass_rate: 0.43
+rules:
+- cot: 'The error "Unsupported dtype Half" is triggered because the dtype of ''input''
+    tensor is float16 (also known as Half). The unsupported dtype could be due to
+    a specific function or operation which does not support float16. To prevent this
+    error from occurring again, you need to ensure that the dtype of ''input'' tensor
+    should not be float16. Therefore, the logical relationship constraint could be
+    defined as follows:'
+  target: Unsupported dtype Half
+  txt: '''input''.dtype != ''float16'''
+- cot: "The error is indicating a type mismatch. The 'out' tensor is of dtype ComplexDouble\
+    \ while the expected dtype is ComplexFloat. This suggests that the 'out' tensor\
+    \ has a higher precision than what is expected. \n\nGiven the inputs, the constraint\
+    \ to prevent this error would be to ensure that the dtype of the 'out' tensor\
+    \ matches the expected dtype. This can be enforced with the following constraint:"
+  target: Found dtype ComplexDouble but expected ComplexFloat
+  txt: out.dtype == TensorDType.ComplexFloat
+- cot: 'The error message indicates that there is an attempt to resize a storage that
+    is not resizable. This could be due to the ''dim'' value being 0. It could also
+    be due to the mismatch between the input and output tensor data types. Therefore,
+    several constraints need to be checked:
+
+
+    1. ''dim'' should not be zero, so the constraint is:'
+  target: Trying to resize storage that is not resizable
+  txt: (out.rank==input.rank) and (n <= len(input))
+- cot: 'This error arises because the inverse Fourier transform (ifft) function expects
+    to produce a complex output tensor, but the provided output tensor ''out'' is
+    of type Float. To fix this error, the ''out'' tensor should be a complex tensor.
+    Let''s look at the args. It indicates ''out'' tensor is of type float32. Therefore,
+    Left : type(out). It says that the type of ''out'' should be complex, so Op :
+    ==, and Right : complex.'
+  target: ifft expects a complex output tensor, but got Float
+  txt: type(out) == complex
+- cot: "The error occurs because the 'dim' value provided is 7, which is out of the\
+    \ valid range. The tensor has 3 dimensions, so valid 'dim' values are in the range\
+    \ [-3, 2] (inclusive). The 'dim' value should be greater than or equal to -3 and\
+    \ less than or equal to 2. \n\nThis can be captured with the constraint:"
+  target: Dimension out of range (expected to be in range of [-3, 2], but got 7)
+  txt: dim < len(input.shape)
+- cot: "The error is due to an invalid number of data points specified. In the given\
+    \ values, the number of data points 'n' is 0, which is invalid. To avoid this\
+    \ error in the future, we need to create a constraint that 'n' should always be\
+    \ greater than 0. \nThe constraint can be expressed as:"
+  target: Invalid number of data points (0) specified
+  txt: n > 0
+time_cost: 1026.3487105369568
+title: torch._C._fft.fft_ifft
+tokens_used: 9563
+trained: true

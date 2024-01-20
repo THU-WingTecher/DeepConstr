@@ -1,0 +1,48 @@
+constraints:
+  inplace:
+    default: false
+    dtype: bool
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  lower:
+    default: 0.125
+    dtype: float
+    init: false
+    required: false
+  training:
+    default: false
+    dtype: bool
+    init: false
+    required: false
+  upper:
+    default: 0.3333333333333333
+    dtype: float
+    init: false
+    required: false
+infered_history: []
+infered_times: 2
+package: torch
+pass_rate: 0.87
+rules:
+- cot: 'The error is due to the fact that the "leaky_relu_cpu" function is not implemented
+    for ''ComplexDouble'' data type. From the given values, the ''input'' tensor is
+    of the type ''ComplexDouble''. Therefore, Left : input.dtype. It says that ''ComplexDouble''
+    is not implemented, so Op : !=, and Right : ''ComplexDouble''.'
+  target: '"leaky_relu_cpu" not implemented for ''ComplexDouble'''
+  txt: (input.dtype != 'ComplexDouble')
+- cot: 'The error is due to the fact that the ''lower'' bound is greater than the
+    ''upper'' bound. If we look at the arguments, ''lower'' is 7.6185102 and ''upper''
+    is 7.092226166993459. The constraint should be that the ''lower'' bound is less
+    than or equal to the ''upper'' bound. Therefore, Left: lower, Operation: <=, Right:
+    upper.'
+  target: Lower bound should be less than or equal to the upper bound
+  txt: lower <= upper
+time_cost: 40.16685652732849
+title: torch.nn.functional.rrelu
+tokens_used: 1072
+trained: true

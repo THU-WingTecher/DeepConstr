@@ -1,0 +1,62 @@
+constraints:
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  out:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+  upper:
+    default: false
+    dtype: bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 41
+package: torch
+pass_rate: 0.1
+rules:
+- cot: "The error is due to the fact that the 'input' tensor is not a square matrix.\
+    \ In the Cholesky decomposition, the input matrix must be square (i.e., the number\
+    \ of rows must be equal to the number of columns). In this case, the 'input' tensor\
+    \ has dimensions of 8 by 6, which is not square. \n\nLet's relate the values to\
+    \ generate constraints that do not trigger the error:"
+  target: 'linalg.cholesky: A must be batches of square matrices, but they are 8 by
+    6 matrices'
+  txt: '''input''.shape[-2] == ''input''.shape[-1]'
+- cot: 'Error is triggered because the input tensor A has less than 2 dimensions.
+    We can see that the ''input'' tensor has no dimension ([]), therefore, this error
+    occurs. As per the requirement, the input tensor A must have at least 2 dimensions.
+    Therefore, the constraints can be generated as follows:'
+  target: 'linalg.cholesky: The input tensor A must have at least 2 dimensions.'
+  txt: len(input.shape) >= 2
+- cot: The error is caused because we are trying to resize the 'out' tensor to an
+    incompatible shape. The 'out' tensor should have the same shape as the 'input'
+    tensor for the operation to be valid. This is indicated by the 'input' tensor's
+    shape [8,8,8]. Therefore, the left term will be 'out.shape', 'out.rank', the operation
+    is '==', and the right term will be 'input.shape', 'input.rank'.
+  target: Trying to resize storage that is not resizable
+  txt: out.rank==input.rank and all(out.shape[i]==input.shape[i] for i in range(out.rank))
+- cot: 'The error is due to a mismatch in data types. Here, the ''out'' tensor is
+    expected to be of type float32 (as per the ''input'' tensor) but it is of type
+    int8. Therefore, Left : type(out) should be corrected. It says that should be
+    equal to the datatype of ''input'' tensor, so Op : ==, and Right : type(input).'
+  target: Expected out tensor to have dtype float, but got signed char instead
+  txt: ('out'.dtype != int32) and (type(out)==type(input))
+- cot: 'Error is triggered because of the integer type tensor. The linalg.cholesky
+    function requires a floating point or complex tensor as input, not an integer.
+    Let''s see what the args were. The ''input'' tensor is of dtype int32, and is
+    the problem. Therefore, the type of ''input'' tensor should be corrected, which
+    is input.dtype. Therefore, Left : input.dtype. It says that expected a floating
+    point or complex tensor, so Op : ==, and Right : float or complex. Also, It implies
+    that dtype cannot be Int, so Op : !=, and Right : int.'
+  target: 'linalg.cholesky: Expected a floating point or complex tensor as input.
+    Got Int'
+  txt: input.dtype == float or input.dtype == complex
+time_cost: 2458.4944081306458
+title: torch._C._linalg.linalg_cholesky
+tokens_used: 24952
+trained: true

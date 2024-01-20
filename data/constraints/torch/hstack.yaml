@@ -1,0 +1,6 @@
+package: torch
+pass_rate: 0.0
+rules: {}
+skipped: true
+skipped_reason: unsupport constraints uncompatiable type(tensor sequences)
+title: torch.hstack

@@ -1,0 +1,108 @@
+constraints:
+  bias:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+  eps:
+    default: 1.0e-05
+    dtype: float
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  momentum:
+    default: 0.1
+    dtype: float
+    init: false
+    required: false
+  running_mean:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  running_var:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  training:
+    default: false
+    dtype: bool
+    init: false
+    required: false
+  weight:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: false
+infered_history: []
+infered_times: 40
+package: torch
+pass_rate: 0.0
+rules:
+- cot: 'The error indicates that the ''weight'' tensor has more elements than expected.
+    Let''s see what the args were. It seems that ''weight'' tensor should have the
+    same number of elements as the ''running_mean'' and ''running_var'' tensors. Therefore,
+    the length of the weight tensor should equal the length of the ''running_mean''
+    tensor. Hence, Left : len(weight.shape), Op : ==, and Right : len(running_mean.shape).
+    Also, the total number of elements in the weight tensor should equal the total
+    number of elements in the ''running_mean'' and ''running_var'' tensors. Hence,
+    Left : weight.numel(), Op : ==, and Right : running_mean.numel() or running_var.numel().'
+  target: weight should contain 8 elements not 64
+  txt: weight.numel() == running_var.numel()
+- cot: The error indicates that the 'bias' tensor has an incorrect dimension. The
+    'bias' tensor should have the same dimension as the 'weight' tensor. In this case,
+    the 'weight' tensor has a dimension of [3, 1], which means that the 'bias' tensor
+    should also have a dimension of [3, 1]. Therefore, the constraint is that the
+    dimensions of 'weight' and 'bias' must be equal.
+  target: bias should contain 3 elements not 10
+  txt: '''weight''.shape == ''bias''.shape'
+- cot: 'The error occurs because there is a mismatch of tensor data types in one of
+    the operations. Specifically, the error message indicates that a floating point
+    tensor (Float) was expected, but an integer tensor (Int) was found. Let''s take
+    a look at the input values. All tensors should have the same data type, which
+    is float32, except for ''running_var'', which is int32. Therefore, the data type
+    of ''running_var'' should be corrected to float32. Also, ''momentum'' and ''eps''
+    are floating point numbers which are expected to be scalar. However, ''momentum''
+    is above 1 and ''eps'' is negative, which should be corrected. Therefore, Left
+    : type(running_var), momentum, eps. Ops : ''=='', Right : float32, between 0 and
+    1, positive.'
+  target: expected scalar type Float but found Int
+  txt: eps>0
+- cot: 'The error is caused by mixed data types, specifically, the tensor ''weight''
+    has a data type of int64 while other tensors are float32. The system expects all
+    tensors to have a float type. Therefore, the datatype of ''weight'' should be
+    converted from ''int64'' to ''float32''. Also, the ''momentum'' value is a float
+    but it seems it''s too large and it should typically be a scalar between 0 and
+    1. So, we need to verify both these constraints. Let''s see what the args were.
+    Therefore, Left: weight.dtype and momentum. Ops: ''=='' and ''<='', ''>='', Right:
+    ''float32'' and 1.0, 0.0 respectively.'
+  target: 'mixed dtype (CPU): expect parameter to have scalar type of Float'
+  txt: weight.dtype == TensorDType.float32
+- cot: 'The error is due to the mismatch in dimensions between ''input'' and ''running_mean''.
+    The ''input'' tensor has 8 dimensions, while the ''running_mean'' tensor has 54
+    elements. According to the error, ''running_mean'' should contain 8 elements.
+    Therefore, the size of the ''running_mean'' tensor should match the size of ''input''
+    tensor''s second dimension (since usually in batch normalization, we have running
+    mean for each feature channel which is represented by the second dimension in
+    ''input''). So, left : running_mean.rank, len(running_mean.shape), op : ==, right
+    : 1, input.shape[1]'
+  target: running_mean should contain 8 elements not 54
+  txt: (len(running_mean.shape) == input.shape[1]) or ((len(running_mean) == 6) or
+    ((running_mean.dtype == input.dtype) or ((running_mean.dim == input.dim) or (len(running_mean.shape)==1
+    and running_mean.shape[0]==input.shape[1]))))
+- cot: 'The error states that the ''running_var'' tensor should contain 8 elements
+    but it only contains 2. This is a mismatch and the sizes of the tensors should
+    be corrected. Let''s see what the args were. The ''running_var'' tensor should
+    have the same size as the ''running_mean'' tensor. Therefore, left : running_var.shape[0],
+    Op : ==, right : running_mean.shape[0].'
+  target: running_var should contain 8 elements not 2
+  txt: (running_mean.dtype == input.dtype) or (running_var.shape[0] == running_mean.shape[0])
+time_cost: 8832.67371249199
+title: torch.nn.functional.batch_norm
+tokens_used: 24863
+trained: true

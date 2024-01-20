@@ -1,0 +1,88 @@
+constraints:
+  begin:
+    default: null
+    dtype: int32,int64
+    init: false
+    required: true
+  begin_mask:
+    default: 0
+    dtype: int
+    init: false
+    required: false
+  ellipsis_mask:
+    default: 0
+    dtype: int
+    init: false
+    required: false
+  end:
+    default: null
+    dtype: int32,int64
+    init: false
+    required: true
+  end_mask:
+    default: 0
+    dtype: int
+    init: false
+    required: false
+  input:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+  name:
+    default: null
+    dtype: str
+    init: false
+    required: false
+  new_axis_mask:
+    default: 0
+    dtype: int
+    init: false
+    required: false
+  shrink_axis_mask:
+    default: 0
+    dtype: int
+    init: false
+    required: false
+  strides:
+    default: null
+    dtype: int32,int64
+    init: false
+    required: true
+  value:
+    default: null
+    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    init: false
+    required: true
+infered_history:
+- 4
+- 5
+infered_times: 10
+package: tf
+pass_rate: 0.0
+rules:
+- cot: 'From the context, the error is due to the incorrect datatype of the ''index''
+    attribute. The given tensors ''begin'', ''end'', ''strides'', and ''value'' are
+    of type Float32. However, the expected datatype for these tensors are either Int32
+    or Int64. Hence, the types of these tensors need to be corrected. Op : in, and
+    Right : ["int32", "int64"].'
+  target: "Value for attr 'Index' of float is not in the list of allowed values: int32,\
+    \ int64\n ; NodeDef: ; Op output:T; attr=T:type; attr=Index:type,allowed=[DT_INT32,\
+    \ DT_INT64]; attr=begin_mask:int,default=0; attr=end_mask:int,default=0; attr=ellipsis_mask:int,default=0;\
+    \ attr=new_axis_mask:int,default=0; attr=shrink_axis_mask:int,default=0> [Op:TensorStridedSliceUpdate]\
+    \ name:"
+  txt: type(begin) in ["int32", "int64"], type(end) in ["int32", "int64"], type(strides)
+    in ["int32", "int64"], type(value) in ["int32", "int64"]
+- cot: 'The error is triggered because the function expects a ''int32'' tensor as
+    input #2, but it''s receiving a ''int64'' tensor. Let''s see what the args were.
+    The ''end'' tensor is the second input, and it''s of type int64. Therefore, the
+    tensor type should be corrected. Left : type(end), which is the type of tensor
+    ''end'', should be corrected. It says that this should be equal to ''int32'',
+    so Op : ==, and Right : ''int32''.'
+  target: 'cannot compute TensorStridedSliceUpdate as input #2(zero-based) was expected
+    to be a int32 tensor but is a int64 tensor [Op:TensorStridedSliceUpdate] name:'
+  txt: (len(end) == input.dim) and (type(end) == 'int32')
+time_cost: 2636.7542197704315
+title: tf.raw_ops.TensorStridedSliceUpdate
+tokens_used: 8387
+trained: true
