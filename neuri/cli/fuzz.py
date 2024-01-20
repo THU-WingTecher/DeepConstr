@@ -251,7 +251,8 @@ class FuzzingLoop:
                 max_elem_per_tensor=cfg["mgen"]["max_elem_per_tensor"],
                 test_pool=cfg["mgen"]["test_pool"],
             )
-            
+        
+        assert len(self.opset) > 0, "No opset found."
         seed = cfg["fuzz"]["seed"] or random.getrandbits(32)
         set_seed(seed)
 
