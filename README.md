@@ -1,93 +1,6 @@
-# NeuRI: Diversifying DNN Generation via Inductive Rule Inference
+# Towards More Sound and Complete Constraints for Deep Learning Framework Testing
 
-<p align="center">
-    <a href="https://arxiv.org/abs/2302.02261"><img src="https://img.shields.io/badge/arXiv-2302.02261-b31b1b.svg?style=for-the-badge">
-    <a href="https://doi.org/10.5281/zenodo.8319975"><img src="https://img.shields.io/badge/DOI-10.5281%2Fzenodo.8319975-8A2BE2?style=for-the-badge">
-    <a href="https://github.com/ise-uiuc/neuri-artifact/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg?style=for-the-badge"></a>
-    <a href="https://hub.docker.com/r/ganler/neuri-fse23-ae/tags"><img src="https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white"></a>
-</p>
-
-Welcome to the artifact repository of the NeuRI paper which is accepted by ESEC/FSE 2023.
-
-
-## Bug finding evidence (RQ3)
-
-See [links to real-world bug reports](docs/rq3-bug-reports.md).
-
-
-## Get ready for running experiments!
-
-> [!IMPORTANT]
->
-> **General test-bed requirements**
-> - **OS**: A Linux System with Docker Support;
-> - **Hardware**: X86/X64 CPU; 16GB RAM; 1TB Storage; Good Network to GitHub and Docker Hub;
-
-> [!Note]
->
-> Before you start, please make sure you have [Docker](https://docs.docker.com/engine/install/) installed.
->
-> To check the installation:
-> ```bash
-> docker --version # Test docker availability
-> # Docker version 20.10.12, build e91ed5707e
-> ```
-
-```bash
-# 💡 Get Docker image from Docker Hub
-docker pull ganler/neuri-fse23-ae:latest
-# 💡 [Alternative] load image from https://doi.org/10.5281/zenodo.8319975
-# 1. Install and "unzip" the package 
-# 2. Run `docker load --input neuri-image-fse23.tar.gz`
-
-# Run Docker image
-docker run -it --name ${USER}-neuri ganler/neuri-fse23-ae:latest
-# By using this command, you will "get into" the image like entering a virtual machine.
-# The session will be kept under the name "${USER}-neuri"
-# So that later on even if you exit the interactive bash, you can come back via:
-# `docker start ${USER}-neuri && docker exec -it ${USER}-neuri /bin/bash`
-
-# Inside the image, try to update any timely bug fixes
-cd /artifact
-git remote set-url origin https://github.com/ise-uiuc/neuri-artifact.git
-git pull origin main
-```
-
-## Evaluating Coverage (RQ1)
-
-The overall process of NeuRI is shown as:
-
-![](gallery/overview.svg)
-
-> **Note**
-> **Pre-generated rules**: For simplicity, we pre-generated the output of instrumentation and rule inference in `./data` directory.
-> To perform instrumentation from scratch, follow [instructions here](https://github.com/ise-uiuc/neuri-artifact/blob/main/neuri/autoinf/instrument/README.md).
-> To perform rule inference, follow the RQ2 section.
-
-### S1: Start fuzzing and cache test-cases
-
-We will use `./fuzz.sh` to generate the test-cases.
-
-> [!NOTE]
->
-> **Command usage of**: `./fuzz.sh NSIZE METHOD MODEL BACKEND TIME`
->
-> **Arguments**:
-> - `NSIZE`: the number of operators in each generated graph.
-> - `METHOD`: in `["neuri", "neuri-i", "neuri-r", "symbolic-cinit"]`.
-> - `MODEL`: in `["tensorflow", "torch"]`.
-> - `BACKEND`: in `["xla", "torchjit"]`.
-> - `TIME`: fuzzing time in formats like `4h`, `1m`, `30s`.
->
-> **Outputs**:
-> - `$(pwd)/gen/${MODEL}-${METHOD}-n${NSIZE}.models`: the generated test-cases (models)
-
-#### For PyTorch
-
-> [!NOTE]
->
-> You may parallelize the scripts below if you have multiple cores, at the risk of potential result unstability.
-> Nonetheless the results in the paper are generated without script parallelization.
+## Commands
 
 ```bash
 source ./env_std.sh
@@ -168,6 +81,12 @@ python3 experiments/process_lcov.py --root $(pwd)/gen/tensorflow-neuri-i-n5.mode
 python3 experiments/process_lcov.py --root $(pwd)/gen/tensorflow-neuri-r-n5.models --parallel $(nproc)
 python3 experiments/process_lcov.py --root $(pwd)/gen/tensorflow-symbolic-cinit-n5.models --parallel $(nproc)
 ```
+
+
+## Bug finding evidence (RQ3)
+
+See [links to real-world bug reports](https://demo.hedgedoc.org/uVYLcZVSSseXknO6lQY0Mg).
+
 
 ### S3: Checkout the results
 
@@ -251,19 +170,3 @@ Rules will be stored in `gen/`.
 RULE_DIR=$(pwd)/gen ./fuzz.sh 1 neuri-i   torch      torchjit 4h
 RULE_DIR=$(pwd)/gen ./fuzz.sh 1 neuri-i   tensorflow xla      4h
 ```
-
-### S3: Check the results
-
-#### Table 3 & 4
-
-```bash
-python3 table3.py
-python3 table4.py
-```
-
-Check the terminal output for the results.
-
-## Learning More
-
-- Pre-print: [![](https://img.shields.io/badge/arXiv-2302.02261-b31b1b.svg)](https://arxiv.org/abs/2302.02261)
-- NeuRI is being merged into [NNSmith](https://github.com/ise-uiuc/nnsmith)
