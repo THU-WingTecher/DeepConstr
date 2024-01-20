@@ -1,4 +1,4 @@
-z3-solver==4.11.2.0
+z3-solver
 hydra-core>=1.1.0
 hydra_colorlog
 multipledispatch

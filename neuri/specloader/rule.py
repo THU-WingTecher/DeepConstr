@@ -109,7 +109,7 @@ class Rule() :
         set_location(expr_node, 1, 0)
         return expr_node
 
-    def export_merged(self, to_merge : list[ast.Expr], op : Literal['or','and'] = 'or') : 
+    def export_merged(self, to_merge : List[ast.Expr], op : Literal['or','and'] = 'or') : 
         from specloader.utils import set_location
         values = [self.ast.body]+[rule.ast.body for rule in to_merge]
         if op=='or' : 

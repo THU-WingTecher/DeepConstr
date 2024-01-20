@@ -2,6 +2,11 @@
 
 ## Commands
 
+Specific API testing
+```bash
+./fuzz.sh 5 neuri          torch torchjit 30m Slice,torch.acos
+```
+
 ```bash
 source ./env_std.sh
 ./fuzz.sh 5 neuri          torch torchjit 4h

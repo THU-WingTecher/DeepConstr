@@ -20,7 +20,7 @@
             "program": "tests/test.py",
             "console": "integratedTerminal",
             "env" : {
-                "PYTHONPATH": "/home/guihuan/artifact/:/home/guihuan/artifact/neuri/"
+                "PYTHONPATH": "/artifact/:/artifact/neuri/"
             },
             "args": ["test.task.type=5",
                     "test.func=torch.acos",
@@ -34,15 +34,16 @@
             "program": "neuri/cli/fuzz.py",
             "console": "integratedTerminal",
             "env" : {
-                "PYTHONPATH": "/home/guihuan/artifact/:/home/guihuan/artifact/neuri/"
+                "PYTHONPATH": "/artifact:/artifact/neuri"
             },
             "args": ["fuzz.time=120m",
                     "mgen.record_path=data/torch_records",
-                    "fuzz.root=gen/torch-neuri-n5",
+                    "fuzz.root=gen/debug_neuri",
                     "filter.type=['nan','dup','inf']",
                     "backend.type=torchjit",
+                    "mgen.test_pool=['Slice', 'torch.Tensor.relu_', 'torch.Tensor.diagonal', 'torch.Tensor.gt']",
                     "model.type=torch",
-                    "fuzz.save_test=gen/torch-neuri-n5.models",
+                    "fuzz.save_test=gen/debug_neuri.models",
                     "debug.viz=true",
                     "hydra.verbose=fuzz",
                     "fuzz.resume=false",
@@ -58,7 +59,7 @@
             "program": "neuri/cli/fuzz.py",
             "console": "integratedTerminal",
             "env" : {
-                "PYTHONPATH": "/home/guihuan/artifact/:/home/guihuan/artifact/neuri/"
+                "PYTHONPATH": "/artifact/:/artifact/neuri/"
             },
             "args": ["fuzz.time=120m",
                     "mgen.record_path=data/constraints/torch",
@@ -82,12 +83,12 @@
             "program": "neuri/cli/model_exec.py",
             "console": "integratedTerminal",
             "env" : {
-                "PYTHONPATH": "/home/guihuan/artifact/:/home/guihuan/artifact/neuri/"
+                "PYTHONPATH": "/artifact/:/artifact/neuri/"
             },
             "args": ["model.type=tensorflow",
                     "backend.type=xla",
                     "backend.target=cpu",
-                    "model.path=/home/guihuan/artifact/gen/tensorflow-neuri-n1/bug-Symptom.INCONSISTENCY-Stage.VERIFICATION-2/model"
+                    "model.path=/artifact/gen/tensorflow-neuri-n1/bug-Symptom.INCONSISTENCY-Stage.VERIFICATION-2/model"
         ],
             "justMyCode": true
         },
