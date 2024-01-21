@@ -171,9 +171,12 @@ class Program:
 
 if __name__ == "__main__":
     import sys 
+    import os
     dirpath = sys.argv[1]
-    with open(os.path.join(dirpath, "gir.pkl"), "rb") as f:
-        ir = pickle.load(f)
-    print(ir)
-    prog = Program(ir)
-    prog.dump(dirpath)
+    for root, dirs, files in os.walk(dirpath): 
+        for dir in dirs :
+            with open(os.path.join(root, dir, "gir.pkl"), "rb") as f:
+                ir = pickle.load(f)
+    # print(ir)
+            prog = Program(ir)
+            prog.dump(os.path.join(root, dir))
