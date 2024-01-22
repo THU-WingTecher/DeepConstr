@@ -34,8 +34,7 @@ rules:
     than that. Hence the constraint would be that the dimensions of 'other' tensor
     should be less than or equal to the dimensions of 'input' and 'out' tensor.
   target: Trying to resize storage that is not resizable
-  txt: (out.rank == input.rank) or ((input.is_resizable == True) and (len(other.shape)
-    <= len(input.shape) and len(other.shape) <= len(out.shape)))
+  txt: input.shape == other.shape and other.shape == out.shape
 - cot: 'The error is triggered because the result type Half (float16) cannot be cast
     to the desired output type Int. Looking at the args, the dtype of ''input'' is
     float16, the dtype of ''other'' is float64, and the dtype of ''out'' is int32.
@@ -50,16 +49,7 @@ rules:
     "logaddexp2_cpu" operation. So, Op : !=, and Right : "Bool".'
   target: '"logaddexp2_cpu" not implemented for ''Bool'''
   txt: type(out) != "Bool"
-- cot: 'Error is triggered because the size of tensor a doesn''t match the size of
-    tensor b at non-singleton dimension 7. Let''s see what the args were. It seems
-    that the sizes of ''input'' tensor at dimension 7 and ''other'' tensor at dimension
-    7 are not matching. Therefore, Left : input.shape[7]. Op : ==. Right : other.shape[7].'
-  target: The size of tensor a (3) must match the size of tensor b (6) at non-singleton
-    dimension 7
-  txt: (input.shape[2] == other.shape[2]) and ((all(input.shape[i] == other.shape[i]
-    or input.shape[i] == 1 or other.shape[i] == 1 for i in range(-1, -min(len(input.shape),
-    len(other.shape))-1, -1))) and ((input.shape[6] == other.shape[6]) and (input.shape[7]
-    == other.shape[7])))
+
 time_cost: 17284.541882038116
 title: torch.logaddexp2
 tokens_used: 17241

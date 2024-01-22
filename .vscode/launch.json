@@ -73,6 +73,7 @@
                     "fuzz.resume=false",
                     "mgen.method=constrinf",
                     "mgen.max_nodes=3",
+                    "mgen.test_pool=['torch.addr', 'torch.as_strided', 'torch.atan2', 'torch.cross', 'torch.floor', 'torch.imag', 'torch.logaddexp2']",
         ],
             "justMyCode": true
         },

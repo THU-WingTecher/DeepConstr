@@ -15,9 +15,10 @@ from specloader.irs import Select, IRcompare, IRexpr, symbolize_idx
 from specloader.smt import gen_sufficient_condition
 class Ast2z3 : 
     
-    def __init__(self, arg_names, _ast, args_type_dict) -> None:
+    def __init__(self, arg_names, txt, _ast, args_type_dict) -> None:
         
         self.arg_names = arg_names
+        self.txt = txt
         self.is_sliced= {arg_name : [] for arg_name in arg_names}
         self.must_not_None = {arg_name : False for arg_name in arg_names}
         self.min_len = {arg_name : 0 for arg_name in arg_names}
@@ -34,10 +35,11 @@ class Ast2z3 :
         self.type_constraints = None
         self.types_map : Dict[str, List[str, Union[AbsDType, AbsLiteral, AbsTensor]]] = dict()
         self.irs : List[IRcompare] = []
-        self.inspect_ast_tree()     
-        self.set_err_flag()
         self.constraints = None
         self.inspecting = False
+
+        self.inspect_ast_tree()     
+        self.set_err_flag()
 
     def set_rank_rule_flag(self, arg_name) : 
         self.is_rank_rules[arg_name] = True
@@ -45,6 +47,7 @@ class Ast2z3 :
         return self.is_rank_rules[arg_name] 
     def info(self) -> str :
         info = ""
+        info += f"txt : {self.txt}\n"
         info += f"arg_names : {self.arg_names}\n"
         info += f"is_sliced : {self.is_sliced}\n"
         info += f"min_len : {self.min_len}\n"
@@ -81,7 +84,7 @@ class Ast2z3 :
             self.types_map[left].append((sign, right))
     def inspect_ast_tree(self) -> None :
         self.args_types = {arg_name : None for arg_name in self.arg_names}
-        self.inspecting = True 
+        self.inspecting = True  
         self.convert(self.ast)
         self.inspecting = False
         if self.is_in_types_map('undefined') and len(self.arg_names) == 1 :
@@ -123,9 +126,8 @@ class Ast2z3 :
             # return z3.And(constraints)
             return z3.simplify(z3.And(constraints))
         except :
-            AUTOINF_LOG.error(f"{ast.dump(self.ast, indent=3)}\n{self.info()}\n{traceback.format_exc()}")
-            self.set_err_flag()
-            return None
+            raise ValueError(f"{self.info()}\n{traceback.format_exc()}")
+
     def type_rule_behavior(self,
                            left : str, 
                            comparators : List[Union[str, AbsLiteral]],
@@ -485,8 +487,7 @@ class Ast2z3 :
                         self.set_iter_rule_flag(arg_name)
                         return arg_name
             else :
-                AUTOINF_LOG.error(f"{self.get_mode()} Unsupported function {call.func.id}")
-                self.set_err_flag()
+                raise ValueError(f"{self.get_mode()} Unsupported function {call.func.id}")
 
         elif isinstance(expr, ast.GeneratorExp) or isinstance(expr, ast.ListComp) :
             ## interpret generators -> idx = symbol , name cannot change 
@@ -552,8 +553,7 @@ class Ast2z3 :
             else : # inspecting 
                 return True 
         else : 
-            self.set_err_flag()
-            AUTOINF_LOG.error(f"{self.get_mode()} Unsupported generator expression {expr}")
+            raise ValueError(f"{self.get_mode()} Unsupported generator expression {expr}")
     def get_arg_name(self, args : List[Any]) :
         for arg_name in args :
             if arg_name in self.arg_names :

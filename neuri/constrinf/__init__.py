@@ -212,7 +212,6 @@ def gen_inst_with_records(
             cfg = load_yaml(path)
             record['name'] = cfg['title']
             record['pass_rate'] = cfg['pass_rate']
-            AUTOINF_LOG.info(f"Loding {record['name']}[{record['pass_rate']}]")
             if 'constraints' in cfg.keys() :
                 record['args'] = {'name' : [arg_name for arg_name in cfg['constraints'].keys()], 
                                 'is_pos' : [False] * len(cfg['constraints'].keys()), 
@@ -228,7 +227,7 @@ def gen_inst_with_records(
             
             yield record         
 
-def convert_rule_to_executable(record) -> List["z3.Exr"] : 
+def convert_rule_to_executable(record, rule_cnt) -> List["z3.Exr"] : 
 
     chosn_dtypes = {} 
     exec_rules = []
@@ -248,6 +247,9 @@ def convert_rule_to_executable(record) -> List["z3.Exr"] :
         c1 = rule.ast2z3.gen_constraints()
         if c1 is not None :
             exec_rules.append(c1)
+
+    rule_cnt["cnt"] += len(exec_rules)
+    AUTOINF_LOG.info(f"{len(exec_rules)} rules are generated")
     return exec_rules
 
 def make_record_finder(
@@ -260,66 +262,44 @@ def make_record_finder(
 
     records = []
     total_rec = 0
-    skipped_elem = 0
     skipped_err = 0
     skipped_blacklist = 0
-    skipped_special = 0
     skipped_unenough_psrate = 0
-    # bin_edges = np.arange(1, 101, 10)
-    # hist, _ = np.histogram([record.get('pass_rate') for record in gen_inst_records if record.get('pass_rate') is not None], bins=bin_edges)
-
-    # Creating a dictionary to map each range to its corresponding frequency
     blacklisted = set()
-    valid_apis = set()
-
-    rule_cnt = Counter()
+    rule_cnt = {"cnt" : 0}
     if test_pool : AUTOINF_LOG.info(f"testing {test_pool}")
     for record in gen_inst_records:
         total_rec+=1
-        if record.get('skipped') is not None :
-            skipped_err+=1
-            continue
-        if record.get('pass_rate') is None or record['pass_rate'] < pass_rate :
-            skipped_unenough_psrate+=1
-            continue
-
         if test_pool :
             if record['name'] not in test_pool :
                 continue 
-            
-        record['constraints'] = convert_rule_to_executable(record)
+        else : # when test_pool is defined; we don't check others
+            if record.get('skipped') is not None :
+                AUTOINF_LOG.info(f"skipped key --> Skip {record['name']}")
+                skipped_err+=1
+                continue
+            if record.get('pass_rate') is None or record['pass_rate'] < pass_rate :
+                AUTOINF_LOG.info(f"low pass_rate[thr:{pass_rate}] {record.get('pass_rate')}")
+                skipped_unenough_psrate+=1
+                continue
+            if record['name'] in BLACKLIST:  # black list
+                if record['name'] not in blacklisted:
+                    AUTOINF_LOG.warning(f"Blacklist operator {record['name']} found!")
+                    blacklisted.add(record['name'])
+                skipped_blacklist += 1
+                continue
 
-        if record['name'] in BLACKLIST:  # black list
-            if record['name'] not in blacklisted:
-                AUTOINF_LOG.warning(f"Blacklist operator {record['name']} found!")
-                blacklisted.add(record['name'])
-            skipped_blacklist += 1
-            continue
-
-        try:
-            pass 
-            ## Rule Validty check(Rule error?)
-        except NotImplementedError as e:
-            AUTOINF_LOG.error(f"{record['name']}")
-            skipped_err += 1
-            continue
-
-        valid_apis.add(record['name'])
+        AUTOINF_LOG.info(f"Loading record name : {record['name']}")
+        record['constraints'] = convert_rule_to_executable(record, rule_cnt)
         records.append(record)
 
-
-    skipped_rec = skipped_elem + skipped_err + skipped_blacklist + skipped_special
-    # distribution = {f"{bin_edges[i]}-{bin_edges[i+1]-1}": hist[i] for i in range(len(hist))}
-    final_rec = total_rec - skipped_rec
+    skipped_rec = skipped_err + skipped_unenough_psrate + skipped_blacklist
     AUTOINF_LOG.info(
-        f"Got {final_rec} records of {total_rec} OpInstance of {len(valid_apis)} APIs"
+        f"Got {len(records)} records of {total_rec} records with total {rule_cnt['cnt']} rules."
     )
     AUTOINF_LOG.info(f"Filtered {skipped_rec} records from {total_rec} initial set.")
     AUTOINF_LOG.info(
-        f"~ {skipped_elem}:  {skipped_unenough_psrate} : lower pass rate.  ~ {skipped_err}: bad subst.  ~ {skipped_blacklist}: blacklisted."
+        f" Skipped : {skipped_err}\nLower_psrate : {skipped_unenough_psrate}\nblack_list : {skipped_blacklist}"
     )
 
-    # counter to distribution
-    # rank_total = sum(rule_cnt.values())
-    # rank_dist = {k: v / rank_total for k, v in rule_cnt.items()}
     return records

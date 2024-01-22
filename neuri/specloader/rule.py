@@ -42,12 +42,14 @@ class Rule() :
         try :
             self.ast2z3 = Ast2z3(
                         self.related_args,
+                        self.txt,
                         self.ast,
                         self.args_type_dict
                     )
         except :
             AUTOINF_LOG.error(f"Rule({self.txt}) : Ast2z3 build failed.")
             AUTOINF_LOG.debug(f"{self.info()}\n{traceback.format_exc()}")
+            self.set_err_flag()
         if self.ast2z3.error == False :
             self.check() 
         else : 
@@ -218,7 +220,7 @@ class Rule() :
                 ## AST Revise Logic
                 revised_rule = astree
                 if revised_rule == rule_txt :
-                    LOGGER.debug(f'Eval ##FAILED## : {rule_txt}') 
+                    AUTOINF_LOG.debug(f'Eval ##FAILED## : {rule_txt}') 
                     return None
                 else :
                     return self._parse_rule(revised_rule)
