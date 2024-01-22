@@ -9,7 +9,7 @@ import z3
 
 from neuri.autoinf.inference.const import GEN_DIR
 from neuri.autoinf.inference.invocations import input_validity_test
-from neuri.autoinf.inference.logger import AUTOINF_LOG
+from neuri.logger import AUTOINF_LOG
 from neuri.autoinf.inference.tree import ArithExpNode, ArithExpTree, TreeDatabase
 from neuri.autoinf.inference.utils import equivalent, mask_to_list, popcount
 

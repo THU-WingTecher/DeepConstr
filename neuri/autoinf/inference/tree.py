@@ -9,7 +9,7 @@ from z3 import *
 
 from neuri.abstract.arith import *
 from neuri.autoinf.inference.const import GEN_DIR
-from neuri.autoinf.inference.logger import AUTOINF_LOG
+from neuri.logger import AUTOINF_LOG
 from neuri.autoinf.inference.utils import str_equivalent, wrap_time
 
 testcases = defaultdict(list)

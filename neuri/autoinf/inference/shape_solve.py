@@ -8,7 +8,7 @@ import z3
 
 from neuri.autoinf.inference.augmentation import OpDatabase
 from neuri.autoinf.inference.const import GEN_DIR
-from neuri.autoinf.inference.logger import AUTOINF_LOG
+from neuri.logger import AUTOINF_LOG
 from neuri.autoinf.inference.tree import ArithExpNode, ArithExpTree, TreeDatabase
 from neuri.autoinf.inference.utils import equivalent, mask_to_list, popcount, wrap_time
 from neuri.autoinf.instrument.op import OpInstance

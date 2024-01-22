@@ -7,7 +7,7 @@ import z3
 
 from neuri.autoinf.inference.const import DATA_DIR, GEN_DIR
 from neuri.autoinf.inference.invocations import inst_augmented_invocations
-from neuri.autoinf.inference.logger import AUTOINF_LOG
+from neuri.logger import AUTOINF_LOG
 from neuri.autoinf.inference.utils import equivalent
 from neuri.autoinf.instrument.categorize import gen_inst_with_records
 from neuri.autoinf.instrument.op import OpInstance

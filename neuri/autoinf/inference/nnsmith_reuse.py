@@ -15,7 +15,7 @@ from neuri.autoinf.inference.invocations import (
     input_validity_test,
     inst_augmented_invocations,
 )
-from neuri.autoinf.inference.logger import AUTOINF_LOG
+from neuri.logger import AUTOINF_LOG
 from neuri.autoinf.inference.utils import equivalent, time_limit
 from neuri.autoinf.instrument.categorize import gen_inst_with_records
 from neuri.autoinf.instrument.op import OpInstance
