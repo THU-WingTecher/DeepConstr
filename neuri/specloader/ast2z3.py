@@ -1,4 +1,380 @@
 import ast
+import random
+import string
+import traceback
+import operator as op 
+import z3
+from typing import *
+from neuri.abstract.dtype import AbsDType
+from neuri.constrinf import gen_inst_with_records
+from neuri.specloader import z3_funcs
+
+###### TENSOR DTYPE DEINITION ######
+
+## Define : tensor, int, float, bool, complex, str
+## Define : Array(tensor, int, float, bool, complex, str)
+## Will be updated to support Dict, object
+
+Z3DTYPE = z3.Datatype('DType')
+Z3DTYPE.declare('float32')
+Z3DTYPE.declare('int32')
+Z3DTYPE.declare("qint8")
+Z3DTYPE.declare("qint16")
+Z3DTYPE.declare("qint32")
+Z3DTYPE.declare("bfloat16")
+Z3DTYPE.declare("float16")
+Z3DTYPE.declare("float32")
+Z3DTYPE.declare("float64")
+Z3DTYPE.declare("uint8")
+Z3DTYPE.declare("uint16")
+Z3DTYPE.declare("uint32")
+Z3DTYPE.declare("uint64")
+Z3DTYPE.declare("int8")
+Z3DTYPE.declare("int16")
+Z3DTYPE.declare("int32")
+Z3DTYPE.declare("int64")
+Z3DTYPE.declare("bool")
+Z3DTYPE.declare("complex32")
+Z3DTYPE.declare("complex64")
+Z3DTYPE.declare("complex128")
+Z3DTYPE = Z3DTYPE.create()
+
+Z3COMPLEX = z3.Datatype('complex')
+Z3COMPLEX.declare('complex_instance', ('real', z3.RealSort()), ('imag', z3.RealSort()))
+Z3COMPLEX = Z3COMPLEX.create()
+
+Z3TENSOR = z3.Datatype('z3tensor')
+Z3TENSOR.declare('tensor_instance', 
+                ('shape', z3.ArraySort(z3.IntSort(), z3.IntSort())),
+                ('dtype', Z3DTYPE),
+                ('rank', z3.IntSort())),
+Z3TENSOR = Z3TENSOR.create()
+
+Z3ARRINT = z3.Datatype('z3intarr')
+Z3ARRINT.declare('arr_instance', 
+                ('value', z3.ArraySort(z3.IntSort(), z3.IntSort())),
+                ('len', z3.IntSort())),
+Z3ARRINT = Z3ARRINT.create()
+Z3ARRFLOAT = z3.Datatype('z3floatarr')
+Z3ARRFLOAT.declare('arr_instance', 
+                ('value', z3.ArraySort(z3.IntSort(), z3.RealSort())),
+                ('len', z3.IntSort()))
+Z3ARRFLOAT = Z3ARRFLOAT.create()
+Z3ARRSTR = z3.Datatype('z3strarr')
+Z3ARRSTR.declare('arr_instance', 
+                ('value', z3.ArraySort(z3.IntSort(), z3.StringSort())),
+                ('len', z3.IntSort()))
+Z3ARRSTR = Z3ARRSTR.create()
+Z3ARRCOMPLEX = z3.Datatype('z3complexarr')
+Z3ARRCOMPLEX.declare('arr_instance',
+                ('value', z3.ArraySort(z3.IntSort(), Z3COMPLEX)),
+                ('len', z3.IntSort()))
+Z3ARRCOMPLEX = Z3ARRCOMPLEX.create()
+Z3ARRTENSOR = z3.Datatype('z3tensorarr')
+Z3ARRTENSOR.declare('arr_instance',
+                ('value', z3.ArraySort(z3.IntSort(), Z3TENSOR)),
+                ('len', z3.IntSort()))
+Z3ARRTENSOR = Z3ARRTENSOR.create()
+Z3ARRBOOL = z3.Datatype('z3boolarr')
+Z3ARRBOOL.declare('arr_instance',
+                ('value', z3.ArraySort(z3.IntSort(), z3.BoolSort())),
+                ('len', z3.IntSort()))
+Z3ARRBOOL = Z3ARRBOOL.create()
+def load_z3_const(name, var_type, is_array=False):
+    """
+    Define a Z3 variable of a given type. 
+    If it's an array, specify the element type.
+    """
+    if var_type == 'int':
+        dtype = Z3ARRINT if is_array else z3.IntSort() 
+        return z3.Const(name, dtype)
+    elif var_type == 'float':
+        dtype = Z3ARRFLOAT if is_array else z3.RealSort()
+        return z3.Const(name, dtype)
+    elif var_type == 'str':
+        dtype = Z3ARRSTR if is_array else z3.StringSort()
+        return z3.Const(name, dtype)
+    elif var_type == 'complex':
+        dtype = Z3ARRCOMPLEX if is_array else Z3COMPLEX
+        return z3.Const(name, dtype)
+    elif var_type == 'bool':
+        dtype = Z3ARRBOOL if is_array else z3.BoolSort()
+        return z3.Const(name, dtype)
+    elif var_type == 'tensor':
+        dtype = Z3ARRTENSOR if is_array else Z3TENSOR
+        return z3.Const(name, dtype)
+    else:
+        raise ValueError("Unsupported variable type")
+
+# Example usage
+int_var = load_z3_const('a', 'int')
+arr_int_var = load_z3_const('a', 'int', is_array=True)
+arr_int_var = load_z3_const('a', 'float', is_array=True)
+arr_int_var = load_z3_const('a', 'str', is_array=True)
+arr_int_var = load_z3_const('a', 'complex', is_array=True)
+arr_int_var = load_z3_const('a', 'tensor', is_array=True)
+print(arr_int_var)
+
+def is_same_ast_name(left_ast : str, right_ast) : 
+    return left_ast == right_ast.__name__
+
+def get_operator(astop):
+    if is_same_ast_name(astop, ast.Eq):
+        return lambda a,b : op.eq(a, b)
+    elif is_same_ast_name(astop, ast.NotEq):
+        return lambda a,b : op.ne(a, b)
+    elif is_same_ast_name(astop, ast.Lt):
+        return lambda a,b : op.lt(a, b)
+    elif is_same_ast_name(astop, ast.LtE):
+        return lambda a,b : op.le(a, b)
+    elif is_same_ast_name(astop, ast.Gt):
+        return lambda a,b : op.gt(a, b)
+    elif is_same_ast_name(astop, ast.USub):
+        return lambda a: -a
+    elif is_same_ast_name(astop, ast.GtE):
+        return lambda a,b : op.ge(a, b)
+    elif is_same_ast_name(astop, ast.Is):
+        return lambda a,b : op.eq(a, b)
+    elif is_same_ast_name(astop, ast.IsNot):
+        return lambda a,b : op.ne(a, b)
+    elif is_same_ast_name(astop, ast.In):
+        return lambda a,b : z3_funcs.in_(a,b)
+    elif is_same_ast_name(astop, ast.NotIn):
+        return lambda a,b : z3_funcs.not_in(a,b)
+    elif is_same_ast_name(astop, ast.Add):
+        return lambda a,b : op.add(a, b)
+    elif is_same_ast_name(astop, ast.Sub):
+        return lambda a,b : op.sub(a, b)
+    elif is_same_ast_name(astop, ast.Mult):
+        return lambda a,b : op.mul(a, b)
+    elif is_same_ast_name(astop, ast.MatMult):
+        return lambda a,b : op.matmul(a, b)
+    elif is_same_ast_name(astop, ast.Div):
+        return lambda a,b : op.truediv(a, b)
+    elif is_same_ast_name(astop, ast.FloorDiv):
+        return lambda a,b : op.truediv(a, b)
+    elif is_same_ast_name(astop, ast.Mod):
+        return lambda a,b : op.mod(a, b)
+    elif is_same_ast_name(astop, ast.Pow):
+        return lambda a,b : op.pow(a, b)
+    elif is_same_ast_name(astop, ast.Or):
+        return z3.Or
+    elif is_same_ast_name(astop, ast.Not):
+        return z3.Not
+    elif is_same_ast_name(astop, ast.And):
+        return z3.And
+    else:
+        raise ValueError(f"Unknown operator: {ast.dump(astop)}")
+
+def get_rank(arg) :  
+    return f"{arg}.rank"
+def gen_z3_obj(arg, arg_map, idx=None) : 
+    if arg in arg_map.keys() : 
+        z3obj = arg_map[arg]
+    else : 
+        return arg # constant
+    if idx is not None : 
+        if type(idx) == int :
+            return z3obj[get_rank(z3obj) + idx] if idx<0 else z3obj[idx]
+        else : # when index is 'i' for generator
+            if idx in arg_map.keys() : 
+                return z3obj[arg_map[idx]]
+            elif type(idx) == str :
+                return z3obj[z3.Int(idx)]
+            else : 
+                return z3obj[idx]
+    else : 
+        return z3obj
+
+def gen_basic_constr(op, *args) : 
+    res = get_operator(op)(*args)
+    # res = f"{op}({[gen_z3_obj(arg) for arg in args]})"
+    return res
+
+def random_gen_name() : 
+    return ''.join(random.choice(string.ascii_lowercase) for _ in range(5))
+
+def gen_sliced_obj(obj, arg_map, start = None, end = None) :
+    if start is None : start = 0 
+    if end is None : end = get_rank(obj)
+    temp_i = z3.Int(f'{random_gen_name()}')
+    idx_range = z3.And(temp_i>=start, temp_i<end)
+    z3obj = gen_z3_obj(obj, arg_map, temp_i)
+    res = z3obj, idx_range
+    # res = f"{z3obj}[{start}:{end}]"
+    return z3obj, idx_range
+    # res = gen_z3_obj(obj)[{start}:{end}]
+
+def gen_func_obj(func_name, *args) :
+    func_exec = getattr(z3_funcs, func_name)
+    res = func_exec(*args)
+    # res = f"{func_name}({', '.join(map(str, args))})".replace("'", "").replace('"', '')
+    return res
+
+def gen_exp_constr(generator, arg_map):
+    # Assuming generator is a dictionary with keys "element" and "generators"
+    constraints = []
+    for comp in generator["generators"]:
+        # Assuming comp is a dictionary with keys "target", "iter", "ifs"
+        target = gen_z3_obj(comp["target"], arg_map)
+        iter = gen_z3_obj(comp["iter"], arg_map)
+        ifs = [gen_z3_obj(if_clause, arg_map) for if_clause in comp["ifs"]]
+        
+        # Use z3.And to combine all conditions in 'ifs'
+        combined_ifs = z3.And(*ifs) if ifs else z3.BoolVal(True)
+
+        # Element of the generator expression
+        element = gen_z3_obj(generator["element"], arg_map)
+
+        # Construct the Z3 constraint using z3.Imply
+        constraint = z3.ForAll([target], z3.Implies(target.is_in(iter) & combined_ifs, element))
+        constraints.append(constraint)
+
+    # Combine all constraints
+    return constraints
+
+def merge_constr(constrs) : 
+    return z3.And(constrs)
+    return f"{', '.join(constrs)}"
+
+def ast_to_mimic_z3(arg_names, str_constr, func_name):
+    # Mimic function to represent Z3 constraints
+
+    # Function to handle different AST nodes
+    def handle_node(node, arg_map):
+        if isinstance(node, ast.BoolOp):
+            op = type(node.op).__name__
+            values = [handle_node(value, arg_map) for value in node.values]
+            return gen_basic_constr(op, *values)
+        elif isinstance(node, ast.UnaryOp):
+            op = type(node.op).__name__
+            operand = handle_node(node.operand, arg_map)
+            return gen_basic_constr(op, *operand)
+        elif isinstance(node, ast.Call):
+            if isinstance(node.func, ast.Attribute):
+                attribute_value = handle_node(node.func.value, arg_map)
+                return gen_func_obj(node.func.attr, attribute_value)
+            else:
+                func_name = node.func.id
+                args = [handle_node(arg, arg_map) for arg in node.args]
+                assert func_name in ['all', 'any', 'len', 'type', 'sorted', 'abs', 'min', 'max', 'in_', 'not_in', 'rank', 'range'], f"Unsupported function {func_name}"
+                return gen_func_obj(func_name, args)
+            
+        elif isinstance(node, ast.Attribute):
+            value = handle_node(node.value, arg_map)
+            return gen_func_obj(node.attr, value)
+        elif isinstance(node, ast.BinOp):
+            op_type = type(node.op).__name__
+            left = handle_node(node.left, arg_map)
+            right =handle_node(node.right, arg_map)
+            return gen_basic_constr(op_type, left, right)
+        elif isinstance(node, ast.Compare):
+            results = []
+            left = handle_node(node.left, arg_map)
+            for op, right_node in zip(node.ops, node.comparators):
+                right = handle_node(right_node, arg_map)
+                op_type = type(op).__name__
+                results.append(gen_basic_constr(op_type, left, right))
+            return merge_constr(results)
+        elif isinstance(node, ast.Subscript):
+            # Handle negative indices and slicing
+            if isinstance(node.slice, ast.Index):
+                    return gen_z3_obj(handle_node(node.value, arg_map),
+                                      arg_map,
+                                      handle_node(node.slice.value, arg_map))
+            elif isinstance(node.slice, ast.Slice):
+                # Slicing, e.g., a[1:] or a[:-1]
+                start = handle_node(node.slice.lower, arg_map) if node.slice.lower else None
+                end = handle_node(node.slice.upper, arg_map) if node.slice.upper else None
+                array = handle_node(node.value, arg_map)
+                if start : 
+                    if start < 0 :
+                        start = gen_func_obj('rank', array) - start
+                        # start = f"{gen_func_obj('rank', array)}-{start}"
+                if end : 
+                    if end < 0 :
+                        end = gen_func_obj('rank', array) - end
+                        # end = f"{gen_func_obj('rank', array)}-{end}"
+                return gen_sliced_obj(array, arg_map, start, end)
+
+        elif isinstance(node, (ast.GeneratorExp, ast.ListComp)):
+            # Handle generator expressions
+            elt = handle_node(node.elt, arg_map)
+            generators = [handle_node(gen, arg_map) for gen in node.generators]
+            generator_exp = {"type": "GeneratorExp", "element": elt, "generators": generators}
+            return gen_exp_constr(generator_exp)
+
+        elif isinstance(node, ast.comprehension):
+            # Handle comprehension part of generator expression
+            target = handle_node(node.target, arg_map)
+            iter = handle_node(node.iter, arg_map)
+            ifs = [handle_node(if_clause, arg_map) for if_clause in node.ifs]
+            comprehension = {"type": "comprehension", "target": target, "iter": iter, "ifs": ifs}
+            return comprehension
+        elif isinstance(node, ast.IfExp):
+            # Handle IfExp (Ternary Conditional Expression)
+            test = handle_node(node.test, arg_map)
+            body = handle_node(node.body, arg_map)
+            orelse = handle_node(node.orelse, arg_map)
+            return f"({body} if {test} else {orelse})"
+        elif isinstance(node, (ast.List, ast.Tuple)):
+            return merge_constr([handle_node(elem, arg_map) for elem in node.elts])
+        elif isinstance(node, ast.Name):
+            return node.id
+        elif isinstance(node, ast.Constant):
+            return node.value
+        elif isinstance(node, ast.Num):
+            return node.n
+        else:
+            raise ValueError(f"Unsupported AST node {ast.dump(node)})")
+
+    # Process and print each constraint
+    all_results = []
+    for constr in str_constr:
+        try :
+            ast_tree = ast.parse(constr, mode='eval')
+        except :
+            continue
+        arg_map = arg_names
+        try :
+            result = handle_node(ast_tree.body, arg_map)
+            if isinstance(result, list) :
+                result = merge_constr(result)
+            ## clean
+            result = result.replace('\\','')
+        except :
+            print(traceback.format_exc())
+            print(constr, func_name)
+            result = handle_node(ast_tree.body, arg_map)
+        all_results.append((constr, result))
+        print(f"Constraint: {constr}\nMimic Z3: {result}\n")
+
+    return all_results
+
+# dir_path = "/artifact/data/constraints"
+# records = gen_inst_with_records(dir_path)
+# for record in records : 
+#     arg_names = record['args']['name']
+#     rule_txts = [r['txt'] for r in record['rules']]
+#     ast_to_mimic_z3(arg_names, rule_txts, record['name'])
+# Test cases
+
+arg_names = {'a' : AbsDType.int.to_iter().z3()('a'), 'b' : AbsDType.int.to_iter().z3()('b')}
+test_constraints = [
+    "all((a[i]>1 and a[i]<4) for i in range(len(a[2:])))",
+    "((i>1 and i<4) for i in a[2:])",
+    # '(a>b) and (a>1)',
+    # 'not (a>b) and (a>1)',
+    # 'a.shape[0] == 1', 'a.shape[1] > 1', 'a.rank > 0', 
+    # 'a > b', 'a > 1', 'a[0] < b[0]', 'a > b > 1',
+    # 'a[-1] > b[-2]', 'a[:-1] == b[1:]'
+]
+ast_to_mimic_z3(arg_names, test_constraints, func_name="test")
+    
+
+
+
+import ast
 from typing import List, Union, Dict, Any, Callable, Tuple, Optional, get_args
 import traceback
 import operator as op
