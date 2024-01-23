@@ -1,0 +1,4 @@
+all(input.shape[i+2] == axis[i] for i in range(len(axis)))
+input.dtype == 'real'
+len(axis) >2
+axis[0] = 1
