@@ -86,6 +86,16 @@ def convert_rule_to_executable(record) -> List["z3.Exr"] :
         exec_rules.append(c1)
     return exec_rules
 
+def test_whole_rules(data_dir = None) : 
+    from neuri.constrinf import gen_inst_with_records
+    if data_dir == None : 
+        dir_path = os.path.join(os.getcwd(), 'data/constraints')
+
+    records = gen_inst_with_records(dir_path)
+    for record in records : 
+        arg_names = record['args']['name']
+        rule_txts = [r['txt'] for r in record['rules']]
+        ##test function(arg_names, rule_txts)
 def test_rule_parsing(rules : List[str], record) : 
 
     chosn_dtypes = {} 

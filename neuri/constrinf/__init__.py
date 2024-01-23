@@ -224,8 +224,9 @@ def gen_inst_with_records(
                 }
                 for i_name, name in enumerate(record['args']['name']) :
                     record['args']['dtype'][i_name] = materalize_dtypes(cfg['constraints'][name]['dtype'])   
-            
-            yield record         
+                yield record         
+            else : 
+                AUTOINF_LOG.warning(f"no constraints in {path}")
 
 def convert_rule_to_executable(record, rule_cnt) -> List["z3.Exr"] : 
 
