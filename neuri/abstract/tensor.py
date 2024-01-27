@@ -1,10 +1,11 @@
-from functools import reduce
+from functools import partial, reduce
 from typing import Any, Callable, Dict, List, Union
 
 import z3
 
 from neuri.abstract.arith import *
 from neuri.abstract.dtype import DType
+from neuri.constrinf.ast2z3 import load_z3_const
 from neuri.error import ConstraintCheck, SanityCheck
 from neuri.specloader import Z3TENSOR
 
@@ -27,6 +28,8 @@ class AbsTensor:
     def from_numpy(x: "np.ndarray") -> "AbsTensor":
         return AbsTensor(list(x.shape), str(x.dtype))
     
+    def to_str(self) -> Any :
+        return 'tensor'
     def downcast_rank(self):
         return AbsTensor(shape=[None] * self.ndims, dtype=self.dtype)
     
@@ -152,13 +155,12 @@ class AbsTensor:
     
     @classmethod
     def z3(self) -> "z3.Dtype" :
-        def abstensor(arg_name) :
-            from specloader import Z3TENSOR
-            from z3 import Const
-            # Define the abstensor datatype with shape and dtype attributes
-            return Const(arg_name, Z3TENSOR)
-            
-        return abstensor
+        z3_load_func = partial(load_z3_const, 
+                        var_type=self.to_str(self), 
+                        is_array=False)
+        
+        return z3_load_func
+
     def constains_symbol(self) -> bool:
         return any(isinstance(s, z3.ExprRef) for s in self.shape)
 
@@ -172,7 +174,10 @@ class AbsTensor:
 
     def deepcopy(self):
         return AbsTensor(shape=list(self.shape), dtype=self.dtype)
-
+    @staticmethod
+    def to_iter() :
+        from neuri.abstract.dtype import AbsIter
+        return AbsIter([AbsTensor])
     @property
     def ndims(self):
         return len(self.shape)

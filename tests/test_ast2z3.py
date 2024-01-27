@@ -7,7 +7,7 @@ import z3
 from typing import *
 from neuri.abstract.dtype import AbsDType, DType
 from neuri.constrinf import gen_inst_with_records
-from neuri.constrinf.ast2z3 import z3_funcs, ast2z3, load_z3_const
+from neuri.constrinf.ast2z3 import ast2z3
 
 def test_with_given_constraints(constrs, arg_names, dtypes) :
 
@@ -23,6 +23,7 @@ def test_with_given_constraints(constrs, arg_names, dtypes) :
             print(constr, func_name)
         print(f"Constraint: {constr}\nMimic Z3: {result}\n")
 
+
 def test_whole_constraints(dir_path = None ) :
 
     if dir_path is None :
@@ -35,11 +36,12 @@ def test_whole_constraints(dir_path = None ) :
         for constr in rule_txts:
             result = "error"
             try :
-                result = ast2z3(arg_names, dtypes, constr, record['name']).convert()
+                converter  = ast2z3(arg_names, dtypes, constr, record['name'])
+                result = converter.convert()
             except :
                 print(traceback.format_exc())
                 print(constr, record['name'])
-        print(f"Constraint: {constr}\nMimic Z3: {result}\n")
+            print(f"Constraint: {constr}\nMimic Z3: {result}\n")
 
 test_whole_constraints()
 #  Example Usage : test_with_given_constraints

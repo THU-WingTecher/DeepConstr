@@ -1,4 +1,5 @@
 import ast
+import itertools
 import random
 import string
 import traceback
@@ -10,9 +11,10 @@ from neuri.specloader import z3_funcs
 
 ###### TENSOR DTYPE DEINITION ######
 
-## Define : tensor, int, float, bool, complex, str
+## Define : tensor, int, float, bool, complex, str``
 ## Define : Array(tensor, int, float, bool, complex, str)
 ## Will be updated to support Dict, object
+
 
 iter_specific_funcs = ['len', 'rank', 'sorted', 'min', 'max']
 Z3DTYPE = z3.Datatype('DType')
@@ -47,25 +49,44 @@ ComplexArr = DeclareArr(Complex)
 TensorArr = DeclareArr(TensorZ3)
 
 class BaseWrapper():
-    def __init__(self, const, datatype):
+    def __init__(self, const, datatype, value_func, len_func):
         self.const : z3.Datatype = const
         self.datatype : z3.Datatype = datatype
+        self.value_func = value_func
+        self.len_func = len_func
         self.info = {
 
         }
+    
+    def corrected_idx(self, idx, datatype = None, len_func_name = "len"):
+        """ 
+        return corrected idx for possible negative index
+        """ 
+        if datatype is None : datatype = self.datatype
+        if len_func is None : len_func = self.len_func
+        else : len_func = getattr(datatype, len_func_name)
+        return z3.If(idx >= 0, idx, self.len_func(self.const) + idx)  
+    
     def len(self): 
         if self.info.get("sliced") is not None : 
             return self.info["sliced"][1] - self.info["sliced"][0]
         else :
-            return self.datatype.len(self.const)
-    
+            return self.len_func(self.const)
+
+    @property
+    def value(self):
+        return self.value_func(self.const)
+     
+    def __getitem__(self, idx):
+        return self.corrected_idx(idx, self.datatype, "len")
+
     @property
     def name(self):
         return self.const.decl().name()
     
     @property
     def rank(self):
-        return self.datatype.len(self.const)
+        return self.len_func(self.const)
     
     def update_info(self, *args, **kwargs):
         for key, value in kwargs.items() : 
@@ -74,35 +95,41 @@ class BaseWrapper():
     def get_wrapped_object(self):
         return self.const
     
-    def __getitem__(self, idx):
-        return self.datatype.value(self.const)[idx]
-
+    def range(self):
+        # for generator conversion # range of idx
+        assert "sliced" in self.info.keys(), "sliced info is not defined"
+        return self.info["sliced"]
 class TensorWrapper(BaseWrapper):
-    def __init__(self, const, datatype):
-        super().__init__(const, datatype)
-    
+    def __init__(self, const, datatype, value_func, len_func):
+        super().__init__(const, datatype, value_func, len_func)
+        self.dtype_func = datatype.dtype
     def __getitem__(self, idx):
-        return self.datatype.shape(self.const)[idx]
-    
-    @property
-    def rank(self):
-        return self.datatype.rank(self.const)
-    
+        return self.corrected_idx(idx)
+     
     def __str__(self):
         return f"Tensor:{self.const.name()}"
-
+    
     @property
     def shape(self):
-        return self.datatype.shape(self.const)
+        return self.value_func(self.const)
     
     @property
     def dtype(self):
-        return self.datatype.dtype(self.const)
+        return self.dtype_func(self.const)
     
 class ComplexWrapper(BaseWrapper):
     def __init__(self, const, datatype):
         super().__init__(const, datatype)
 
+    def range(self):
+        raise NotImplementedError
+    
+    def __len__(self):
+        raise NotImplementedError
+    
+    def __getitem__(self, idx):
+        raise NotImplementedError
+       
     def __str__(self):
         return f"Complex:{self.const.name()}"
     
@@ -120,13 +147,6 @@ class ArrWrapper(BaseWrapper):
     def __str__(self):
         return f"Arr:{self.const.name()}"
     
-    @property
-    def value(self):
-        return self.datatype.value(self.const)
-    
-    def range(self):
-        assert "sliced" in self.info.keys(), "sliced info is not defined"
-        return self.info["sliced"]
 def load_z3_const(name, var_type, is_array=False):
     """
     Define a Z3 variable of a given type. 
@@ -134,37 +154,41 @@ def load_z3_const(name, var_type, is_array=False):
     """
     if var_type == 'int':
         if is_array : 
-            return ArrWrapper(z3.Const(name, IntArr), IntArr)
+            return ArrWrapper(z3.Const(name, IntArr), IntArr, IntArr.value, IntArr.len)
         else : 
             return z3.Const(name, z3.IntSort())
     elif var_type == 'float':
         if is_array : 
-            return ArrWrapper(z3.Const(name, FloatArr), FloatArr)
+            return ArrWrapper(z3.Const(name, FloatArr), FloatArr, FloatArr.value, FloatArr.len)
         else :
             return z3.Const(name, z3.RealSort())
     elif var_type == 'str':
         if is_array : 
-            return ArrWrapper(z3.Const(name, StrArr), StrArr)
+            return ArrWrapper(z3.Const(name, StrArr), StrArr, StrArr.value, StrArr.len)
         else :
             return z3.Const(name, z3.StringSort())
     elif var_type == 'complex':
         if is_array : 
-            return ArrWrapper(z3.Const(name, ComplexArr), ComplexArr)
+            return ArrWrapper(z3.Const(name, ComplexArr), ComplexArr, ComplexArr.value, ComplexArr.len)
         else :
             return ComplexWrapper(z3.Const(name, Complex), Complex)
     elif var_type == 'bool':
         if is_array : 
-            return ArrWrapper(z3.Const(name, BoolArr), BoolArr)
+            return ArrWrapper(z3.Const(name, BoolArr), BoolArr, BoolArr.value, BoolArr.len)
         else :
             return z3.Const(name, z3.BoolSort())
     elif var_type == 'tensor':
         if is_array : 
-            return ArrWrapper(z3.Const(name, TensorArr), TensorArr)
+            return ArrWrapper(z3.Const(name, TensorArr), 
+                              TensorWrapper(z3.Const(name, TensorZ3), TensorZ3),
+                              TensorArr.value, TensorArr.len)
         else :
-            return TensorWrapper(z3.Const(name, TensorZ3), TensorZ3)
+            return TensorWrapper(z3.Const(name, TensorZ3), TensorZ3, TensorZ3.shape, TensorZ3.rank)
     else:
         raise ValueError("Unsupported variable type")
 
+def is_wrapper(obj) : 
+    return hasattr(obj, 'get_wrapped_object')
 
 class z3funcs:
     """
@@ -172,9 +196,12 @@ class z3funcs:
     """
     # Class variable to hold names of all functions
     function_names = ['all', 'any', 'len', 'type', 'sorted', 'abs', 'min', 'max', 'in_', 'not_in', 'rank', 'range']
-    _z3_dataarr = [IntArr, FloatArr, StrArr, ComplexArr, BoolArr, TensorArr, TensorZ3]
+    _z3_dataarr = [IntArr, FloatArr, StrArr, ComplexArr, BoolArr, TensorArr, TensorZ3, TensorZ3.shape]
     iterables = []
     non_iterables= []
+    rank_idx = 0
+    value_idx = 1
+    dtype_idx = 2
     def __init__(self) -> None:
         self.constrs = []
 
@@ -191,23 +218,30 @@ class z3funcs:
         pass 
 
     @staticmethod
-    def in_(a,b) : 
-        pass 
-
-    @staticmethod
     def not_in(a,b) : 
         pass 
 
     @classmethod 
     def is_iterable(cls, v) :
         return cls._find_datatype_by_id(v.sort().get_id()) is not None 
-    @staticmethod
-    def type(v) : 
-        return v.sort().name()
     
     @classmethod
-    def clear(cls) :
-        cls.constrs.clear()
+    def type(cls, v) : 
+        if hasattr(v, 'dtype') :
+            return v.dtype
+        else :
+            attrs = cls._load_attrs(v)
+            assert len(attrs) > cls.dtype_idx, f"{v} seems not be Tensor object"
+            return attrs[cls.dtype_idx]
+    @staticmethod
+    def sort(v) : 
+        if is_wrapper(v) : 
+            return v.datatype.name()
+        else : 
+            return v.sort().name()
+    
+    def clear(self) :
+        self.constrs.clear()
     
     @classmethod
     def _find_datatype_by_id(cls, id):
@@ -258,14 +292,44 @@ class z3funcs:
         datatype = None
         datatype = cls._find_datatype_by_id(v.sort().get_id())
         if datatype is None :
-            raise TypeError("Undefined in z3func object")
+             # Tensor.shape - dirty fix
+            datatype = cls._find_datatype_by_id(v.decl().get_id())
+
+        if datatype is None :
+            return None
         else : 
             obj, name = datatype
             if name == TensorZ3.name() : 
                 return obj.rank(v), obj.shape(v), obj.dtype(v)
+            elif name == "shape" : #shape(t) -> load name "t" -> TensorZ3.rank(t)
+                return TensorZ3.rank(v.arg(0)), v, TensorZ3.dtype(v.arg(0))
             else : 
                 return obj.len(v), obj.value(v)
-
+    @classmethod
+    def is_tensor(cls, v):
+        return cls.sort(v) == TensorZ3.name()
+    
+    @classmethod
+    def shape(cls, v):
+        """
+        Custom 'len' function for Z3 arrays and tensors.
+        Returns the length of an array or the rank of a tensor.
+        """
+        if hasattr(v, 'shape') :
+            return v.shape
+        else :
+            attrs = cls._load_attrs(v)
+            assert len(attrs) > cls.value_idx, f"{v} seems not be Tensor object"
+            return attrs[cls.value_idx]
+        
+    @classmethod
+    def dtype(cls, v):
+        if hasattr(v, 'dtype') :
+            return v.dtype
+        else :
+            attrs = cls._load_attrs(v)
+            assert len(attrs) > cls.dtype_idx, f"{v} seems not be Tensor object"
+            return attrs[cls.dtype_idx]
     @classmethod
     def len(cls, v):
         """
@@ -276,15 +340,60 @@ class z3funcs:
             return v.len()
         else :
             attrs = cls._load_attrs(v)
-            return attrs[0]
+            assert len(attrs) > cls.rank_idx, f"{v} seems not be Tensor object"
+            return attrs[cls.rank_idx]
+    @classmethod
+    def dim(cls, v) :
+        assert cls.is_tensor(v), f"{v} is not tensor object"
+        return cls.len(v)
+    @classmethod
+    def ndim(cls, v) :
+        return cls.dim(v)
+    @staticmethod
+    def in_(a,b) : 
+        from specloader.irs import SYM_LEN
+        if isinstance(b[0], z3.ArrayRef) : 
+            b_len = SYM_LEN[b[0].arg(0).decl().name()] if b[0].num_args() else SYM_LEN[b[0].decl().name()]
+            i = z3.Int('i')
+            exists = z3.Exists([i], z3.Implies(z3.And(i >= 0, i < b_len), b[0][i] == a))
+            return exists
+        elif hasattr(b, '__len__') :
+            return z3.Or([a == v for v in b])
+        else :
+            return z3.Or([a == b[i] for i in range(MAX_ARR_LEN)])
     
-    def min(self, vs, lev_var=None):
-        if not hasattr(vs, '__len__') :
+    @staticmethod
+    def not_in(a,b) : 
+        if isinstance(b[0], z3.ArrayRef) : 
+            from specloader.irs import SYM_LEN
+            b_len = SYM_LEN[b[0].arg(0).decl().name()] if b[0].num_args() else SYM_LEN[b[0].decl().name()]
+            i = z3.Int('i')
+            exists = z3.ForAll([i], z3.Implies(z3.And(i >= 0, i < b_len), b[0][i] != a))
+            return exists
+        elif hasattr(b, '__len__') :
+            return z3.And([a != v for v in b])
+        else :
+            return z3.And([a != b[i] for i in range(MAX_ARR_LEN)])
+    @classmethod
+    def get_corrected_idx(cls, idx, v) :
+        rank = cls.len(v)
+        corrected_idx = z3.If(idx >= 0, idx, rank + idx)
+        return corrected_idx
+    def min(self, *vs):
+        if len(vs) > 1 :
+            assert len(vs) > 0, f"len of list should be positive, cur : {len(vs)}"
+            if len(vs) == 1 :
+                return vs[0]
+            m = vs[0]
+            for v in vs[1:]:
+                m = z3.If(v < m, v, m)
+            return m
+        else : 
+            vs = vs[0]
             assert self.is_iterable(vs), f"{vs.sort().name()} is not iterable variable"
-            if lev_var is None :
-                attrs = self._load_attrs(vs)
-                lev_var = attrs[0]
-                values = attrs[1]
+            attrs = self._load_attrs(vs)
+            lev_var = attrs[0]
+            values = attrs[1]
             
             min_idx = z3.Int('min_idx')
             assert values[min_idx].sort().name() not in ['complex', 'tensor'], f"{values[min_idx].sort().name()} don't support min func"
@@ -295,38 +404,22 @@ class z3funcs:
                         values[min_idx] <= values[i]))
             exists_in_array = z3.And(min_idx >= 0, min_idx < lev_var)
             self.constrs.append(z3.And(exists_in_array, min_const))
-            return values[min_idx] 
-        else :
-            assert len(vs) > 0, f"len of list should be positive, cur : {len(vs)}"
-            if len(vs) == 1 :
-                return vs[0]
-            m = vs[0]
-            for v in vs[1:]:
-                m = z3.If(v < m, v, m)
-            return m
-
-# z3_constrs = []
-# ia = load_z3_const('a', 'int', is_array=True)
-# ib = load_z3_const('b', 'complex', is_array=True)
-# ic = load_z3_const('c', 'tensor', is_array=False)
-# z3funcs_const = z3funcs()
-# z3_constrs.extend([
-#     z3funcs_const.len(ib) <3,
-#     z3funcs_const.min(ia) <3,
-#     # z3funcs.len(ic) <3
-#                   ])
-# z3_constrs = [Z3ARRINT.value(arr_int_var)[0] > 1, Z3ARRINT.len(arr_int_var) <3]
-# print(z3funcs.all(z3_constrs))
-# arr_int_var = load_z3_const('a', 'float', is_array=True)
-# arr_int_var = load_z3_const('a', 'str', is_array=True)
-# arr_int_var = load_z3_const('a', 'complex', is_array=True)
-# arr_int_var = load_z3_const('a', 'tensor', is_array=True)
-# print(arr_int_var)
+            return values[min_idx]
 
 def is_same_ast_name(left_ast : str, right_ast) : 
     return left_ast == right_ast.__name__
 
-def get_operator(astop):
+def get_bool_operator(astop : str): 
+    if is_same_ast_name(astop, ast.And):
+        return z3.And
+    elif is_same_ast_name(astop, ast.Or):
+        return z3.Or
+    elif is_same_ast_name(astop, ast.Not):
+        return z3.Not
+    else:
+        raise ValueError(f"Unknown operator: {astop}")
+    
+def get_operator(astop : str):
     if is_same_ast_name(astop, ast.Eq):
         return lambda a,b : op.eq(a, b)
     elif is_same_ast_name(astop, ast.NotEq):
@@ -346,9 +439,9 @@ def get_operator(astop):
     elif is_same_ast_name(astop, ast.IsNot):
         return lambda a,b : op.ne(a, b)
     elif is_same_ast_name(astop, ast.In):
-        return lambda a,b : z3_funcs.in_(a,b)
+        return lambda a,b : z3funcs.in_(a,b)
     elif is_same_ast_name(astop, ast.NotIn):
-        return lambda a,b : z3_funcs.not_in(a,b)
+        return lambda a,b : z3funcs.not_in(a,b)
     elif is_same_ast_name(astop, ast.Add):
         return lambda a,b : op.add(a, b)
     elif is_same_ast_name(astop, ast.Sub):
@@ -365,44 +458,8 @@ def get_operator(astop):
         return lambda a,b : op.mod(a, b)
     elif is_same_ast_name(astop, ast.Pow):
         return lambda a,b : op.pow(a, b)
-    elif is_same_ast_name(astop, ast.Or):
-        return z3.Or
-    elif is_same_ast_name(astop, ast.Not):
-        return z3.Not
-    elif is_same_ast_name(astop, ast.And):
-        return z3.And
     else:
-        raise ValueError(f"Unknown operator: {ast.dump(astop)}")
-
-def gen_z3_obj(arg, arg_map, ret_wrapper=False, no_const=False) : 
-    if ast2z3.is_sym(arg) : 
-        z3obj = arg
-    elif arg in arg_map.keys() : 
-        z3obj = arg_map[arg]
-    else :
-        if isinstance(arg, str) and no_const : # index 'i' generator
-            return z3.Int(arg) 
-        return arg # constant
-    if hasattr(z3obj, 'get_wrapped_object') and not ret_wrapper :
-        return z3obj.get_wrapped_object()
-    else :
-        return z3obj
-    # if idx is not None : 
-    #     if type(idx) == int :
-    #         return z3obj[z3obj.rank + idx] if idx<0 else z3obj[idx]
-    #     else : # when index is 'i' for generator
-    #         if idx in arg_map.keys() : 
-    #             return z3obj[arg_map[idx]]
-    #         elif type(idx) == str :
-    #             return z3obj[z3.Int(idx)]
-    #         else : 
-    #             return z3obj[idx]
-    # else : 
-    #     if hasattr(z3obj, 'get_wrapped_object') and not ret_wrapper :
-    #         return z3obj.get_wrapped_object()
-    #     else :
-    #         return z3obj
-
+        raise ValueError(f"Unknown operator: {astop}")
 
 def random_gen_name() : 
     return ''.join(random.choice(string.ascii_lowercase) for _ in range(5))
@@ -411,6 +468,42 @@ def change_val_from_expr(expr, target, new_target):
     return z3.substitute(expr, (target, new_target))
 
     # res = gen_z3_obj(obj)[{start}:{end}]
+
+
+def is_dtype_constant(arg) :
+    from neuri.specloader.materalize import STR_TO_ABS
+    return arg in STR_TO_ABS.keys()
+
+def get_dtype_z3_obj(arg) : 
+    from neuri.specloader.materalize import STR_TO_ABS
+    dtypeobj = STR_TO_ABS[arg] 
+    if hasattr(dtypeobj, "to_tensor_dtype") : 
+        if dtypeobj.to_tensor_dtype() is not None :
+            return [dtype.z3() for dtype in dtypeobj.to_tensor_dtype()]
+    return dtypeobj.z3()
+
+def gen_z3_obj(arg, arg_map, ret_wrapper=True, no_const=False) : 
+    """
+    in most of the case, 
+    we need to return wrapper, 
+    wrapper has correction for negative index
+    """
+    
+    if ast2z3.is_sym(arg) : 
+        z3obj = arg
+    elif arg in arg_map.keys() : 
+        z3obj = arg_map[arg]
+    elif is_dtype_constant(arg) : # TODO : very inefficient(every conversion need to check)
+        return get_dtype_z3_obj(arg)
+    else :
+        if isinstance(arg, str) and no_const : # index 'i' generator
+            return z3.Int(arg) 
+        return arg # constant
+    if hasattr(z3obj, 'get_wrapped_object') and not ret_wrapper :
+        # array but need to its const, why?
+        return z3obj.get_wrapped_object()
+    else :
+        return z3obj
 
 def gen_exp_constr(generator, arg_map):
     # Assuming generator is a dictionary with keys "element" and "generators"
@@ -453,6 +546,19 @@ def gen_exp_constr(generator, arg_map):
 def merge_constr(constrs) : 
     return z3.And(constrs)
 
+def dict_combinations(input_dict):
+    # Create a list of tuples where each tuple is (key, option)
+    keys, values = zip(*[(key, value) for key, values in input_dict.items() for value in values])
+    
+    # Generate all combinations
+    all_combinations = itertools.product(*[set(vals) for vals in input_dict.values()])
+
+    # Create a list of dictionaries for each combination
+    result = []
+    for combination in all_combinations:
+        result.append(dict(zip(keys, combination)))
+
+    return result
 class ast2z3(z3funcs) : 
     def __init__(self, arg_names, dtypes, txt, func_name) -> None : 
         super().__init__()
@@ -469,6 +575,16 @@ class ast2z3(z3funcs) :
                 'must_str' : False
             } for name in arg_names
         }
+    def dtype_hijack(self, dtype) : 
+        ## if dtype-related rule exist, then hijack dtype to be the same as the rule
+        pass 
+    def gen_dtype_obj(self) :
+        return dict_combinations(self.arg_map) 
+    def dtype_constant_to_z3(self, dtype) :
+        if dtype in DType : 
+            return DType[dtype].z3()
+        else :
+            return False 
     def parse(self, txt) : 
         try :
             ast_tree = ast.parse(txt, mode='eval')
@@ -480,7 +596,12 @@ class ast2z3(z3funcs) :
         pass
     def convert(self) : 
         ast = self.parse(self.txt)
-        return self._convert(ast, self.arg_map)
+        for dtype_map in self.gen_dtype_obj() : 
+            # dtype_hijack else : 
+            z3_type_objs = {
+                    name : dtype.z3()(name) for name, dtype in dtype_map.items()
+                }
+            return self._convert(ast, z3_type_objs)
     
     def gen_func_obj(self, func_name, *args) :
         func_exec = getattr(self, func_name)
@@ -507,12 +628,11 @@ class ast2z3(z3funcs) :
     def is_sym(a):
         # Check if 'a' is a Z3 expression or sort
         is_z3_obj = isinstance(a, (z3.ExprRef, z3.SortRef))
-        is_wrapper = hasattr(a, 'get_wrapped_object')
-        return is_z3_obj or is_wrapper
+        return is_z3_obj or is_wrapper(a)
 
     @staticmethod
     def get_name(a) : 
-        if hasattr(a, 'get_wrapped_object') :
+        if is_wrapper(a) :
             return a.name
         if a.num_args() == 0 : 
             return a.decl().name()
@@ -537,18 +657,38 @@ class ast2z3(z3funcs) :
         z3obj = gen_z3_obj(obj, arg_map, ret_wrapper=True)
         if start is None : start = 0 
         if end is None : end = z3obj.rank
-        idx_range = (start, end)
+        idx_range = (z3obj.corrected_idx(start), z3obj.corrected_idx(start))
         z3obj.update_info(sliced=idx_range)
         return z3obj
+    
+    def gen_bool_constr(self, op, *args) : 
+        res = get_bool_operator(op)(*args)
+        return res
+
+    def replace_op_accord_constant(self, op, arg) : 
+        """
+        some dtype is float -> float16, float32, float64
+        eq -> in 
+        not_eq -> not in 
+        """
+        if hasattr(arg, "__len__") : # suppose that arg is replaced
+            if is_same_ast_name(op, ast.Eq) : 
+                return ast.In.__name__
+            elif is_same_ast_name(op, ast.NotEq) :
+                return ast.NotIn.__name__
+        return op
     def _convert(self, node, arg_map):
         if isinstance(node, ast.BoolOp):
             op = type(node.op).__name__
             values = [self._convert(value, arg_map) for value in node.values]
-            return self.gen_basic_constr(op, *values)
+            return self.gen_bool_constr(op, *values)
         elif isinstance(node, ast.UnaryOp):
             op = type(node.op).__name__
             operand = self._convert(node.operand, arg_map)
-            return self.gen_basic_constr(op, operand)
+            if is_same_ast_name(op, ast.Not) :
+                return self.gen_bool_constr(op, operand)
+            else : 
+                return self.gen_basic_constr(op, operand)
         elif isinstance(node, ast.Call):
             if isinstance(node.func, ast.Attribute):
                 attribute_value = self._convert(node.func.value, arg_map)
@@ -574,6 +714,7 @@ class ast2z3(z3funcs) :
             for op, right_node in zip(node.ops, node.comparators):
                 right = self._convert(right_node, arg_map)
                 op_type = type(op).__name__
+                op_type = self.replace_op_accord_constant(op_type, right)
                 results.append(self.gen_basic_constr(op_type, left, right))
             return merge_constr(results)
         elif isinstance(node, ast.Subscript):
@@ -582,20 +723,14 @@ class ast2z3(z3funcs) :
                 slice_value = self._convert(node.slice.value, arg_map)
                 slice_value = gen_z3_obj(slice_value, arg_map, no_const=True)
                 val = gen_z3_obj(self._convert(node.value, arg_map), arg_map, ret_wrapper=True)
+                if not is_wrapper(val) : 
+                    slice_value = self.get_corrected_idx(slice_value, val)
                 return val[slice_value]
             elif isinstance(node.slice, ast.Slice):
                 # Slicing, e.g., a[1:] or a[:-1]
                 start = self._convert(node.slice.lower, arg_map) if node.slice.lower else None
                 end = self._convert(node.slice.upper, arg_map) if node.slice.upper else None
                 array = self._convert(node.value, arg_map)
-                if start : 
-                    if start < 0 :
-                        start = self.gen_func_obj('len', array) - start
-                if end : 
-                    if end < 0 :
-                        end = self.gen_func_obj('len', array) - end
-                
-                ### typically sliced obj is used in list comprehension 
                 return self.gen_sliced_obj(array, arg_map, start, end)
 
         elif isinstance(node, (ast.GeneratorExp, ast.ListComp)):
@@ -626,6 +761,8 @@ class ast2z3(z3funcs) :
                 ret_wrapper=True,
                 )
         elif isinstance(node, ast.Constant):
+            if is_dtype_constant(node.value) : # TODO : very inefficient(every conversion need to check)
+                node.value = get_dtype_z3_obj(node.value)
             return node.value
         elif isinstance(node, ast.Num):
             return node.n

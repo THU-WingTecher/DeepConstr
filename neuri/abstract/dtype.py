@@ -1,8 +1,10 @@
 from enum import Enum, unique
+from functools import partial
 from typing import Any, Dict, List
 
 import numpy as np
 from z3 import Const, BoolSort, IntSort, RealSort, StringSort, Array, Datatype, Const
+
 
 
 
@@ -27,7 +29,27 @@ class DType(Enum):
     complex32 = "complex32"
     complex64 = "complex64"
     complex128 = "complex128"
-
+    __all__ = [
+        "qint8",
+        "qint16",
+        "qint32",
+        "bfloat16",
+        "float16",
+        "float32",
+        "float64",
+        "uint8",
+        "uint16",
+        "uint32",
+        "uint64",
+        "int8",
+        "int16",
+        "int32",
+        "int64",
+        "bool",
+        "complex32",
+        "complex64",
+        "complex128",
+    ]
     def __repr__(self) -> str:
         return self.name
 
@@ -191,7 +213,7 @@ class DType(Enum):
         }[dtype]
 
 
-    def tensorflow(self) -> "tf.Dtype":
+    def tensorflow(self) :
         import tensorflow as tf
 
         return {
@@ -294,9 +316,9 @@ class AbsDType(Enum):
             AbsDType.none: None,
         }[self]
     def z3(self) -> "z3.Dtype" :
-        def Scalar(arg_name):
-            return Const(arg_name, self._z3())
-        return Scalar
+        from neuri.constrinf.ast2z3 import load_z3_const
+        z3_load_func = partial(load_z3_const, var_type=self.to_str(), is_array=False)
+        return z3_load_func
     def to_iter(self) -> "AbsIter" :
         return AbsIter([self])
     def get_arg_dtype(self) : 
@@ -335,9 +357,11 @@ class AbsIter():
     def to_str(self) -> str:
         return f"list[{self.arg_type.to_str()}]"
     def z3(self) -> "z3.Dtype" :
-        def Vector(arg_name):
-            return Array(arg_name, IntSort(), self.arg_type._z3())
-        return Vector
+        from neuri.constrinf.ast2z3 import load_z3_const
+        z3_load_func = partial(load_z3_const, 
+                               var_type=self.arg_type.to_str(), 
+                               is_array=True)
+        return z3_load_func
     
 class AbsLiteral() :
     def __init__ (self, choices : List[str]):

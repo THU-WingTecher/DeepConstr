@@ -5,21 +5,8 @@ import copy
 from logger import LOGGER
 from abstract.dtype import AbsDType, AbsIter, AbsLiteral, DType, DTYPE_ALL
 from neuri.abstract.tensor import AbsTensor
+# from neuri.constrinf.mapping import STR_TO_ABS, TYPE_TO_ABS
 
-NOT_SUPPORTED_DTYPES ={
-    'torch' : [
-    'qint8',
-    'qint16',
-    'qint32',
-    'uint8',
-    'uint16',
-    'uint32',
-    'uint64',
-    ],
-    'tf' : [
-        'complex32'
-    ]
-}
 TYPE_TO_ABS = {
     ## __origin__ of typing object
     int : AbsDType.int,
@@ -32,7 +19,6 @@ TYPE_TO_ABS = {
 }
 STR_TO_ABS = {
     # AbsDType
-    'scalar': 'scalar_float',
     'float': AbsDType.float,
     'real': AbsDType.float,
     'complex': AbsDType.complex,
@@ -200,13 +186,13 @@ STR_TO_ABS = {
     'complex128': DType.complex128,
 
     # AbsTensor and List[AbsTensor]
-    'tf.tensor': AbsTensor(possible_dtypes=DTYPE_ALL),
-    'torch.tensor': AbsTensor(possible_dtypes=DTYPE_ALL),
-    'tensor': AbsTensor(possible_dtypes=DTYPE_ALL),
-    'tf.tensors': AbsTensor(possible_dtypes=DTYPE_ALL),
-    'torch.tensors': AbsTensor(possible_dtypes=DTYPE_ALL),
-    'longtensor': AbsTensor(possible_dtypes=DTYPE_ALL),
-    'sequence of Tensors': List[AbsTensor],
+    'tf.tensor': AbsTensor,
+    'torch.tensor': AbsTensor,
+    'tensor': AbsTensor,
+    'tf.tensors': AbsTensor,
+    'torch.tensors': AbsTensor,
+    'longtensor': AbsTensor,
+    'sequence of Tensors':  AbsTensor.to_iter(),
 
     # torch 
     'complexfloat' : AbsDType.complex,
