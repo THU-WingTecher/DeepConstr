@@ -13,6 +13,7 @@ class DType(Enum):
     qint8 = "qint8"
     qint16 = "qint16"
     qint32 = "qint32"
+    quint8 = "quint8"
     bfloat16 = "bfloat16"
     float16 = "float16"
     float32 = "float32"
@@ -30,6 +31,7 @@ class DType(Enum):
     complex64 = "complex64"
     complex128 = "complex128"
     __all__ = [
+        "quint8",
         "qint8",
         "qint16",
         "qint32",
@@ -60,6 +62,7 @@ class DType(Enum):
 
     def short(self) -> str:
         return {
+            DType.quint8: "qu8",
             DType.qint8: "q8",
             DType.qint16: "q16",
             DType.qint32: "q32",
@@ -89,6 +92,7 @@ class DType(Enum):
     @staticmethod
     def from_str(s):
         return {
+            "qu8": DType.quint8,
             "q8": DType.qint8,
             "q16": DType.qint16,
             "q32": DType.qint32,
@@ -123,9 +127,10 @@ class DType(Enum):
             "complex128": DType.complex128,
             "bool": DType.bool,
         }[s]
-    def z3(self) -> str:
-        from specloader import Z3DTYPE
+    def z3_const(self) -> str:
+        from neuri.constrinf.z3const import Z3DTYPE
         return {
+            DType.quint8: Z3DTYPE.quint8,
             DType.float16: Z3DTYPE.float16,
             DType.float32: Z3DTYPE.float32,
             DType.float64: Z3DTYPE.float64,
@@ -217,6 +222,7 @@ class DType(Enum):
         import tensorflow as tf
 
         return {
+            DType.quint8: tf.quint8,
             DType.bfloat16: tf.bfloat16,
             DType.float16: tf.float16,
             DType.float32: tf.float32,
@@ -242,6 +248,7 @@ class DType(Enum):
         import tensorflow as tf
 
         return {
+            tf.quint8: DType.quint8,
             tf.bfloat16: DType.bfloat16,
             tf.float16: DType.float16,
             tf.float32: DType.float32,
@@ -265,6 +272,7 @@ class DType(Enum):
     def sizeof(self) -> int:
         return {
             DType.bfloat16: 2,
+            DType.quint8: 1,
             DType.qint8: 1,
             DType.qint16: 2,
             DType.qint32: 4,
@@ -323,12 +331,12 @@ class AbsDType(Enum):
         return AbsIter([self])
     def get_arg_dtype(self) : 
         return self
-    def to_tensor_dtype(self) -> List[DType]:
+    def z3_const(self) -> List[DType]:
         return {
-            AbsDType.bool: [DType.bool],
-            AbsDType.int: [DType.int32, DType.int64, DType.int8, DType.int16],
-            AbsDType.float: [DType.float16,DType.float32,DType.float64],
-            AbsDType.complex: [DType.complex64, DType.complex128],
+            AbsDType.bool: [dtype.z3_const() for dtype in [DType.bool]],
+            AbsDType.int: [dtype.z3_const() for dtype in [DType.int32, DType.int64, DType.int8, DType.int16]],
+            AbsDType.float: [dtype.z3_const() for dtype in [DType.float16,DType.float32,DType.float64]],
+            AbsDType.complex: [dtype.z3_const() for dtype in [DType.complex64, DType.complex128]],
             AbsDType.none: [None],
         }[self]
     
@@ -357,6 +365,15 @@ class AbsIter():
     def to_str(self) -> str:
         return f"list[{self.arg_type.to_str()}]"
     def z3(self) -> "z3.Dtype" :
+        from neuri.constrinf.ast2z3 import load_z3_const
+        z3_load_func = partial(load_z3_const, 
+                               var_type=self.arg_type.to_str(), 
+                               is_array=True)
+        return z3_load_func
+    def z3_const(self) -> "z3.Dtype" :
+        """
+        Not IMPLEMENTED YET
+        """
         from neuri.constrinf.ast2z3 import load_z3_const
         z3_load_func = partial(load_z3_const, 
                                var_type=self.arg_type.to_str(), 
