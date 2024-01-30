@@ -21,7 +21,7 @@ pass_rate: 0.8
 rules:
 - cot: 'The error occurs because the "leaky_relu_cpu" function is not implemented
     for ''Short'' data type. Therefore, the ''input'' tensor''s dtype should not be
-    ''Short''. Here, the dtype is TensorDType.int16, which is equivalent to ''Short''.
+    ''Short''. Here, the dtype is  int16, which is equivalent to ''Short''.
     So, Left : input.dtype and Op : !=, and Right : ''Short''. Another factor that
     can be checked is the ''negative_slope'' which is a float value. It should be
     a valid float, therefore, Left : type(negative_slope), Op : ==, and Right : float.

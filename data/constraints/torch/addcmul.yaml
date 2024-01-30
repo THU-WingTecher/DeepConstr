@@ -46,10 +46,10 @@ rules:
     Let''s see what the args were. The dtype of ''tensor1'' is Long and the dtype
     of ''out'' is Bool. Therefore, the dtypes of ''tensor1'' and ''out'' should be
     consistent. Also, the dtype of ''input'' and ''tensor2'' are Bool, which is consistent.
-    Therefore, the dtype of all arguments should be consistent. Left : type(tensor1),
-    op : ==, Right : type(out), type(input), type(tensor2)'
+    Therefore, the dtype of all arguments should be consistent. Left : tensor1.dtype,
+    op : ==, Right : out.dtype, input.dtype, tensor2.dtype'
   target: result type Float can't be cast to the desired output type Long
-  txt: (type(tensor2) == type(out)) and (type(tensor1)==type(out))
+  txt: (tensor2.dtype == out.dtype) and (tensor1.dtype==out.dtype)
 - cot: 'Error is triggered because of dynamic casting failure in PyTorch''s internal
     operation. Let''s see what the args were. It seems that ''input'', ''tensor1'',
     ''tensor2'', and ''out'' tensors have different datatypes, which might cause the
@@ -58,7 +58,7 @@ rules:
     tensor1.dtype == input.dtype, tensor2.dtype == input.dtype, out.dtype == input.dtype'
   target: '!needs_dynamic_casting<func_t>::check(iter) INTERNAL ASSERT FAILED at "../aten/src/ATen/native/cpu/Loops.h":349,
     please report a bug to PyTorch.'
-  txt: (type(tensor1) == type(out)) and (tensor2.dtype == input.dtype)
+  txt: (tensor1.dtype == out.dtype) and (tensor2.dtype == input.dtype)
 time_cost: 54053.03339552879
 title: torch.addcmul
 tokens_used: 41154

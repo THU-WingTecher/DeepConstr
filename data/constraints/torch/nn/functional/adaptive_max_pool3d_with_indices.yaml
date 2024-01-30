@@ -29,13 +29,13 @@ rules:
   target: 'adaptive_max_pool3d(): Expected 4D or 5D tensor, but got: [8, 3]'
   txt: input.ndims() == 5
 - cot: 'The error is triggered because ''adaptive_max_pool3d_cpu'' is not implemented
-    for ''Int'' . In the given values, ''input'' is a Tensor with TensorDType.int32.
+    for ''Int'' . In the given values, ''input'' is a Tensor with  int32.
     This means that the ''input'' is not compatible with the ''adaptive_max_pool3d_cpu''
     function as it only accepts float types. The ''input'' value of TensorDType should
     be changed from ''int32'' to ''float32'' or ''float64''. Hence, the type of ''input''
-    should be ''float32'' or ''float64''. Let''s generate the constraint. Left : type(input).
+    should be ''float32'' or ''float64''. Let''s generate the constraint. Left : input.dtype.
     Op : in. Right : [''float32'', ''float64'']'
   target: '"adaptive_max_pool3d_cpu" not implemented for ''Int'''
-  txt: type(input) in ['float32', 'float64']
+  txt: input.dtype in ['float32', 'float64']
 time_cost: 398.7554404735565
 title: torch.nn.functional.adaptive_max_pool3d_with_indices

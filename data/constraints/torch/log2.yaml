@@ -25,11 +25,11 @@ rules:
   txt: input.shape == out.shape
 - cot: 'The error is triggered because the result type of ''Float'' cannot be cast
     to the desired output type of ''Int''. What the args were? The output should be
-    of type ''Int'', but currently it is ''Float''. Therefore, Left : type(out), Op
+    of type ''Int'', but currently it is ''Float''. Therefore, Left : out.dtype, Op
     : ==, Right : Int. Also, the input is of type ''Int'' but is handled as ''Float''.
-    Therefore, Left : type(input), Op : ==, Right : Float. The constraints could be:'
+    Therefore, Left : input.dtype, Op : ==, Right : Float. The constraints could be:'
   target: result type Float can't be cast to the desired output type Int
-  txt: (type(input)==type(out)) and (type(input)==Float)
+  txt: (input.dtype==out.dtype) and (input.dtype==Float)
 time_cost: 1637.9116671085358
 title: torch.log2
 tokens_used: 9640

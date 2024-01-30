@@ -28,8 +28,8 @@ rules:
     \ int32, int64\n ; NodeDef: ; Op loss:T, backprop:T; attr=T:type,allowed=[DT_HALF,\
     \ DT_BFLOAT16, DT_FLOAT, DT_DOUBLE]; attr=Tlabels:type,default=DT_INT64,allowed=[DT_INT32,\
     \ DT_INT64]> [Op:SparseSoftmaxCrossEntropyWithLogits] name:"
-  txt: (type(features) in ["half", "bfloat16", "float", "double"]) and (type(labels)
-    in ["int32", "int64"]) and (type(features) in ["half", "bfloat16", "float", "double"])
+  txt: (features.dtype in ["half", "bfloat16", "float", "double"]) and (labels.dtype
+    in ["int32", "int64"]) and (features.dtype in ["half", "bfloat16", "float", "double"])
 - cot: 'The error is occurring because the logits are not 2-D as required by the SparseSoftmaxCrossEntropyWithLogits
     operation. In this case, logits are the tensor of float32 with shape [6,1,6,6,1,6,4,1,9,2].
     To make it 2-D, it should have only two dimensions. However, logits have 10 dimensions.

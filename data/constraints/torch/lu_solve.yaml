@@ -36,12 +36,12 @@ rules:
 - cot: 'Based on given values, the error is triggered because torch.linalg.lu_solve
     function expects a floating point or complex tensor as input, but got a Short
     tensor. Let''s see what the args were. It seems the ''input'' tensor is of type
-    int16, which is not floating point or complex. Therefore, Left : type(input),
+    int16, which is not floating point or complex. Therefore, Left : input.dtype,
     which is the type of tensor input, should be corrected. It should be a floating
     point or complex tensor, so Op : ==, and Right : torch.float or torch.complex.'
   target: 'torch.linalg.lu_solve: Expected a floating point or complex tensor as input.
     Got Short'
-  txt: (type(input)==torch.float) or (type(input)==torch.complex) or (type(input)==torch.float)
+  txt: (input.dtype==torch.float) or (input.dtype==torch.complex) or (input.dtype==torch.float)
 - cot: "The error message indicates that the shapes of the 'A' matrix (LU_data) and\
     \ the 'B' matrix (input) in the equation AX = B are incompatible. The 'A' matrix\
     \ has a shape of 5x5 and the 'B' matrix has a shape of 2x5.\n\nTo prevent this\
@@ -55,10 +55,10 @@ rules:
     (1x1 and 4x1)'
   txt: (LU_data.shape[-2] == input.shape[0]) and (LU_data.shape[-2] == input.shape[-2])
 - cot: 'The error is triggered because ''LU_pivots'' is not a Tensor of scalar type
-    torch.int32. It was TensorDType.float32. We need to change the data type of ''LU_pivots''
+    torch.int32. It was  float32. We need to change the data type of ''LU_pivots''
     to torch.int32. Therefore, the constraint can be:'
   target: 'linalg.lu_solve: pivots should be a Tensor of scalar type torch.int32'
-  txt: type(LU_pivots) == torch.int32
+  txt: LU_pivots.dtype == torch.int32
 - cot: "The error is triggered because the 'LU_data' tensor should be a batch of square\
     \ matrices. This means that the last two dimensions of 'LU_data' should be equal.\
     \ Here, the 'LU_data' tensor's last two dimensions are 5 and 1, which are not\

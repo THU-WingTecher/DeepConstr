@@ -25,7 +25,7 @@ rules:
     tensor is of type int32. The tensor data types should be consistent to avoid this
     error. Hence, the constraints should be:'
   target: result type Float can't be cast to the desired output type Int
-  txt: (type(input)==int) or ((type(input)==Long) or (type(input)==type(out)))
+  txt: (input.dtype==int) or ((input.dtype==Long) or (input.dtype==out.dtype))
 time_cost: 407.77034091949463
 title: torch.sqrt
 tokens_used: 8309

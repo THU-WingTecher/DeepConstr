@@ -27,8 +27,7 @@ rules:
     with ''input'' tensor. Therefore, left : out.shape, out.rank op : == right : input.shape,
     input.rank'
   target: Trying to resize storage that is not resizable
-  txt: (out.resizable == True) and (out.rank==input.rank and all(out.shape[i]==input.shape[i]
-    for i in range(out.rank)))
+  txt: (out.rank==input.rank and all(out.shape[i]==input.shape[i] for i in range(out.rank)))
 time_cost: 134.82671809196472
 title: torch._C._fft.fft_irfft2
 tokens_used: 4073

@@ -17,11 +17,11 @@ rules:
 - cot: 'The error comes from trying to cast a float tensor to an integer tensor. You
     cannot directly cast a float to an int. So, the ''input'' tensor is of type float32,
     but the ''out'' tensor is expected to be of type int32. The ''input'' tensor needs
-    to be converted to int32 before being assigned to ''out''. Therefore, Left : type(input)
+    to be converted to int32 before being assigned to ''out''. Therefore, Left : input.dtype
     should be equal to Right : int32. Also, the type of ''out'' should be equal to
-    type(input) to ensure that they are of the same type.'
+    input.dtype to ensure that they are of the same type.'
   target: result type Float can't be cast to the desired output type Int
-  txt: (type(input)==int32) or (type(out)==type(input))
+  txt: (input.dtype==int32) or (out.dtype==input.dtype)
 - cot: 'The issue seems to be related to the ''input'' and ''out'' tensors. As per
     the error, there is an attempt to resize a tensor that is not resizable. The dimensions
     of the ''input'' tensor are [6, 8] and the ''out'' tensor are [2, 8]. It appears

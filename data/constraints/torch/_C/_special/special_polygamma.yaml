@@ -25,9 +25,9 @@ rules:
     data type should be changed from ''Float'' to ''Short''. Let''s see what the ''out''
     and ''input'' were. The type of ''out'' is ''Short'' and the type of ''input''
     is ''Float'', but we don''t know which one should be changed. Therefore, Left
-    : type(out) or type(input). Op : == Right : Float'
+    : out.dtype or input.dtype. Op : == Right : Float'
   target: result type Float can't be cast to the desired output type Short
-  txt: (input.dtype == out.dtype) and ((out.dtype != Short) and (type(input)==Float))
+  txt: (input.dtype == out.dtype) and ((out.dtype != Short) and (input.dtype==Float))
 - cot: 'The error is triggered because we''re trying to resize a storage that isn''t
     resizable. This means that the ''out'' tensor shape has to match the operation
     results. In this case, the result shape is the shape of ''input''. From the given

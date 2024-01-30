@@ -18,11 +18,11 @@ rules:
 - cot: 'The error is due to the "frac_cpu" operation not being implemented for ''Char''
     type. In this case, the input and output tensors are of ''int8'' type, which is
     equivalent to ''Char''. The operation "frac_cpu" should be applied on tensors
-    of a different type. Therefore, the Left : type(input) or type(out) should be
+    of a different type. Therefore, the Left : input.dtype or out.dtype should be
     corrected. It says that it cannot be ''int8'' for operation "frac_cpu", so Op
     : !=, and Right : ''int8''.'
   target: '"frac_cpu" not implemented for ''Char'''
-  txt: type(out) != 'int8'
+  txt: out.dtype != 'int8'
 - cot: The error is due to trying to resize a storage that is not resizable. Looking
     at the provided values, 'input' and 'out' tensors have different dimensions. In
     this case, the shape of 'out' must match the shape of 'input'. Hence, the constraint
@@ -31,10 +31,10 @@ rules:
   txt: input.shape == out.shape
 - cot: 'The error is triggered because the dtype of ''out'' is float32, but it is
     expected to be float64 (Double). So, the dtype of ''out'' should be corrected
-    to match the dtype of ''input''. Therefore, Left : type(out), Op : ==, and Right
-    : type(input).'
+    to match the dtype of ''input''. Therefore, Left : out.dtype, Op : ==, and Right
+    : input.dtype.'
   target: Found dtype Float but expected Double
-  txt: type(out) == type(input)
+  txt: out.dtype == input.dtype
 time_cost: 642.9052736759186
 title: torch.frac
 tokens_used: 10827

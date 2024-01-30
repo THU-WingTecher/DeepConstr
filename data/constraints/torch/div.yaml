@@ -34,29 +34,16 @@ rules:
   target: Trying to resize storage that is not resizable
   txt: (all(out.shape[i] == other.shape[i] for i in range(other.rank))) and ((out.rank==input.rank
     and out.rank==other.rank and all(out.shape[i]==input.shape[i] for i in range(out.rank))
-    and all(out.shape[i]==other.shape[i] for i in range(out.rank))) or (out.is_resizeable()
-    == False))
-- cot: 'The ZeroDivisionError occurs when a division or modulo operation is performed
-    with 0 as the divisor. Let''s see what the args were. It seems the tensors ''input'',
-    ''other'', and ''out'' are involved in some mathematical operation that could
-    involve division. The ''rounding_mode'' is set to ''trunc'', which means the operation
-    truncates the decimal part. However, this error would only occur if there is a
-    division by zero somewhere in the operation. Therefore, we should ensure that
-    ''other'' tensor should not contain any zero if it''s used as divisor in any operation.
-
-
-    The constraint can be expressed as:'
-  target: ZeroDivisionError
-  txt: all(x != 0 for x in other.flatten())
+    and all(out.shape[i]==other.shape[i] for i in range(out.rank))))
 - cot: 'The error is caused because the result type is ''ComplexFloat'' and it cannot
     be cast to the desired output type ''Float''. From the given values, ''input''
     and ''other'' are ''complex64'' type and ''out'' is ''float32'' type. The ''rounding_mode''
-    is ''floor''. Therefore, Left : type(input) and type(other), Op : ==, Right :
+    is ''floor''. Therefore, Left : input.dtype and other.dtype, Op : ==, Right :
     ComplexFloat, which means the types of ''input'' and ''other'' should be ''ComplexFloat''.
-    And Left : type(out), Op : ==, Right : Float, which means the type of ''out''
+    And Left : out.dtype, Op : ==, Right : Float, which means the type of ''out''
     should be ''Float''.'
   target: result type ComplexDouble can't be cast to the desired output type Float
-  txt: type(out)==Float
+  txt: out.dtype==Float
 - cot: "Error is triggered because the size of tensors at non-singleton dimension\
     \ 5 doesn't match. In the given values, 'input' tensor and 'other' tensor's dimension\
     \ 5 sizes are 4 and 8 respectively, which is causing the error. \n\nFor non-singleton\

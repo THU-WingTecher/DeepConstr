@@ -22,18 +22,18 @@ pass_rate: 0.96
 rules:
 - cot: 'The error is raised because the datatype of the ''out'' tensor is not as expected.
     The ''out'' tensor was expected to be of float type but it is of int32 type. So,
-    the data type of ''out'' tensor needs to be corrected. Therefore, Left : type(out),
+    the data type of ''out'' tensor needs to be corrected. Therefore, Left : out.dtype,
     which is the type of tensor ''out''. It says that the expected datatype is float,
     so Op : ==, and Right : float.'
   target: Expected out tensor to have dtype float, but got c10::Half instead
-  txt: type(out)==float
+  txt: out.dtype==float
 - cot: 'The error is triggered because the datatypes of m1 and m2 are not the same.
     It expects m1 and m2 to have the same datatype. In this case, m1 and m2 correspond
     to ''input'' and ''mat2''. Let''s see what the args were. It seems the datatypes
     of ''input'' and ''mat2'' are not same, so they should be corrected. Therefore,
-    Left : type(input). Op : ==, and Right : type(mat2).'
+    Left : input.dtype. Op : ==, and Right : type(mat2).'
   target: 'expected m1 and m2 to have the same dtype, but got: float != short int'
-  txt: type(input) == type(mat2)
+  txt: input.dtype == mat2.dtype
 - cot: "The error is because the shapes of mat1 and mat2 are not suitable for multiplication.\
     \ In matrix multiplication, the number of columns in the first matrix must be\
     \ equal to the number of rows in the second matrix. But here, mat1 and mat2 both\

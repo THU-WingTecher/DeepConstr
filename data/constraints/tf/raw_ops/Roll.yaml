@@ -36,20 +36,20 @@ rules:
   target: "Value for attr 'Taxis' of float is not in the list of allowed values: int32,\
     \ int64\n ; NodeDef: ; Op output:T; attr=T:type; attr=Tshift:type,allowed=[DT_INT32,\
     \ DT_INT64]; attr=Taxis:type,allowed=[DT_INT32, DT_INT64]> [Op:Roll] name:"
-  txt: type(input) in ["int32", "int64"] and type(shift) in ["int32", "int64"] and
-    type(axis) in ["int32", "int64"]
+  txt: input.dtype in ["int32", "int64"] and shift.dtype in ["int32", "int64"] and
+    axis.dtype in ["int32", "int64"]
 - cot: 'The error is caused because the ''shift'' value is expected to be a scalar
     or a 1-D vector, but it is neither. Currently, ''shift'' is a 1-D vector with
     3 elements. Therefore, the Left : len(shift), should be corrected. It says that
     shift can be a scalar or a 1-D vector, so Op : <=, and Right : 1. This means the
     length of shift should be less than or equal to 1.'
   target: "shift must be a scalar or a 1-D vector. Found: [5,3]\n [[]] [Op:Roll] name:"
-  txt: (len(shift) <= 1) or ((max(axis) < len(input.shape)) and (len(shift) <= 1))
+  txt: (len(shift) <= 1) or ((max(axis.shape) < len(input.shape)) and (len(shift) <= 1))
 - cot: The error is triggered because the 'Taxis' attribute has a float value, whereas
     it should be of type int32 or int64. Therefore, the type of 'axis' should be corrected.
-    The constraint could be "type(axis) == int32" or "type(axis) == int64".
+    The constraint could be "axis.dtype == int32" or "axis.dtype == int64".
   target: 'shift and axis must have the same size [Op:Roll] name:'
-  txt: type(axis) == int64
+  txt: axis.dtype == int64
 time_cost: 1624.8537366390228
 title: tf.raw_ops.Roll
 tokens_used: 16118

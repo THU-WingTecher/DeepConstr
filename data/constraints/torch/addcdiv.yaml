@@ -34,18 +34,18 @@ rules:
     ''out'', ''tensor1'', ''tensor2'', and ''value''. The tensor ''tensor1'' is of
     type ComplexFloat while ''input'' and ''out'' are of type Float. The operation
     cannot be performed due to this type mismatch. Therefore, Left : tensor1.dtype,
-    Op : ==, Right : "TensorDType.float32". Also, Left : out.dtype, Op : ==, Right
-    : "TensorDType.float32". The ''tensor2'' and ''value'' do not seem to be directly
+    Op : ==, Right : " float32". Also, Left : out.dtype, Op : ==, Right
+    : " float32". The ''tensor2'' and ''value'' do not seem to be directly
     related to this error.'
   target: result type ComplexFloat can't be cast to the desired output type Float
-  txt: tensor1.dtype == "TensorDType.float32"
+  txt: tensor1.dtype == " float32"
 - cot: 'The error occurs because of the integer division with addcdiv, which is no
     longer supported. The error message also suggests how the operation can be implemented
     for both integer and float inputs. The constraint can be extracted from this information.
     Considering the input types, type(''tensor1'') and type(''tensor2'') should be
     float. This is because the future addcdiv behavior only supports float inputs.
     Hence, if we want to use addcdiv, we should ensure that tensor1 and tensor2 are
-    float tensors. Therefore, Left : type(tensor1) and type(tensor2), Op : ==, Right
+    float tensors. Therefore, Left : tensor1.dtype and tensor2.dtype, Op : ==, Right
     : float.'
   target: 'Integer division with addcdiv is no longer supported, and in a future  release
     addcdiv will perform a true division of tensor1 and tensor2. The historic addcdiv
@@ -53,7 +53,7 @@ rules:
     for integer inputs and as (input + value * tensor1 / tensor2) for float inputs.
     The future addcdiv behavior is just the latter implementation: (input + value
     * tensor1 / tensor2), for all dtypes.'
-  txt: type(tensor2)=="float"
+  txt: tensor2.dtype=="float"
 - cot: 'Error is triggered because the size of tensors a and b at non-singleton dimension
     6 doesn''t match. Looking at the provided tensors, tensor ''input'' has size 9
     and tensor ''tensor1'' has size 2 at dimension 6. Broadcasting would require these

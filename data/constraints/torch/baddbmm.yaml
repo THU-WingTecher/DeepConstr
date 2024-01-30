@@ -46,15 +46,6 @@ rules:
     \ is batch1.ndims() and out.ndims(). \n\nThe constraints would thus be:"
   target: Dimension out of range (expected to be in range of [-1, 0], but got 1)
   txt: out.ndims() > 1
-- cot: 'The error suggests that the number of sizes provided (3) is less than the
-    number of dimensions in the tensor (5). This information is referring to the ''expand''
-    function attempting to reshape a tensor of size [4,4,4,7,5] to [10,9,9]. The dimensions
-    of the target size is less than the dimensions of the original tensor. Therefore,
-    Left: len(size), Op: ''>='', Right: input.dim.'
-  target: 'expand(torch.FloatTensor{[4, 4, 4, 7, 5]}, size=[10, 9, 9]): the number
-    of sizes provided (3) must be greater or equal to the number of dimensions in
-    the tensor (5)'
-  txt: len(size) >= input.dim
 - cot: 'Based on the error, it seems that the tensor sizes are not matching at non-singleton
     dimension 2. The expanded size of the tensor (6) needs to match the existing size
     (2). Therefore, the tensor''s dimensions should be checked and made the same where

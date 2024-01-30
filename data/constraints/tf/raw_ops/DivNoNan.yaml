@@ -24,12 +24,12 @@ rules:
 - cot: 'The error occurs because the function is trying to divide a float tensor with
     an int16 tensor. However, both tensors in the operation must have the same data
     type. Let''s see what the args were. The ''x'' tensor is float32, but the ''y''
-    tensor is of type int16. Therefore, Left : type(y), which is the type of tensor
+    tensor is of type int16. Therefore, Left : y.dtype, which is the type of tensor
     y, should be corrected. It says that should be equal to the datatype of tensor
-    x, so Op : ==, and Right : type(x).'
+    x, so Op : ==, and Right : x.dtype.'
   target: 'cannot compute DivNoNan as input #1(zero-based) was expected to be a float
     tensor but is a int16 tensor name:'
-  txt: type(y)==type(x)
+  txt: y.dtype==x.dtype
 - cot: The error is due to the shapes of 'x' and 'y' not being broadcastable. For
     two dimensions to be compatible for broadcasting, one of them must be either 1
     or the same as the other. Therefore, for each dimension 'i', either x.shape[i]
@@ -42,12 +42,12 @@ rules:
 - cot: 'The error is due to the incorrect datatype ''T'' of the tensors ''x'' and
     ''y''. The ''T'' attribute of the tensors has a value of int32 which is not in
     the list of allowed values: half, float, bfloat16, double, complex64, complex128.
-    Therefore, type(T) for both the tensors should be corrected to be one of the allowed
+    Therefore, T.dtype for both the tensors should be corrected to be one of the allowed
     types. Op : in, and Right : [half, float, bfloat16, double, complex64, complex128].'
   target: "Value for attr 'T' of int32 is not in the list of allowed values: half,\
     \ float, bfloat16, double, complex64, complex128\n ; NodeDef: ; Op z:T; attr=T:type,allowed=>\
     \ name:"
-  txt: type(y) in [half, float, bfloat16, double, complex64, complex128]
+  txt: y.dtype in [half, float, bfloat16, double, complex64, complex128]
 time_cost: 401.36342310905457
 title: tf.raw_ops.DivNoNan
 tokens_used: 6287

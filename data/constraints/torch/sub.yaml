@@ -37,19 +37,19 @@ rules:
     Looking at the arguments, ''input'' and ''other'' are of type Float and ''out''
     is of type Bool. So, we must ensure that the type of ''out'' is consistent with
     the type of ''input'' and ''other''. Therefore, the dtype of ''out'' should be
-    changed from ''Bool'' to ''Float''. Left : type(out), op : ==, comparator : type(input)
-    or type(other)'
+    changed from ''Bool'' to ''Float''. Left : out.dtype, op : ==, comparator : input.dtype
+    or other.dtype'
   target: result type Float can't be cast to the desired output type Bool
-  txt: (type(out)==type(input)) and (type(out)==type(other))
+  txt: (out.dtype==input.dtype) and (out.dtype==other.dtype)
 - cot: 'The error indicates that the argument ''alpha'' should not be a floating point
     number when the input tensors are integral. The provided alpha value is 1.17428,
     which is a floating point number, and the input tensors are of int64 type. So,
-    the type of alpha must be corrected. Therefore, Left : type(alpha), Op : !=, and
+    the type of alpha must be corrected. Therefore, Left : alpha.dtype, Op : !=, and
     Right : float. Also, alpha should be an integer when input is integral, so Left
-    : type(alpha), Op : ==, and Right : int when type(input) == int.'
+    : alpha.dtype, Op : ==, and Right : int when input.dtype == int.'
   target: For integral input tensors, argument alpha must not be a floating point
     number.
-  txt: type(alpha) != float
+  txt: alpha.dtype != float
 time_cost: 16184.411197662354
 title: torch.sub
 tokens_used: 22798

@@ -83,10 +83,10 @@ rules:
     \ like the stride is too large or the kernel size is too large compared to the\
     \ input size. Therefore, the stride and kernel size should be smaller or equal\
     \ to the input size and the padding should be less than or equal to (kernel size\
-    \ - 1)/2. \nLeft : input['stride'][0], op : <=, right : input['input'].shape[2]"
+    \ - 1)/2. \nLeft : stride[0], op : <=, right : input.shape[2]"
   target: 'Given input size: (8x1x6). Calculated output size: (8x1x0). Output size
     is too small'
-  txt: (kernel_size <= input.shape[2]) and (input['stride'][0] <= input['input'].shape[2])
+  txt: (kernel_size <= input.shape[2]) and (stride[0] <= input.shape[2])
 - cot: 'The error is triggered because of a negative pad value. The padding parameter
     should be non-negative. Looking at the values, it seems padding received a negative
     value of -500. Therefore, the Left : padding must be corrected. Since the error

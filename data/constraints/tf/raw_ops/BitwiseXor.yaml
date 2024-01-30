@@ -24,22 +24,22 @@ rules:
     include: int8, int16, int32, int64, uint8, uint16, uint32, uint64. Therefore,
     the type of ''T'' contained in ''x'' or ''y'' should be checked and corrected
     accordingly. Looking at ''args'', ''x'' has the type complex64 and ''y'' has the
-    type int32. Hence, Left : type(x) and type(y), should be checked. Operation :
+    type int32. Hence, Left : x.dtype and y.dtype, should be checked. Operation :
     in, and Right : [int8, int16, int32, int64, uint8, uint16, uint32, uint64].'
   target: "Value for attr 'T' of float is not in the list of allowed values: int8,\
     \ int16, int32, int64, uint8, uint16, uint32, uint64\n ; NodeDef: ; Op z:T; attr=T:type,allowed=;\
     \ is_commutative=true> name:"
-  txt: type(x) in [int8, int16, int32, int64, uint8, uint16, uint32, uint64] and type(y)
+  txt: x.dtype in [int8, int16, int32, int64, uint8, uint16, uint32, uint64] and y.dtype
     in [int8, int16, int32, int64, uint8, uint16, uint32, uint64]
 - cot: 'The error comes up because the operation is trying to perform on an int8 tensor
     and a uint8 tensor. However, both tensors in the created args should have the
     same data type. Let''s see what the args were. The ''x'' tensor is of int8, but
-    the ''y'' tensor is of uint8. Thus, Left : type(y), which is the type of tensor
+    the ''y'' tensor is of uint8. Thus, Left : y.dtype, which is the type of tensor
     y, should be corrected. It needs to be equivalent to the datatype of tensor x,
-    so Op : ==, and Right : type(x).'
+    so Op : ==, and Right : x.dtype.'
   target: 'cannot compute BitwiseXor as input #1(zero-based) was expected to be a
     int8 tensor but is a uint8 tensor name:'
-  txt: type(y)==type(x)
+  txt: y.dtype==x.dtype
 - cot: 'The error is due to an input tensor having a rank (number of dimensions) greater
     than 5. Both tensors ''x'' and ''y'' are considered, therefore, the dimension
     of both tensors should be checked. Therefore, Left : len(x.shape) which is the

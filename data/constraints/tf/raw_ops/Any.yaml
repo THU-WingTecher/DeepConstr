@@ -34,7 +34,7 @@ rules:
   target: "Value for attr 'Tidx' of float is not in the list of allowed values: int32,\
     \ int64\n ; NodeDef: ; Op output:bool; attr=keep_dims:bool,default=false; attr=Tidx:type,default=DT_INT32,allowed=[DT_INT32,\
     \ DT_INT64]> [Op:Any] name:"
-  txt: type(input) in ["int32", "int64"] and type(axis) in ["int32", "int64"]
+  txt: input.dtype in ["int32", "int64"] and axis.dtype in ["int32", "int64"]
 time_cost: 542.9655756950378
 title: tf.raw_ops.Any
 tokens_used: 5640

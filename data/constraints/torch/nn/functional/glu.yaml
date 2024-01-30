@@ -34,9 +34,9 @@ rules:
     type. The ''input'' tensor is of type int32. Therefore, the tensor should not
     be of type int. The function is trying to operate on ''dim'' 3 which the tensor
     has. So, the ''dim'' value is valid but the tensor type is not. Therefore, Left
-    : type(input), Op : !=, Right : ''Int'''
+    : input.dtype, Op : !=, Right : ''Int'''
   target: '"glu_cpu" not implemented for ''Int'''
-  txt: type(input) != 'Int'
+  txt: input.dtype != 'Int'
 time_cost: 817.7180304527283
 title: torch.nn.functional.glu
 tokens_used: 13508

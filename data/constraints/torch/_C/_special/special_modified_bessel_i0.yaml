@@ -14,15 +14,6 @@ infered_times: 25
 package: torch
 pass_rate: 0.88
 rules:
-- cot: 'The error is triggered because an operation is attempting to resize a storage
-    that isn''t resizable. Examining the values, it appears ''input'' and ''out''
-    are tensors with different dimensions. It is not clear which tensor is causing
-    the problem, so both should be checked. Therefore, Left : ''input'' and ''out''.
-    The operation that we need to ensure to not cause this error would be a resizing
-    operation, so Op : is_resizable. Since the storage should not be resizable, Right
-    : False.'
-  target: Trying to resize storage that is not resizable
-  txt: '''input''.is_resizable == False'
 - cot: 'The error is due to the function "modified_bessel_i0_cpu" not being implemented
     for the data type ''Half'', which corresponds to float16. In this case, ''input''
     is a tensor of type float16. To prevent this error, the input tensor''s data type

@@ -36,12 +36,12 @@ rules:
     getting a float tensor. Looking at the values, ''logits'' and ''num_samples''
     are both float tensors. The ''num_samples'' tensor seems to be the problem as
     it is expected to be an integer tensor for the Multinomial operation. Therefore,
-    the data type of num_samples should be corrected. Left : type(num_samples), which
+    the data type of num_samples should be corrected. Left : num_samples.dtype, which
     is the type of tensor num_samples. It says that should be equal to int32, so Op
     : ==, and Right : int32.'
   target: 'cannot compute Multinomial as input #1(zero-based) was expected to be a
     int32 tensor but is a float tensor [Op:Multinomial] name:'
-  txt: type(num_samples) == int32
+  txt: num_samples.dtype == int32
 - cot: 'The error is due to the fact that logits is not a matrix. The rank of a tensor
     is the length of its shape, and the rank of a matrix is 2. Therefore, the Left
     : len(logits.shape) should be corrected to 2. Ops : ''=='', Right : 2. Also, it

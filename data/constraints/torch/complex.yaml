@@ -18,15 +18,7 @@ infered_history: []
 infered_times: 5
 package: torch
 pass_rate: 0.0
-rules:
-- cot: The error occurs because the function expects a complex number type for 'out',
-    but it received a float. In this case, 'out' should have been a complex type that
-    matches the precision of 'imag' and 'real'. Therefore, the constraint for 'out'
-    would be that it needs to have the same type as 'imag' (or 'real').
-  target: Expected object of scalar type ComplexHalf but got scalar type Float for
-    argument 'out'
-  txt: (type(out) == type(imag)) and ((type(out) == torch.complex64) and (len(out.shape)
-    >= len(imag.shape)))
+rules : {}
 time_cost: 420.81375670433044
 title: torch.complex
 tokens_used: 3209

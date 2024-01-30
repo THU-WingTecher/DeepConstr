@@ -24,16 +24,6 @@ infered_times: 21
 package: tf
 pass_rate: 0.92
 rules:
-- cot: 'The error is due to duplicate dimensions in the axis. Let''s take a look at
-    the args. The axis contains duplicate dimensions, specifically the dimension 2.
-    To avoid this error, we need to ensure that all elements in the axis are unique.
-    Therefore, Left : axis, should be corrected. The axis should not contain duplicate
-    values, so Op : ''in'', and Right : set(axis). Also, it is stated that dimension
-    2 is duplicate, so Op : ''not in'', and Right : [2 if axis.count(2) > 1 else i
-    for i in axis].'
-  target: 'Error: Invalid reduction arguments: Axes contains duplicate dimension:
-    2 [Op:Min]'
-  txt: '[2 if axis.count(2) > 1 else i for i in axis] not in axis'
 - cot: The error arises because the attribute 'T' of the input tensor is of type bool,
     but it needs to be of a different type. The allowed types are float, double, int32,
     uint8, int16, int8, int64, bfloat16, uint16, half, uint32, uint64, qint8, quint8,
@@ -42,14 +32,14 @@ rules:
     to False and does not need to be changed.
   target: "Error: Value for attr 'T' of bool is not in the list of allowed values:\
     \ float, double, int32, uint8, int16, int8, int64, bfloat16, uint16, half, uint32,\
-    \ uint64, qint8, quint8, qint32, qint16, quint16\n ; NodeDef: ; Op output:T; attr=keep_dims:bool,default=false;\
+    \ uint64, qint8, quint8, qint32, qint16\n ; NodeDef: ; Op output:T; attr=keep_dims:bool,default=false;\
     \ attr=T:type,allowed=[DT_FLOAT, DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16, DT_INT8,\
     \ DT_INT64, DT_BFLOAT16, DT_UINT16, DT_HALF, DT_UINT32, DT_UINT64, DT_QINT8, DT_QUINT8,\
     \ DT_QINT32, DT_QINT16, DT_QUINT16]; attr=Tidx:type,default=DT_INT32,allowed=[DT_INT32,\
     \ DT_INT64]> [Op:Min]"
-  txt: type(input) in ["float", "double", "int32", "uint8", "int16", "int8", "int64",
+  txt: input.dtype in ["float", "double", "int32", "uint8", "int16", "int8", "int64",
     "bfloat16", "uint16", "half", "uint32", "uint64", "qint8", "quint8", "qint32",
-    "qint16", "quint16"]
+    "qint16"]
 - cot: 'The error is due to an invalid reduction dimension. Looking at the args, the
     function is trying to reduce on dimension 500, but the input tensor has 0 dimensions.
     Therefore, the reduction dimension (axis) should be less than the dimensions of
@@ -57,7 +47,7 @@ rules:
     problem, so Op : <, and Right : input.rank. Also, it should be non-negative, so
     Op : >=, and Right : 0.'
   target: 'Error: Invalid reduction dimension (500 for input with 0 dimension(s) [Op:Min]'
-  txt: ((axis < len(input))) and ((all(i < input.rank for i in axis)) and (all(i >=
+  txt: ((all(i < input.rank for i in axis)) and (all(i >=
     0 for i in axis)))
 time_cost: 407.34678387641907
 title: tf.raw_ops.Min

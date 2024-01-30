@@ -36,12 +36,12 @@ rules:
 - cot: 'The error arises because the function BatchMatMulV2 is trying to perform an
     operation on a int16 tensor and a bool tensor. However, both tensors in the operation
     must have the same data type. Let''s see what the args were. The ''x'' tensor
-    is int16, but the ''y'' tensor is of type bool. Therefore, Left : type(y), which
+    is int16, but the ''y'' tensor is of type bool. Therefore, Left : y.dtype, which
     is the type of tensor y, should be corrected. It says that should be equal to
-    the datatype of tensor x, so Op : ==, and Right : type(x).'
+    the datatype of tensor x, so Op : ==, and Right : x.dtype.'
   target: 'cannot compute BatchMatMulV2 as input #1(zero-based) was expected to be
     a int16 tensor but is a float tensor name:'
-  txt: type(y) == type(x)
+  txt: y.dtype == x.dtype
 - cot: 'The error is triggered because In[0] and In[1] don''t have compatible batch
     dimensions. In[0] and In[1] refer to ''x'' and ''y'' respectively. It seems ''x''
     and ''y'' do not have same len() and shape. Therefore, you should correct len(x),

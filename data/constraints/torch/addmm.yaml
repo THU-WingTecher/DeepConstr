@@ -49,15 +49,6 @@ rules:
     have more than one dimension. So, Op : >, and Right : 1.'
   target: mat1 must be a matrix, got 1-D tensor
   txt: (len(mat1.shape)==2) and ((len(mat2.shape) >= 2) and (len(mat1.shape)>1))
-- cot: 'The error is indicating that the number of sizes provided for the tensor expansion
-    function is less than the number of dimensions in the tensor. In this case, 2
-    sizes were provided, but the tensor has 7 dimensions. Therefore, the sizes provided
-    for tensor expansion need to be greater or equal to the tensor dimensions. A possible
-    constraint could be: Left: len(size), Op: ''>='', Right: input.ndim.'
-  target: 'expand(torch.FloatTensor{[8, 6, 10, 3, 1, 2, 7]}, size=[10, 9]): the number
-    of sizes provided (2) must be greater or equal to the number of dimensions in
-    the tensor (7)'
-  txt: len(size) >= input.ndim
 - cot: 'The error is raised because the expanded size of the tensor (2) is not matching
     the existing size (10) at non-singleton dimension 1. So, the constraints are,
     Left : mat2.shape[1], Op : ==, Right : mat1.shape[1] or input.shape[1]'
@@ -90,7 +81,7 @@ rules:
     \ short int. \n\nSo, the logical relationship constraint that can be generated\
     \ to prevent this error is:"
   target: Expected out tensor to have dtype short int, but got float instead
-  txt: type(out) == type(input)
+  txt: out.dtype == input.dtype
 time_cost: 34921.99036860466
 title: torch.addmm
 tokens_used: 44799

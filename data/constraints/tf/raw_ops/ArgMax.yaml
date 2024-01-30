@@ -29,14 +29,14 @@ rules:
     0.'
   target: 'dim must be a scalar, but received tensor of shape: [4] [Op:ArgMax]'
   txt: (len(input) > 0) or (input.dim == 0)
-- cot: 'The error arises because the input tensor type (''TensorDType.qint32'') and
+- cot: 'The error arises because the input tensor type ('' qint32'') and
     device ('''') are not compatible with any of the registered kernels for the operation
     ''ArgMax''. For this operation, the input tensor should be of a type listed in
     the registered kernels (''DT_FLOAT'', ''DT_DOUBLE'', ''DT_INT32'', ''DT_UINT8'',
     ''DT_INT16'', ''DT_INT8'', ''DT_INT64'', ''DT_BOOL'', ''DT_QINT8'', ''DT_QUINT8'',
     ''DT_QINT32'', ''DT_BFLOAT16'', ''DT_UINT16'', ''DT_HALF'', ''DT_UINT32'', ''DT_UINT64'')
     and the operation should be run on a device that also matches with the registered
-    kernels (''XLA_CPU_JIT'', ''XLA_GPU_JIT'', ''GPU'', ''CPU''). Hence, Left : type(input),
+    kernels (''XLA_CPU_JIT'', ''XLA_GPU_JIT'', ''GPU'', ''CPU''). Hence, Left : input.dtype,
     Op : in, and Right : [''DT_FLOAT'', ''DT_DOUBLE'', ''DT_INT32'', ''DT_UINT8'',
     ''DT_INT16'', ''DT_INT8'', ''DT_INT64'', ''DT_BOOL'', ''DT_QINT8'', ''DT_QUINT8'',
     ''DT_QINT32'', ''DT_BFLOAT16'', ''DT_UINT16'', ''DT_HALF'', ''DT_UINT32'', ''DT_UINT64'']
@@ -100,10 +100,9 @@ rules:
     \ device='CPU'; T in [DT_UINT64]; output_type in [DT_INT16]\n device='CPU'; T\
     \ in [DT_UINT64]; output_type in [DT_INT32]\n device='CPU'; T in [DT_UINT64];\
     \ output_type in [DT_INT64]\n [Op:ArgMax]"
-  txt: type(input) in ['DT_FLOAT', 'DT_DOUBLE', 'DT_INT32', 'DT_UINT8', 'DT_INT16',
+  txt: input.dtype in ['DT_FLOAT', 'DT_DOUBLE', 'DT_INT32', 'DT_UINT8', 'DT_INT16',
     'DT_INT8', 'DT_INT64', 'DT_BOOL', 'DT_QINT8', 'DT_QUINT8', 'DT_QINT32', 'DT_BFLOAT16',
-    'DT_UINT16', 'DT_HALF', 'DT_UINT32', 'DT_UINT64'] and device in ['XLA_CPU_JIT',
-    'XLA_GPU_JIT', 'GPU', 'CPU']
+    'DT_UINT16', 'DT_HALF', 'DT_UINT32', 'DT_UINT64']
 time_cost: 805.6617324352264
 title: tf.raw_ops.ArgMax
 tokens_used: 11616

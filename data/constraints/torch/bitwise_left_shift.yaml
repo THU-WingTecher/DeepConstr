@@ -29,9 +29,9 @@ rules:
     to the desired output type Int (int32). Let''s examine the types of values ''input'',
     ''other'', and ''out''. The dtype of ''input'' is float16, ''other'' is int16,
     and ''out'' is int32. Therefore, to prevent this error, the dtype of ''input''
-    and ''out'' should be the same. Left : type(input), op : ==, comparator : type(out)'
+    and ''out'' should be the same. Left : input.dtype, op : ==, comparator : out.dtype'
   target: result type Half can't be cast to the desired output type Int
-  txt: (input.dtype in [Float32, Float64]) and ((type(other)==type(out)) and (type(input)==type(out)))
+  txt: (input.dtype in [Float32, Float64]) and ((other.dtype==out.dtype) and (input.dtype==out.dtype))
 - cot: 'The error is triggered because we are trying to resize a storage that is not
     resizable. Let''s see what the args were. From the given values, ''input'', ''other'',
     and ''out'' are tensors. In this operation, the output tensor ''out'' must match
@@ -49,7 +49,7 @@ rules:
     as float32, which is not compatible. Therefore, the type of these tensors should
     be corrected to a type that is compatible with the 'lshift_cpu' operation.
   target: '"lshift_cpu" not implemented for ''Float'''
-  txt: type(out) != 'float32'
+  txt: out.dtype != 'float32'
 time_cost: 6384.06613612175
 title: torch.bitwise_left_shift
 tokens_used: 28444

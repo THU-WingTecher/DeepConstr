@@ -30,7 +30,7 @@ rules:
     1. If the operation cannot be adjusted, then the dtype of ''out'' should be float.
     So, Left : out.dtype, Op : ==, Right : float'
   target: result type Float can't be cast to the desired output type Int
-  txt: (type(out)==type(other)) and (out.dtype==float)
+  txt: (out.dtype==other.dtype) and (out.dtype==float)
 - cot: The error message "Trying to resize storage that is not resizable" is suggesting
     that there's an attempt to change the size of a tensor that cannot be resized.
     In this context, 'input', 'other', and 'out' are tensors with different dimensions.
@@ -41,12 +41,7 @@ rules:
     match or be compatible as per the operation requirements. Thus, the constraint
     here is that the dimensions of the tensors should be compatible.
   target: Trying to resize storage that is not resizable
-  txt: ((out.resizable == True) and ((input.shape == other.shape) and ((out.shape
-    == other.shape) and ((out.dim == input.dim) or (len(input.shape) == len(other.shape))))))
-    or ((input.shape == other.shape) and ((out.shape == other.shape) and ((out.dim
-    == input.dim) or (len(input.shape) == len(other.shape))))) or ((out.resizable
-    == True) and ((input.shape == other.shape) and ((out.shape == other.shape) and
-    ((out.dim == input.dim) or (len(input.shape) == len(other.shape))))))
+  txt: ((input.shape == other.shape) and (out.shape == other.shape) and (out.dim == input.dim) and len(input.shape) == len(other.shape))
 time_cost: 3156.905944108963
 title: torch._C._special.special_xlog1py
 tokens_used: 14444

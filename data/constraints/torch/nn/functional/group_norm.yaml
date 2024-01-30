@@ -34,12 +34,12 @@ rules:
     of int32, ''weight'' had a dtype of float32, and ''bias'' had a dtype of int8.
     However, the system expects all parameters to have a scalar type of Float. Therefore,
     the dtypes of all the parameters should be consistent and of type Float. Left
-    : type(input), op : ==, comparator : type(weight), type(bias), type(eps)'
+    : input.dtype, op : ==, comparator : weight.dtype, bias.dtype, type(eps)'
   target: 'mixed dtype (CPU): expect parameter to have scalar type of Float'
-  txt: type(input)==type(weight)
+  txt: input.dtype==weight.dtype
 - cot: 'The error is triggered by an unsupported implementation of GroupNormKernelImpl
     for ''Char'' type. Looking at the args, the problematic tensor seems to be of
-    TensorDType.int8 type. Therefore, the Tensors should not be of ''Char'' type or
+     int8 type. Therefore, the Tensors should not be of ''Char'' type or
     specifically, int8 type. Therefore, Left : input.dtype, weight.dtype, bias.dtype.
     It says that GroupNormKernelImpl not implemented for ''Char'', so Op : !=, and
     Right : ''Char'' or ''int8''.'
@@ -49,9 +49,9 @@ rules:
     is found. Let''s see the what''s args were. The dtype of ''input'' and ''weight''
     is float64, which is Double type, and the dtype of ''bias'' is float32, which
     is Float type. Therefore, the dtype of ''bias'' should be consistent with ''input''
-    and ''weight''. Left : type(bias), op : ==, comparator : type(input) or type(weight)'
+    and ''weight''. Left : bias.dtype, op : ==, comparator : input.dtype or weight.dtype'
   target: expected scalar type Double but found Float
-  txt: type(bias)==type(input)
+  txt: bias.dtype==input.dtype
 - cot: 'The error message indicates that the ''weight'' tensor is expected to be a
     vector with size equal to the number of channels in the ''input'' tensor. However,
     the ''weight'' tensor has an empty shape [], and ''input'' tensor has a shape

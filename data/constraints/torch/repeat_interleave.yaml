@@ -89,15 +89,15 @@ rules:
     which is incompatible. Therefore, the type of ''input'' and ''repeats'' should
     be corrected to match an acceptable type. Op: ''type'', and Right: ''Not Float''.'
   target: '"repeat_interleave_cpu" not implemented for ''Float'''
-  txt: type(input) != "Float" and type(repeats) != "Float"
+  txt: input.dtype != "Float" and repeats.dtype != "Float"
 
 - cot: 'The error arises from the ''repeats'' attribute of the tensor, which is of
     type float16 (Half). However, the function "repeat_interleave_cpu" is not implemented
     for tensors of type ''Half''. Therefore, the tensor type of ''repeats'' should
-    be changed from ''Half'' to a compatible type. The Left : type(repeats), Op :
+    be changed from ''Half'' to a compatible type. The Left : repeats.dtype, Op :
     !=, Right : "Half".'
   target: '"repeat_interleave_cpu" not implemented for ''Half'''
-  txt: type(repeats) not in ["Half", "Short", "Bool", "Double"]
+  txt: repeats.dtype not in ["Half", "Short", "Bool", "Double"]
 - cot: 'The error is due to the ''repeats'' tensor having a negative value. ''Repeats''
     should always contain non-negative values. Therefore, the symbol is ''repeats''.
     The Op is ''>='', and the Right is ''0''. This implies that all values in the
@@ -110,14 +110,7 @@ rules:
     Right : repeats.shape[0]'
   target: repeats must have the same size as input along dim
   txt: input.shape[dim] == repeats.shape[0]
-- cot: The error is due to the use of an unsupported ScalarType 'BFloat16'. The tensor
-    'repeats' is of type BFloat16 which might not be supported by the function or
-    operation being performed. Therefore, the dtype of 'repeats' must be changed to
-    a supported type. The constraint to be generated is to ensure that the dtype of
-    all tensors involved in the operation are supported by that operation. The 'repeats'
-    tensor should have a dtype that is supported by the operation.
-  target: Got unsupported ScalarType BFloat16
-  txt: repeats.dtype in SUPPORTED_DTYPES
+
 time_cost: 13686.435838222504
 title: torch.repeat_interleave
 tokens_used: 68580

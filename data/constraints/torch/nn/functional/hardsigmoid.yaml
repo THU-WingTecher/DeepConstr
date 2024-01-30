@@ -23,7 +23,7 @@ rules:
     should also be checked to make sure that it is appropriate for the operation and
     the data type of the ''input'' tensor. The constraint could be:'
   target: '"hardsigmoid_cpu" not implemented for ''Int'''
-  txt: type(input) != 'Int32'
+  txt: input.dtype != 'Int32'
 time_cost: 218.19507837295532
 title: torch.nn.functional.hardsigmoid
 tokens_used: 1961

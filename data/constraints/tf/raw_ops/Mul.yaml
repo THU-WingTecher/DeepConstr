@@ -24,10 +24,10 @@ rules:
     an issue with the ''complex32'' attribute from the tensorflow module. Let''s check
     what the args were. As the ''complex32'' is not supported by tensorflow, the dtype
     of ''x'' and ''y'' should be changed to a supported type such as ''float32'' or
-    ''int32''. So, the constraints would be Left : type(x) and type(y). Op : == Right
+    ''int32''. So, the constraints would be Left : x.dtype and y.dtype. Op : == Right
     : ''float32'' or ''int32'''
   target: 'rror: module ''tensorflow'' has no attribute ''complex32'''
-  txt: type(y)=='float32' or type(y)=='int32'
+  txt: y.dtype=='float32' or y.dtype=='int32'
 - cot: 'The error is caused because the operation is trying to perform multiplication
     on tensors ''x'' and ''y'' that have ranks greater than 5. Let''s see what the
     ranks were. The ''x'' tensor has a rank of 8 and the ''y'' tensor has a rank of
@@ -57,7 +57,7 @@ rules:
     ''x''. The logical constraint will be:'
   target: 'rror: cannot compute Mul as input #1(zero-based) was expected to be a float
     tensor but is a half tensor [Op:Mul] name:'
-  txt: type(y) == type(x)
+  txt: y.dtype == x.dtype
 time_cost: 1747.096974849701
 title: tf.raw_ops.Mul
 tokens_used: 14697

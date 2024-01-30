@@ -13,9 +13,9 @@ rules:
     which is not implemented. Therefore, the type of ''input'' should be changed from
     ''Int'' to a compatible type for ''log_sigmoid_cpu''. Let''s see what the args
     were. The type of ''input'' is ''Int'', but we don''t know the acceptable type
-    for ''log_sigmoid_cpu''. Therefore, Left : type(input). Op : != Right : Int'
+    for ''log_sigmoid_cpu''. Therefore, Left : input.dtype. Op : != Right : Int'
   target: '"log_sigmoid_cpu" not implemented for ''Int'''
-  txt: type(input) != Int
+  txt: input.dtype != Int
 time_cost: 213.67317008972168
 title: torch._C._nn.log_sigmoid
 tokens_used: 3536

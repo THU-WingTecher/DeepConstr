@@ -23,17 +23,11 @@ rules:
 - cot: 'The error occurs due to the mismatch of the expected output type and the actual
     result type. The function expects a boolean type but got a float type. Let''s
     see what the args were. When ''input'' and ''other'' are float type, ''out'' should
-    also be float type to prevent this error. Therefore, Left : type(out) Op : ==
-    Right : type(input), float'
+    also be float type to prevent this error. Therefore, Left : out.dtype Op : ==
+    Right : input.dtype, float'
   target: result type Float can't be cast to the desired output type Bool
-  txt: (other.dtype == out.dtype) and ((input.dtype == out.dtype) or (type(out)==float))
-- cot: 'The error states that the size of tensor ''a'' which is 9, doesn''t match
-    the size of tensor ''b'' which is 5. They must have the same size at non-singleton
-    dimension 0. Here, ''a'' represents ''input'' and ''b'' represents ''other''.
-    Therefore, Left : input.size(0), Op : == and Right : other.size(0).'
-  target: The size of tensor a (9) must match the size of tensor b (5) at non-singleton
-    dimension 0
-  txt: input.size(0) == other.size(0)
+  txt: (other.dtype == out.dtype) and ((input.dtype == out.dtype) or (out.dtype==float))
+
 - cot: 'The error is triggered because ''out'' tensor is trying to resize its storage.
     From the values, we can see that ''out'' tensor has a shape of [4] while ''input''
     and ''other'' tensors have a shape of [10]. The operation might be expecting ''out''

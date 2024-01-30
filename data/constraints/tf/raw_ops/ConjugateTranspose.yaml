@@ -30,7 +30,7 @@ rules:
   target: "Value for attr 'Tperm' of float is not in the list of allowed values: int32,\
     \ int64\n ; NodeDef: ; Op y:T; attr=T:type; attr=Tperm:type,default=DT_INT32,allowed=[DT_INT32,\
     \ DT_INT64]> [Op:ConjugateTranspose] name:"
-  txt: type(perm) in ["int32", "int64"]
+  txt: perm.dtype in ["int32", "int64"]
 - cot: 'The error is due to the rank of ''perm'' being more than 1. The operation
     ''ConjugateTranspose'' requires the ''perm'' to be of rank 1 but it has the shape
     [9,2,6,6] which is of rank 4. So, to prevent this error, the rank of ''perm''

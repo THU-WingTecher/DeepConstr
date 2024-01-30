@@ -26,25 +26,25 @@ rules:
 - cot: 'Based on the provided values, the error arises because the attribute of ''x''
     and ''y'' is a float, but it is expected to be one of int8, int16, int32, int64,
     uint8, uint16, uint32, uint64. The tensors ''x'' and ''y'' are both provided as
-    float32, which is not compatible. So, the Left : type(x) or type(y) should be
+    float32, which is not compatible. So, the Left : x.dtype or y.dtype should be
     corrected to match one of the allowed types. Op : in, and Right : [int8, int16,
     int32, int64, uint8, uint16, uint32, uint64].'
   target: "Value for attr 'T' of float is not in the list of allowed values: int8,\
     \ int16, int32, int64, uint8, uint16, uint32, uint64\n ; NodeDef: ; Op z:T; attr=T:type,allowed=[DT_INT8,\
     \ DT_INT16, DT_INT32, DT_INT64, DT_UINT8, DT_UINT16, DT_UINT32, DT_UINT64]> [Op:LeftShift]\
     \ name:"
-  txt: type(x) in ["int8", "int16", "int32", "int64", "uint8", "uint16", "uint32",
-    "uint64"] and type(y) in ["int8", "int16", "int32", "int64", "uint8", "uint16",
+  txt: x.dtype in ["int8", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+    "uint64"] and y.dtype in ["int8", "int16", "int32", "int64", "uint8", "uint16",
     "uint32", "uint64"]
 - cot: 'The error arises because the function is trying to perform a operation on
     a int16 tensor and a uint32 tensor. However, both tensors in generated args must
     have the same data type. Let''s see what the args were. the ''x'' tensor is uint16,
-    but the ''y'' tensor is of type uint64. Therefore, Left : type(y), which is the
+    but the ''y'' tensor is of type uint64. Therefore, Left : y.dtype, which is the
     type of tensor y, should be corrected. It says that should be equal to the datatype
-    of tensor x, so Op : ==, and Right : type(x).'
+    of tensor x, so Op : ==, and Right : x.dtype.'
   target: 'cannot compute LeftShift as input #1(zero-based) was expected to be a int16
     tensor but is a uint32 tensor [Op:LeftShift] name:'
-  txt: type(y) == type(x)
+  txt: y.dtype == x.dtype
 - cot: 'The error says that the input for a dynamic binary or n-ary operation was
     of a rank greater than 5. Looking at the values, both ''x'' and ''y'' are tensors
     with ranks greater than 5. Therefore, both ''x'' and ''y'' should have ranks less

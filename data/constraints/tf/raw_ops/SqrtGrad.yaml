@@ -25,12 +25,12 @@ rules:
 - cot: 'The error arises because the function is trying to perform a operation on
     a float tensor and an int8 tensor. However, both tensors in generated args must
     have the same data type. Let''s see what the args were. The ''y'' tensor is float32,
-    but the ''dy'' tensor is of type float16. Therefore, Left : type(dy), which is
+    but the ''dy'' tensor is of type float16. Therefore, Left : dy.dtype, which is
     the type of tensor dy, should be corrected. It says that should be equal to the
-    datatype of tensor y, so Op : ==, and Right : type(y).'
+    datatype of tensor y, so Op : ==, and Right : y.dtype.'
   target: 'cannot compute SqrtGrad as input #1(zero-based) was expected to be a float
     tensor but is a int8 tensor [Op:SqrtGrad] name:'
-  txt: type(dy)==type(y)
+  txt: dy.dtype==y.dtype
 - cot: 'The error is triggered because ''y'' and ''dy'' don''t have the same number
     of elements. ''y'' has 1080 elements and ''dy'' has 1024 elements. Therefore,
     the number of elements of ''y'' should be equal to the number of elements of ''dy''.
@@ -48,8 +48,8 @@ rules:
   target: "Value for attr 'T' of int32 is not in the list of allowed values: bfloat16,\
     \ half, float, double, complex64, complex128\n ; NodeDef: ; Op z:T; attr=T:type,allowed=[DT_BFLOAT16,\
     \ DT_HALF, DT_FLOAT, DT_DOUBLE, DT_COMPLEX64, DT_COMPLEX128]> [Op:SqrtGrad] name:"
-  txt: type(y) in ["bfloat16", "half", "float", "double", "complex64", "complex128"]
-    and type(dy) in ["bfloat16", "half", "float", "double", "complex64", "complex128"]
+  txt: y.dtype in ["bfloat16", "half", "float", "double", "complex64", "complex128"]
+    and dy.dtype in ["bfloat16", "half", "float", "double", "complex64", "complex128"]
 time_cost: 293.3573248386383
 title: tf.raw_ops.SqrtGrad
 tokens_used: 6343

@@ -31,11 +31,11 @@ rules:
 - cot: 'The error arises because the function is trying to perform a Split operation
     on a float tensor while it expects an integer tensor. Given the context, the ''axis''
     tensor is a float32, which is causing the error. The ''axis'' tensor should be
-    corrected to be integer type. Therefore, Left : type(axis). It should be equal
+    corrected to be integer type. Therefore, Left : axis.dtype. It should be equal
     to ''int32'', so Op : ==, and Right : ''int32''.'
   target: 'cannot compute Split as input #0(zero-based) was expected to be a int32
     tensor but is a float tensor [Op:Split] name:'
-  txt: type(axis) == 'int32'
+  txt: axis.dtype == 'int32'
 - cot: 'The error is due to the ''split_dim'' not being a scalar but having rank 9.
     From the given values, ''num_split'' is a scalar and could be the intended ''split_dim''.
     However, it seems like ''axis'' is currently being used as ''split_dim'', as it

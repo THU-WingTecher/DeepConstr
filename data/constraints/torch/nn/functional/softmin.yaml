@@ -42,7 +42,7 @@ rules:
     it as input.dtype(). Therefore, Left : input.dtype(). The operation should not
     equal ComplexDouble, so Op : !=, and Right : ComplexDouble.'
   target: '"softmax_lastdim_kernel_impl" not implemented for ''ComplexDouble'''
-  txt: input.dtype() != ComplexDouble
+  txt: input.dtype != ComplexDouble
 - cot: "The error is because the 'softmax_lastdim_kernel_impl' is not implemented\
     \ for integer type. Looking at the args, the 'input' tensor is of 'Int' dtype\
     \ which is not supported. Therefore, the dtype of 'input' tensor needs to be corrected.\

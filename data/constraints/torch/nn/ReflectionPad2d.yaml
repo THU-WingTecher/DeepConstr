@@ -32,7 +32,7 @@ rules:
     as:'
   target: Padding length should be less than or equal to two times the input dimension
     but got padding length 4 and input of dimension 1
-  txt: type(padding) == list
+  txt: isinstance(padding, int) and (padding <= 2 * input.shape[0])
 - cot: 'Error is triggered because padding size is not less than the corresponding
     input dimension at dimension 1. Let''s see what the args were. padding (1, 1)
     and input [2, 1, 8]. This implies that padding on dimension 1 should be less than

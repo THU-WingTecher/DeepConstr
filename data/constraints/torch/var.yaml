@@ -44,8 +44,7 @@ rules:
     \ not trying to resize a non-resizable tensor. \n\nConstraint 1: The input tensor\
     \ must be resizable, so Op : ==, and Right : Resizable."
   target: Trying to resize storage that is not resizable
-  txt: (len(out.shape) == len(input.shape)) and ((input.is_resizable() == True) and
-    (correction >= 0))
+  txt: (len(out.shape) == len(input.shape) and (correction >= 0))
 - cot: 'The error is due to an out of range dimension from the provided args. The
     ''dim'' value is 4, but the expected range is between -1 and 0. So, ''dim'' should
     be corrected to be in the range of -1 to 0. Thus, Left : dim, Op : >= and Right

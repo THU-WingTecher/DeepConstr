@@ -45,10 +45,10 @@ rules:
   txt: '''out''.dtype == ''A''.dtype'
 - cot: 'The error is triggered because the ''out'' tensor has a complex dtype, while
     it is expected to be of type double. Let''s check the dtype of ''out''. Left:
-    type(out). It is expected to be double, so Op: ==, and Right: double. Moreover,
+    out.dtype. It is expected to be double, so Op: ==, and Right: double. Moreover,
     it cannot be complex, so Op: !=, and Right: complex.'
   target: Expected out tensor to have dtype double, but got c10::complex<double> instead
-  txt: type(out) != complex
+  txt: out.dtype != complex
 time_cost: 1223.6630909442902
 title: torch._C._linalg.linalg_svdvals
 tokens_used: 20257

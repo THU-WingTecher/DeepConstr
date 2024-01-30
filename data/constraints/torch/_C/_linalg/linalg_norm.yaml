@@ -54,8 +54,8 @@ rules:
     to be of dtype float, but it is of dtype int16. So, the constraint to prevent
     this error will be:'
   target: 'linalg.norm expected out tensor dtype Float but got: Short'
-  txt: (out.dtype == torch.float32 or out.dtype == torch.float64) and (type(out) ==
-    type(input))
+  txt: (out.dtype == torch.float32 or out.dtype == torch.float64) and (out.dtype ==
+    input.dtype)
 time_cost: 623.2399981021881
 title: torch._C._linalg.linalg_norm
 tokens_used: 7993

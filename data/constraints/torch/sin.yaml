@@ -22,7 +22,7 @@ rules:
 - cot: 'The error is caused by the fact that the output tensor''s datatype is ''int16''
     and the result of the operation is ''float32''. The ''float32'' cannot be cast
     into ''int16''. The output tensor''s datatype should be changed to ''float32''
-    to prevent this error. Therefore, Left : type(out). Op : ==. Right : float32.'
+    to prevent this error. Therefore, Left : out.dtype. Op : ==. Right : float32.'
   target: result type Float can't be cast to the desired output type Long
   txt: input.dtype == out.dtype
 time_cost: 1332.3560678958893

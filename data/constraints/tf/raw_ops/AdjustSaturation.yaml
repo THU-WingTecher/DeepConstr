@@ -40,13 +40,13 @@ rules:
     name:'
   txt: images.shape[2] == 3
 - cot: 'The error is because the attribute ''T'' of tensor ''images'' is int32, but
-    it is expected to be either half or float. So, the attribute type(images) should
+    it is expected to be either half or float. So, the attribute images.dtype should
     be corrected to match either half or float. The operator for this constraint is
     : in, and the Right values are : ["half", "float"].'
   target: "Value for attr 'T' of int32 is not in the list of allowed values: half,\
     \ float\n ; NodeDef: ; Op output:T; attr=T:type,default=DT_FLOAT,allowed=[DT_HALF,\
     \ DT_FLOAT]> [Op:AdjustSaturation] name:"
-  txt: type(images) in ["half", "float"]
+  txt: images.dtype in ["half", "float"]
 time_cost: 0.013229608535766602
 title: tf.raw_ops.AdjustSaturation
 tokens_used: 0

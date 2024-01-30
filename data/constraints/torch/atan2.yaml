@@ -37,10 +37,10 @@ rules:
     (Short) compared to the input tensor (Float). What the args were? In this case,
     the input tensor has dtype float32 and the other tensor has dtype int16. The output
     tensor is expected to be of the same type as the ''other'' tensor, but it currently
-    is of type float. Therefore, Left : type(input) or type(out). Op : == Right :
-    type(other)'
+    is of type float. Therefore, Left : input.dtype or out.dtype. Op : == Right :
+    other.dtype'
   target: result type Float can't be cast to the desired output type Short
-  txt: (type(input)==type(out)) and (type(input)==type(other))
+  txt: (input.dtype==out.dtype) and (input.dtype==other.dtype)
 - cot: 'Error is triggered because size of tensors at non-singleton dimension 4 doesn''t
     match. Let''s see what the args were? the two tensors matching problem at non-singleton
     dimension looks like broadcasting request. Broadcasting in tensor operations requires
@@ -58,7 +58,7 @@ rules:
     It is usually implemented for float or integer types. So, Op : !=, Right : ''complex64''
     and type(<symbol>) should be either int or float.'
   target: '"atan2_cpu" not implemented for ''ComplexFloat'''
-  txt: (input.dtype != 'ComplexFloat') and (type(out) != 'complex64')
+  txt: (input.dtype != 'ComplexFloat') and (out.dtype != 'complex64')
 time_cost: 26491.9864051342
 title: torch.atan2
 tokens_used: 37780

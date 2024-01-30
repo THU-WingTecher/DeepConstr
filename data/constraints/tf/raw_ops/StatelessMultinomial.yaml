@@ -39,18 +39,18 @@ rules:
     \ DT_HALF, DT_UINT32, DT_UINT64]; attr=Tseed:type,default=DT_INT64,allowed=[DT_INT32,\
     \ DT_INT64]; attr=output_dtype:type,default=DT_INT64,allowed=[DT_INT32, DT_INT64]>\
     \ [Op:StatelessMultinomial] name:"
-  txt: (type(logits) in [float, double, int32, uint8, int16, int8, int64, bfloat16,
-    uint16, half, uint32, uint64]) and (type(seed) in ["int32", "int64"]) and (type(logits)
+  txt: (logits.dtype in [float, double, int32, uint8, int16, int8, int64, bfloat16,
+    uint16, half, uint32, uint64]) and (seed.dtype in ["int32", "int64"]) and (logits.dtype
     in [float, double, int32, uint8, int16, int8, int64, bfloat16, uint16, half, uint32,
     uint64])
 - cot: 'The error is occurring because there''s a float tensor where an int32 tensor
     is expected. It appears that ''num_samples'' is the problem as it is float32 while
     it should be int32. So, we need to ensure that ''num_samples'' is of type int32.
-    Therefore, Left : type(num_samples). It says that should be equal to int32, so
+    Therefore, Left : num_samples.dtype. It says that should be equal to int32, so
     Op : ==, and Right : int32.'
   target: 'cannot compute StatelessMultinomial as input #1(zero-based) was expected
     to be a int32 tensor but is a float tensor [Op:StatelessMultinomial] name:'
-  txt: (type(seed) in [int32, int64]) and (type(num_samples)==int32.)
+  txt: (seed.dtype in [int32, int64]) and (num_samples.dtype==int32)
 - cot: 'The error is due to the mismatch in the data types of logits, num_samples,
     and seed with the StatelessMultinomial op. The op StatelessMultinomial expects
     Tseed to be in [DT_INT32], T (logits) to be in [DT_FLOAT, DT_DOUBLE, DT_BFLOAT16],
@@ -73,8 +73,8 @@ rules:
     \ output_dtype in [DT_INT64]\n device='CPU'; T in [DT_BFLOAT16]; output_dtype\
     \ in [DT_INT32]\n device='CPU'; T in [DT_HALF]; output_dtype in [DT_INT64]\n device='CPU';\
     \ T in [DT_HALF]; output_dtype in [DT_INT32]\n [Op:StatelessMultinomial] name:"
-  txt: (type(logits) in ["float", "double", "bfloat16"]) and (type(num_samples) in
-    ["int32", "int64"]) and (type(logits) in ["float", "double", "bfloat16"])
+  txt: (logits.dtype in ["float", "double", "bfloat16"]) and (num_samples.dtype in
+    ["int32", "int64"]) and (logits.dtype in ["float", "double", "bfloat16"])
 time_cost: 1866.3525104522705
 title: tf.raw_ops.StatelessMultinomial
 tokens_used: 15054

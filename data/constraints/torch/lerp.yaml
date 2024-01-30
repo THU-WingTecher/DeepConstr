@@ -35,11 +35,11 @@ rules:
     for i in range(out.rank)))
 - cot: 'The error indicates that the ''out'' tensor is of type Bool, but it was expected
     to be Float. Therefore, the data type of ''out'' should be corrected to match
-    Float. It can be done by checking the type of ''out''. Thus, Left : type(out).
+    Float. It can be done by checking the type of ''out''. Thus, Left : out.dtype.
     It says expected type is Float, so Op : ==, and Right : float32. It also implies
     that the type cannot be Bool, so Op : !=, and Right : bool.'
   target: Found dtype Bool but expected Float
-  txt: type(out) == "float32"
+  txt: out.dtype == "float32"
 - cot: 'The error occurs due to a mismatch in expected and actual ''weight'' tensor
     datatype. Expected dtype for ''weight'' is float, but got dtype short int. From
     the value information, dtype for ''weight'' is `int16` but it should be `float32`.
@@ -51,7 +51,7 @@ rules:
     be converted to float type before being used. Therefore, the ''end'' tensor data
     type, Op : ==, and Right : float32.'
   target: expected dtype float for `end` but got dtype c10::complex<double>
-  txt: (type(end) == type(input)) and (type(end) == "float32")
+  txt: (end.dtype == input.dtype) and (end.dtype == "float32")
 - cot: 'Error is triggered because size of tensors at non-singleton dimension 2 doesn''t
     match. What the args were? tensor a (8) is ''input'' with 8 on 2nd dim. So 2nd
     dim of ''input'' should be corrected. Therefore, Left : input.shape[2]. tensor

@@ -27,21 +27,21 @@ rules:
     of the "rshift_cpu" operation, but assuming it supports integer types, the constraint
     could be:'
   target: '"rshift_cpu" not implemented for ''Float'''
-  txt: type(out) in ["int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64"]
+  txt: out.dtype in ["int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64"]
 - cot: 'The error is triggered because the result type of the operation is float,
     but the desired output type is long. So, the type of the result should be changed
     from ''Float'' to ''Long''. Let''s see what the input values were. The type of
     ''input'' and ''other'' are ''float32'', and the type of ''out'' is ''int64''
     (Long). The operation might be generating a float type result because of the ''float32''
-    type inputs. Therefore, Left : type(input) or type(other). Op : == Right : Long'
+    type inputs. Therefore, Left : input.dtype or other.dtype. Op : == Right : Long'
   target: result type Float can't be cast to the desired output type Long
-  txt: (type(input)==Long) and (type(other)==Long)
+  txt: (input.dtype==Long) and (other.dtype==Long)
 - cot: 'Error is triggered because we are trying to resize storage. Let''s see what
     the values were. It seems ''out'' tensor shape should be matched with the operation
     results. In this operation, the result shape is ''input''.shape. Therefore, Left
     : out.shape, out.rank. Op : ==. Right : input.shape, input.rank.'
   target: Trying to resize storage that is not resizable
-  txt: (out.rank == 0) or ((type(other).shape == type(out).shape) and (out.rank==input.rank
+  txt: (out.rank == 0) or ((other.dtype.shape == out.dtype.shape) and (out.rank==input.rank
     and all(out.shape[i]==input.shape[i] for i in range(out.rank))))
 time_cost: 1415.0568990707397
 title: torch.bitwise_right_shift

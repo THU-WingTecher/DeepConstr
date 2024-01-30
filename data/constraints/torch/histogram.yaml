@@ -34,7 +34,7 @@ rules:
     compatible with ''linspace_cpu''. Therefore, type(''input'') and type(''weight'')
     need to be corrected. They should not be ''Bool'', so Op : !=, and Right : ''Bool''.'
   target: '"linspace_cpu" not implemented for ''Bool'''
-  txt: (type(weight) != 'Bool')
+  txt: (weight.dtype != 'Bool')
 - cot: 'The error is due to the ''input'' tensor''s data type being incompatible with
     the ''histogram_cpu'' function which does not support ''int''. Therefore, the
     ''input'' tensor''s data type must be changed to a compatible data type such as
@@ -44,17 +44,17 @@ rules:
     type should also be a compatible data type such as ''float''. So, the constraints
     are:'
   target: '"histogram_cpu" not implemented for ''Int'''
-  txt: type(input) == float
+  txt: input.dtype == float
 - cot: 'The error is due to the ''Half'' type of the input and weight tensors not
     being supported by the ''histogram_cpu'' function. Looking at the values, the
-    ''input'' and ''weight'' tensors are both of type TensorDType.float16, also known
+    ''input'' and ''weight'' tensors are both of type  float16, also known
     as ''Half''. However, the ''histogram_cpu'' function does not support ''Half''
-    type tensors. Therefore, Left : type(input) and type(weight) should be corrected
+    type tensors. Therefore, Left : input.dtype and weight.dtype should be corrected
     to a type that is supported by the ''histogram_cpu'' function. It is not explicitly
     stated what the allowed types are, but ''Half'' is not one of them. So, Op : !=,
     and Right : ''Half''.'
   target: '"histogram_cpu" not implemented for ''Half'''
-  txt: type(input) != "Half"
+  txt: input.dtype != "Half"
 - cot: 'The error occurs because the range parameter for the histogram does not have
     the required 2 elements for a 1-dimensional histogram. Let''s see what the args
     were. It appears the range is an empty list which is causing the issue. To prevent
@@ -74,16 +74,6 @@ rules:
   target: 'torch.histogramdd: if weight tensor is provided, input tensor and weight
     tensor should have the same dtype, but got input(double), and weight(float)'
   txt: all(weight.shape[i]==input.shape[i] for i in range(len(weight.shape)))
-- cot: "The error is caused because the weight tensor does not have the same shape\
-    \ as the input tensor excluding its innermost dimension. The input tensor has\
-    \ shape [64, 1] and the weight tensor has shape [8]. Therefore, the dimensionality\
-    \ of the weight tensor should match the dimensionality of the input tensor excluding\
-    \ its innermost dimension. \n\nSo, Left: weight.dim, Op: ==, Right: input.dim\
-    \ - 1."
-  target: 'torch.histogramdd: if weight tensor is provided it should have the same
-    shape as the input tensor excluding its innermost dimension, but got input with
-    shape [64, 1] and weight with shape [8]'
-  txt: weight.numel() == input.numel() / input.size(-1)
 - cot: 'The error is due to an invalid range. What the args were? The function is
     trying to apply a histogram with given ''bins'' and ''range''. But ''range'' is
     invalid because minimum value is greater than maximum value, which is not acceptable.

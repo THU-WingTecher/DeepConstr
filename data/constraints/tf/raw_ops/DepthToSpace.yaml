@@ -87,5 +87,5 @@ rules:
     NHWC\"]\n device='CPU'; T in [DT_UINT64]; data_format in [\"NHWC\"]\n device='GPU';\
     \ T in [DT_QINT8]\n device='GPU'; T in [DT_BFLOAT16]\n device='GPU'; T in [DT_HALF]\n\
     \ device='GPU'; T in [DT_FLOAT]\n [Op:DepthToSpace] name:"
-  txt: type(input) == "DT_BOOL" and data_format == "NHWC" and block_size == 2
+  txt: input.dtype == "DT_BOOL" and data_format == "NHWC" and block_size == 2
 title: tf.raw_ops.DepthToSpace

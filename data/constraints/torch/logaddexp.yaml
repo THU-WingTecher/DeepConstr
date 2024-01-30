@@ -32,9 +32,9 @@ rules:
     are tensors of type float32, float32 and int32 respectively. The output tensor
     type ''int32'' is not compatible with the input tensor types ''float32''. Therefore,
     the output tensor type should be changed to ''float32'' to match the input tensor
-    types. So, Left : type(out), Op : ==, Right : float32.'
+    types. So, Left : out.dtype, Op : ==, Right : float32.'
   target: result type Float can't be cast to the desired output type Int
-  txt: (out.shape==other.shape) or (type(out)==float32)
+  txt: (out.shape==other.shape) or (out.dtype==float32)
 - cot: 'Error is triggered because size of tensor a and tensor b at non-singleton
     dimension 2 doesn''t match. Let''s see what the args were? It is a size mismatch
     between ''input'' and ''other'' at non-singleton dimension 2. The size of ''input''

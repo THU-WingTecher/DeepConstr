@@ -124,11 +124,11 @@ rules:
 - cot: 'Based on given values, Error is triggered because the input type and the weight
     type are not same. It expects to have the same type for input and weight. Let''s
     see what the args were. ''input'' is of type ''complex128'' and ''weight'' is
-    of type ''int64'', these two types should be the same. Therefore, Left : type(input).
-    Op : ==, and Right : type(weight)'
+    of type ''int64'', these two types should be the same. Therefore, Left : input.dtype.
+    Op : ==, and Right : weight.dtype'
   target: Input type (CPUComplexDoubleType) and weight type (torch.LongTensor) should
     be the same
-  txt: (type(input) == type(bias)) and (type(input) == type(weight))
+  txt: (input.dtype == bias.dtype) and (input.dtype == weight.dtype)
 time_cost: 3105.252735853195
 title: torch.conv_transpose1d
 tokens_used: 18430

@@ -22,7 +22,7 @@ rules:
 - cot: The error is due to an invalid attribute 'complex32' in Tensorflow. Looking
     at the args, 'x' and 'y' are tensors with dtype 'uint8'. There are no complex32
     types in Tensorflow. The types should be one of the valid Tensorflow dtypes. Therefore,
-    type(x) and type(y) should be in valid Tensorflow dtypes. Also, the shape of 'y'
+    x.dtype and y.dtype should be in valid Tensorflow dtypes. Also, the shape of 'y'
     has a zero dimension, which may cause issues. All dimensions of 'x' and 'y' should
     be non-zero.
   target: 'rror: module ''tensorflow'' has no attribute ''complex32'''
@@ -31,12 +31,12 @@ rules:
     on a complex128 tensor and a float tensor. However, both tensors must have the
     same data type. Let''s see what the args were. The ''x'' tensor is complex64,
     but the ''y'' tensor is of type float32. Thus, the type of tensor ''y'' should
-    be corrected. Therefore, Left : type(y), which is the type of tensor y, should
+    be corrected. Therefore, Left : y.dtype, which is the type of tensor y, should
     be corrected. It says that it should be equal to the datatype of tensor x, so
-    Op : ==, and Right : type(x).'
+    Op : ==, and Right : x.dtype.'
   target: 'rror: cannot compute Add as input #1(zero-based) was expected to be a complex128
     tensor but is a float tensor [Op:Add] name:'
-  txt: type(y)==type(x)
+  txt: y.dtype==x.dtype
 - cot: 'The error is due to the rank of the input tensor being greater than the limit
     for dynamic binary or n-ary op lowering, which is 5. Looking at the args, the
     ''x'' tensor has a rank of 4, which is fine, but the ''y'' tensor has a rank of

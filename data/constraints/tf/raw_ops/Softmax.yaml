@@ -34,7 +34,7 @@ rules:
   target: "rror: Value for attr 'T' of int32 is not in the list of allowed values:\
     \ half, bfloat16, float, double\n ; NodeDef: ; Op softmax:T; attr=T:type,allowed=[DT_HALF,\
     \ DT_BFLOAT16, DT_FLOAT, DT_DOUBLE]> [Op:Softmax] name:"
-  txt: type(logits.dtype) in ['half', 'bfloat16', 'float', 'double']
+  txt: logits.dtype in ['half', 'bfloat16', 'float', 'double']
 time_cost: 182.05521392822266
 title: tf.raw_ops.Softmax
 tokens_used: 7566

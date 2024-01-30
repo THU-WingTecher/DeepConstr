@@ -52,9 +52,9 @@ rules:
     output type Long. From the provided values, the ''input'' and ''out'' tensors
     have different dtypes, float32 and int64 respectively. We should ensure that the
     dtype of the ''out'' tensor is the same as the dtype of the ''input'' tensor to
-    prevent this error. Therefore, Left : type(input), Op : ==, Right : type(out)'
+    prevent this error. Therefore, Left : input.dtype, Op : ==, Right : out.dtype'
   target: result type Float can't be cast to the desired output type Long
-  txt: type(input)==type(out)
+  txt: input.dtype==out.dtype
 - cot: 'Error is triggered because ''input'' tensor has Boolean data type but linalg.vector_norm
     expects a floating point or complex tensor as input. Therefore, ''input'' data
     type should be corrected, which is input.dtype. Therefore, Left : input.dtype.

@@ -43,7 +43,7 @@ rules:
 
     The constraint for the ''out'' tensor dtype can be expressed as:'
   target: Found dtype ComplexDouble but expected Float
-  txt: type(out) == type(input)
+  txt: out.dtype == input.dtype
 time_cost: 624.2675673961639
 title: torch.bitwise_not
 tokens_used: 8146

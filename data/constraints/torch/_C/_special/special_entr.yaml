@@ -18,9 +18,9 @@ rules:
     \ be cast to the output tensor of type Int. This could be due to a mismatch in\
     \ the data types of the input and output tensors. Therefore, the data type of\
     \ the input tensor should match the data type of the output tensor. \n\nLeft :\
-    \ input.tensorDType, Op : ==, Right : out.tensorDType"
+    \ input.dtype, Op : ==, Right : out.dtype"
   target: result type ComplexFloat can't be cast to the desired output type Float
-  txt: (out.dtype == Float) and (input.tensorDType==out.tensorDType)
+  txt: (out.dtype == Float) and (input.dtype==out.dtype)
 time_cost: 573.9799387454987
 title: torch._C._special.special_entr
 tokens_used: 9646

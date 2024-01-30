@@ -19,12 +19,12 @@ rules:
     which is not allowed. The allowed data types are half, bfloat16, float, and double.
     Therefore, the data type of ''T'' should be corrected. The data type of ''T''
     is derived from the data type of ''features'' which is int32 in this case. Therefore,
-    type(features) should be among half, bfloat16, float, and double. Therefore, Op:
+    features.dtype should be among half, bfloat16, float, and double. Therefore, Op:
     in, and Right: ["half", "bfloat16", "float", "double"].'
   target: "Value for attr 'T' of complex128 is not in the list of allowed values:\
     \ half, bfloat16, float, double\n ; NodeDef: ; Op activations:T; attr=T:type,allowed=>\
     \ name:"
-  txt: type(features) in ["half", "bfloat16", "float", "double"]
+  txt: features.dtype in ["half", "bfloat16", "float", "double"]
 time_cost: 35.70127272605896
 title: tf.raw_ops.Elu
 tokens_used: 1222

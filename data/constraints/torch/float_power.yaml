@@ -32,15 +32,15 @@ rules:
     \ exponent=int, input=int, ), but expected one of:\n * (Tensor input, Tensor exponent,\
     \ *, Tensor out)\n * (Number self, Tensor exponent, *, Tensor out)\n * (Tensor\
     \ input, Number exponent, *, Tensor out)"
-  txt: (type(exponent) == type(out)) and (type(exponent) == Number)
+  txt: (exponent.dtype == out.dtype) and (exponent.dtype == Number)
 - cot: 'The error arises because the output given to float_power has dtype Float but
     the operation''s result requires dtype Double. From the values, it seems ''input''
     is of dtype int16, ''exponent'' is int32 and ''out'' is float32. Therefore, the
-    dtype of ''out'' should be consistent with the operation''s result. Left : type(out),
+    dtype of ''out'' should be consistent with the operation''s result. Left : out.dtype,
     op : ==, comparator : Double'
   target: the output given to float_power has dtype Float but the operation's result
     requires dtype Double
-  txt: (out.dtype == input.dtype) and (type(out) == Double)
+  txt: (out.dtype == input.dtype) and (out.dtype == Double)
 - cot: 'Error is triggered because of resizing a non-resizable storage. Let''s consider
     the values given. The ''input'' tensor has a shape of [9, 4, 6, 2, 6, 6, 1, 1,
     4, 1] and the ''out'' tensor has a shape of [6, 2, 9, 2, 6, 6]. The ''out'' tensor

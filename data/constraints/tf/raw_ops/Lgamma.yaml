@@ -18,13 +18,13 @@ rules:
 - cot: 'From the error, the attribute ''T'' is given as int32 but it is expected to
     be one of the following types: bfloat16, half, float, double. The tensor ''x''
     is provided as int16, which is not compatible. Thus, the type of ''x'' needs to
-    be corrected to match one of the allowed types. So, the constraint would be: type(x)
+    be corrected to match one of the allowed types. So, the constraint would be: x.dtype
     in [''bfloat16'', ''half'', ''float'', ''double'']. The operator is ''in'' and
     the right operand is [''bfloat16'', ''half'', ''float'', ''double''].'
   target: "Value for attr 'T' of int32 is not in the list of allowed values: bfloat16,\
     \ half, float, double\n ; NodeDef: ; Op y:T; attr=T:type,allowed=[DT_BFLOAT16,\
     \ DT_HALF, DT_FLOAT, DT_DOUBLE]> [Op:Lgamma] name:"
-  txt: type(x) in ['bfloat16', 'half', 'float', 'double']
+  txt: x.dtype in ['bfloat16', 'half', 'float', 'double']
 time_cost: 53.46257758140564
 title: tf.raw_ops.Lgamma
 tokens_used: 1832

@@ -18,10 +18,10 @@ rules:
 - cot: 'The error indicates that a Float type result can''t be cast to the Long type.
     Given the input and output data types, it appears that the output data type of
     int64 (Long) is incompatible with the input data type of int32. Therefore, the
-    data type of input should be consistent with that of output. Left : type(input),
-    Op : ==, Right : type(output)'
+    data type of input should be consistent with that of output. Left : input.dtype,
+    Op : ==, Right : output.dtype'
   target: result type Float can't be cast to the desired output type Long
-  txt: type(input)==type(out)
+  txt: input.dtype==out.dtype
 - cot: "Considering the provided scenario, it seems the error is triggered because\
     \ we are trying to resize a storage that is not resizable. Given the tensor's\
     \ dimensions, it seems the 'out' tensor shape should be matched with the operation\

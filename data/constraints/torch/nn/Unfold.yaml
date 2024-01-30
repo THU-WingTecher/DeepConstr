@@ -56,7 +56,7 @@ rules:
     -6), but its components must be at least one.
   txt: stride != 0
 - cot: 'The error is caused because the given dimension is out of the valid range.
-    In this case, we have a 1D tensor (based on the TensorDType.float32:[1] information),
+    In this case, we have a 1D tensor (based on the  float32:[1] information),
     meaning the valid range for dimensions should be [-1, 0]. However, the error mentions
     that a dimension of 1 was provided, which is outside of the valid range.
 

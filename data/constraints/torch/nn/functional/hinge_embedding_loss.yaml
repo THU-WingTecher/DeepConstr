@@ -45,8 +45,8 @@ rules:
     the ''clamp'' operation on a complex type tensor. In this case, ''input'' tensor
     is of complex128 type, which is not supported. Therefore, ''input'' tensor type
     should be checked and corrected to avoid this error. The ''input'' tensor should
-    not be a complex type. So, the Left : type(input), Op : not in, Right : [''complex64'',
+    not be a complex type. So, the Left : input.dtype, Op : not in, Right : [''complex64'',
     ''complex128''].'
   target: clamp is not supported for complex types
-  txt: type(input) not in ["complex64", "complex128"]
+  txt: input.dtype not in ["complex64", "complex128"]
 title: torch.nn.functional.hinge_embedding_loss

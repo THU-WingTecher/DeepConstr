@@ -55,9 +55,9 @@ rules:
     , \"NCHW\"]; attr=T:type,allowed=[DT_FLOAT, DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16,\
     \ DT_INT8, DT_INT64, DT_BFLOAT16, DT_UINT16, DT_HALF, DT_UINT32, DT_UINT64]> [Op:MaxPoolGradGrad]\
     \ name:"
-  txt: ((len(strides) >= 4) and (type(data_format) in ["NHWC", "NCHW"])) and ((len(ksize)
-    >= 4 and padding in ["SAME", "VALID"]) and (type(data_format) in ["NHWC", "NCHW"]))
-    and ((len(strides) >= 4) and (type(data_format) in ["NHWC", "NCHW"]))
+  txt: ((len(strides) >= 4) and (data_format in ["NHWC", "NCHW"])) and ((len(ksize)
+    >= 4 and padding in ["SAME", "VALID"]) and (data_format in ["NHWC", "NCHW"]))
+    and ((len(strides) >= 4) and (data_format in ["NHWC", "NCHW"]))
 - cot: 'The error arises because the function is trying to perform an operation on
     a float tensor and an int32 tensor. However, both tensors in generated args must
     have the same data type. From the given values, ''orig_input'' tensor is of type
@@ -66,7 +66,7 @@ rules:
     corrected. It says that should be equal to float, so Op : ==, and Right : float.'
   target: 'cannot compute MaxPoolGradGrad as input #1(zero-based) was expected to
     be a float tensor but is a int32 tensor [Op:MaxPoolGradGrad] name:'
-  txt: type(orig_input)==float
+  txt: orig_input.dtype==float
 - cot: "The error is due to trying to perform pooling on the batch dimension, which\
     \ is not supported. In this case, the batch dimension is the first dimension of\
     \ the 'grad' tensor and the 'orig_input' tensor when 'data_format' is 'NCHW'.\

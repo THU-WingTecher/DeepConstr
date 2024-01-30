@@ -18,9 +18,9 @@ rules:
     result type Float. What the args were? The input and output are both of type Bool.
     However, the operation performed might be returning a Float. Therefore, the operation
     should be adjusted to return a Bool, or the output type should be changed to Float.
-    Therefore, Left : type(out) or type(result of operation). Op : == Right : Float'
+    Therefore, Left : out.dtype or type(result of operation). Op : == Right : Float'
   target: result type Float can't be cast to the desired output type Char
-  txt: type(out)==Float
+  txt: out.dtype==Float
 - cot: "The error is triggered because an attempt is made to resize a storage that\
     \ is not resizable. Looking at the input and output tensor shapes, they are not\
     \ matching. The 'input' tensor shape is [6,8,6,8,1,3] and 'out' tensor shape is\

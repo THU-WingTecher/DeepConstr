@@ -29,7 +29,7 @@ rules:
     Op : == Right : out.dtype. Also, it says that ''Float'' can''t be cast to ''Short'',
     so Left : input.dtype. Op : != Right : ''Float''.'
   target: result type Float can't be cast to the desired output type Short
-  txt: (type(out)==float32) and (input.dtype == out.dtype)
+  txt: (out.dtype==float32) and (input.dtype == out.dtype)
 time_cost: 750.5635969638824
 title: torch.special.expit
 tokens_used: 9164

@@ -17,13 +17,13 @@ pass_rate: 1.0
 rules:
 - cot: 'The error arises because the attribute of ''x'' is an int32, but it is expected
     to be one of bfloat16, half, float, double, complex64, complex128. The tensor
-    ''''x'''' is provided as int32, which is not compatible. So, the Left : type(x)
+    ''''x'''' is provided as int32, which is not compatible. So, the Left : x.dtype
     should be corrected to match one of the allowed types. Op : in, and Right : [bfloat16,
     half, float, double, complex64, complex128].'
   target: "Value for attr 'T' of int32 is not in the list of allowed values: bfloat16,\
     \ half, float, double, complex64, complex128\n ; NodeDef: ; Op y:T; attr=T:type,allowed=[DT_BFLOAT16,\
     \ DT_HALF, DT_FLOAT, DT_DOUBLE, DT_COMPLEX64, DT_COMPLEX128]> [Op:Cos] name:"
-  txt: type(x) in ["bfloat16", "half", "float", "double", "complex64", "complex128"]
+  txt: x.dtype in ["bfloat16", "half", "float", "double", "complex64", "complex128"]
 time_cost: 27.634163856506348
 title: tf.raw_ops.Cos
 tokens_used: 1172

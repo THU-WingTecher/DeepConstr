@@ -27,12 +27,12 @@ rules:
 - cot: 'Based on the given values, the error occurs because the attribute ''T'' of
     ''images'' is a complex128, but it is expected to be one of half, bfloat16, float,
     double. The tensor ''images'' is provided as complex64, which is not compatible.
-    Therefore, the type(images) should be corrected to match one of the allowed types.
+    Therefore, the images.dtype should be corrected to match one of the allowed types.
     Op : in, and Right : [half, bfloat16, float, double].'
   target: "Value for attr 'T' of complex128 is not in the list of allowed values:\
     \ half, bfloat16, float, double\n ; NodeDef: ; Op output:T; attr=T:type,default=DT_FLOAT,allowed=[DT_HALF,\
     \ DT_BFLOAT16, DT_FLOAT, DT_DOUBLE]> [Op:RGBToHSV] name:"
-  txt: type(images) in ["half", "bfloat16", "float", "double"]
+  txt: images.dtype in ["half", "bfloat16", "float", "double"]
 time_cost: 433.83099389076233
 title: tf.raw_ops.RGBToHSV
 tokens_used: 5742

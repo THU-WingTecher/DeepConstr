@@ -1,7 +1,7 @@
 constraints:
   axis:
     default: null
-    dtype: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+    dtype: list[int]
     init: false
     required: true
   input:
@@ -33,18 +33,6 @@ rules:
   target: 'rror: Invalid reduction dimension (-361591 for input with 3 dimension(s)
     [Op:Max] name:'
   txt: (len(input.shape) > 0) and ((i >=0 and i< len(input.shape) for i in axis))
-- cot: 'The error occurs because the ''Tidx'' attribute is of the type int16, but
-    it is expected to be either int32 or int64. The ''axis'' tensor which is related
-    to ''Tidx'' is provided as int16 which is not compatible. Thus, the type of ''axis''
-    should be corrected to either int32 or int64. The logical relationship constraint
-    is as follows:'
-  target: "rror: Value for attr 'Tidx' of int16 is not in the list of allowed values:\
-    \ int32, int64\n ; NodeDef: ; Op output:T; attr=keep_dims:bool,default=false;\
-    \ attr=T:type,allowed=[DT_FLOAT, DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16, DT_INT8,\
-    \ DT_INT64, DT_BFLOAT16, DT_UINT16, DT_HALF, DT_UINT32, DT_UINT64, DT_QINT8, DT_QUINT8,\
-    \ DT_QINT32, DT_QINT16, DT_QUINT16]; attr=Tidx:type,default=DT_INT32,allowed=[DT_INT32,\
-    \ DT_INT64]> [Op:Max] name:"
-  txt: type(axis) in ["int32", "int64"]
 time_cost: 1106.9335083961487
 title: tf.raw_ops.Max
 tokens_used: 16927

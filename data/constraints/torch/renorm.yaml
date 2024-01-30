@@ -32,10 +32,10 @@ rules:
 - cot: 'The error occurs because the output tensor''s data type is not as expected.
     The function expects the output tensor to have a float data type. However, in
     the given values, the data type of the output tensor is ''int''. Therefore, the
-    data type of the output tensor, which is type(out), should be corrected. It should
+    data type of the output tensor, which is out.dtype, should be corrected. It should
     be equal to ''float'', so Op : ==, and Right : ''float''.'
   target: Expected out tensor to have dtype float, but got int instead
-  txt: (input.shape == out.shape) and (type(out) == 'float')
+  txt: (input.shape == out.shape) and (out.dtype == 'float')
 - cot: 'The error indicates that the ''input'' tensor has 1 dimension, but it needs
     at least 2 dimensions to avoid the renorm error. Let''s generate constraints based
     on the values. It seems ''input'' is the problem tensor as it''s dimension is

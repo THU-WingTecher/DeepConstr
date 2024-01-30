@@ -20,10 +20,9 @@ rules:
     shapes. The ''input'' tensor has a shape of [9, 8, 8, 8, 8] and the ''out'' tensor
     has a shape of [3, 2, 8, 1, 6, 9, 8]. We need to ensure that the ''input'' and
     ''out'' tensors have the same shape or that ''out'' tensor is resizable. Therefore,
-    Left: input.shape == out.shape or out.is_resizable(), Op: ==, and Right: True.'
+    Left: input.shape == out.shape or out, Op: ==, and Right: True.'
   target: Trying to resize storage that is not resizable
-  txt: (out.rank == input.rank and all(out.shape[i] == input.shape[i] for i in range(out.rank))
-    and out.resizable == True) or (input.shape == out.shape)
+  txt: (out.rank == input.rank and all(out.shape[i] == input.shape[i] for i in range(out.rank))) or (input.shape == out.shape)
 - cot: 'The error is triggered because the output tensor type is not compatible with
     the input tensor type. The input tensor is of type ComplexDouble and the output
     tensor is of type Float. Hence, left : input.dtype, op : == , right : ''ComplexDouble''

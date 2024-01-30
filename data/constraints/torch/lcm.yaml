@@ -46,7 +46,7 @@ rules:
     need to be validated before they are passed into the 'lcm_cpu' operation. The
     constraint is that the type of these tensors must be within the allowed types.
   target: '"lcm_cpu" not implemented for ''Float'''
-  txt: type(out) in ["int8", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+  txt: out.dtype in ["int8", "int16", "int32", "int64", "uint8", "uint16", "uint32",
     "uint64"]
 time_cost: 6973.982981204987
 title: torch.lcm

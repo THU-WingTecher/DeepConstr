@@ -35,7 +35,7 @@ rules:
     to avoid any other unimplemented types, it would be safer to ensure ''n'' is of
     type ''float64'', so Op: ==, and Right: float64.'
   target: '"chebyshev_polynomial_u_cpu" not implemented for ''ComplexFloat'''
-  txt: type(n) == float64
+  txt: n.dtype == float64
 time_cost: 35174.214223861694
 title: torch._C._special.special_chebyshev_polynomial_u
 tokens_used: 6653

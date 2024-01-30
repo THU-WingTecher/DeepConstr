@@ -25,7 +25,7 @@ rules:
     an integer type, which is not possible. Let''s see what the args were. The type
     of ''input'' and ''out'' are both ''int'', but the result is of type ''Float''.
     Therefore, the type of the result should be equal to the type of ''input'' and
-    ''out''. So, Left : type(result), Op : ==, Right : type(input), type(out). Also,
+    ''out''. So, Left : type(result), Op : ==, Right : input.dtype, out.dtype. Also,
     the dimensions of ''input'' and ''out'' should be the same, so Left : input.shape,
     Op : ==, Right : out.shape.'
   target: result type ComplexFloat can't be cast to the desired output type Float

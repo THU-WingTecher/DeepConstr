@@ -26,9 +26,9 @@ rules:
 - cot: 'The error is caused because the output tensor (''out'') is of type ''int8''
     (Char) but a ''float32'' (Float) tensor is expected. Therefore, the type of the
     output tensor should be corrected to match that of the input tensor. The Left
-    : type(out) should be corrected, Op : ==, and Right : type(input).'
+    : out.dtype should be corrected, Op : ==, and Right : input.dtype.'
   target: Found dtype Char but expected Float
-  txt: type(out) == type(input)
+  txt: out.dtype == input.dtype
 time_cost: 989.6871871948242
 title: torch.ceil
 tokens_used: 14342

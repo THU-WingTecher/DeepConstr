@@ -51,7 +51,7 @@ rules:
     which is not compatible. So, the data types of ''A'' and ''out'' should be corrected
     to become compatible with the function. Op : !=, and Right : ''Half''.'
   target: '"lu_cpu" not implemented for ''Half'''
-  txt: type(out) != 'Half'
+  txt: out.dtype != 'Half'
 time_cost: 623.3444464206696
 title: torch._C._linalg.linalg_det
 tokens_used: 10984

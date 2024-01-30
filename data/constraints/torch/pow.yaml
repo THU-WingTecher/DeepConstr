@@ -47,10 +47,10 @@ rules:
 - cot: 'The error is triggered because result type Float cannot be cast to the Int.
     Let''s see what the args were. The dtype of ''exponent'' and ''input'' is float32,
     and the dtype of ''out'' is int8. Therefore, the dtypes of ''exponent'', ''input'',
-    and ''out'' should be consistent. Left : type(exponent), type(input), type(out).
-    Op : ==. Right : type(exponent), type(input) or type(out).'
+    and ''out'' should be consistent. Left : type(exponent), input.dtype, out.dtype.
+    Op : ==. Right : type(exponent), input.dtype or out.dtype.'
   target: result type Float can't be cast to the desired output type Int
-  txt: (type(exponent)==type(input)) and (type(input)==type(out))
+  txt: (exponent.dtype==input.dtype) and (input.dtype==out.dtype)
 time_cost: 4302.679625272751
 title: torch.pow
 tokens_used: 9717

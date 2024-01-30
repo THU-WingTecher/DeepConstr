@@ -55,12 +55,12 @@ rules:
     ''x'', ''mean'', ''variance'', ''offset'', ''scale'' and ''variance_epsilon'',
     we can see that ''x'', ''mean'', ''variance'', and ''offset'' are float32 tensors,
     while ''scale'' is an int32 tensor. Therefore, the data type of ''scale'' should
-    be corrected to float32. So, Left : type(scale), which is the data type of tensor
+    be corrected to float32. So, Left : scale.dtype, which is the data type of tensor
     scale, should be corrected. It says that it should be equal to the datatype of
-    tensor x, so Op : ==, and Right : type(x).'
+    tensor x, so Op : ==, and Right : x.dtype.'
   target: 'rror: cannot compute Mul as input #1(zero-based) was expected to be a float
     tensor but is a int32 tensor [Op:Mul] name:'
-  txt: type(scale)==type(x)
+  txt: scale.dtype==x.dtype
 - cot: 'The error is due to the fact that one or more of the input tensors for the
     op have a rank greater than 5. Let''s look at the given values. The tensors ''mean''
     and ''offset'' have a rank greater than 5. Therefore, we need to ensure these

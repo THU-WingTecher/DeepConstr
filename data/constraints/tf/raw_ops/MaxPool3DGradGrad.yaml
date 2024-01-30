@@ -67,13 +67,13 @@ rules:
 - cot: 'The error arises because the function is trying to perform a operation on
     a float tensor and a int32 tensor. However, both tensors in generated args must
     have the same data type. Let''s see what the args were. ''orig_output'' tensor
-    is int64, but the ''grad'' tensor is of type float32. Therefore, Left : type(grad),
+    is int64, but the ''grad'' tensor is of type float32. Therefore, Left : grad.dtype,
     which is the type of tensor grad, should be corrected. It says that should be
-    equal to the datatype of tensor orig_output, so Op : ==, and Right : type(orig_output).'
+    equal to the datatype of tensor orig_output, so Op : ==, and Right : orig_output.dtype.'
   target: 'cannot compute MaxPool3DGradGrad as input #1(zero-based) was expected to
     be a float tensor but is a int32 tensor [Op:MaxPool3DGradGrad] name:'
-  txt: ((ksize[1] >= 5) or (type(grad)==type(orig_output))) and ((len(ksize) >= 5)
-    or (type(grad)==type(orig_output))) and ((ksize[1] >= 5) or (type(grad)==type(orig_output)))
+  txt: ((ksize[1] >= 5) or (grad.dtype==orig_output.dtype)) and ((len(ksize) >= 5)
+    or (grad.dtype==orig_output.dtype)) and ((ksize[1] >= 5) or (grad.dtype==orig_output.dtype))
 - cot: 'The error is due to the attribute ''ksize'' having a length less than the
     minimum requirement of 5. The function is trying to execute MaxPool3DGradGrad
     operation which requires ''ksize'' to have at least 5 elements. Therefore, Left

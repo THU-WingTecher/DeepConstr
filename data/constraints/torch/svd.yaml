@@ -30,11 +30,11 @@ rules:
 - cot: 'The error occurs due to the input tensor''s data type. The ''linalg.svd''
     function expects a tensor of type floating point or complex but got integer (int8).
     Let''s see what the args were. The input tensor is of type int8, but it needs
-    to be of type float or complex. Hence, Left: type(input) needs to be changed.
+    to be of type float or complex. Hence, Left: input.dtype needs to be changed.
     It should be equal to either float or complex type, so Op: ==, and Right: [float,
     complex].'
   target: 'linalg.svd: Expected a floating point or complex tensor as input. Got Char'
-  txt: type(input) == float or type(input) == complex
+  txt: input.dtype == float or input.dtype == complex
 time_cost: 258.11507272720337
 title: torch.svd
 tokens_used: 4273

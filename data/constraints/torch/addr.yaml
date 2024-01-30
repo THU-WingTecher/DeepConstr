@@ -41,16 +41,16 @@ rules:
     not of type ComplexFloat to prevent this error. So, Left : type(vec2), Op : !=,
     Right : ComplexFloat. Also, the output is expected to be of type Float. So, we
     should ensure that ''input'', ''out'', ''vec1'', and ''vec2'' should be of type
-    Float. Therefore, Left : type(input), type(out), type(vec1), type(vec2), Op :
+    Float. Therefore, Left : input.dtype, out.dtype, type(vec1), type(vec2), Op :
     ==, Right : Float.'
   target: result type ComplexDouble can't be cast to the desired output type Double
-  txt: type(vec2)!=ComplexFloat
+  txt: vec2.dtype!=ComplexFloat
 - cot: 'The error is triggered because the expanded size of the tensor doesn''t match
     with the existing size at non-singleton dimension 1. From the given values, it
     seems that the dimension size of the tensor is not matching the target size. Therefore,
     the constraint would be that the size of the tensor dimension should match the
     target size. The value of vec1 (length 2) and vec2 (length 6) seems to be the
-    target sizes and the size of input tensor (TensorDType.float32:[9, 7]) is not
+    target sizes and the size of input tensor ( float32:[9, 7]) is not
     matching with these. Therefore, Left : len(vec1), len(vec2). Op : ==, and Right
     : input.shape[1], input.shape[2]'
   target: 'The expanded size of the tensor (6) must match the existing size (7) at

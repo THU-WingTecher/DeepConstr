@@ -22,11 +22,11 @@ rules:
 - cot: 'The error arises because the dtype of ''input'' and ''other'' are not same.
     ''input'' is of type Float while ''other'' is of type ComplexDouble. The linalg.solve
     function expects ''input'' and ''other'' to have the same dtype. So, the dtype
-    of ''input'' and ''other'' should be same. This can be represented as Left : type(input),
-    op : ==, Right : type(other)'
+    of ''input'' and ''other'' should be same. This can be represented as Left : input.dtype,
+    op : ==, Right : other.dtype'
   target: 'linalg.solve: Expected A and B to have the same dtype, but found A of type
     Float and B of type ComplexDouble instead'
-  txt: type(input)==type(other)
+  txt: input.dtype==other.dtype
 - cot: 'The error is triggered because the program is trying to create a vector that
     is larger than the maximum allowable size. The arguments were ''input'' with shape
     [6, 8], ''other'' with shape [2, 8, 2, 6, 6, 8], and ''out'' which is empty. It

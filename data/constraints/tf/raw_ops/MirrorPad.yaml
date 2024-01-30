@@ -33,7 +33,7 @@ rules:
     \ values: \"REFLECT\", \"SYMMETRIC\"\n ; NodeDef: ; Op output:T; attr=T:type;\
     \ attr=Tpaddings:type,default=DT_INT32,allowed=[DT_INT32, DT_INT64]; attr=mode:string,allowed=[\"\
     REFLECT\", \"SYMMETRIC\"]> [Op:MirrorPad]"
-  txt: type(mode) in ["REFLECT", "SYMMETRIC"].
+  txt: mode in ["REFLECT", "SYMMETRIC"]
 - cot: 'The error is due to the rank of the input tensor being not in the range [0,5].
     The function is trying to pad a tensor of rank 10, but the allowed ranks are between
     0 and 5. Therefore, a condition ensuring that the rank of the input tensor is

@@ -27,10 +27,10 @@ rules:
     desired output type Char. Looking at the input and output values, the dtype of
     ''input'' is int32 and the dtype of ''out'' is int8. To prevent this error, the
     dtype of ''out'' should be changed to match the dtype of ''input'' or vice versa.
-    Left : type(out), op : ==, comparator : type(input)'
+    Left : out.dtype, op : ==, comparator : input.dtype'
   target: result type Float can't be cast to the desired output type Char
-  txt: ((input.dtype == ComplexFloat) and (type(input)==type(out))) or ((type(input)==type(out))
-    and (type(out)=='Float')) or ((input.dtype == ComplexFloat) and (type(input)==type(out)))
+  txt: ((input.dtype == ComplexFloat) and (input.dtype==out.dtype)) or ((input.dtype==out.dtype)
+    and (out.dtype=='Float')) or ((input.dtype == ComplexFloat) and (input.dtype==out.dtype))
 time_cost: 843.7711143493652
 title: torch.log10
 tokens_used: 9672

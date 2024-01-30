@@ -31,11 +31,11 @@ rules:
     + diagonal))
 - cot: 'The error is due to a mismatch in the data types of the ''input'' tensor and
     the ''out'' tensor. The ''input'' tensor is of type float32, but the ''out'' tensor
-    is of type int64. Therefore, Left : type(out) should be made to match the type
+    is of type int64. Therefore, Left : out.dtype should be made to match the type
     of the ''input'' tensor. It says that it should be float, so Op : ==, and Right
-    : type(input).'
+    : input.dtype.'
   target: Expected out tensor to have dtype float, but got long int instead
-  txt: type(out) == type(input)
+  txt: out.dtype == input.dtype
 time_cost: 499.8375132083893
 title: torch.diag
 tokens_used: 5486

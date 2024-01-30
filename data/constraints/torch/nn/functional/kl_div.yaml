@@ -43,7 +43,7 @@ rules:
     complex inputs. Therefore, the type of the ''input'' and ''target'' tensors should
     not be complex. Op: !=, Right: complex.'
   target: 'kl_div: Complex inputs not supported.'
-  txt: type(input)!=complex and type(target)!=complex
+  txt: input.dtype!=complex and target.dtype!=complex
 - cot: 'The error is due to incompatible data types and shapes in the input dictionaries.
     The input is of type int8 and the target is of type float16. The kl_div function
     does not support integral inputs. Thus, the data type of ''input'' should be of
@@ -52,7 +52,7 @@ rules:
     Therefore, ''input'' and ''target'' should have the same shape. Op : ==, and Right
     : input.shape.'
   target: 'kl_div: Integral inputs not supported.'
-  txt: (target.dtype == float) and (type(input.dtype) == float and input.shape ==
+  txt: (target.dtype == float) and (input.dtype == float and input.shape ==
     target.shape)
 time_cost: 1155.705461025238
 title: torch.nn.functional.kl_div

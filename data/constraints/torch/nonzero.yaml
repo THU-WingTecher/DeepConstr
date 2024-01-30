@@ -31,14 +31,14 @@ rules:
 - cot: 'The error is triggered because the ''out'' tensor is expected to be of scalar
     type Long, but it is of scalar type Float. Let''s see what the args were. It seems
     ''out'' tensor is of type float32. Therefore, the tensor type of ''out'' should
-    be corrected. Left : type(out), which is the type of tensor ''out''. It says that
+    be corrected. Left : out.dtype, which is the type of tensor ''out''. It says that
     should be equal to Long, so Op : ''=='', and Right : ''Long''.'
   target: 'nonzero: Expected out tensor to have scalar type Long but got scalar typeFloat'
-  txt: type(out) == 'Long'
+  txt: out.dtype == 'Long'
 - cot: 'The error is due to the incompatibility between ''as_tuple'' set to True and
     usage of the ''out'' kwarg in the ''nonzero'' function. It indicates that ''nonzero''
     does not support the ''out'' kwarg when ''as_tuple'' is True. The wrongly provided
-    values are ''out'' : Tensor:TensorDType.int64:[4, 1, 3, 2, 8, 2, 6, 6, 8, 1] and
+    values are ''out'' : Tensor: int64:[4, 1, 3, 2, 8, 2, 6, 6, 8, 1] and
     ''as_tuple'' : True. Therefore, Left: as_tuple, Op: ''=='', Right: False and Left:
     ''out'' in input, Op: ''=='', Right: False.'
   target: nonzero does not support the out kwarg when as_tuple is True

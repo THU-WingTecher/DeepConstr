@@ -39,16 +39,16 @@ rules:
     to the desired output type Int. Looking at the args, the dtype of ''input'' is
     float16, the dtype of ''other'' is float64, and the dtype of ''out'' is int32.
     Therefore, the dtypes of all arguments should be consistent to prevent this error.
-    Left : type(input), op : ==, comparator : type(other), type(out)'
+    Left : input.dtype, op : ==, comparator : other.dtype, out.dtype'
   target: result type Half can't be cast to the desired output type Int
-  txt: (type(other)==type(out)) and (type(input)==type(other))
+  txt: (other.dtype==out.dtype) and (input.dtype==other.dtype)
 - cot: 'The error arises because the "logaddexp2_cpu" operation is not implemented
     for ''Bool'' type tensors. Let''s check the inputs. The input tensors ''input'',
-    ''other'', and ''out'' are all of boolean type. Therefore, the Left : type(input)
-    or type(other) or type(out) should be corrected to match a type that supports
+    ''other'', and ''out'' are all of boolean type. Therefore, the Left : input.dtype
+    or other.dtype or out.dtype should be corrected to match a type that supports
     "logaddexp2_cpu" operation. So, Op : !=, and Right : "Bool".'
   target: '"logaddexp2_cpu" not implemented for ''Bool'''
-  txt: type(out) != "Bool"
+  txt: out.dtype != "Bool"
 
 time_cost: 17284.541882038116
 title: torch.logaddexp2

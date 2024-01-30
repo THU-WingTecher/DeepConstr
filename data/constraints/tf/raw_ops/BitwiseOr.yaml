@@ -26,34 +26,34 @@ rules:
 - cot: 'The error occurs because a bitwise operation is being attempted on a float
     tensor, which is not allowed. Both tensors in generated args must have the same
     data type. Let''s see what the args were. The ''x'' tensor is int32, but the ''y''
-    tensor is of type float. Therefore, Left : type(y), which is the type of tensor
+    tensor is of type float. Therefore, Left : y.dtype, which is the type of tensor
     y, should be corrected. It says that should be equal to the datatype of tensor
-    x, so Op : ==, and Right : type(x).'
+    x, so Op : ==, and Right : x.dtype.'
   target: 'cannot compute BitwiseOr as input #1(zero-based) was expected to be a int32
     tensor but is a float tensor [Op:BitwiseOr] name:'
-  txt: type(y)==type(x)
+  txt: y.dtype==x.dtype
 - cot: 'The error arises because the attribute ''T'' of ''x'' and ''y'' is a float,
     but it is expected to be one of int8, int16, int32, int64, uint8, uint16, uint32,
     uint64. The tensors ''x'' and ''y'' are both provided as float32, which is not
-    compatible with the operation ''BitwiseOr''. The Left : type(x) or type(y) should
+    compatible with the operation ''BitwiseOr''. The Left : x.dtype or y.dtype should
     be corrected to match one of the allowed types. Op : in, and Right : [int8, int16,
     int32, int64, uint8, uint16, uint32, uint64].'
   target: "Value for attr 'T' of float is not in the list of allowed values: int8,\
     \ int16, int32, int64, uint8, uint16, uint32, uint64\n ; NodeDef: ; Op z:T; attr=T:type,allowed=[DT_INT8,\
     \ DT_INT16, DT_INT32, DT_INT64, DT_UINT8, DT_UINT16, DT_UINT32, DT_UINT64]; is_commutative=true>\
     \ [Op:BitwiseOr] name:"
-  txt: type(x) in ["int8", "int16", "int32", "int64", "uint8", "uint16", "uint32",
-    "uint64"] and type(y) in ["int8", "int16", "int32", "int64", "uint8", "uint16",
+  txt: x.dtype in ["int8", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+    "uint64"] and y.dtype in ["int8", "int16", "int32", "int64", "uint8", "uint16",
     "uint32", "uint64"]
 - cot: 'The error indicates that the function is trying to perform a bitwise operation
     on a tensor of type uint8, while it expects an int16 tensor. The tensor types
     of ''x'' and ''y'' should be ''int16'' to perform this operation. Thus, the type
     of ''x'' and ''y'' must be checked and if necessary, converted to ''int16'' before
-    performing the operation. Therefore, Left : type(x), Ops : ''=='', Right : ''int16'';
-    and Left : type(y), Ops : ''=='', Right : ''int16''.'
+    performing the operation. Therefore, Left : x.dtype, Ops : ''=='', Right : ''int16'';
+    and Left : y.dtype, Ops : ''=='', Right : ''int16''.'
   target: 'Input for dynamic binary or n-ary op lowering was of a rank greater than
     5 [Op:BitwiseOr] name:'
-  txt: (type(y) == 'int16') or (((x.rank <= 5)) and ((y.rank <= 5))) or (type(y) ==
+  txt: (y.dtype == 'int16') or (((x.rank <= 5)) and ((y.rank <= 5))) or (y.dtype ==
     'int16')
 - cot: 'The error is caused due to the shapes of tensors ''''x'''' and ''''y'''' not
     being broadcastable. To ensure that the shapes are broadcastable for the BitwiseOr

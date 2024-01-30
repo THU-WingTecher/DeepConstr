@@ -37,10 +37,10 @@ rules:
     cannot be cast to the desired output type, which is float. The current output
     type is int16, but the function ''mvlgamma'' requires its output to be of float
     type. Therefore, the output type should be corrected to match the required type.
-    Let''s relate the types to generate the constraint. Left : type(out), op : ==,
+    Let''s relate the types to generate the constraint. Left : out.dtype, op : ==,
     comparator : "float32"'
   target: 'mvlgamma: result type Float can''t be cast to the desired output type Float'
-  txt: type(out)=='float32'
+  txt: out.dtype=='float32'
 time_cost: 950.185210943222
 title: torch.special.multigammaln
 tokens_used: 16942

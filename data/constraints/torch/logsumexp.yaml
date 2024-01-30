@@ -51,10 +51,10 @@ rules:
     point type for the result tensor, but it received an integer type instead. Let''s
     see what the args were. It seems the ''out'' tensor is of integer type, which
     is causing the problem. Therefore, the type of ''out'' tensor needs to be corrected.
-    Left : type(out), which is the type of the ''out'' tensor. It should be a floating
+    Left : out.dtype, which is the type of the ''out'' tensor. It should be a floating
     point type, so Op : ==, and Right : float.'
   target: 'logsumexp(): Expected floating point type for result tensor, but got: ComplexFloat'
-  txt: type(out) == float
+  txt: out.dtype == float
 time_cost: 442.25678849220276
 title: torch.logsumexp
 tokens_used: 8869

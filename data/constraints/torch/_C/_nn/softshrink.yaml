@@ -27,10 +27,10 @@ rules:
     the function softshrink_cpu does not work with ''Int'' type. Therefore, the input
     type should not be ''Int''. Instead, it should be a type that softshrink_cpu can
     handle. The type of input should be ''float'' or ''double'' in order to prevent
-    the error. Thus, the constraint should be : type(input) == ''float'' or type(input)
+    the error. Thus, the constraint should be : input.dtype == ''float'' or input.dtype
     == ''double''.'
   target: '"softshrink_cpu" not implemented for ''Int'''
-  txt: type(input) in ['float', 'double']
+  txt: input.dtype in ['float', 'double']
 time_cost: 137.88998222351074
 title: torch._C._nn.softshrink
 tokens_used: 4561

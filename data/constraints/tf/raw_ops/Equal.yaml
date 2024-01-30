@@ -27,12 +27,12 @@ rules:
 - cot: 'The error arises because the function is trying to perform an operation requiring
     a float tensor and an int64 tensor. However, both tensors in generated args must
     have the same data type. Let''s see what the args were. the ''x'' tensor is int8,
-    but the ''y'' tensor is of type float32. Therefore, Left : type(x), which is the
+    but the ''y'' tensor is of type float32. Therefore, Left : x.dtype, which is the
     type of tensor x, should be corrected. It says that should be equal to the datatype
-    of tensor y, so Op : ==, and Right : type(y).'
+    of tensor y, so Op : ==, and Right : y.dtype.'
   target: 'cannot compute Equal as input #1(zero-based) was expected to be a float
     tensor but is a int64 tensor name:'
-  txt: type(x) == type(y)
+  txt: x.dtype == y.dtype
 - cot: 'The error is triggered because the input for dynamic binary or n-ary op lowering
     was of a rank greater than 5. Let''s see what the args were. The tensors ''x''
     and ''y'' both have 8 dimensions. However, the operation only allows for at most

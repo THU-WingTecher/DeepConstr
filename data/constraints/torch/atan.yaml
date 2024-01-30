@@ -23,7 +23,7 @@ rules:
   target: Trying to resize storage that is not resizable
   txt: input.size() == out.size()
 - cot: 'The error is caused because the result type is Float which cannot be casted
-    to the desired output type Long. The dictionary values provided are of type TensorDType.int64,
+    to the desired output type Long. The dictionary values provided are of type  int64,
     which suggests the output type should be an integer, not a float. Therefore, we
     can impose a constraint that the output type must be an integer. Looking at the
     inputs and outputs, we could infer that ''input'' and ''out'' should be of the
@@ -31,7 +31,7 @@ rules:
     type(''out''). Op : ==. Right : int. Also, the output type should be Long, not
     Float. So, Left : type(''out''). Op : !=. Right : float.'
   target: result type Float can't be cast to the desired output type Long
-  txt: (type(out) == Float) and ((type(input)==Long) or (type(out)!=float))
+  txt: (out.dtype == Float) and ((input.dtype==Long) or (out.dtype!=float))
 time_cost: 835.9593477249146
 title: torch.atan
 tokens_used: 8231

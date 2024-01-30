@@ -32,7 +32,7 @@ rules:
     (ComplexFloat) which can't be converted to the desired output type (Float). To
     prevent this error, 'n' should be of type Float. Therefore,
   target: result type ComplexFloat can't be cast to the desired output type Float
-  txt: (type(x)==Float) or (type(out)==Float)
+  txt: (x.dtype==Float) or (out.dtype==Float)
 time_cost: 4858.959731340408
 title: torch._C._special.special_hermite_polynomial_h
 tokens_used: 8198

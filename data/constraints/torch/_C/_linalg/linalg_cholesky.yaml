@@ -42,10 +42,10 @@ rules:
   txt: out.rank==input.rank and all(out.shape[i]==input.shape[i] for i in range(out.rank))
 - cot: 'The error is due to a mismatch in data types. Here, the ''out'' tensor is
     expected to be of type float32 (as per the ''input'' tensor) but it is of type
-    int8. Therefore, Left : type(out) should be corrected. It says that should be
-    equal to the datatype of ''input'' tensor, so Op : ==, and Right : type(input).'
+    int8. Therefore, Left : out.dtype should be corrected. It says that should be
+    equal to the datatype of ''input'' tensor, so Op : ==, and Right : input.dtype.'
   target: Expected out tensor to have dtype float, but got signed char instead
-  txt: ('out'.dtype != int32) and (type(out)==type(input))
+  txt: ('out'.dtype != int32) and (out.dtype==input.dtype)
 - cot: 'Error is triggered because of the integer type tensor. The linalg.cholesky
     function requires a floating point or complex tensor as input, not an integer.
     Let''s see what the args were. The ''input'' tensor is of dtype int32, and is

@@ -39,17 +39,17 @@ rules:
 
     This can be written in code as:'
   target: Trying to resize storage that is not resizable
-  txt: (type(n) == type(x)) and ((n.shape == x.shape) and ((n.rank==x.rank and all(n.shape[i]==x.shape[i]
-    for i in range(n.rank))))) and (type(out) == type(x)) and ((out.shape == x.shape)
+  txt: (type(n) == x.dtype) and ((n.shape == x.shape) and ((n.rank==x.rank and all(n.shape[i]==x.shape[i]
+    for i in range(n.rank))))) and (out.dtype == x.dtype) and ((out.shape == x.shape)
     and ((out.rank==x.rank and all(out.shape[i]==x.shape[i] for i in range(out.rank)))))
 - cot: 'The error is caused because the result of the operation is a float type but
     it''s trying to be cast to a boolean type which is not possible. So, we need to
-    ensure the output type is float and not boolean. Therefore, Left : type(out),
+    ensure the output type is float and not boolean. Therefore, Left : out.dtype,
     Op : ==, Right : float. Also, we need to ensure that the output type matches the
-    type of ''x'' and ''n''. Therefore, Left : type(out), Op : ==, Right : type(x)
+    type of ''x'' and ''n''. Therefore, Left : out.dtype, Op : ==, Right : x.dtype
     or type(n).'
   target: result type Float can't be cast to the desired output type Char
-  txt: type(out)==float
+  txt: out.dtype==float
 time_cost: 14196.7093667984
 title: torch._C._special.special_chebyshev_polynomial_t
 tokens_used: 18059

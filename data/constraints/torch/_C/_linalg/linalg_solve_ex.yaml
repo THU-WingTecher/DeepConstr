@@ -44,13 +44,13 @@ rules:
     and (len(A) == len(B))))))
 - cot: 'The error is due to the mismatch in the dtypes of Tensor A and Tensor B. Tensor
     A has dtype float32 and Tensor B has dtype int32. The linalg.solve function expects
-    A and B to have the same dtype. Let''s look at the args. From {''A'': Tensor:TensorDType.float32:[9,
-    9], ''B'': Tensor:TensorDType.int32:[9, 7], ''check_errors'': False, ''left'':
+    A and B to have the same dtype. Let''s look at the args. From {''A'': Tensor: float32:[9,
+    9], ''B'': Tensor: int32:[9, 7], ''check_errors'': False, ''left'':
     True}, it indicates that the dtypes of A and B should be same. Therefore, Left
-    : type(A), Op : ==, and Right : type(B)'
+    : A.dtype, Op : ==, and Right : B.dtype'
   target: 'linalg.solve: Expected A and B to have the same dtype, but found A of type
     Float and B of type Int instead'
-  txt: type(A)==type(B)
+  txt: A.dtype==B.dtype
 - cot: 'Error is triggered because of an integer input where a floating point or complex
     tensor is expected. Let''s see what the args were. It seems that ''A'' and ''B''
     are tensors of type Int32, and are the problem. Therefore, the tensors ''A'' and

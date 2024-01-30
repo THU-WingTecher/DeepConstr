@@ -77,11 +77,11 @@ rules:
   txt: weight.dim() >= 3
 - cot: 'Error is triggered because of mismatch between input type and weight type.
     It expects both to be the same. Let''s see what the args were. The type of ''input''
-    is ''TensorDType.complex64'' and the type of ''weight'' is ''TensorDType.float64''.
-    Therefore, Left : type(input), Op : ==, Right : type(weight)'
+    is '' complex64'' and the type of ''weight'' is '' float64''.
+    Therefore, Left : input.dtype, Op : ==, Right : weight.dtype'
   target: Input type (CPUComplexFloatType) and weight type (torch.DoubleTensor) should
     be the same
-  txt: type(input) == type(weight)
+  txt: input.dtype == weight.dtype
 - cot: 'Based on given values, Error is triggered because Input type (CPUComplexDoubleType)
     and bias type (torch.FloatTensor) are not the same. It expects to have same type
     between input and bias. Let''s see what the args were. It seems the type of ''input''

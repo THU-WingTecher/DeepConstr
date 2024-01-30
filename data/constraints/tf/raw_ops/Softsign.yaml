@@ -23,7 +23,7 @@ rules:
   target: "Value for attr 'T' of int32 is not in the list of allowed values: half,\
     \ bfloat16, float, double\n ; NodeDef: ; Op activations:T; attr=T:type,allowed=>\
     \ name:"
-  txt: type(features) in ["half", "bfloat16", "float", "double"]
+  txt: features.dtype in ["half", "bfloat16", "float", "double"]
 time_cost: 28.36713433265686
 title: tf.raw_ops.Softsign
 tokens_used: 1204

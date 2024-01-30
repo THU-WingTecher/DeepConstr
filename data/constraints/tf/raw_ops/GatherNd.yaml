@@ -29,7 +29,7 @@ rules:
   target: "Value for attr 'Tindices' of float is not in the list of allowed values:\
     \ int16, int32, int64\n ; NodeDef: ; Op output:Tparams; attr=Tparams:type; attr=Tindices:type,allowed=[DT_INT16,\
     \ DT_INT32, DT_INT64]> [Op:GatherNd] name:"
-  txt: type(indices) in ["int16", "int32", "int64"]
+  txt: indices.dtype in ["int16", "int32", "int64"]
 - cot: 'The error occurs because the innermost dimension length of the indices tensor
     is greater than the rank of the params tensor. The innermost dimension length
     of indices is 8 while the rank of params is 1. To avoid this error, we need two

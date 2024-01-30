@@ -48,15 +48,6 @@ rules:
     \ DT_UINT16, DT_QINT8]; attr=padding:string,allowed=[\"SAME\", \"VALID\"]; attr=data_format:string,default=\"\
     NHWC\",allowed=[\"NHWC\", \"NCHW\", \"NCHW_VECT_C\"]> [Op:MaxPoolV2] name:"
   txt: padding in ["SAME", "VALID"] and data_format in ["NHWC", "NCHW", "NCHW_VECT_C"]
-- cot: 'The error occurs because the function MaxPoolV2 is trying to perform a operation
-    on a int32 tensor and a float tensor. According to the error message, input#1
-    (which is ''ksize'' based on zero-indexing) is expected to be int32 but is a float.
-    Therefore, to correct this, the type of ''ksize'' must be int32. So the Left :
-    type(ksize). It needs to be equal to ''int32'', so Op : ==, and Right : int32.'
-  target: 'cannot compute MaxPoolV2 as input #1(zero-based) was expected to be a int32
-    tensor but is a float tensor [Op:MaxPoolV2] name:'
-  txt: (type(strides) in [half, bfloat16, float, double, int32, int64, uint8, int16,
-    int8, uint16, qint8]) and (type(ksize) == int32)
 - cot: 'The error is generated because the ksize field does not specify 4 dimensions,
     which is required for the Sliding window in MaxPoolV2 operation. The input tensor
     ''ksize'' has a length of 10, but it must be 4. Therefore, Left : len(ksize) must

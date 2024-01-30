@@ -54,9 +54,9 @@ rules:
   txt: input.shape == normalized_shape
 - cot: 'The error is caused because the tensor type ''bias'' is Bool while the operation
     expects it to be of type Float. Therefore, the type of ''bias'' should be Float.
-    Left : type(bias), Op : ==, Right : Float.'
+    Left : bias.dtype, Op : ==, Right : Float.'
   target: expected scalar type Float but found Bool
-  txt: type(bias) == Float
+  txt: bias.dtype == Float
 - cot: 'The error is triggered because all inputs do not share the same datatype.
     Looking at the args, bias and weight are of dtype float32, while input is of dtype
     complex64. The constraint here is that all input tensors must have the same datatype.
@@ -68,10 +68,10 @@ rules:
 - cot: 'The error "LayerNormKernelImpl" not implemented for ''Int'' is due to the
     input of the function. It is trying to use ''Int'' for ''LayerNormKernelImpl''
     which is not implemented. Therefore, we need to correct the type of ''input''
-    and ''weight'' to be ''float'' instead of ''int''. Therefore, Left : type(input)
-    and type(weight), Op : ==, and Right : float.'
+    and ''weight'' to be ''float'' instead of ''int''. Therefore, Left : input.dtype
+    and weight.dtype, Op : ==, and Right : float.'
   target: '"LayerNormKernelImpl" not implemented for ''Int'''
-  txt: type(weight) == float
+  txt: weight.dtype == float
 time_cost: 2844.4911546707153
 title: torch.nn.functional.layer_norm
 tokens_used: 27380

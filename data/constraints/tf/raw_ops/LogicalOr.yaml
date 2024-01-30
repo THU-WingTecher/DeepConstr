@@ -26,7 +26,7 @@ rules:
     is bool, so the operation would be Op : ==, and Right : bool.'
   target: 'rror: cannot compute LogicalOr as input #0(zero-based) was expected to
     be a bool tensor but is a float tensor [Op:LogicalOr] name:'
-  txt: (type(x)==bool) and (type(y)==bool)
+  txt: (x.dtype==bool) and (y.dtype==bool)
 - cot: 'The error is caused because the rank of the input tensors for the operation
     is greater than 5. The rank of a tensor is the number of dimensions in it. In
     this case, the tensor ''x'' has a rank of 5 and the tensor ''y'' has a rank of

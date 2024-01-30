@@ -27,10 +27,10 @@ rules:
   txt: input.shape == out.shape
 - cot: 'The error is triggered because result type Float cannot be cast to the Int.
     From the values, we can see that the type of ''input'' and ''out'' are int32.
-    So, the output type should be consistent with the input type. Left : type(input),
-    op : ==, comparator : type(output)'
+    So, the output type should be consistent with the input type. Left : input.dtype,
+    op : ==, comparator : output.dtype'
   target: result type Float can't be cast to the desired output type Int
-  txt: type(input)==type(out)
+  txt: input.dtype==out.dtype
 time_cost: 610.7649812698364
 title: torch.reciprocal
 tokens_used: 8934

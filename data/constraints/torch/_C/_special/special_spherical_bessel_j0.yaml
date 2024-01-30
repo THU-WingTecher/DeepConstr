@@ -27,10 +27,10 @@ rules:
 - cot: 'The error message states that a value of type ''Float'' cannot be cast to
     ''Int''. This means that the output type is ''Int'' but the function is trying
     to assign a ''Float'' value to it. Therefore, the output type should be ''Float''
-    or the input type should be ''Int''. Hence, Left : type(out) or type(x), Op :
+    or the input type should be ''Int''. Hence, Left : out.dtype or x.dtype, Op :
     ==, Right : Float or Int'
   target: result type Float can't be cast to the desired output type Short
-  txt: type(out)==Float
+  txt: out.dtype==Float
 time_cost: 1553.4538407325745
 title: torch._C._special.special_spherical_bessel_j0
 tokens_used: 7906

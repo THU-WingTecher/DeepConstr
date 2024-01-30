@@ -22,10 +22,10 @@ rules:
 - cot: 'The error occurs because the output tensor ''out'' is of Float type while
     the function ''rfftn'' expects a complex output tensor. Let''s look at the arguments.
     The ''out'' tensor is of dtype float32, which is incorrect. Hence, the dtype of
-    ''out'' tensor needs to be corrected, i.e., type(out). Therefore, Left : type(out).
+    ''out'' tensor needs to be corrected, i.e., out.dtype. Therefore, Left : out.dtype.
     It states that the expected type is complex, so Op : ==, and Right : Complex.'
   target: rfftn expects a complex output tensor, but got Float
-  txt: type(out) == Complex
+  txt: out.dtype == Complex
 - cot: 'Error is triggered because of trying to resize storage. Let''s see what the
     args were. The ''out'' tensor doesn''t match the shape of the ''input'' tensor.
     Therefore, Left : out.shape, Right : input.shape, and Op : ==.'

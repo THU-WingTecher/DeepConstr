@@ -16,15 +16,5 @@ constraints:
     required: false
 package: torch
 pass_rate: 0.0
-rules:
-- cot: 'Error is triggered because linalg_cond() function received an invalid combination
-    of arguments. It expected the second argument ''p'' to be either a Number or a
-    string, but it got an integer. Also, the first argument ''A'' should be a tensor
-    and the third argument ''out'' should be a tensor. Let''s see what the args were.
-    The ''A'' argument is a tensor, the ''p'' argument is an integer and the ''out''
-    argument is a tensor. Therefore, the constraints can be revised as follows:'
-  target: "linalg_cond() received an invalid combination of arguments - got (out=Tensor,\
-    \ p=int, A=Tensor, ), but expected one of:\n * (Tensor input, Number p, *, Tensor\
-    \ out)\n * (Tensor input, str p, *, Tensor out)"
-  txt: type(A) == Tensor, type(p) == Number or type(p) == str, type(out) == Tensor
+rules: {}
 title: torch._C._linalg.linalg_cond

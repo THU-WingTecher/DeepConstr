@@ -36,7 +36,7 @@ rules:
   target: "Value for attr 'Tpaddings' of float is not in the list of allowed values:\
     \ int32, int64\n ; NodeDef: ; Op output:T; attr=T:type; attr=Tpaddings:type,default=DT_INT32,allowed=[DT_INT32,\
     \ DT_INT64]> [Op:PadV2] name:"
-  txt: type(paddings) in ["int32", "int64"]
+  txt: paddings.dtype in ["int32", "int64"]
 - cot: 'The error seems to be triggered because the dimensions of the ''input'' tensor
     and the dimensions specified in the ''paddings'' tensor do not match. The ''paddings''
     tensor should contain pairs of integers that represent the padding values for
@@ -49,11 +49,11 @@ rules:
 
     Also, the ''constant_values'' tensor seems to be of a different type (''bool'')
     than the ''input'' tensor (''float32''). The data type of ''constant_values''
-    should match the type of the ''input'' tensor. Therefore, Left : type(constant_values),
-    Op : ==, and Right : type(input).'
+    should match the type of the ''input'' tensor. Therefore, Left : constant_values.dtype,
+    Op : ==, and Right : input.dtype.'
   target: 'cannot compute PadV2 as input #2(zero-based) was expected to be a float
     tensor but is a half tensor [Op:PadV2] name:'
-  txt: type(constant_values) == type(input)
+  txt: constant_values.dtype == input.dtype
 - cot: 'The error is due to invalid dimensions of the padding tensor. The padding
     tensor should be a matrix with 2 columns, however, it is currently an 8-dimensional
     tensor. Therefore, the Left : paddings.dim should be corrected to 2. Ops : ''=='',
@@ -61,19 +61,6 @@ rules:
     Left : len(paddings.shape), Ops : ''=='', Right : 2.'
   target: "paddings must be a matrix with 2 columns: [8]\n [[]] [Op:PadV2] name:"
   txt: paddings.dim == 2
-- cot: 'The error is due to the ''input'', ''paddings'', and ''constant_values'' being
-    None. They should not be None for the operation to be successful. Therefore, Left
-    : input, Op : !=, Right : None. This applies to ''paddings'' and ''constant_values''
-    as well.'
-  target: 'inputs rank not in [0,8]: 10 [Op:PadV2] name:'
-  txt: input != None, paddings != None, constant_values != None.
-- cot: 'The error occurs because either the ''input'', ''paddings'' or ''constant_values''
-    is None. To avoid this error, all three variables need to be defined. Therefore,
-    the constraints are: ''input'' should not be None, ''paddings'' should not be
-    None, and ''constant_values'' should not be None.'
-  target: "The first dimension of paddings must be the rank of inputs[10,2] []\n [[]]\
-    \ [Op:PadV2] name:"
-  txt: input != None
 time_cost: 5443.551707029343
 title: tf.raw_ops.PadV2
 tokens_used: 15026

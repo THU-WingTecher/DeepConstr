@@ -17,19 +17,19 @@ rules:
 - cot: 'The error is due to an attempt to use a ''complex32'' attribute that does
     not exist in the ''tensorflow'' module. The ''x'' value is a tensor of type ''bfloat16''.
     To prevent this error, the tensor type should not refer to a non-existent attribute.
-    Left : type(x); Op : != Right : tensorflow.complex32'
-  target: 'rror: module ''tensorflow'' has no attribute ''complex32'''
-  txt: type(x)!=tensorflow.complex32
+    Left : x.dtype; Op : != Right : tf.complex32'
+  target: 'rror: module ''tf'' has no attribute ''complex32'''
+  txt: x.dtype!=tf.complex32
 - cot: 'The error is due to incorrect data type for ''x''. The current data type of
     ''x'' is int32, which is not allowed as per the error message. The allowed data
     types are ''bfloat16'', ''half'', ''float'', ''double''. Therefore, the data type
-    of ''x'' should be corrected. So, the Left : type(x) should be corrected to match
+    of ''x'' should be corrected. So, the Left : x.dtype should be corrected to match
     one of the allowed types. Op : in, and Right : [''bfloat16'', ''half'', ''float'',
     ''double''].'
   target: "rror: Value for attr 'T' of int32 is not in the list of allowed values:\
     \ bfloat16, half, float, double\n ; NodeDef: ; Op y:T; attr=T:type,allowed=[DT_BFLOAT16,\
     \ DT_HALF, DT_FLOAT, DT_DOUBLE]> [Op:Floor] name:"
-  txt: type(x) in ["bfloat16", "half", "float", "double"]
+  txt: x.dtype in ["bfloat16", "half", "float", "double"]
 time_cost: 115.2298800945282
 title: tf.raw_ops.Floor
 tokens_used: 4440

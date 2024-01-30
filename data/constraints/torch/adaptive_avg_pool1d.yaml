@@ -33,14 +33,14 @@ rules:
   txt: (input.dtype in ['Float', 'Complex', 'Double'])
 - cot: 'The error is due to the use of the "adaptive_avg_pool2d" function on a tensor
     with ''ComplexFloat'' datatype. This function is not implemented for ''ComplexFloat''
-    datatype. Therefore, type(input) should be corrected to a data type for which
+    datatype. Therefore, input.dtype should be corrected to a data type for which
     "adaptive_avg_pool2d" is implemented. Also, the output_size indicates the target
     output size, which should be less than or equal to the size of the input dimensions
     for the operation to be valid. So, Left : output_size, should be less than or
     equal to the size of each dimension of input tensor, so Op : <=, and Right : len(input[i])
     for each ''i'' in input dimensions.'
   target: '"adaptive_avg_pool2d" not implemented for ''ComplexFloat'''
-  txt: type(input) != "ComplexFloat"
+  txt: input.dtype != "ComplexFloat"
 - cot: 'The error states that the ''output_size'' argument in the function ''adaptive_avg_pool2d''
     is not satisfying the requirement of being greater than or equal to 0. The current
     ''output_size'' value is -1. Therefore, Left: output_size, Op: ''>='', and Right:

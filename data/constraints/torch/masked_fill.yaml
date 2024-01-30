@@ -35,7 +35,7 @@ rules:
     is stated that the ''mask'' should be of boolean type. So, Operation : == ; and
     Right : Boolean data type.'
   target: masked_fill_ only supports boolean masks, but got mask with dtype float
-  txt: type(mask) == bool
+  txt: mask.dtype == bool
 time_cost: 92.93530631065369
 title: torch.masked_fill
 tokens_used: 436

@@ -57,8 +57,8 @@ rules:
     \ the 'input' tensor. \n\nThe constraint for the 'out' parameter can be expressed\
     \ as:"
   target: 'linalg.matrix_norm expected out tensor dtype Double but got: Float'
-  txt: (type(out) == Float) and ((len(out.shape) == len(input.shape)) or ((type(out)
-    == Double) and (type(out) == type(input))) or (len(out.shape) == len(input.shape)))
+  txt: (out.dtype == Float) and ((len(out.shape) == len(input.shape)) or ((out.dtype
+    == Double) and (out.dtype == input.dtype)) or (len(out.shape) == len(input.shape)))
 time_cost: 3504.050005674362
 title: torch._C._linalg.linalg_matrix_norm
 tokens_used: 30046

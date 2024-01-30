@@ -26,9 +26,9 @@ rules:
 - cot: 'The error arises due to the mismatch of the data type. The input tensor has
     a data type of float32 and the output tensor has a data type of int8. To prevent
     this error, the data types of the input and output tensors should be the same.
-    Therefore, the constraint would be Left : type(input), Op : ==, Right : type(out)'
+    Therefore, the constraint would be Left : input.dtype, Op : ==, Right : out.dtype'
   target: result type Float can't be cast to the desired output type Char
-  txt: (type(out)==float) and (type(input)==type(out))
+  txt: (out.dtype==float) and (input.dtype==out.dtype)
 time_cost: 2707.3082687854767
 title: torch.special.erfc
 tokens_used: 9054

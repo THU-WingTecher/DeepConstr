@@ -40,8 +40,8 @@ rules:
     to be corrected. Thus, Left: out.dtype, Op: ==, Right: ComplexFloat. On the other
     hand, it should not be ComplexDouble, so Op: !=, Right: ComplexDouble.'
   target: Found dtype ComplexDouble but expected ComplexFloat
-  txt: (out.dtype != ComplexDouble) and ((input.dtype != ComplexDouble) or ((type(out)
-    == "ComplexFloat") and (type(input) == "ComplexFloat"))) and (out.dtype != ComplexDouble)
+  txt: (out.dtype != ComplexDouble) and ((input.dtype != ComplexDouble) or ((out.dtype
+    == "ComplexFloat") and (input.dtype == "ComplexFloat"))) and (out.dtype != ComplexDouble)
 - cot: The error is due to the attempt to resize 'out' tensor which is not resizable.
     It seems that the shape of 'out' tensor does not match with the shape of 'input'
     tensor after the operation. In this case, the shape of 'input' tensor is [10],

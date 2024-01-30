@@ -22,11 +22,11 @@ rules:
 - cot: 'The error is due to the ''cholesky_cpu'' function not being implemented for
     ''Half'' (float16) data type. It seems like the ''input'' tensor is of type ''Half''.
     Therefore, the data type of ''input'' should be corrected. It should not be ''Half''.
-    So, type(input) : != ''Half''. Also, as the function ''cholesky_cpu'' is not defined
+    So, input.dtype : != ''Half''. Also, as the function ''cholesky_cpu'' is not defined
     for ''Half'', the ''input'' tensor should be converted to a data type that is
     compatible with the ''cholesky_cpu'' function.'
   target: '"cholesky_cpu" not implemented for ''Half'''
-  txt: type(input) != 'Half'
+  txt: input.dtype != 'Half'
 - cot: "The error message suggests that the Cholesky factorization failed because\
     \ the input is not positive-definite. This often happens when the input is not\
     \ a symmetric matrix, or when the input is not positive-definite. \n\nFor a matrix\
@@ -56,13 +56,13 @@ rules:
 - cot: 'Error is triggered because of wrong data type of input tensor. Let''s see
     what the args were. It seems input tensor has Long data type, which is not suitable
     for linalg.cholesky function. Therefore, the datatype of input tensor should be
-    floating point or complex. Therefore, Left : type(input), Op : ==, and Right :
-    TensorDType.float32 or TensorDType.float64 or TensorDType.complex64 or TensorDType.complex128.
-    It also implies that datatype cannot be Long, so Op : !=, and Right : TensorDType.int64.'
+    floating point or complex. Therefore, Left : input.dtype, Op : ==, and Right :
+    float32 or float64 or complex64 or complex128.
+    It also implies that datatype cannot be Long, so Op : !=, and Right : int64.'
   target: 'linalg.cholesky: Expected a floating point or complex tensor as input.
     Got Long'
-  txt: type(input) == TensorDType.float32 or type(input) == TensorDType.float64 or
-    type(input) == TensorDType.complex64 or type(input) == TensorDType.complex128
+  txt: input.dtype == float32 or input.dtype == float64 or
+    input.dtype == complex64 or input.dtype == complex128
 - cot: "The error is triggered because the matrix A, which is input, is not a square\
     \ matrix. Let's see what the args were. The input tensor is here a 3D tensor of\
     \ shape [8, 6, 9]. For the linalg.cholesky operation, the last two dimensions\

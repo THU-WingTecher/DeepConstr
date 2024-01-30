@@ -19,9 +19,9 @@ rules:
     for ''Char'' type tensors. Looking at the given values, ''input'' is a tensor
     with dtype ''int8'', which corresponds to a ''Char'' type tensor in Pytorch. This
     is likely what''s causing the problem. We can correct this by ensuring that ''input''
-    is not of type ''Char''. So, Left : input.dtype(), Op : !=, Right : tf.int8.'
+    is not of type ''Char''. So, Left : input.dtype, Op : !=, Right : tf.int8.'
   target: '"hardshrink_cpu" not implemented for ''Char'''
-  txt: input.dtype() != tf.int8
+  txt: input.dtype != tf.int8
 time_cost: 64.43782806396484
 title: torch.nn.functional.hardshrink
 tokens_used: 1181

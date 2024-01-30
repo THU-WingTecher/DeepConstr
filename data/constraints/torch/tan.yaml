@@ -26,9 +26,9 @@ rules:
 - cot: 'The error is triggered because result type Float cannot be cast to the Char.
     Let''s see the what''s args were. The dtype of ''input'' is float32, but the dtype
     of ''out'' is int8. Therefore, the dtypes of two arguments should be consistent.
-    Left : type(input), op : ==, Right : type(out)'
+    Left : input.dtype, op : ==, Right : out.dtype'
   target: result type Float can't be cast to the desired output type Char
-  txt: (out.dtype==Float) and (type(input)==type(out))
+  txt: (out.dtype==Float) and (input.dtype==out.dtype)
 time_cost: 627.6767959594727
 title: torch.tan
 tokens_used: 9421

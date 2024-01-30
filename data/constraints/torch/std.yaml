@@ -46,15 +46,15 @@ rules:
   target: Dimension out of range (expected to be in range of [-4, 3], but got 5)
   txt: (dim >= -1) and (dim >= -len(input.shape) and dim < len(input.shape))
 - cot: 'The error is caused because the output type of the tensor is expected to be
-    float, but it is being cast to int. The values provided are {''input'': Tensor:TensorDType.complex64:[10,
-    9, 8, 6], ''dim'': 0, ''correction'': 0, ''keepdim'': False, ''out'': Tensor:TensorDType.int32:[10,
+    float, but it is being cast to int. The values provided are {''input'': Tensor: complex64:[10,
+    9, 8, 6], ''dim'': 0, ''correction'': 0, ''keepdim'': False, ''out'': Tensor: int32:[10,
     9, 8, 6]}. We see that the input tensor is of type complex64 and the output tensor
     is of type int32. This is causing the error as casting from complex64 to int32
-    is not allowed. Therefore, Left : type(out) which is the type of output tensor
+    is not allowed. Therefore, Left : out.dtype which is the type of output tensor
     should be corrected. It says that cannot be int, so Op : !=, and Right : int.
     Also, it should be float, so Op : ==, and Right : float.'
   target: result type Float can't be cast to the desired output type Int
-  txt: type(out)!=int
+  txt: out.dtype!=int
 - cot: 'The error occurs as the ''std'' and ''var'' operations only support floating
     point and complex dtypes. Let''s see what the args were. It seems the ''input''
     dtype is not in the supported list of [''float32'', ''float64'', ''complex64'',
@@ -62,7 +62,7 @@ rules:
     Operation : in, and Right : [''float32'', ''float64'', ''complex64'', ''complex128'',
     ''float16'']'
   target: std and var only support floating point and complex dtypes
-  txt: type('input') in ['float32', 'float64', 'complex64', 'complex128', 'float16']
+  txt: input.dtype in ['float32', 'float64', 'complex64', 'complex128', 'float16']
 time_cost: 2506.35781621933
 title: torch.std
 tokens_used: 17513

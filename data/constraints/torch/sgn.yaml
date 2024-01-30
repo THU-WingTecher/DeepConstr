@@ -24,9 +24,9 @@ rules:
   txt: out.dim == input.dim and all(out.shape[i] == input.shape[i] for i in range(out.dim))
 - cot: The error is due to the fact that the 'out' tensor has a dtype of int32, but
     a dtype of float32 is expected. Therefore, the dtype of the 'out' tensor should
-    be float32. The left is 'type(out)', the operator is '==', and the right is 'type(input)'.
+    be float32. The left is 'out.dtype', the operator is '==', and the right is 'input.dtype'.
   target: Found dtype Int but expected Float
-  txt: type(out) == type(input)
+  txt: out.dtype == input.dtype
 time_cost: 406.9274961948395
 title: torch.sgn
 tokens_used: 7708

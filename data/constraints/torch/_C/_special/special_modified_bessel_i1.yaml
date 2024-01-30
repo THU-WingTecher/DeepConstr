@@ -17,11 +17,11 @@ rules:
 - cot: 'The error is caused because the output tensor data type is Float but it''s
     trying to cast to Char which is not possible. What the args were? The inputs are
     Tensors with data types of bool and int8, but the output Tensor is expected to
-    be of Char type. Therefore, Left : out.dtype. Op : ==. Right : TensorDType.Char.
+    be of Char type. Therefore, Left : out.dtype. Op : ==. Right :  Char.
     Also, the input tensor shouldn''t be of Float type, so Left : input.dtype. Op
-    : !=. Right : TensorDType.Float.'
+    : !=. Right :  Float.'
   target: result type Float can't be cast to the desired output type Char
-  txt: out.dtype==TensorDType.Char
+  txt: out.dtype== Char
 - cot: 'The error message indicates that an attempt was made to resize a storage that
     is not resizable. Looking at the provided values, it can be seen that the ''input''
     tensor has a shape of [6, 8] and the ''out'' tensor has a shape of [2, 8]. The

@@ -60,8 +60,8 @@ rules:
     SAME\", \"VALID\", \"EXPLICIT\"]; attr=explicit_paddings:list(int),default=[];\
     \ attr=data_format:string,default=\"NHWC\",allowed=[\"NHWC\", \"NCHW\"]; attr=dilations:list(int),default=[1,\
     \ 1, 1, 1]> [Op:DepthwiseConv2dNative] name:"
-  txt: (data_format in ["NHWC", "NCHW"]) or ((type(filter) in ["half", "bfloat16",
-    "float", "double"]) and ((type(input) in ["half", "bfloat16", "float", "double"])
+  txt: (data_format in ["NHWC", "NCHW"]) or ((filter.dtype in ["half", "bfloat16",
+    "float", "double"]) and ((input.dtype in ["half", "bfloat16", "float", "double"])
     or (padding in ["SAME", "VALID", "EXPLICIT"])))
 - cot: 'The error is due to the attribute ''complex32'' not found in the ''tensorflow''
     module. It seems like some of the parameters are not fitting into the expected
@@ -70,16 +70,10 @@ rules:
     are lists, and their length should be equal. ''filter'' and ''input'' are tensors,
     their dimensions should match. ''filter'' has more dimensions compared to ''input'',
     which seems off. Therefore, Left : len(dilations), len(explicit_paddings), len(filter.shape),
-    len(strides). Op : == Right : len(input.shape). Also, Left : type(data_format),
+    len(strides). Op : == Right : len(input.shape). Also, Left : data_format,
     type(padding). Op : != Right : ''args'''
   target: 'rror: module ''tensorflow'' has no attribute ''complex32'''
   txt: (all(i>=0 for i in dilations)) and (len(dilations)==len(input.shape))
-- cot: 'Based on given values, Error is triggered because ''padding'' is missing in
-    the given values. It expects ''padding'' value for the computation. Let''s see
-    what the args were. It seems ''padding'' is missing, so padding should be added.
-    Therefore, Left : padding. Op : in, and Right : values.keys()'
-  target: 'rror: ''padding'''
-  txt: '''padding'' in values.keys()'
 time_cost: 8591.347313165665
 title: tf.raw_ops.DepthwiseConv2dNative
 tokens_used: 21313

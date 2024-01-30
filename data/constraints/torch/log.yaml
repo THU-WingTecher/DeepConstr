@@ -19,9 +19,9 @@ rules:
     of type Short. Therefore, the constraint should be that the output tensor type
     should be compatible with the input tensor type. In this case, the input tensor
     type is Float32, and the desired output tensor type is Short. Therefore, Left
-    : type(input) or type(out), Op : ==, Right : float32'
+    : input.dtype or out.dtype, Op : ==, Right : float32'
   target: result type Float can't be cast to the desired output type Long
-  txt: (input.dtype==int16) and (type(out)==float32)
+  txt: (input.dtype==int16) and (out.dtype==float32)
 - cot: 'The error suggests that there is an attempt to resize a tensor which is not
     resizable. The ''input'' tensor has a shape of [9, 4, 10, 6, 8] and the ''out''
     tensor has a shape of [1, 8, 4]. This discrepancy might be causing the issue.

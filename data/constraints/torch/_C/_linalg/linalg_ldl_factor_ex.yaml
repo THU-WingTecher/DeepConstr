@@ -23,12 +23,12 @@ rules:
     function expects either a floating point or a complex tensor as input, but it
     got a Boolean tensor. So, it generates error because of incompatible tensor data
     type. Let''s see what the args were. The input tensor is of boolean type, however
-    it should be either floating point or complex type. Therefore, Left : type(input),
+    it should be either floating point or complex type. Therefore, Left : input.dtype,
     should be corrected. It says that should be either float or complex, so Op : in,
     and Right : [float, complex].'
   target: 'torch.linalg.ldl_factor_ex: Expected a floating point or complex tensor
     as input. Got Long'
-  txt: type(input) in [float, complex]
+  txt: input.dtype in [float, complex]
 - cot: 'The error is caused because the input tensor is not a square matrix, but the
     function torch.linalg.ldl_factor_ex expects batches of square matrices as input.
     Hence, the input tensor''s shape should be corrected. In this case, Left : input.shape[0]
@@ -39,7 +39,7 @@ rules:
   txt: (input.shape[-2] == input.shape[-1]) and (input.shape[0] == input.shape[1])
 - cot: 'Error is triggered because the input tensor A doesn''t have at least 2 dimensions.
     It expects to have at least 2 dimensions on input tensor A. Let''s see what the
-    args were. It seems input is a tensor with TensorDType.int32, and it''s dimension
+    args were. It seems input is a tensor with  int32, and it''s dimension
     is missing in the argument. So the dimension of input should be corrected. Therefore,
     Left : input.dim. It says that expected at least 2 dimensions, so Op >=, and Right
     : 2.'

@@ -28,8 +28,7 @@ rules:
     the same as the shape of the ''input'' tensor. Left : out.shape, Op : ==, Right
     : input.shape.'
   target: Trying to resize storage that is not resizable
-  txt: ((out.shape == input.shape) and (out.is_resizable == True)) and (out.shape
-    == input.shape)
+  txt: (out.shape == input.shape) and (out.shape== input.shape)
 time_cost: 946.4059422016144
 title: torch._C._fft.fft_hfft2
 tokens_used: 10473

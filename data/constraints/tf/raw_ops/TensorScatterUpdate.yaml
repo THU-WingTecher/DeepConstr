@@ -29,7 +29,7 @@ rules:
   target: "Value for attr 'Tindices' of float is not in the list of allowed values:\
     \ int16, int32, int64, uint16\n ; NodeDef: ; Op output:T; attr=T:type; attr=Tindices:type,allowed=[DT_INT16,\
     \ DT_INT32, DT_INT64, DT_UINT16]> [Op:TensorScatterUpdate] name:"
-  txt: type(indices) in ["int16", "int32", "int64", "uint16"]
+  txt: indices.dtype in ["int16", "int32", "int64", "uint16"]
 title: tf.raw_ops.TensorScatterUpdate
 skipped: true 
 skipped_reason: bug

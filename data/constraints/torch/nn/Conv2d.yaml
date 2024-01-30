@@ -118,12 +118,12 @@ rules:
 - cot: 'The error message indicates that the input type and bias type should be the
     same, but in the given values, the input type is "c10::complex<double>" and the
     bias type is "float". What the args were? If we look at the provided arguments,
-    we can see that ''input'' is a tensor of type TensorDType.complex128 and ''bias''
+    we can see that ''input'' is a tensor of type  complex128 and ''bias''
     is a float. Therefore, either the ''input'' should be changed to float or ''bias''
-    should be changed to complex. Therefore, Left : type(input) or type(bias). Op
+    should be changed to complex. Therefore, Left : input.dtype or bias.dtype. Op
     : ==, Right : float or complex.'
   target: Input type (c10::complex<double>) and bias type (float) should be the same
-  txt: (len(kernel_size) > 0) or (type(input)==float)
+  txt: (len(kernel_size) > 0) or (input.dtype==float)
 - cot: 'The error is due to the ''groups'' parameter which must be a positive integer.
     From the given values, groups value is 0. Therefore, Left : groups, Op : >, Right
     : 0. Additionally, it must be an integer, so Op: == , and Right : int(groups).'

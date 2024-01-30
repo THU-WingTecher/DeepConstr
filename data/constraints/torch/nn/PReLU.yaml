@@ -33,7 +33,7 @@ rules:
     is a Float while ''input'' is a Tensor of type Int8. This inconsistency in data
     types is causing the error. Therefore, the data types of ''init'' and ''input''
     should be consistent for prelu operation. Let''s consider Left : type(init), op
-    : ==, and Right : type(input).'
+    : ==, and Right : input.dtype.'
   target: Not allow zero-dim input tensor.
   txt: len(input.shape) > 0
 - cot: 'Error is triggered because of trying to create a tensor with a negative dimension.

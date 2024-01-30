@@ -39,22 +39,7 @@ rules:
 
     In terms of the given symbols, these constraints can be translated into:'
   target: vector + matrix @ vector expected, got 1, 10, 10
-  txt: (all(vec.shape[i] == input.shape[i] for i in range(len(vec.shape)))) and ((len(input.shape)
-    == 2 and len(out.shape) == 1 and len(vec.shape) == 1 and len(vec) == input.shape[1])
-    and ((len(out.shape) == 2) or (((out.size == input.shape[0])) and (len(vec) ==
-    len(out)))))
-- cot: 'Error is triggered because of size mismatch among input, mat (which is part
-    of input), and vec. Let''s see what the args were. The number of columns in mat
-    (input[1]) should match the number of elements in vec. Also, the number of rows
-    in mat (input[0]) should match the size of out. Therefore, Left : input[1]. Op
-    : ==, Right : len(vec) and Left : input[0]. Op : ==, Right : out.shape[0].'
-  target: size mismatch, got input (8), mat (8x6), vec (2)
-  txt: ((out.shape[0] == vec.shape[0]) and (((len(vec) == len(input)) and (input[1]
-    == len(vec))) or (input.shape[1] == vec.shape[0]) or ((len(vec) == len(input))
-    and (input[1] == len(vec))))) or (input.shape[1] == vec.shape[0]) or ((out.shape[0]
-    == vec.shape[0]) and (((len(vec) == len(input)) and (input[1] == len(vec))) or
-    (input.shape[1] == vec.shape[0]) or ((len(vec) == len(input)) and (input[1] ==
-    len(vec)))))
+  txt: (all(vec.shape[i] == input.shape[i] for i in range(len(vec.shape)))) and (len(input.shape)== 2 and len(out.shape) == 1 and len(vec.shape) == 1 and len(vec) == input.shape[1]) and ((len(out.shape) == 2) or (len(vec) == len(out))) 
 - cot: 'Error is triggered because the dimension specified as 0 but tensor has no
     dimensions. For the tensors `input` and `vec`, they have no dimensions, but operations
     might have been attempted to access the 0th dimension, which is not existent.

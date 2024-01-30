@@ -23,9 +23,9 @@ rules:
 - cot: 'The error is triggered because result type Float cannot be cast to the Char.
     Let''s see the what''s args were. The dtype of ''input'' and ''other'' is float32,
     and ''out'' is int8. Therefore, the dtypes of all arguments should be consistent.
-    Left : type(input), op : ==, comparator : type(out) or type(other)'
+    Left : input.dtype, op : ==, comparator : out.dtype or other.dtype'
   target: result type Float can't be cast to the desired output type Char
-  txt: (type(out)==type(other)) and (type(input)==type(out))
+  txt: (out.dtype==other.dtype) and (input.dtype==out.dtype)
 - cot: 'Based on the given values, the error is triggered due to mismatch in tensor
     sizes. It''s clear that the size of tensor ''input'' which is 9, does not match
     the size of tensor ''other'' which is 2. This inconsistency needs to be corrected.
@@ -48,10 +48,10 @@ rules:
     are tensors. ''input'' and ''out'' are of complex64 type while ''other'' is of
     float32 type. Therefore, the constraint should be that the data type of ''input''
     and ''out'' should not be complex64 as it is not supported by the "igamma_cpu"
-    function. So, the Left : type(input) and type(out) should be corrected. It implies
+    function. So, the Left : input.dtype and out.dtype should be corrected. It implies
     that type cannot be ''ComplexFloat'', so Op : !=, and Right : ''ComplexFloat''.'
   target: '"igamma_cpu" not implemented for ''ComplexFloat'''
-  txt: type(out) != 'ComplexFloat'
+  txt: out.dtype != 'ComplexFloat'
 time_cost: 2696.1291007995605
 title: torch.special.gammainc
 tokens_used: 20912

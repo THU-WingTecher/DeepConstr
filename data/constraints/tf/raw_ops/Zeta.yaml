@@ -23,12 +23,12 @@ rules:
 - cot: 'The error arises because the function is trying to perform an operation on
     a double tensor and a float tensor. However, both tensors in generated args must
     have the same data type. Let''s see what the args were. the ''x'' tensor is double,
-    but the ''q'' tensor is of type float. Therefore, Left : type(q), which is the
+    but the ''q'' tensor is of type float. Therefore, Left : q.dtype, which is the
     type of tensor q, should be corrected. It says that should be equal to the datatype
-    of tensor x, so Op : ==, and Right : type(x).'
+    of tensor x, so Op : ==, and Right : x.dtype.'
   target: 'cannot compute Zeta as input #1(zero-based) was expected to be a double
     tensor but is a float tensor name:'
-  txt: type(q)==type(x)
+  txt: q.dtype==x.dtype
 - cot: 'The error appears because the rank of the input tensor for dynamic binary
     or n-ary operation lowering was greater than 5. However, the function can only
     handle tensors with a rank of up to 5. Both ''q'' and ''x'' tensors are having
@@ -53,11 +53,11 @@ rules:
 - cot: 'Based on the given values, the error arises because the attribute of ''q''
     and ''x'' is an int32, but it is expected to be either float or double. The tensors
     ''''q'''' and ''''x'''' are both provided as int32, which is not compatible. So,
-    the Left : type(q) or type(x) should be corrected to match either float or double.
+    the Left : q.dtype or x.dtype should be corrected to match either float or double.
     Op : in, and Right : ["float", "double"].'
   target: "Value for attr 'T' of int32 is not in the list of allowed values: float,\
     \ double\n ; NodeDef: ; Op z:T; attr=T:type,allowed=> name:"
-  txt: type(q) in ["float", "double"] and type(x) in ["float", "double"]
+  txt: q.dtype in ["float", "double"] and x.dtype in ["float", "double"]
 time_cost: 36.83410859107971
 title: tf.raw_ops.Zeta
 tokens_used: 701

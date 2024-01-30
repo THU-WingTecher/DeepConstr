@@ -35,50 +35,50 @@ rules:
 - cot: 'The error is triggered because the result data type Float cannot be safely
     casted from ComplexDouble dtype. Let''s see what the args were. The dtype of ''out''
     is float32 while ''input'' and ''input2'' have dtype complex128. Therefore, the
-    dtypes of all arguments should be consistent. Left : type(input), op : ==, comparator
-    : type(input2) or type(out)'
+    dtypes of all arguments should be consistent. Left : input.dtype, op : ==, comparator
+    : input2.dtype or out.dtype'
   target: 'cholesky_solve: Expected result to be safely castable from ComplexDouble
     dtype, but got result with dtype Float'
-  txt: type(input2)==type(out)
+  txt: input2.dtype==out.dtype
 - cot: 'The error is due to the data type of the tensors being ''Half'' or float16,
     while the "cholesky_solve_cpu" function does not support this data type. Therefore,
     the data type of input, input2, and out tensors need to be checked and corrected.
     All tensors type() should be != ''Half'' or float16. So, for input, input2, and
     out, Op : !=, and Right : ''Half''.'
   target: '"cholesky_solve_cpu" not implemented for ''Half'''
-  txt: (type(input) != 'Half') or (type(out) != 'Half')
+  txt: (input.dtype != 'Half') or (out.dtype != 'Half')
 - cot: 'The error is due to the mismatch of the data type in input tensors and the
     ''cholesky_solve_cpu'' function. The function ''cholesky_solve_cpu'' does not
     support ''Int'' data type for the input tensors, but ''input'', ''input2'' and
     ''out'' are all of type int32. Therefore, the data type of the input tensors should
-    not be int32. So, Left : type(input), Op : !=, Right : int32, and similarly for
+    not be int32. So, Left : input.dtype, Op : !=, Right : int32, and similarly for
     ''input2'' and ''out''.'
   target: '"cholesky_solve_cpu" not implemented for ''Int'''
-  txt: (type(input2) != int32) or (type(input) != int32)
+  txt: (input2.dtype != int32) or (input.dtype != int32)
 - cot: 'The error refers to the CPU implementation of the "cholesky_solve" operation
     not being supported for ''Long'' data types. In the given values, all tensors
     (input, input2, and out) have the integer (Long) data type. So, to prevent this
     error, we need to ensure that the data type of these tensors is not ''Long''.
-    Therefore, Left : type(input), type(input2), type(out). It says that dtype should
+    Therefore, Left : input.dtype, input2.dtype, out.dtype. It says that dtype should
     not be ''Long'', so Op : !=, and Right : ''Long''.'
   target: '"cholesky_solve_cpu" not implemented for ''Long'''
-  txt: type(out) != 'Long'
+  txt: out.dtype != 'Long'
 - cot: 'The error is because the function "cholesky_solve_cpu" is not implemented
     for ''Bool''. This suggests that the type of input, input2, and out should not
-    be Bool. Therefore, Left : type(input), type(input2), and type(out). It says that
+    be Bool. Therefore, Left : input.dtype, input2.dtype, and out.dtype. It says that
     cannot be Bool, so Op : !=, and Right : Bool. Also, these tensors should be of
     a type that is acceptable by the function "cholesky_solve_cpu", but since the
     acceptable types are not specified in the question, we cannot provide the exact
     types.'
   target: '"cholesky_solve_cpu" not implemented for ''Bool'''
-  txt: type(input) != "Bool"
+  txt: input.dtype != "Bool"
 - cot: 'The error is caused by the fact that the ''cholesky_solve_cpu'' function is
     not implemented for ''BFloat16'' data type. Looking at the arguments, both ''input'',
     ''input2'', and ''out'' are tensors of type ''BFloat16''. Therefore, the data
     types of ''input'', ''input2'', and ''out'' should be corrected. The data types
     should not be ''BFloat16'', so Op : !=, and Right : ''BFloat16''.'
   target: '"cholesky_solve_cpu" not implemented for ''BFloat16'''
-  txt: type(out) != 'BFloat16'
+  txt: out.dtype != 'BFloat16'
 - cot: "The error is caused because the input matrix 'A' is not a square matrix. Let's\
     \ see what the args were. The 'A' is a tensor of float32 with shape [6, 6, 1,\
     \ 3, 4, 1, 3, 2, 9, 2] and 'input2' is a tensor of float32 with shape [6, 6, 4,\
@@ -109,16 +109,16 @@ rules:
     type, but ''b'' is of type Short and ''A'' is of type Float. Looking at the arguments,
     ''input'' (which we can assume is ''b'') is of type int16, and ''input2'' and
     ''out'' (which can be assumed are ''A'') are of type float32. Therefore, the data
-    types of ''input'' and ''input2''/''out'' should be consistent. Left : type(input),
-    op : ==, comparator : type(input2) or type(out)'
+    types of ''input'' and ''input2''/''out'' should be consistent. Left : input.dtype,
+    op : ==, comparator : input2.dtype or out.dtype'
   target: Expected b and A to have the same dtype, but found b of type Short and A
     of type Float instead.
-  txt: type(input)==type(out)
+  txt: input.dtype==out.dtype
 - cot: "The error is due to trying to resize a storage that is not resizable. This\
     \ could be due to incorrect dimensions or data types of the input tensors. Let's\
-    \ examine the provided values.\n\n1. 'input': Tensor:TensorDType.float32:[1, 3,\
-    \ 4, 1, 3, 2, 8, 2]\n2. 'input2': Tensor:TensorDType.float32:[8, 8]\n3. 'out':\
-    \ Tensor:TensorDType.float32:[2, 1]\n4. 'upper': False\n\nIt seems these tensors\
+    \ examine the provided values.\n\n1. 'input': Tensor: float32:[1, 3,\
+    \ 4, 1, 3, 2, 8, 2]\n2. 'input2': Tensor: float32:[8, 8]\n3. 'out':\
+    \ Tensor: float32:[2, 1]\n4. 'upper': False\n\nIt seems these tensors\
     \ are trying to be resized but their storage is not resizable. Therefore, the\
     \ dimensions of the tensors should match to prevent the need for resizing. We\
     \ can also check if 'upper' is False, as this may determine whether resizing is\

@@ -63,11 +63,11 @@ rules:
 - cot: 'The error is triggered because the output tensor ''out'' is of Long type but
     the function ''irfft'' expects a floating point tensor. Let''s see what the args
     were. The ''out'' tensor is of type Long, and it seems to be the problem. Therefore,
-    the data type of tensor ''out'' should be corrected, which is type(out). Therefore,
-    Left : type(out). It says that expected floating point, so Op : ==, and Right
+    the data type of tensor ''out'' should be corrected, which is out.dtype. Therefore,
+    Left : out.dtype. It says that expected floating point, so Op : ==, and Right
     : float.'
   target: irfft expects a floating point output tensor, but got Long
-  txt: type(out)==float
+  txt: out.dtype==float
 time_cost: 2270.792401075363
 title: torch._C._fft.fft_irfft
 tokens_used: 10728

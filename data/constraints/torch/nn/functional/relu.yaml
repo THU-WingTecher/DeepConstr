@@ -16,11 +16,11 @@ pass_rate: 0.98
 rules:
 - cot: 'The error is thrown because the ''clamp'' operation is not supported for complex
     types. Here ''input'' is a tensor of complex64 type which causes the error. Thus,
-    the Left : type(input) should be corrected. ''Clamp'' operation supports only
+    the Left : input.dtype should be corrected. ''Clamp'' operation supports only
     real numbers, so the tensor type should not be complex. Therefore, Op : !=, and
     Right : complex.'
   target: clamp is not supported for complex types
-  txt: type(input) != "complex"
+  txt: input.dtype != "complex"
 time_cost: 30.772860765457153
 title: torch.nn.functional.relu
 tokens_used: 1130

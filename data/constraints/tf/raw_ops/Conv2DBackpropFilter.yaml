@@ -61,7 +61,7 @@ pass_rate: 0.0
 rules:
 - cot: 'The error is due to incorrect values for ''data_format'' from args. For ''data_format'',
     the value provided is ''not defined'', which is not in the allowed values: "NHWC",
-    "NCHW". Therefore, type(data_format) should be corrected to be either "NHWC" or
+    "NCHW". Therefore, data_format should be corrected to be either "NHWC" or
     "NCHW", which is ["NHWC", "NCHW"]. Op : in, and Right : ["NHWC", "NCHW"].'
   target: "Value for attr 'data_format' of \"not defined\" is not in the list of allowed\
     \ values: \"NHWC\", \"NCHW\"\n ; NodeDef: ; Op output:T; attr=T:type,allowed=[DT_HALF,\
@@ -69,7 +69,7 @@ rules:
     \ attr=padding:string,allowed=[\"SAME\", \"VALID\", \"EXPLICIT\"]; attr=explicit_paddings:list(int),default=[];\
     \ attr=data_format:string,default=\"NHWC\",allowed=[\"NHWC\", \"NCHW\"]; attr=dilations:list(int),default=[1,\
     \ 1, 1, 1]> [Op:Conv2DBackpropFilter] name:"
-  txt: (padding in ["SAME", "VALID", "EXPLICIT"]) and (type(data_format) in ["NHWC",
+  txt: (padding in ["SAME", "VALID", "EXPLICIT"]) and (data_format in ["NHWC",
     "NCHW"])
 time_cost: 114.27183818817139
 title: tf.raw_ops.Conv2DBackpropFilter

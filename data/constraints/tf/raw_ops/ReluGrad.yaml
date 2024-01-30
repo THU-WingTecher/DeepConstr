@@ -24,11 +24,11 @@ rules:
 - cot: 'The error is caused because the ReluGrad operation expects a float tensor
     as input, but an int8 tensor is being provided. Let''s see what the args were.
     It seems ''features'' tensor is of int8 type, but the ''gradients'' tensor is
-    of float32 type. Therefore, Left : type(features). It says that expected to be
+    of float32 type. Therefore, Left : features.dtype. It says that expected to be
     a float tensor. So, Op : ==, and Right : float.'
   target: 'cannot compute ReluGrad as input #1(zero-based) was expected to be a int8
     tensor but is a float tensor [Op:ReluGrad] name:'
-  txt: (type(gradients)==type(features)) and (type(features) == float)
+  txt: (gradients.dtype==features.dtype) and (features.dtype == float)
 - cot: 'Error is triggered because inputs to operation ReluGrad must have same size
     and shape but it didn''t. Here, gradients and features can be input0 and input1.
     It seems both are tensors and the size [9] and [3] are different. Therefore, Left

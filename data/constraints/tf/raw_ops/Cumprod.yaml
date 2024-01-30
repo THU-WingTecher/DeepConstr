@@ -36,7 +36,7 @@ rules:
     it should be either int32 or int64 for the operation ''Cumprod''. The value for
     ''axis'' is a Tensor of dtype float32 which seems to be the cause of this issue
     as ''axis'' might be used as ''Tidx'' in operation ''Cumprod''. So, the Left :
-    type(axis) should be corrected to be either int32 or int64. Op : in, and Right
+    axis.dtype should be corrected to be either int32 or int64. Op : in, and Right
     : [int32, int64].'
   target: "Value for attr 'Tidx' of float is not in the list of allowed values: int32,\
     \ int64\n ; NodeDef: ; Op out:T; attr=exclusive:bool,default=false; attr=reverse:bool,default=false;\
@@ -44,7 +44,7 @@ rules:
     \ DT_COMPLEX64, DT_INT64, DT_QINT8, DT_QUINT8, DT_QINT32, DT_BFLOAT16, DT_QINT16,\
     \ DT_QUINT16, DT_UINT16, DT_COMPLEX128, DT_HALF, DT_UINT32, DT_UINT64]; attr=Tidx:type,default=DT_INT32,allowed=[DT_INT32,\
     \ DT_INT64]> [Op:Cumprod] name:"
-  txt: type(axis) in ["int32", "int64"]
+  txt: axis.dtype in ["int32", "int64"]
 - cot: 'The error is due to the axis not being a scalar. The function is trying to
     use a vector as the axis, but it should be a scalar. In the given values, ''axis''
     is a tensor of int64 with 10 dimensions. It needs to be corrected to scalar. Therefore,

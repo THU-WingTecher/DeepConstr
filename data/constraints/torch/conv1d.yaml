@@ -69,11 +69,11 @@ rules:
 - cot: "The error is triggered because the input type (torch.FloatTensor) and bias\
     \ type (torch.HalfTensor) are not the same. Therefore, the data types of input\
     \ and bias should be the same to prevent this error. The constraints that could\
-    \ be generated to prevent this error are as follows: \nLeft : type(input), op\
-    \ : ==, comparator : type(bias)"
+    \ be generated to prevent this error are as follows: \nLeft : input.dtype, op\
+    \ : ==, comparator : bias.dtype"
   target: Input type (torch.FloatTensor) and bias type (torch.HalfTensor) should be
     the same or input should be a MKLDNN tensor and bias is a dense tensor
-  txt: type(input) == type(bias)
+  txt: input.dtype == bias.dtype
 time_cost: 8183.67614197731
 title: torch.conv1d
 tokens_used: 45188

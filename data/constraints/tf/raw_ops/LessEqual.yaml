@@ -27,11 +27,11 @@ rules:
     between an int32 tensor and a float tensor. However, both tensors in the generated
     arguments must have the same data type. Looking at the arguments, tensor ''x''
     is of type int16 and tensor ''y'' is float32. Therefore, the data type of tensor
-    ''x'' should be matched with tensor ''y''.  So, Left : type(x). It says that should
-    be equal to the datatype of tensor y, so Op : ==, and Right : type(y).'
+    ''x'' should be matched with tensor ''y''.  So, Left : x.dtype. It says that should
+    be equal to the datatype of tensor y, so Op : ==, and Right : y.dtype.'
   target: 'cannot compute LessEqual as input #1(zero-based) was expected to be a int32
     tensor but is a float tensor [Op:LessEqual] name:'
-  txt: type(x)==type(y)
+  txt: x.dtype==y.dtype
 - cot: 'The error is due to the operation being applied to tensors that have a rank
     greater than 5. The maximum rank allowed for the operation is 5, but the tensors
     x and y have ranks of 5 and 7 respectively. The rank of a tensor is the number
@@ -40,8 +40,8 @@ rules:
     y.rank, Op : <=, Right : 5.'
   target: 'Input for dynamic binary or n-ary op lowering was of a rank greater than
     5 [Op:LessEqual] name:'
-  txt: ((type(x) == type(y)) and (((x.rank <= 5)) or ((y.rank <= 5)))) or (((x.rank
-    <= 5)) and ((y.rank <= 5))) or ((type(x) == type(y)) and (((x.rank <= 5)) or ((y.rank
+  txt: ((x.dtype == y.dtype) and (((x.rank <= 5)) or ((y.rank <= 5)))) or (((x.rank
+    <= 5)) and ((y.rank <= 5))) or ((x.dtype == y.dtype) and (((x.rank <= 5)) or ((y.rank
     <= 5))))
 - cot: 'From the given values, the error is due to the attribute ''T'' of the tensors
     ''x'' and ''y'' being of type complex64, which is not in the list of allowed types:
@@ -54,8 +54,8 @@ rules:
     \ ; NodeDef: ; Op z:bool; attr=T:type,allowed=[DT_FLOAT, DT_DOUBLE, DT_INT32,\
     \ DT_UINT8, DT_INT16, DT_INT8, DT_INT64, DT_BFLOAT16, DT_UINT16, DT_HALF, DT_UINT32,\
     \ DT_UINT64]> [Op:LessEqual] name:"
-  txt: type(x) in ["float", "double", "int32", "uint8", "int16", "int8", "int64",
-    "bfloat16", "uint16", "half", "uint32", "uint64"] and type(y) in ["float", "double",
+  txt: x.dtype in ["float", "double", "int32", "uint8", "int16", "int8", "int64",
+    "bfloat16", "uint16", "half", "uint32", "uint64"] and y.dtype in ["float", "double",
     "int32", "uint8", "int16", "int8", "int64", "bfloat16", "uint16", "half", "uint32",
     "uint64"]
 - cot: 'The error is due to the shapes of ''''x'''' and ''''y'''' not being broadcastable.

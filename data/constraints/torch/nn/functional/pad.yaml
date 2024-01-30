@@ -31,18 +31,7 @@ rules:
     ''reflect'', ''value'' should not be defined. Op: ==, and Right: None.'
   target: Padding mode "replicate" doesn't take in value argument
   txt: mode != "reflect" or (mode == "reflect" and value == None)
-- cot: 'The error is caused by an excessive memory allocation request. The function
-    is trying to allocate a memory of 32677137305100288 bytes, which is too large.
-    Let''s see what the args were. In padding operation, the ''pad'' list has extremely
-    large values, and the ''input'' tensor has a high rank and large shape, both of
-    which may cause the memory allocation issue. Therefore, the size of the ''input''
-    tensor and the values in ''pad'' list should be reduced. The total memory required
-    for padding should be less than the available memory. Left : product(pad) + product(input.shape),
-    Op : <, Right : available_memory.'
-  target: '[enforce fail at alloc_cpu.cpp:83] err == 0. DefaultCPUAllocator: can''t
-    allocate memory: you tried to allocate 32677137305100288 bytes. Error code 12
-    (Cannot allocate memory)'
-  txt: product(pad) + product(input.shape) < available_memory
+
 - cot: 'The error is triggered because the padding length is not divisible by 2. Let''s
     see what the args were. ''pad'' is the tensor of int32, which was [10]. To prevent
     the error, the number of elements in ''pad'' should be even. Therefore, the Left

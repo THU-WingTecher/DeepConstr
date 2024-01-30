@@ -76,8 +76,8 @@ rules:
     args. For ''padding'', the value provided is ''not defined'' which is not in the
     allowed values: "SAME", "VALID", "EXPLICIT". For ''data_format'', the value provided
     is ''not defined'' which is not in the allowed values: "NHWC", "NCHW". Therefore,
-    type(padding) should be corrected to be either "SAME", "VALID", or "EXPLICIT",
-    which is ["SAME", "VALID", "EXPLICIT"], and type(data_format) should be corrected
+    padding should be corrected to be either "SAME", "VALID", or "EXPLICIT",
+    which is ["SAME", "VALID", "EXPLICIT"], and data_format should be corrected
     to be either "NHWC" or "NCHW", which is ["NHWC", "NCHW"]. Op : in, and Right :
     ["SAME", "VALID", "EXPLICIT"], ["NHWC", "NCHW"].'
   target: "Value for attr 'padding' of \"not defined\" is not in the list of allowed\
@@ -86,16 +86,16 @@ rules:
     \ attr=padding:string,allowed=[\"SAME\", \"VALID\", \"EXPLICIT\"]; attr=explicit_paddings:list(int),default=[];\
     \ attr=data_format:string,default=\"NHWC\",allowed=[\"NHWC\", \"NCHW\"]; attr=dilations:list(int),default=[1,\
     \ 1, 1, 1]> [Op:Conv2DBackpropInput] name:"
-  txt: type(padding) in ["SAME", "VALID", "EXPLICIT"], type(data_format) in ["NHWC",
+  txt: padding in ["SAME", "VALID", "EXPLICIT"], data_format in ["NHWC",
     "NCHW"]
 - cot: 'The error is caused because the Conv2DBackpropInput operation expects an int32
     tensor but receives a float tensor. Looking at the inputs, it appears ''input_sizes''
     is the problematic tensor, as it''s a float32 tensor. Therefore, the type of ''input_sizes''
-    needs to be corrected. Left: type(input_sizes). It should be equal to int32, so
+    needs to be corrected. Left: input_sizes.dtype. It should be equal to int32, so
     Op: ==, and Right: int32. '
   target: 'cannot compute Conv2DBackpropInput as input #0(zero-based) was expected
     to be a int32 tensor but is a float tensor [Op:Conv2DBackpropInput] name:'
-  txt: type(input_sizes)==int32
+  txt: input_sizes.dtype==int32
 - cot: 'The error is triggered because the ''strides'' field does not specify 4 dimensions.
     Let''s examine the arguments. ''strides'' is a list of integers and it has 5 dimensions.
     However, for the operation ''Conv2DBackpropInput'', ''strides'' is required to

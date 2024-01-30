@@ -44,7 +44,7 @@ rules:
     error is that the data types of the tensors 'A' and 'B' should be the same.
   target: 'linalg.solve: Expected A and B to have the same dtype, but found A of type
     Double and B of type Float instead'
-  txt: (len(out) == len(B)) or (type('A')==type('B'))
+  txt: (len(out) == len(B)) and (A.dtype == B.dtype)
 - cot: 'The error message suggests that the data type of the ''out'' tensor is incorrect.
     The expected data type is float, but the actual type is complex. Therefore, the
     data type of the ''out'' tensor needs to be matched to the data type of the ''A''

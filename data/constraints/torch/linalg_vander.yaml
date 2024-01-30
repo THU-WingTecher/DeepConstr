@@ -23,13 +23,13 @@ rules:
   txt: N > 1
 - cot: 'The error is caused because the function linalg.vander only supports floating
     point, complex, and integer tensors, but it received a Bool type tensor. Let''s
-    see what the args were. It seems that x, which is a tensor, is of the type TensorDType.float16,
+    see what the args were. It seems that x, which is a tensor, is of the type  float16,
     which is a floating point type and therefore should be acceptable. However, the
     error message indicates that it received a Bool type. Therefore, the type of x
     should be checked. So, Op : !=, and Right : Bool.'
   target: linalg.vander supports floating point, complex, and integer tensors, but
     got Bool
-  txt: type(x) != Bool
+  txt: x.dtype != Bool
 time_cost: 47.99843645095825
 title: torch._C._linalg.linalg_vander
 tokens_used: 1126

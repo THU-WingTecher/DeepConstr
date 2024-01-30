@@ -18,10 +18,10 @@ rules:
     data type. The input tensor is of type ''float16'' (also known as ''Half'') which
     is incompatible. The output tensor is of type ''float32'' which might be acceptable
     as there is no error mentioning about the output tensor in the error message.
-    Therefore, the Left : type(input) should be corrected to not be ''float16''. Op
+    Therefore, the Left : input.dtype should be corrected to not be ''float16''. Op
     : != , and Right : float16.'
   target: '"bessel_j0_cpu" not implemented for ''Half'''
-  txt: type(input) != "float16"
+  txt: input.dtype != "float16"
 - cot: 'The error is caused because the output type of the tensor is not as expected.
     What the args were? The output tensor type is ''int32'', but the result type is
     ''float32'' which can''t be cast to ''int32''. Therefore, the output type ''int32''
@@ -35,18 +35,12 @@ rules:
     Thus, the constraint should be that the output tensor is resizable. We can represent
     this by the following condition:
 
-
-    `out.resizable == True`
-
-
     This condition ensures that the output tensor is resizable before any resize operation
     is attempted on it.
-
 
     Hence, the complete constraints would be:'
   target: Trying to resize storage that is not resizable
   txt: out.rank==input.rank and all(out.shape[i]==input.shape[i] for i in range(out.rank))
-    and out.resizable == True
 time_cost: 1479.5788042545319
 title: torch._C._special.special_bessel_j0
 tokens_used: 10268

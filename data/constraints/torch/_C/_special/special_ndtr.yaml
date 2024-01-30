@@ -28,10 +28,10 @@ rules:
   txt: input.shape == out.shape
 - cot: 'The error is caused because the output type is ''int32'', but the result type
     is ''float32''. The output type needs to match the result type. Therefore, Left
-    : type(out), Right : type(input). The type of ''out'' should be ''float32'' to
+    : out.dtype, Right : input.dtype. The type of ''out'' should be ''float32'' to
     match the type of ''input''. Op : =='
   target: result type Float can't be cast to the desired output type Int
-  txt: type(out) == float32
+  txt: out.dtype == float32
 time_cost: 1417.1326897144318
 title: torch._C._special.special_ndtr
 tokens_used: 11477

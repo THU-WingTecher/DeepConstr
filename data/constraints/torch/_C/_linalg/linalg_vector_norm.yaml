@@ -44,13 +44,13 @@ rules:
     [9,2] and ''out'' is a tensor of float64 type with no dimensions. The problem
     might be due to the incompatible ''x'' and ''out'' tensors. There are no constraints
     that specify the dimensionality or type of ''out'' tensor. It should be the same
-    as ''x'' in order to avoid resizing issues. Therefore, Left : type(out), Op :
-    ==, and Right : type(x).'
+    as ''x'' in order to avoid resizing issues. Therefore, Left : out.dtype, Op :
+    ==, and Right : x.dtype.'
   target: Trying to resize storage that is not resizable
   txt: out.shape == x.shape
 - cot: 'Error is triggered because the input tensor x is of type Char. It expects
     a floating point or complex tensor. Let''s see what the args were. The argument
-    x : Tensor:TensorDType.int8:[10, 9] is the problem. Therefore, the datatype of
+    x : Tensor: int8:[10, 9] is the problem. Therefore, the datatype of
     x should be corrected, which is x.dtype. Left : x.dtype. It says that expected
     floating point or complex, so Op : ==, and Right : float or complex. It implies
     that datatype cannot be Char, so Op : !=, and Right : Char.'
@@ -64,14 +64,14 @@ rules:
     Right : double. It also implies that ''out'' tensor''s dtype cannot be complex128,
     so Op : !=, and Right : complex128.'
   target: Expected out tensor to have dtype double, but got c10::complex<double> instead
-  txt: type('out') != complex128
+  txt: out.dtype != complex128
 - cot: The error occurs because the data type of the output tensor is integer, but
     the function expects it to be float. It seems the 'out' tensor has a type of int32,
     which is not matching with the expected type - float. So, the constraint we need
     to add is to make sure the 'out' tensor data type is the same as the 'x' tensor
     data type.
   target: Expected out tensor to have dtype float, but got double instead
-  txt: type(out) == float
+  txt: out.dtype == float
 time_cost: 4243.395208835602
 title: torch._C._linalg.linalg_vector_norm
 tokens_used: 33781

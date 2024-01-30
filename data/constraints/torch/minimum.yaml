@@ -33,17 +33,17 @@ rules:
     issue. In order to ensure this, the dtype of ''input'', ''other'', and ''out''
     need to be the same. Therefore, the constraints can be written as:'
   target: result type Float can't be cast to the desired output type Int
-  txt: type(out)==Float
+  txt: out.dtype==Float
 - cot: 'The error is due to the ''minimum'' operation not being implemented for complex
     tensors. In the given case, the ''input'' tensor is of type complex128. Therefore,
     for preventing this error, the type of the ''input'' tensor should not be complex.
-    Therefore, type(input) should be corrected. It says that type(input) cannot be
+    Therefore, input.dtype should be corrected. It says that input.dtype cannot be
     complex128 or any complex types, so Op : !=, and Right : complex128 or any complex
     types. Also, the dimensions of ''input'', ''other'', and ''out'' tensors should
     be the same for the ''minimum'' operation to be valid. Therefore, len(input.shape)
     == len(other.shape) == len(out.shape).'
   target: minimum not implemented for complex tensors.
-  txt: type(input) != complex
+  txt: input.dtype != complex
 - cot: 'The error here implies that the first dimension (dimension 0) of tensor ''input''
     and tensor ''other'' do not match. ''input'' has a size of 7 in dimension 0 while
     ''other'' has a size of 4. To prevent this error, we need to ensure that these

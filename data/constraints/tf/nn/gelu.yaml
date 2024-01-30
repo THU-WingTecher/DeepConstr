@@ -21,10 +21,10 @@ pass_rate: 1.0
 rules:
 - cot: 'The error occurs because the ''features'' tensor is of bool data type, but
     it should be a floating point tensor. Let''s see what the constraints were. The
-    ''features'' tensor had bool type. Therefore, Left: type(features), which indicates
+    ''features'' tensor had bool type. Therefore, Left: features.dtype, which indicates
     the data type of ''features'', should be corrected. Op: ''=='', and Right: ''float''.'
   target: 'rror: `features.dtype` must be a floating point tensor.Received:features.dtype='
-  txt: type(features) == 'float'
+  txt: features.dtype == 'float'
 skipped: uncompatiable type
 time_cost: 58.870954751968384
 title: tf.nn.gelu

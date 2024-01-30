@@ -19,13 +19,6 @@ infered_times: 28
 package: tf
 pass_rate: 0.93
 rules:
-- cot: 'The error is triggered because Tensorflow does not have an attribute ''complex32''.
-    It seems like the user is trying to use a non-existent data type ''TensorDType.uint32''
-    for the tensors ''x'' and ''y''. Therefore, the data type of the tensor should
-    be changed to one of the valid data types that Tensorflow supports. Here are the
-    constraints:'
-  target: 'rror: module ''tensorflow'' has no attribute ''complex32'''
-  txt: x.dtype in tensorflow.dtypes
 - cot: 'Error is triggered because the "Less" operation expects both inputs to be
     of the same type, specifically a float tensor, but one of them is an int16 tensor.
     From the values provided, variable x is a float tensor and y is an int16 tensor.
@@ -67,7 +60,7 @@ rules:
     \ uint64\n ; NodeDef: ; Op z:bool; attr=T:type,allowed=[DT_FLOAT, DT_DOUBLE, DT_INT32,\
     \ DT_UINT8, DT_INT16, DT_INT8, DT_INT64, DT_BFLOAT16, DT_UINT16, DT_HALF, DT_UINT32,\
     \ DT_UINT64]> [Op:Less] name:"
-  txt: type(y) in [float, double, int32, uint8, int16, int8, int64, bfloat16, uint16,
+  txt: y.dtype in [float, double, int32, uint8, int16, int8, int64, bfloat16, uint16,
     half, uint32, uint64]
 time_cost: 1070.5748388767242
 title: tf.raw_ops.Less

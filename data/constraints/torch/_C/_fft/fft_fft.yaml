@@ -49,7 +49,7 @@ rules:
     output tensor is of type Float32, but fft function requires a complex output tensor.
     Therefore, we can revise the constraints as follows:'
   target: fft expects a complex output tensor, but got Float
-  txt: type(out) == complex
+  txt: out.dtype == complex
 - cot: 'The error is due to an invalid number of data points. The ''n'' value provided
     is 0, which is not a valid number of data points. The value for ''n'' should be
     more than 0 to prevent this error. Hence, to prevent this error from happening

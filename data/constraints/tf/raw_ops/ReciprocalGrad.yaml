@@ -29,15 +29,15 @@ rules:
 - cot: 'The error arises because the function is trying to perform a computation on
     a float tensor and a bool tensor. However, both tensors in generated args must
     have the same data type. Let''s see what the args were. The ''dy'' tensor is a
-    bool, but the ''y'' tensor is of type float32. Therefore, Left : type(dy), which
+    bool, but the ''y'' tensor is of type float32. Therefore, Left : dy.dtype, which
     is the type of tensor dy, should be corrected. It says that should be equal to
-    the datatype of tensor y, so Op : ==, and Right : type(y).'
+    the datatype of tensor y, so Op : ==, and Right : y.dtype.'
   target: 'cannot compute ReciprocalGrad as input #1(zero-based) was expected to be
     a float tensor but is a bool tensor name:'
-  txt: type(dy)==type(y)
+  txt: dy.dtype==y.dtype
 - cot: 'The error is due to the incorrect data type ''T'' of int16 which is not in
     the allowed list: bfloat16, half, float, double, complex64, complex128. Therefore,
-    type(T) should be corrected to be one of the allowed types. The given values ''dy''
+    T.dtype should be corrected to be one of the allowed types. The given values ''dy''
     and ''y'' are of type uint8, which is not in the allowed list. Therefore, the
     data type of ''dy'' and ''y'' should be converted to one of the allowed types
     before the operation. So, Op : in, and Right : [bfloat16, half, float, double,
@@ -45,7 +45,7 @@ rules:
   target: "Value for attr 'T' of int16 is not in the list of allowed values: bfloat16,\
     \ half, float, double, complex64, complex128\n ; NodeDef: ; Op z:T; attr=T:type,allowed=>\
     \ name:"
-  txt: type(y) in [bfloat16, half, float, double, complex64, complex128]
+  txt: y.dtype in [bfloat16, half, float, double, complex64, complex128]
 time_cost: 0.007537364959716797
 title: tf.raw_ops.ReciprocalGrad
 tokens_used: 0

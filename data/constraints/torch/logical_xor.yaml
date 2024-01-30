@@ -37,7 +37,7 @@ rules:
     ''other'' tensors before the operation is performed. The constraints that do not
     trigger the error could be generated as follows:'
   target: Trying to resize storage that is not resizable
-  txt: (out.is_resizable == True) and (out.rank==input.rank and all(out.shape[i]==input.shape[i]
+  txt: (out.rank==input.rank and all(out.shape[i]==input.shape[i]
     for i in range(out.rank)))
 time_cost: 4374.895068645477
 title: torch.logical_xor

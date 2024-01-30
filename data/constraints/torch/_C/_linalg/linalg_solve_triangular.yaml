@@ -74,10 +74,10 @@ rules:
 - cot: 'The error message indicates that the computation was expecting a float scalar
     type but found a half scalar type instead. Looking at the provided values, ''out''
     tensor is of half type, while ''input'' tensor is of float32 type. This discrepancy
-    is likely the source of the error. Therefore, the Left : type(out) should be corrected
-    to match the type of ''input''. Op : ''=='', Right : Float or type(input).'
+    is likely the source of the error. Therefore, the Left : out.dtype should be corrected
+    to match the type of ''input''. Op : ''=='', Right : Float or input.dtype.'
   target: expected scalar type Float but found Half
-  txt: (B.dtype == complex128) and ((type(out) == "Float") and (type(out) == type(input)))
+  txt: (B.dtype == complex128) and ((out.dtype == "Float") and (out.dtype == input.dtype))
 time_cost: 4932.518354415894
 title: torch._C._linalg.linalg_solve_triangular
 tokens_used: 27147

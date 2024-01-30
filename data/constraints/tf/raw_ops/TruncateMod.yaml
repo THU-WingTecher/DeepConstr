@@ -28,37 +28,27 @@ rules:
 - cot: 'The error arises because the function is trying to perform an operation on
     a int32 tensor and a complex128 tensor. However, both tensors in the argument
     must have the same data type. Let''s see what the args were. ''x'' tensor is int32,
-    but the ''y'' tensor is of complex128, which is incorrect. Therefore, Left : type(y),
+    but the ''y'' tensor is of complex128, which is incorrect. Therefore, Left : y.dtype,
     which is the type of tensor y, should be corrected. It says that should be equal
-    to the datatype of tensor x, so Op : ==, and Right : type(x).'
+    to the datatype of tensor x, so Op : ==, and Right : x.dtype.'
   target: 'cannot compute TruncateMod as input #1(zero-based) was expected to be a
     int32 tensor but is a complex128 tensor name:'
-  txt: type(y)==type(x)
+  txt: y.dtype==x.dtype
 - cot: 'The error is due to incorrect datatype for ''T'', Instead of int16 it should
     be in the list of allowed datatypes: int32, int64, bfloat16, half, float, double.
-    Therefore, type(T) of both ''x'' Tensor and ''y'' Tensor should be corrected.
+    Therefore, T.dtype of both ''x'' Tensor and ''y'' Tensor should be corrected.
     The constraint should ensure that ''T'' should be one of the allowed datatypes.
     Therefore, Op : in, and Right : [int32, int64, bfloat16, half, float, double].'
   target: "Value for attr 'T' of int16 is not in the list of allowed values: int32,\
     \ int64, bfloat16, half, float, double\n ; NodeDef: ; Op z:T; attr=T:type,allowed=>\
     \ name:"
-  txt: type(x.T) in [int32, int64, bfloat16, half, float, double] and type(y.T) in
+  txt: x.dtype in [int32, int64, bfloat16, half, float, double] and y.dtype in
     [int32, int64, bfloat16, half, float, double]
-- cot: 'The error is caused by a binary operator that can''t handle the given values.
-    We know that only integer division and modulo operations should have errors. Let''s
-    see what the args were. There are two tensors ''x'' and ''y'' both of type int64
-    and same shape. So, let''s generate constraints that won''t trigger the error.
-    Considering the error message, the operation between ''x'' and ''y'' should not
-    be division or modulo. Therefore, Left : x Op y, and Right : x + y, x - y, x *
-    y, x == y, x != y, x > y, x >= y, x < y, x <= y.'
-  target: 'Unexpected error in binary operator (only integer div and mod should have
-    errors) name:'
-  txt: ((type(y) in [int]) or (x != y)) or (x == y) or ((type(y) in [int]) or (x !=
-    y))
+
 - cot: 'The error occurs due to the unavailability of a device for running the TruncateMod
     operation for the data type DT_HALF. The available devices for DT_HALF are ''XLA_CPU_JIT''
     and ''XLA_GPU_JIT''. Therefore, the operation should run on one of these devices.
-    So, the Left : type(x) or type(y) should be corrected to match DT_FLOAT, DT_DOUBLE,
+    So, the Left : x.dtype or y.dtype should be corrected to match DT_FLOAT, DT_DOUBLE,
     DT_INT32, DT_INT64, DT_BFLOAT16. Op : in, and Right : [''XLA_CPU_JIT'', ''XLA_GPU_JIT''].'
   target: "Could not find device for node: = TruncateMod[T=DT_HALF]\nAll kernels registered\
     \ for op TruncateMod:\n device='XLA_CPU_JIT'; T in [DT_FLOAT, DT_DOUBLE, DT_INT32,\
@@ -67,8 +57,8 @@ rules:
     \ device='GPU'; T in [DT_INT32]\n device='CPU'; T in [DT_DOUBLE]\n device='CPU';\
     \ T in [DT_FLOAT]\n device='CPU'; T in [DT_INT64]\n device='CPU'; T in [DT_INT32]\n\
     \ [Op:TruncateMod] name:"
-  txt: type(x) in ["DT_FLOAT", "DT_DOUBLE", "DT_INT32", "DT_INT64", "DT_BFLOAT16"]
-    and type(y) in ["DT_FLOAT", "DT_DOUBLE", "DT_INT32", "DT_INT64", "DT_BFLOAT16"]
+  txt: x.dtype in ["DT_FLOAT", "DT_DOUBLE", "DT_INT32", "DT_INT64", "DT_BFLOAT16"]
+    and y.dtype in ["DT_FLOAT", "DT_DOUBLE", "DT_INT32", "DT_INT64", "DT_BFLOAT16"]
 
 time_cost: 0.001026153564453125
 title: tf.raw_ops.TruncateMod

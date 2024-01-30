@@ -37,11 +37,11 @@ rules:
 - cot: 'The error is due to the data type of the output tensor ''out''. The fftn function
     expects a complex output tensor, but the current tensor is of type Half (float16).
     Let''s see what the args were. The ''out'' tensor is of type Half, which is the
-    problem. The data type of ''out'', which is type(out), should be corrected. Therefore,
-    Left: type(out). It says that should be equal to the datatype of complex, so Op:
+    problem. The data type of ''out'', which is out.dtype, should be corrected. Therefore,
+    Left: out.dtype. It says that should be equal to the datatype of complex, so Op:
     ==, and Right: complex.'
   target: fftn expects a complex output tensor, but got Half
-  txt: type(out) == complex
+  txt: out.dtype == complex
 - cot: The error is due to trying to resize a tensor that is not resizable. The input
     tensor and the output tensor have different dimensions, and the 'norm' attribute
     is set to 'ortho'. The tensor dimensions should match, or the tensor should be

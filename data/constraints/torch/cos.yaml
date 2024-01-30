@@ -25,10 +25,9 @@ rules:
 - cot: 'The error is triggered because the result type is ComplexDouble and it can''t
     be cast to Float. What the args were? We know that the input is of type Complex128
     and the output is of type Float32. So, the output type should be changed from
-    Float to Complex. Therefore, Left : type(out.TensorDType) Op : == Right : Complex'
+    Float to Complex. Therefore, Left : type(out .dtype) Op : == Right : Complex'
   target: result type Float can't be cast to the desired output type Int
-  txt: (type(out.TensorDType) == complex) or ((type(input)==type(out)) and (type(out.TensorDType)==float))
-    or (type(out.TensorDType) == complex)
+  txt: input.dtype == out.dtype
 time_cost: 1005.9355082511902
 title: torch.cos
 tokens_used: 9344

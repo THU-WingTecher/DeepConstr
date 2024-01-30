@@ -17,10 +17,10 @@ rules:
 - cot: 'The error message suggests that the "mish_cpu" function is not implemented
     for ''ComplexFloat''. It seems the input tensor has the type of ComplexFloat,
     which is not compatible. Therefore, the type of input tensor should be corrected.
-    Let''s denote the type of the input tensor as type(input). So, Left : type(input).
+    Let''s denote the type of the input tensor as input.dtype. So, Left : input.dtype.
     The op is that it should not be ComplexFloat, so Op : !=, and Right : ComplexFloat.'
   target: '"mish_cpu" not implemented for ''ComplexFloat'''
-  txt: type(input) != "ComplexFloat"
+  txt: input.dtype != "ComplexFloat"
 time_cost: 43.729474782943726
 title: torch.nn.functional.mish
 tokens_used: 837

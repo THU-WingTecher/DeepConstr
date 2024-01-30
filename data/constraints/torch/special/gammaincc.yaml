@@ -23,10 +23,10 @@ rules:
 - cot: 'The error is triggered because the result type Float cannot be cast to the
     desired output type Long. The types of ''input'', ''other'', and ''out'' are inconsistent,
     being int64, float32, and int64 respectively. Therefore, the types of the arguments
-    should be consistent. Left : type(input), op : ==, comparator : type(other) or
-    type(out)'
+    should be consistent. Left : input.dtype, op : ==, comparator : other.dtype or
+    out.dtype'
   target: result type Float can't be cast to the desired output type Long
-  txt: type(other)==type(out)
+  txt: other.dtype==out.dtype
 - cot: 'Error is triggered because size of tensors at non-singleton dimension 0 doesn''t
     match. What the args were? the two tensors matching problem at non-singleton dimensions
     looks like a broadcasting request. Broadcasting in tensor operations requires

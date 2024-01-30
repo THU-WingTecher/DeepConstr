@@ -24,10 +24,10 @@ rules:
     tensor but an int16 tensor is provided. Considering the given values, ''values''
     tensor is float32 and ''sorted_inputs'' tensor is float64. Therefore, the data
     type of ''values'' tensor should match the data type of ''sorted_inputs'' tensor
-    to avoid the error. Thus, Left : type(values), Op : ==, and Right : type(sorted_inputs).'
+    to avoid the error. Thus, Left : values.dtype, Op : ==, and Right : type(sorted_inputs).'
   target: 'cannot compute UpperBound as input #1(zero-based) was expected to be a
     float tensor but is a int16 tensor [Op:UpperBound] name:'
-  txt: type(values) == type(sorted_inputs)
+  txt: values.dtype == sorted_inputs.dtype
 - cot: "The error is triggered because the rank of `sorted_inputs` is not 2. In this\
     \ case, `sorted_inputs` is a tensor of float32 with rank 3. To correct this, `sorted_inputs`\
     \ should be reshaped or sliced to have a rank of 2. \nTherefore, the Left : sorted_inputs.dim\
@@ -88,7 +88,7 @@ rules:
     \ out_type in [DT_INT32]\n device='GPU'; T in [DT_UINT32]; out_type in [DT_INT32]\n\
     \ device='GPU'; T in [DT_INT64]; out_type in [DT_INT32]\n device='GPU'; T in [DT_UINT64];\
     \ out_type in [DT_INT32]\n [Op:UpperBound] name:"
-  txt: type(values) in ['DT_FLOAT', 'DT_DOUBLE', 'DT_INT32', 'DT_UINT8', 'DT_INT16',
+  txt: values.dtype in ['DT_FLOAT', 'DT_DOUBLE', 'DT_INT32', 'DT_UINT8', 'DT_INT16',
     'DT_INT8', 'DT_INT64', 'DT_BOOL', 'DT_QINT8', 'DT_QUINT8', 'DT_QINT32', 'DT_BFLOAT16',
     'DT_UINT16', 'DT_COMPLEX128', 'DT_HALF', 'DT_UINT32', 'DT_UINT64', 'DT_FLOAT8_E5M2',
     'DT_FLOAT8_E4M3FN', 'DT_INT4', 'DT_UINT4']

@@ -47,7 +47,7 @@ rules:
     ''out'' tensor for the ''fftn'' function is of complex data type. This can be
     represented by the following constraint:'
   target: fftn expects a complex output tensor, but got Float
-  txt: type(out)==complex
+  txt: out.dtype==complex
 time_cost: 82.39538288116455
 title: torch._C._fft.fft_ifftn
 tokens_used: 5535

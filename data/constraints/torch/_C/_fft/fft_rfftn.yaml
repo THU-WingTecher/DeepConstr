@@ -22,10 +22,10 @@ rules:
 - cot: 'The error arises because the rfftn function expects a complex tensor, but
     it received a float tensor as output. In the given values, we see that both ''input''
     and ''out'' tensors are of float type. So, the output tensor type should be changed
-    to complex. Therefore, the constraint should be: Left : type(out), Op : ==, Right
+    to complex. Therefore, the constraint should be: Left : out.dtype, Op : ==, Right
     : complex.'
   target: rfftn expects a complex output tensor, but got Float
-  txt: type(out)==complex
+  txt: out.dtype==complex
 - cot: 'The error seems to be triggered by invalid configuration parameters in the
     MKL FFT operation. In this case, the input tensor and the out tensor have different
     dimensions and data types. Also, the norm argument is set to ''ortho''. So, the
@@ -51,7 +51,7 @@ rules:
     be changed to a supported dtype. Additionally, the dtype of the output tensor
     is ''complex64'', which may not be compatible with the input dtype. Hence, the
     dtype of the input and output tensors should be compatible. Therefore, Left :
-    input.dtype, Op : !=, and Right : TensorDType.float16; and Left : input.dtype,
+    input.dtype, Op : !=, and Right :  float16; and Left : input.dtype,
     Op : ==, Right : out.dtype'
   target: Unsupported dtype Half
   txt: input.dtype == out.dtype

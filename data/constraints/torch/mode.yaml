@@ -33,7 +33,7 @@ rules:
     \ keepdim=bool, dim=int, input=Tensor, ), but expected one of:\n * (Tensor input,\
     \ int dim, bool keepdim, *, tuple of Tensors out)\n * (Tensor input, name dim,\
     \ bool keepdim, *, tuple of Tensors out)"
-  txt: type(out)==tuple
+  txt: isinstance(out, tuple)
 - cot: 'The error is because the ''out'' parameter is expected to contain a tuple
     of 2 elements, but got an empty list instead. This issue is related to the ''out''
     parameter. Therefore, the number of elements in ''out'' should be corrected, which

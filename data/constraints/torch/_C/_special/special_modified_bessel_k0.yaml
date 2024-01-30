@@ -26,12 +26,12 @@ rules:
     what the args were. The ''out'' tensor is of ''Long'' type, and the ''input''
     tensor is of ''int8'' type. To not trigger the error, the type of the result of
     operations on ''input'' tensor should be ''Long'', not ''Float''. Therefore, Left
-    : input.TensorDType. Op : == Right : int64. Also, the ''out'' tensor''s dtype
-    should be the same as the ''input'' tensor''s dtype. Therefore, Left : out.TensorDType.
-    Op : == Right : input.TensorDType.'
+    : input.  Op : == Right : int64. Also, the ''out'' tensor''s dtype
+    should be the same as the ''input'' tensor''s dtype. Therefore, Left : out. 
+    Op : == Right : input. '
   target: result type Float can't be cast to the desired output type Bool
-  txt: (type(input)==type(out)) and ((out.dtype == float) and (out.TensorDType ==
-    input.TensorDType))
+  txt: (input.dtype==out.dtype) and ((out.dtype == float) and (out .dtype ==
+    input .dtype))
 time_cost: 554.8564732074738
 title: torch._C._special.special_modified_bessel_k0
 tokens_used: 9741

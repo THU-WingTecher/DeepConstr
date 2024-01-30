@@ -44,16 +44,6 @@ infered_times: 40
 package: torch
 pass_rate: 0.0
 rules:
-- cot: 'The error indicates that the ''weight'' tensor has more elements than expected.
-    Let''s see what the args were. It seems that ''weight'' tensor should have the
-    same number of elements as the ''running_mean'' and ''running_var'' tensors. Therefore,
-    the length of the weight tensor should equal the length of the ''running_mean''
-    tensor. Hence, Left : len(weight.shape), Op : ==, and Right : len(running_mean.shape).
-    Also, the total number of elements in the weight tensor should equal the total
-    number of elements in the ''running_mean'' and ''running_var'' tensors. Hence,
-    Left : weight.numel(), Op : ==, and Right : running_mean.numel() or running_var.numel().'
-  target: weight should contain 8 elements not 64
-  txt: weight.numel() == running_var.numel()
 - cot: The error indicates that the 'bias' tensor has an incorrect dimension. The
     'bias' tensor should have the same dimension as the 'weight' tensor. In this case,
     the 'weight' tensor has a dimension of [3, 1], which means that the 'bias' tensor
@@ -82,7 +72,7 @@ rules:
     Therefore, Left: weight.dtype and momentum. Ops: ''=='' and ''<='', ''>='', Right:
     ''float32'' and 1.0, 0.0 respectively.'
   target: 'mixed dtype (CPU): expect parameter to have scalar type of Float'
-  txt: weight.dtype == TensorDType.float32
+  txt: weight.dtype == float32
 - cot: 'The error is due to the mismatch in dimensions between ''input'' and ''running_mean''.
     The ''input'' tensor has 8 dimensions, while the ''running_mean'' tensor has 54
     elements. According to the error, ''running_mean'' should contain 8 elements.

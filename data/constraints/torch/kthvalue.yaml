@@ -27,10 +27,10 @@ rules:
 - cot: 'The error is triggered because the ''kthvalue_cpu'' function is not implemented
     for ''ComplexFloat'' tensor data type. From the given values, the input tensor
     is of ''Complex64'' data type. Therefore, the data type of the ''input'' tensor,
-    which is type(input), should be corrected to not be ''ComplexFloat''. So, Left
-    : type(input), Op : !=, and Right : ''ComplexFloat''.'
+    which is input.dtype, should be corrected to not be ''ComplexFloat''. So, Left
+    : input.dtype, Op : !=, and Right : ''ComplexFloat''.'
   target: '"kthvalue_cpu" not implemented for ''ComplexFloat'''
-  txt: type(input) != 'ComplexFloat'
+  txt: input.dtype != 'ComplexFloat'
 - cot: 'The error indicates that the dimension provided is outside the valid range
     for the tensor. Therefore, we need to ensure that the dimension is always within
     the valid range. If we denote the shape of the tensor as n, the valid range for

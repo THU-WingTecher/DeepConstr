@@ -23,10 +23,10 @@ rules:
 - cot: 'The error is triggered because the result type float cannot be cast to the
     desired output type int. Looking at the values, ''input'' has a dtype of float32
     and ''out'' has a dtype of int32. The ''out'' dtype should match the ''input''
-    dtype to prevent this error. Therefore, Left : type(input), op : ==, comparator
-    : type(out)'
+    dtype to prevent this error. Therefore, Left : input.dtype, op : ==, comparator
+    : out.dtype'
   target: result type Float can't be cast to the desired output type Int
-  txt: type(input)==type(out)
+  txt: input.dtype==out.dtype
 - cot: "Given the error message \"Trying to resize storage that is not resizable\"\
     , it seems that the 'out' tensor's shape is not compatible with the 'input' tensor's\
     \ shape or the operation's output. The 'out' tensor's shape must match the operation's\

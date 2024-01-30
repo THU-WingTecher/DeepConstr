@@ -42,11 +42,11 @@ rules:
     function is int, while the function expects the input tensor to be of a floating
     point or complex data type. Looking at the argument values, the input tensor is
     of dtype int32 and the desired output size is 1. Therefore, the data type of the
-    input tensor should be a floating point or complex data type. Left : type(input),
+    input tensor should be a floating point or complex data type. Left : input.dtype,
     op : in, right : [float, complex]'
   target: 'mean(): could not infer output dtype. Input dtype must be either a floating
     point or complex dtype. Got: Int'
-  txt: type(input) in [float, complex]
+  txt: input.dtype in [float, complex]
 - cot: 'The error is due to the use of the ''adaptive_avg_pool2d'' function with a
     complex64 data type, which is not supported. The args here are ''input'' and ''output_size''.
     ''input'' is a tensor with a complex64 data type which is causing the issue. Therefore,

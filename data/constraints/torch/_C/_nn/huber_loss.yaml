@@ -32,10 +32,10 @@ rules:
 - cot: 'The error is triggered because the result type Int cannot be cast to the desired
     output type Bool. Let''s examine the args. ''Delta'' is a float type, ''input''
     is a bool tensor and ''target'' is an int tensor. Therefore, the dtype of ''input''
-    and ''target'' should be consistent. Left : type(target), op : ==, comparator
-    : type(input)'
+    and ''target'' should be consistent. Left : target.dtype, op : ==, comparator
+    : input.dtype'
   target: result type Int can't be cast to the desired output type Bool
-  txt: type(target)==type(input)
+  txt: target.dtype==input.dtype
 - cot: The error is caused by the 'delta' value being a non-positive number. The 'huber_loss'
     function does not support non-positive values for 'delta'. Therefore, the 'delta'
     value must be greater than 0. The operator used in this case should be '>', and

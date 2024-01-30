@@ -30,7 +30,7 @@ rules:
 - cot: 'The error arises due to the attribute ''T'' being of type bool, which is not
     in the allowed list of types: float, double, int32, uint8, int16, int8, int64,
     bfloat16, uint16, half, uint32, uint64. This means that the input tensor''s dtype
-    is not compatible. Therefore, the Left : type(input) should be corrected to match
+    is not compatible. Therefore, the Left : input.dtype should be corrected to match
     one of the allowed types. Op : in, and Right : [float, double, int32, uint8, int16,
     int8, int64, bfloat16, uint16, half, uint32, uint64].'
   target: "Value for attr 'Tk' of double is not in the list of allowed values: int16,\
@@ -39,9 +39,9 @@ rules:
     \ DT_INT64, DT_BFLOAT16, DT_UINT16, DT_HALF, DT_UINT32, DT_UINT64]; attr=Tk:type,default=DT_INT32,allowed=[DT_INT16,\
     \ DT_INT32, DT_INT64]; attr=index_type:type,default=DT_INT32,allowed=[DT_INT16,\
     \ DT_INT32, DT_INT64]> [Op:TopKV2] name:"
-  txt: (type(input) in ["float", "double", "int32", "uint8", "int16", "int8", "int64",
+  txt: (input.dtype in ["float", "double", "int32", "uint8", "int16", "int8", "int64",
     "bfloat16", "uint16", "half", "uint32", "uint64"]) and (type(k) in ["int16", "int32",
-    "int64"]) and (type(input) in ["float", "double", "int32", "uint8", "int16", "int8",
+    "int64"]) and (input.dtype in ["float", "double", "int32", "uint8", "int16", "int8",
     "int64", "bfloat16", "uint16", "half", "uint32", "uint64"])
 - cot: 'The error has occurred because ''k'' is not scalar but it was supposed to
     be. The input ''k'' had a shape with 5 dimensions. But the operator requires a

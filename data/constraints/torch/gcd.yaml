@@ -33,14 +33,14 @@ rules:
     of these tensors should be corrected to types that are compatible with the "gcd_cpu"
     function. The constraint to check the type of these tensors should be as follows:'
   target: '"gcd_cpu" not implemented for ''Float'''
-  txt: (type(input) != 'Float') or (type(out) in ["int16", "int32", "int64", "uint8",
-    "uint16", "uint32", "uint64"]) or (type(input) != 'Float')
+  txt: (input.dtype != 'Float') or (out.dtype in ["int16", "int32", "int64", "uint8",
+    "uint16", "uint32", "uint64"]) or (input.dtype != 'Float')
 - cot: 'The problem is with the casting of the result type. The output tensor type
     is int8 (''Char'') but the operation result is float32 which cannot be casted
     to int8. Therefore, Left : ''out'' tensor dtype, Op : ==, Right : ''other'' tensor
     dtype'
   target: result type Float can't be cast to the desired output type Char
-  txt: ((type(input)==type(other)) and (type(other)==type(out))
+  txt: ((input.dtype==other.dtype) and (other.dtype==out.dtype))
 time_cost: 5830.517145395279
 title: torch.gcd
 tokens_used: 14005

@@ -18,10 +18,10 @@ rules:
     ''Long'' datatype, which is int64 in this case. The input tensor is of type int64
     as per the values provided. In order to avoid this error, the datatype of ''input''
     tensor needs to be changed to a type that is compatible with the "GeluKernelImpl".
-    Therefore, Left : type(input) should be corrected. It is currently ''int64'' which
+    Therefore, Left : input.dtype should be corrected. It is currently ''int64'' which
     is causing the error, so Op : !=, and Right : ''int64''.'
   target: '"GeluKernelImpl" not implemented for ''Long'''
-  txt: type(input) != 'int64'
+  txt: input.dtype != 'int64'
 time_cost: 140.28014063835144
 title: torch.nn.GELU
 tokens_used: 1934

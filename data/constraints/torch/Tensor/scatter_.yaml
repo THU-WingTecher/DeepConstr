@@ -33,8 +33,7 @@ rules:
     the ''index'' tensor, i.e., `src.shape[dim] == index.shape[dim]`. Thus, the constraints
     can be following:'
   target: '''reduce'''
-  txt: (src.shape[dim] == len(index)) or ((index.dim == src.dim) or ((index.numel()
-    > 0) or (dim < len(index.shape) and dim < len(src.shape) and src.shape[dim] ==
+  txt: (src.shape[dim] == len(index)) or ((index.dim == src.dim) or ((dim < len(index.shape) and dim < len(src.shape) and src.shape[dim] ==
     index.shape[dim])))
 - cot: 'The error indicates that negative dimensions are not allowed. The provided
     ''dim'' value is -10, which is not allowed. So, the Left : ''dim'' should be corrected.

@@ -31,10 +31,10 @@ rules:
 - cot: 'The error is because ''huber_cpu'' is not implemented for ''Int''. It seems
     that the dtype of ''input'' and ''target'' tensors is int32 while ''huber_cpu''
     requires float type. Therefore, the dtype of ''input'' and ''target'' should be
-    float. Left : type(input), op : ==, Right : float. Also, the dtype of ''target''
-    should be float. Left: type(target), op : ==, Right : float.'
+    float. Left : input.dtype, op : ==, Right : float. Also, the dtype of ''target''
+    should be float. Left: target.dtype, op : ==, Right : float.'
   target: '"huber_cpu" not implemented for ''Int'''
-  txt: type(target) == float
+  txt: target.dtype == float
 - cot: 'The error is due to the mismatch in the size of the tensors at the non-singleton
     dimension 2. The size of tensor ''input'' at dimension 2 is 8, while the size
     of tensor ''target'' at dimension 2 is 2. To avoid this error, the sizes of the
@@ -55,7 +55,7 @@ rules:
     into Char (which is the dtype of the 'input' tensor). Therefore, a logical constraint
     could be that the dtypes of 'input', 'target', and 'delta' must be consistent.
   target: result type Float can't be cast to the desired output type Char
-  txt: type('input')==type('target')
+  txt: input.dtype==target.dtype
 time_cost: 446.83048963546753
 title: torch.nn.functional.huber_loss
 tokens_used: 9739

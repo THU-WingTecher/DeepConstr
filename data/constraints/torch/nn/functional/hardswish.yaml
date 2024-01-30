@@ -19,7 +19,7 @@ rules:
     is a tensor of type int32. The type of ''input'' should be changed to a type that
     "hardswish_cpu" supports. So, the logical constraint would be:'
   target: '"hardswish_cpu" not implemented for ''Int'''
-  txt: type(input) != int
+  txt: input.dtype != int
 time_cost: 182.8429205417633
 title: torch.nn.functional.hardswish
 tokens_used: 3041

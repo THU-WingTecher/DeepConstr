@@ -25,11 +25,11 @@ rules:
 - cot: 'Based on given values, the error arises because the output tensor ''out''
     is of type float32, but it is expected to be of type int16. Let''s see what the
     args were. The ''out'' tensor is float32, but expected to be int16. Therefore,
-    Left : type(out), which is the type of tensor out, should be corrected. It says
+    Left : out.dtype, which is the type of tensor out, should be corrected. It says
     that should be equal to the datatype of tensor input, so Op : ==, and Right :
-    type(input).'
+    input.dtype.'
   target: Expected out tensor to have dtype short int, but got float instead
-  txt: type(out) == type(input)
+  txt: out.dtype == input.dtype
 time_cost: 610.3215565681458
 title: torch.msort
 tokens_used: 10273

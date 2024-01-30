@@ -15,12 +15,12 @@ package: torch
 pass_rate: 0.82
 rules:
 - cot: 'The error is triggered because the result type of ''Float'' cannot be cast
-    to ''Int''. As we can see, the dtype of ''input'' is ''TensorDType.float32'' and
-    the dtype of ''out'' is ''TensorDType.int32''. This creates a type inconsistency
+    to ''Int''. As we can see, the dtype of ''input'' is '' float32'' and
+    the dtype of ''out'' is '' int32''. This creates a type inconsistency
     when attempting to cast. Therefore, the dtypes of ''input'' and ''out'' should
-    be the same to prevent the error. Left : type(input), op : ==, comparator : type(out)'
+    be the same to prevent the error. Left : input.dtype, op : ==, comparator : out.dtype'
   target: result type Float can't be cast to the desired output type Long
-  txt: type(input)==type(out)
+  txt: input.dtype==out.dtype
 - cot: 'Error is triggered because we are trying to resize the ''out'' tensor with
     shape [8,2,1], but it is not resizable. From the given values, the ''input'' tensor
     has a shape [6, 8, 6, 6, 1, 3, 4, 1, 3, 2]. The ''out'' tensor shape should match

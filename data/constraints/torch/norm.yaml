@@ -54,10 +54,10 @@ rules:
 - cot: 'The error occurs because the ''out'' tensor has a dtype of complex128, but
     it is expected to be double. Let''s look at the arguments. The ''out'' tensor
     is of type complex128 and this is the issue. Therefore, the dtype of ''out'' tensor,
-    which is type(out), should be corrected. It says that dtype should be double,
+    which is out.dtype, should be corrected. It says that dtype should be double,
     so Op : ==, and Right : double.'
   target: Expected out tensor to have dtype double, but got c10::complex<double> instead
-  txt: (out.dtype == input.dtype) and (type(out) == double)
+  txt: (out.dtype == input.dtype) and (out.dtype == double)
 - cot: 'The error is due to the fact that the input tensor A has less than 2 dimensions.
     From the given values, the ''input'' tensor has only 1 dimension with a size of
     8. Matrix operations like ''linalg.matrix_norm'' require at least 2 dimensions.

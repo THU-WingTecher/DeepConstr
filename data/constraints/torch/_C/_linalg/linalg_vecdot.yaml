@@ -27,10 +27,10 @@ rules:
 - cot: 'The error is generated because the linalg.vecdot operation expects x and y
     to have the same dtype. However, x has type ComplexDouble and y has type Float.
     Let''s see what the args were. The dtype of x and y is inconsistent. It says should
-    be same with x and y. so Op : ==, and Right : type(x), type(y)'
+    be same with x and y. so Op : ==, and Right : x.dtype, y.dtype'
   target: 'linalg.vecdot: Expected x and y to have the same dtype, but found x of
     type ComplexDouble and y of type Float instead'
-  txt: type(x) == type(y)
+  txt: x.dtype == y.dtype
 - cot: "The error is due to the 'dim' value being out of range for the given tensors\
     \ 'x' and 'y'. The valid range for the 'dim' value, given the shapes of 'x' and\
     \ 'y', is [-1, 0]. However, the provided 'dim' value is 1, which is out of this\
@@ -51,10 +51,10 @@ rules:
     point or complex tensor as input, but it received a Boolean tensor. Let''s see
     what the args were. Tensors ''x'' and ''y'' are of type Bool. Therefore, the data
     types of ''x'' and ''y'' should be changed to a floating point or complex type.
-    So, Left : type(x) and type(y), Op : ==, and Right : float or complex.'
+    So, Left : x.dtype and y.dtype, Op : ==, and Right : float or complex.'
   target: 'linalg.vecdot: Expected a floating point or complex tensor as input. Got
     Bool'
-  txt: (type(x) == float) or (type(y) == complex) or (type(x) == float)
+  txt: (x.dtype == float) or (y.dtype == complex) or (x.dtype == float)
 - cot: 'The error occurs because the ''out'' object has a datatype of ''Int'', but
     the linalg.vecdot operation expects it to be ''ComplexFloat''. In order to ensure
     that this error does not occur, the type of the ''out'' object should be ''ComplexFloat''.

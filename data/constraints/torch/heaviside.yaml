@@ -39,14 +39,14 @@ rules:
     Op : ==, and Right : tf.float32. Also, the data type of ''input'' and ''values''
     tensor should be the same. So, Left : input.dtype, Op : ==, and Right : values.dtype.'
   target: heaviside is not yet implemented for tensors with different dtypes.
-  txt: (type(input) == type(out)) and (input.dtype == values.dtype)
+  txt: (input.dtype == out.dtype) and (input.dtype == values.dtype)
 - cot: 'The problem is that the heaviside function is not implemented for complex
     tensors. In the provided values, ''input'', ''out'', and ''values'' are all complex64
     tensors. To avoid triggering the error, ''input'', ''out'', and ''values'' should
-    not be of complex type. Therefore, type(input), type(out), and type(values) should
+    not be of complex type. Therefore, input.dtype, out.dtype, and values.dtype should
     be real types. Op : not in, and Right : ["complex64", "complex128"].'
   target: heaviside is not yet implemented for complex tensors.
-  txt: type(values) not in ["complex64", "complex128"]
+  txt: values.dtype not in ["complex64", "complex128"]
 time_cost: 21739.92462491989
 title: torch.heaviside
 tokens_used: 22381

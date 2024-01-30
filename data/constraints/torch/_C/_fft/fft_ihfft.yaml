@@ -32,11 +32,11 @@ rules:
 - cot: 'The error arises because the function expects a complex output tensor, but
     a float tensor is provided. Therefore, the ''out'' tensor should be of complex
     type. Let''s see what the args were. The ''out'' tensor is of type float32. Therefore,
-    Left : type(out), which is the type of tensor ''out'', should be corrected. It
+    Left : out.dtype, which is the type of tensor ''out'', should be corrected. It
     says that should be of complex type, so Op : ==, and Right : Complex. The constraint
     would be as follows:'
   target: ihfft expects a complex output tensor, but got Float
-  txt: type(out)== Complex
+  txt: out.dtype== Complex
 - cot: "The error is caused because the dtype of the output tensor 'out' does not\
     \ match the expected dtype. The function expected the output tensor to be of dtype\
     \ 'ComplexFloat', however, the dtype of the provided output tensor 'out' is 'ComplexDouble'.\

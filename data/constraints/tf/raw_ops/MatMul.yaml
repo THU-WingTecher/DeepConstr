@@ -34,12 +34,12 @@ rules:
 - cot: 'The error is due to a mismatch in tensor data types during a matrix multiplication
     operation. From the error message, the ''a'' tensor is of type complex64, but
     the ''b'' tensor is of type float32. Thus, to carry out the MatMul operation,
-    both tensors need to be of the same data type. Therefore, Left : type(b), which
+    both tensors need to be of the same data type. Therefore, Left : b.dtype, which
     is the type of tensor b, should be corrected. It says that should be equal to
-    the datatype of tensor a, so Op : ==, and Right : type(a).'
+    the datatype of tensor a, so Op : ==, and Right : a.dtype.'
   target: 'cannot compute MatMul as input #1(zero-based) was expected to be a complex64
     tensor but is a float tensor [Op:MatMul] name:'
-  txt: type(b)==type(a)
+  txt: b.dtype==a.dtype
 - cot: 'The error is triggered because the number of dimensions of In[0] and In[1]
     (which are ''a'' and ''b'') are different. Let''s see what the args were. The
     dimension of ''a'' is 4 and ''b'' is 1. However, they have to be same for ''Op:MatMul''.
@@ -84,8 +84,8 @@ rules:
     \ attr=transpose_b:bool,default=false; attr=T:type,allowed=[DT_BFLOAT16, DT_HALF,\
     \ DT_FLOAT, DT_DOUBLE, DT_INT32, DT_INT64, DT_UINT8, DT_UINT16, DT_UINT32, DT_UINT64,\
     \ DT_COMPLEX64, DT_COMPLEX128]> [Op:MatMul] name:"
-  txt: type(a) in ["bfloat16", "half", "float", "double", "int32", "int64", "uint8",
-    "uint16", "uint32", "uint64", "complex64", "complex128"] and type(b) in ["bfloat16",
+  txt: a.dtype in ["bfloat16", "half", "float", "double", "int32", "int64", "uint8",
+    "uint16", "uint32", "uint64", "complex64", "complex128"] and b.dtype in ["bfloat16",
     "half", "float", "double", "int32", "int64", "uint8", "uint16", "uint32", "uint64",
     "complex64", "complex128"]
 time_cost: 188.12526655197144

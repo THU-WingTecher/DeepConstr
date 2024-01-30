@@ -72,9 +72,9 @@ rules:
 - cot: 'The error message indicates that the output tensor''s data type ''Float''
     does not match the input tensor''s data type ''Long''. Therefore, it is necessary
     to ensure that the data types of input and output tensors are the same. Hence,
-    the Left: type(input) or type(other), Op: ==, and Right: type(out).'
+    the Left: input.dtype or other.dtype, Op: ==, and Right: out.dtype.'
   target: result dtype Float does not match input dtype Long
-  txt: type(input) == type(out) and type(other) == type(out)
+  txt: input.dtype == out.dtype and other.dtype == out.dtype
 time_cost: 2179.559910297394
 title: torch.matmul
 tokens_used: 27352

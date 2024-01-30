@@ -20,7 +20,7 @@ rules:
     ''input'' should not be ''ComplexDouble''. Hence, Left : type(''input''), Op :
     !=, Right : ''ComplexDouble''.'
   target: '"softmax_lastdim_kernel_impl" not implemented for ''ComplexDouble'''
-  txt: type('input') != 'ComplexDouble'
+  txt: input.dtype != 'ComplexDouble'
 - cot: "The error is due to incorrect data type for the 'input' attribute in the softmax_lastdim_kernel_impl\
     \ function. The function doesn't support 'Int' data type. The 'input' given is\
     \ a tensor with dtype int32 which is not supported. Therefore, the dtype of 'input'\

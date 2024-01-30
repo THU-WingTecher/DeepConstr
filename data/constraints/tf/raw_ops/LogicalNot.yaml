@@ -18,12 +18,12 @@ rules:
 - cot: 'The error arises because the function is trying to perform a LogicalNot operation
     on a float tensor. However, this operation requires a bool tensor. Let''s see
     what the args were. It seems ''x'' tensor is of float32 type, which is the issue.
-    Therefore, Left : type(x), which is the type of tensor x, should be corrected.
+    Therefore, Left : x.dtype, which is the type of tensor x, should be corrected.
     It says that should be equal to the datatype of bool tensor, so Op : ==, and Right
     : bool.'
   target: 'cannot compute LogicalNot as input #0(zero-based) was expected to be a
     bool tensor but is a float tensor name:'
-  txt: type(x)==bool
+  txt: x.dtype==bool
 time_cost: 14.644803285598755
 title: tf.raw_ops.LogicalNot
 tokens_used: 590

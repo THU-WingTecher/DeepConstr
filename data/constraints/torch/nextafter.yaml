@@ -26,7 +26,7 @@ rules:
     be corrected. It says that cannot be ''Bool'', so Op : !=, and Right : Bool. Also,
     it should be ''Float'', so Op : ==, and Right : Float.'
   target: result type Float can't be cast to the desired output type Bool
-  txt: (out.dtype==input.dtype) or ((type(input)==type(other)) or (out.dtype!=bool))
+  txt: (out.dtype==input.dtype) or ((input.dtype==other.dtype) or (out.dtype!=bool))
 - cot: 'Error is triggered because of trying to resize ''out'' tensor which is not
     resizable. The current shape of ''out'' tensor is [1, 1, 4, 3, 6, 3, 6, 9, 10].
     But the operation might be trying to resize it to match the shape of ''input''

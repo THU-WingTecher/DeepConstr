@@ -30,9 +30,9 @@ rules:
     type. Therefore, Left : input.dtype, out.dtype; Op : ==; Right : complex64.'
   target: result type Float can't be cast to the desired output type Int
   txt: (out.dtype==complex64) or (((out.dtype==float32) and ((input.dtype==float32)
-    or ((type(input)==type(out)) and (input.dtype==complex64)) or (input.dtype==float32)))
-    or ((type(input)==type(out)) and (input.dtype==complex64)) or ((out.dtype==float32)
-    and ((input.dtype==float32) or ((type(input)==type(out)) and (input.dtype==complex64))
+    or ((input.dtype==out.dtype) and (input.dtype==complex64)) or (input.dtype==float32)))
+    or ((input.dtype==out.dtype) and (input.dtype==complex64)) or ((out.dtype==float32)
+    and ((input.dtype==float32) or ((input.dtype==out.dtype) and (input.dtype==complex64))
     or (input.dtype==float32)))) or (out.dtype==complex64)
 time_cost: 1337.7666339874268
 title: torch.asin

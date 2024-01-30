@@ -36,9 +36,9 @@ rules:
     output type Int. What the args were? The ''input'' tensor is of type int32 and
     the ''target'' tensor is of type float32. When the ''reduce'' is True and ''reduction''
     is ''mean'', the result is of type float which can''t be converted to int. Therefore,
-    Left : type(input) or type(target). Op : == Right : float.'
+    Left : input.dtype or target.dtype. Op : == Right : float.'
   target: result type Float can't be cast to the desired output type Int
-  txt: type(input)==float
+  txt: input.dtype==float
 - cot: 'The error is triggered because the output shape doesn''t match the broadcast
     shape. The ''reduce'' argument is set to True, which means the output is expected
     to have a reduced shape, but ''reduction'' is set to ''mean'', which should keep

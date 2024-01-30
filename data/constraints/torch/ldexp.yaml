@@ -25,10 +25,10 @@ rules:
     be represented in a regular float. Therefore, the types of the inputs need to
     be changed so that the output is not a complex float. Let''s see what the values
     were. The type of ''input'' and ''other'' are complex float, but we don''t know
-    which one should be changed. Therefore, Left : type(input) or type(other). Op
+    which one should be changed. Therefore, Left : input.dtype or other.dtype. Op
     : == Right : float'
   target: result type ComplexFloat can't be cast to the desired output type Float
-  txt: (type(out)==float) or (type(input)==float)
+  txt: (out.dtype==float) or (input.dtype==float)
 - cot: The error is due to an attempt to resize a storage that is not resizable. This
     usually occurs when the output tensor 'out' is not of the same shape as the input
     tensor 'input'. Therefore, the shape of 'out' should match the shape of 'input'.

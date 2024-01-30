@@ -18,11 +18,11 @@ pass_rate: 1.0
 rules:
 - cot: 'The error is due to the ''input'' argument to ''shape_n'' Op expecting a list,
     but it''s not getting one. Therefore, the ''input'' value needs to be corrected.
-    In this case, ''input'' is a tensor. The expected type is list, which is type(input)
-    should be list. Therefore, Left : type(input). As stated, the expected type is
+    In this case, ''input'' is a tensor. The expected type is list, which is input.dtype
+    should be list. Therefore, Left : input.dtype. As stated, the expected type is
     list, so Op : ==, and Right : list.'
   target: Expected list for 'input' argument to 'shape_n' Op, not .
-  txt: type(input) == list.
+  txt: isinstance(input, list)
 - cot: 'The error is triggered because the ''ShapeN'' operator has a constraint on
     attribute ''T'' which is not in NodeDef. In this case, the input tensor seems
     to be empty, which might be the problem. There are two constraints to fix this

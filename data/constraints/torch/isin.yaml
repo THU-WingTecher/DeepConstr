@@ -29,7 +29,7 @@ rules:
     not supported. Therefore, the dtype of ''test_elements'' should not be complex.
     Left : type(''test_elements''), op : !=, comparator : complex'
   target: 'Unsupported input type encountered for isin(): ComplexFloat'
-  txt: type('test_elements')!=complex
+  txt: test_elements.dtype!=complex
 time_cost: 1228.8883483409882
 title: torch.isin
 tokens_used: 6672

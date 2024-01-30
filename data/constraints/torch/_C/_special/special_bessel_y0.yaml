@@ -16,9 +16,9 @@ pass_rate: 0.92
 rules:
 - cot: 'The error is caused because the result is a float type and it''s trying to
     be cast to an integer type. This means that the output type should be a float
-    type, not an integer type. Therefore, Left : type(out), Op : ==, Right : float.'
+    type, not an integer type. Therefore, Left : out.dtype, Op : ==, Right : float.'
   target: result type ComplexFloat can't be cast to the desired output type Float
-  txt: type(out)==float
+  txt: out.dtype==float
 - cot: 'Error is triggered because of we are trying to resize storageLet''s see what
     the args were. I guess the storage indicates ''out'' tensor. so, it means that
     ''out'' tensor shape should be matched with the operation results. in this operation,

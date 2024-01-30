@@ -23,11 +23,11 @@ rules:
 - cot: 'The error arises because the function linalg.svd expects a floating point
     or complex tensor as input, but is receiving a boolean tensor. Let''s see what
     the args were. The ''A'' tensor is of type boolean, which is the problem. Therefore,
-    Left : type(A), which is the type of tensor A, should be corrected. It says that
+    Left : A.dtype, which is the type of tensor A, should be corrected. It says that
     should be a floating point or complex tensor, so Op : in, and Right : [float,
     complex].'
   target: 'linalg.svd: Expected a floating point or complex tensor as input. Got Bool'
-  txt: type(A) in [float, complex]
+  txt: A.dtype in [float, complex]
 time_cost: 125.80157566070557
 title: torch._C._linalg.linalg_svd
 tokens_used: 4947

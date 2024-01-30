@@ -18,10 +18,10 @@ rules:
 - cot: 'The error is triggered because result type ComplexDouble cannot be cast to
     the Float. Let''s see what the args were. The dtype of ''input'' is complex128
     and the dtype of ''out'' is float32. These two types are incompatible. Therefore,
-    the dtypes of the input and output should be consistent. Left : type(input), op
-    : ==, comparator : type(out)'
+    the dtypes of the input and output should be consistent. Left : input.dtype, op
+    : ==, comparator : out.dtype'
   target: result type Float can't be cast to the desired output type Long
-  txt: type(input)==type(out)
+  txt: input.dtype==out.dtype
 - cot: 'The error occurs because the ''out'' tensor is trying to be resized to a size
     that is not allowed. The size of the ''out'' tensor should be equal to the size
     of the ''input'' tensor to avoid this error. Therefore, the constraint should
@@ -32,10 +32,10 @@ rules:
 - cot: 'The error is due to the implementation of "erf_vml_cpu" not being available
     for ''ComplexDouble'' type. From the given values, it seems that ''input'' and
     ''out'' tensors are of complex128 type. Therefore, the type of ''input'' and ''out''
-    should not be complex128. So, the Left : type(input) or type(out) should be corrected.
+    should not be complex128. So, the Left : input.dtype or out.dtype should be corrected.
     Op : !=, and Right : complex128.'
   target: '"erf_vml_cpu" not implemented for ''ComplexDouble'''
-  txt: type(out) != "complex128"
+  txt: out.dtype != "complex128"
 - cot: 'The error is due to the use of a complex data type, which is not implemented
     for the "erf_vml_cpu". The tensors ''input'' and ''out'' are both provided as
     complex64, which is not compatible. Let''s see the data types. It seems input.dtype

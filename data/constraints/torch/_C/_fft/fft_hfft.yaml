@@ -50,12 +50,12 @@ rules:
   target: Trying to resize storage that is not resizable
   txt: (len(out) >= dim) or (input.shape == out.shape)
 - cot: "The error arises because the function 'hfft' expects a floating point output\
-    \ tensor, but got Long. It seems 'out' tensor is of type Long (TensorDType.int64).\
-    \ Therefore, the data type of 'out' should be corrected. \n\nThe Left : type(out).\
+    \ tensor, but got Long. It seems 'out' tensor is of type Long ( int64).\
+    \ Therefore, the data type of 'out' should be corrected. \n\nThe Left : out.dtype.\
     \ It says that it should be a floating point tensor, so Op : ==, and Right : float.\
     \ Therefore, the corrected logical relationship constraint is:"
   target: hfft expects a floating point output tensor, but got Char
-  txt: type(out)==float
+  txt: out.dtype==float
 - cot: 'The error occurs because the dimension provided is out of the valid range.
     Let''s see what the args were. It appears the given dimension is 7 which is out
     of this range. To prevent this error in the future and generate constraints that

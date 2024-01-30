@@ -34,7 +34,7 @@ rules:
     constraints:'
   target: 'rror: cannot compute LogicalAnd as input #0(zero-based) was expected to
     be a bool tensor but is a float tensor [Op:LogicalAnd] name:'
-  txt: type(x) == bool and type(y) == bool
+  txt: x.dtype == bool and y.dtype == bool
 - cot: "The error occurs because the shapes of tensors 'x' and 'y' are not broadcastable\
     \ for the 'LogicalAnd' operation. Broadcasting in tensor operations requires that\
     \ the trailing dimensions of the tensors are either 1 or the same. We can see\

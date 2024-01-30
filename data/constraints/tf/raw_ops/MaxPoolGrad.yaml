@@ -65,50 +65,13 @@ rules:
     \ DT_HALF, DT_UINT32, DT_UINT64]> [Op:MaxPoolGrad] name:"
   txt: (len(ksize) >= 4) and (len(strides) >= 4 and padding in ["SAME", "VALID", "EXPLICIT"]
     and data_format in ["NHWC", "NCHW"]) and (len(ksize) >= 4)
-- cot: 'The error arises because the function is trying to perform an operation on
-    an int16 tensor and a float tensor. However, both tensors in generated args must
-    have the same data type. Let''s see what the args were. The ''orig_input'' tensor
-    is float32, but the ''grad'' tensor is of type int32. Therefore, Left : type(grad),
-    which is the type of tensor grad, should be corrected. It says that should be
-    equal to the datatype of tensor orig_input, so Op : ==, and Right : type(orig_input).'
-  target: 'cannot compute MaxPoolGrad as input #1(zero-based) was expected to be a
-    int16 tensor but is a float tensor [Op:MaxPoolGrad] name:'
-  txt: (type(orig_output)==type(grad)) and (type(grad)==type(orig_input))
-- cot: The error message indicates that pooling is not supported on the batch dimension.
-    In the given values, the 'data_format' is 'NCHW', which means the input tensor
-    is expected in the order of [batch, channel, height, width]. The error suggests
-    that the operation is attempting to perform pooling over the batch dimension,
-    which is not supported.
-  target: 'Pooling is not yet supported on the batch dimension. [Op:MaxPoolGrad] name:'
-  txt: (ksize[0] == 1), (strides[0] == 1), (len(grad) == len(orig_input)), (len(grad)
-    == len(orig_output)), (len(explicit_paddings) == 2*len(orig_input))
-- cot: 'The error is caused because the MaxPoolingGrad operation is not supported
-    on the depth dimension in this case. The data_format is ''NCHW'', which means
-    the shape of the tensor is [batch, channels, height, width]. MaxPoolingGrad operation
-    is not yet supported on the channels (depth) dimension. The ''ksize'' parameter
-    indicates the size of the windows for each dimension of the input tensor. In this
-    case, ksize is [1, 20, 21, 22], which means the operation is applied on the channels.
-    The constraints to prevent the error would be to ensure that ksize[1] == 1, ksize[0]
-    == 1 (batch size must be 1), and ksize[3] != 1 (to ensure the operation is not
-    applied on the width dimension). '
-  target: 'Sliding window ksize field must specify 4 dimensions [Op:MaxPoolGrad] name:'
-  txt: ksize[0] == 1
-- cot: 'The error is triggered because MaxPoolingGrad is not yet supported on the
-    depth dimension. Let''s see what the ars were. data_format, explicit_paddings,
-    grad, ksize, orig_input, orig_output, padding, strides were None. Therefore, the
-    Left : data_format should be corrected to a supported format. Ops : ''!='', Right
-    : None. Similarly, explicit_paddings, grad, ksize, orig_input, orig_output, padding,
-    strides should not be None.'
-  target: 'tensor_in must be 4-dimensional 4 [Op:MaxPoolGrad] name:'
-  txt: data_format != None, explicit_paddings != None, grad != None, ksize != None,
-    orig_input != None, orig_output != None, padding != None, strides != None.
 - cot: 'The error message indicates that the MaxPoolingGradOp only supports the data
     format ''NHWC'' on CPU device type. However, the current data_format is ''NCHW'',
     which is not supported. Therefore, the constraint should be that the Left : data_format
     is ''NHWC''. Ops : ''=='', Right : ''NHWC''.'
   target: 'Default MaxPoolingGradOp only supports NHWC on device type CPU [Op:MaxPoolGrad]
     name:'
-  txt: data_format == 'NHWC'
+  txt: data_format in ["NHWC", "NCHW"]
 - cot: 'The error is triggered because the explicit_paddings attribute does not contain
     the correct number of values. The operation expects 8 values, but instead got
     10. Therefore, Left : len(explicit_paddings) should be corrected. Ops : ''=='',

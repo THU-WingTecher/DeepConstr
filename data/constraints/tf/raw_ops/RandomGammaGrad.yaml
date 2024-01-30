@@ -27,12 +27,12 @@ rules:
     on a double tensor and a float tensor. However, both tensors in generated args
     must have the same data type. Let''s see what the args were. The ''alpha'' tensor
     is float64 (double), but the ''sample'' tensor is of type flot32. Therefore, Left
-    : type(sample), which is the type of tensor sample, should be corrected. It says
+    : sample.dtype, which is the type of tensor sample, should be corrected. It says
     that should be equal to the datatype of tensor alpha, so Op : ==, and Right :
-    type(alpha).'
+    alpha.dtype.'
   target: 'cannot compute RandomGammaGrad as input #1(zero-based) was expected to
     be a double tensor but is a float tensor [Op:RandomGammaGrad] name:'
-  txt: type(sample)==type(alpha)
+  txt: sample.dtype==alpha.dtype
 - cot: 'The error is because of the incompatible shapes of the tensors during the
     operation ''RandomGammaGrad''. The tensors involved here are ''alpha'' and ''sample''.
     The shape of ''alpha'' is [6, 8, 6, 6, 1] and the shape of ''sample'' is [8, 1,
@@ -51,7 +51,7 @@ rules:
   target: "Value for attr 'T' of int32 is not in the list of allowed values: float,\
     \ double\n ; NodeDef: ; Op output:T; attr=T:type,allowed=[DT_FLOAT, DT_DOUBLE]>\
     \ [Op:RandomGammaGrad] name:"
-  txt: type(alpha) in ["float", "double"] and type(sample) in ["float", "double"]
+  txt: alpha.dtype in ["float", "double"] and sample.dtype in ["float", "double"]
 - cot: The error is caused by invalid broadcasting between two tensors 'alpha' and
     'sample'. In order for broadcasting to occur, the dimensions of the tensors must
     be compatible. Dimensions are compatible if they are equal or if one of them is

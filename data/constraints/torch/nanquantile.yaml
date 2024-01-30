@@ -65,9 +65,9 @@ rules:
     ''input'' tensor in the quantile() function. The ''input'' tensor is of type float64,
     but the ''q'' tensor is of type float32. Therefore, to avoid the error, the data
     type of ''q'' tensor should be the same as that of the ''input'' tensor. Thus,
-    Left : type(q), Op : ''=='', and Right : type(input).'
+    Left : q.dtype, Op : ''=='', and Right : input.dtype.'
   target: quantile() q tensor must be same dtype as the input tensor
-  txt: (type(out) == type(input)) and (type(q) == type(input))
+  txt: (out.dtype == input.dtype) and (q.dtype == input.dtype)
 - cot: 'The error is triggered because the input tensor used in the quantile() function
     is not of the required type. The quantile() function requires that the input tensor
     be of either float or double data type. However, in the arguments provided, the
@@ -75,7 +75,7 @@ rules:
     tensor should be changed. The logical relationship constraint to avoid this error
     would be as follows:'
   target: quantile() input tensor must be either float or double dtype
-  txt: (type(q) == float or type(q) == double) and (type(input) == double)
+  txt: (q.dtype == float or q.dtype == double) and (input.dtype == double)
 time_cost: 12378.78499174118
 title: torch.nanquantile
 tokens_used: 27976

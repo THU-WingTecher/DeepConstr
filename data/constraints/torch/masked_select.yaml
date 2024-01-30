@@ -47,9 +47,9 @@ rules:
     that ''input'' is of type float32, ''mask'' is of type bool, and ''out'' is of
     type int64. The ''mask'' should have the same type as the ''input'' for the masked_select()
     function or ''out'' should have the same type as ''input''. Therefore, the Left
-    : type(input), Ops : ''=='', Right : type(mask) or type(out).'
+    : input.dtype, Ops : ''=='', Right : type(mask) or out.dtype.'
   target: 'masked_select(): self and result must have the same scalar type'
-  txt: type(input) == type(out)
+  txt: input.dtype == out.dtype
 
 time_cost: 3570.8500230312347
 title: torch.masked_select

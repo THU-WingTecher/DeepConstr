@@ -22,10 +22,10 @@ rules:
 - cot: "The error is triggered because the result type Long cannot be cast to Bool.\
     \ It seems that the types of 'input', 'other', and 'out' are inconsistent, being\
     \ int64, int16, and Bool respectively. Therefore, the types of these arguments\
-    \ should be consistent to avoid the error. \nLeft : type(input), op : ==, comparator\
-    \ : type(other) or type(out)"
+    \ should be consistent to avoid the error. \nLeft : input.dtype, op : ==, comparator\
+    \ : other.dtype or out.dtype"
   target: result type Float can't be cast to the desired output type Int
-  txt: type(input)==type(other)
+  txt: input.dtype==other.dtype
 - cot: "The error is triggered because we are trying to resize 'out' tensor's storage\
     \ which is not resizable. Let's look at the provided values. The 'out' tensor\
     \ has the same rank as 'input' and 'other', but its last dimension is one less\
@@ -41,7 +41,7 @@ rules:
     Therefore, the dtype of ''input'' tensor needs to be corrected. Left : ''input.dtype'',
     It says that dtype cannot be complex, so Op : !=, and Right : complex64.'
   target: fmax not implemented for complex tensors.
-  txt: (type(other) not in ["complex64", "complex128"]) or (input.dtype == int64)
+  txt: (other.dtype not in ["complex64", "complex128"]) or (input.dtype == int64)
 time_cost: 3766.2505621910095
 title: torch.fmax
 tokens_used: 11329

@@ -18,11 +18,11 @@ rules:
 - cot: 'The error is triggered because the function view_as_complex is only supported
     for half, float and double tensors, but received a tensor of scalar type Bool.
     Let''s see the args, ''input'' is a Bool type tensor. Therefore, the dtype of
-    ''input'' should be corrected to be either half, float, or double. Left : type(input),
+    ''input'' should be corrected to be either half, float, or double. Left : input.dtype,
     Op : in, Right : ["half", "float", "double"].'
   target: 'view_as_complex is only supported for half, float and double tensors, but
     got a tensor of scalar type: Bool'
-  txt: type(input) in ["half", "float", "double"]
+  txt: input.dtype in ["half", "float", "double"]
 time_cost: 140.36112666130066
 title: torch.view_as_complex
 tokens_used: 4698

@@ -82,10 +82,10 @@ rules:
     same. It expects the input and weight to be of same type. Let''s see what the
     args were. The ''input'' type is ''CPUComplexFloatType'' and the ''weight'' type
     is ''torch.HalfTensor''. Therefore, the types of ''input'' and ''weight'' should
-    be the same. Left : type(input), op : ==, comparator : type(weight)'
+    be the same. Left : input.dtype, op : ==, comparator : weight.dtype'
   target: Input type (CPUComplexFloatType) and weight type (torch.HalfTensor) should
     be the same
-  txt: type(input)==type(weight)
+  txt: input.dtype==weight.dtype
 time_cost: 2856.9025099277496
 title: torch.conv2d
 tokens_used: 26716

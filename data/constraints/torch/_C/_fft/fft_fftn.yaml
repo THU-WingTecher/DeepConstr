@@ -36,7 +36,7 @@ rules:
     be corrected. It should be equal to a complex datatype. So the constraints can
     be revised as follows:'
   target: fftn expects a complex output tensor, but got Float
-  txt: type(out) == complex
+  txt: out.dtype == complex
 - cot: "The error is due to trying to resize a storage that is not resizable. There\
     \ are three variables involved: 'input', 'norm', and 'out'. \nThe 'input' and\
     \ 'out' are tensors with different shapes, and 'norm' is a normalization constant.\
@@ -49,10 +49,10 @@ rules:
   txt: input.shape == out.shape
 - cot: 'Based on given values, the error is triggered because the dtype of ''input''
     is float16 (Half), which is not supported. It expects a supported dtype. It seems
-    the ''input'' tensor dtype is float16, so type(input) should be corrected. Therefore,
-    Left : type(input). Op : !=, and Right : ''Half''.'
+    the ''input'' tensor dtype is float16, so input.dtype should be corrected. Therefore,
+    Left : input.dtype. Op : !=, and Right : ''Half''.'
   target: Unsupported dtype Half
-  txt: type(input) != "Half"
+  txt: input.dtype != "Half"
 time_cost: 7513.185723543167
 title: torch._C._fft.fft_fftn
 tokens_used: 19772

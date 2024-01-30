@@ -34,18 +34,18 @@ rules:
     float32 respectively. The ''bitwise_and_cpu'' cannot be performed on float type
     tensors, it requires integer type tensors. Therefore, the data type of ''input'',
     ''other'' & ''out'' should be corrected. They should be of integer type like int64.
-    Therefore, type(input), type(other), type(out) should be corrected. Op : ==, and
+    Therefore, input.dtype, other.dtype, out.dtype should be corrected. Op : ==, and
     Right : int64. Also, Op : !=, and Right : float32.'
   target: '"bitwise_and_cpu" not implemented for ''Float'''
-  txt: (((type(other) != float32)) or ((type(out) == int64))) or (((type(input) ==
-    int64)) or ((type(out) == int64))) or (((type(other) != float32)) or ((type(out)
+  txt: (((other.dtype != float32)) or ((out.dtype == int64))) or (((input.dtype ==
+    int64)) or ((out.dtype == int64))) or (((other.dtype != float32)) or ((out.dtype
     == int64)))
 - cot: 'The error is triggered because result type Float cannot be cast to the Long.
     Let''s see the what''s args were. The dtype of ''input'' is float32 and the dtype
     of ''other'' and ''out'' is int64. Therefore, the dtypes of the arguments should
-    be consistent. Left : type(input), op : ==, comparator : type(other) or type(out)'
+    be consistent. Left : input.dtype, op : ==, comparator : other.dtype or out.dtype'
   target: result type Float can't be cast to the desired output type Long
-  txt: (type(input)==type(other)) and (type(other)==type(out))
+  txt: (input.dtype==other.dtype) and (other.dtype==out.dtype)
 time_cost: 16932.40133047104
 title: torch.bitwise_and
 tokens_used: 26789

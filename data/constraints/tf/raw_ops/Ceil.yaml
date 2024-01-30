@@ -20,18 +20,18 @@ rules:
     convert ''x'' to ''complex32'', but it''s not a valid type in tensorflow. Therefore,
     ''x'' should be converted to a valid type. The valid types for tensorflow can
     be ''float32'', ''float64'', ''int32'', ''int64'', ''bool'' and others. So Left
-    : type(x); Op : in; Right : [float32, float64, int32, int64, bool].'
+    : x.dtype; Op : in; Right : [float32, float64, int32, int64, bool].'
   target: 'rror: module ''tensorflow'' has no attribute ''complex32'''
-  txt: type(x) in ['float32', 'float64', 'int32', 'int64', 'bool']
+  txt: x.dtype in ['float32', 'float64', 'int32', 'int64', 'bool']
 - cot: 'The error is due to incorrect data type ''T'' from args. The input tensor
     ''x'' has a data type of ''int32'', which is not in the list of allowed data types:
-    ''bfloat16'', ''half'', ''float'', ''double''. Therefore, type(x) should be corrected
+    ''bfloat16'', ''half'', ''float'', ''double''. Therefore, x.dtype should be corrected
     to be one of the allowed data types. Op : in, and Right : [''bfloat16'', ''half'',
     ''float'', ''double''].'
   target: "rror: Value for attr 'T' of int32 is not in the list of allowed values:\
     \ bfloat16, half, float, double\n ; NodeDef: ; Op y:T; attr=T:type,allowed=[DT_BFLOAT16,\
     \ DT_HALF, DT_FLOAT, DT_DOUBLE]> [Op:Ceil] name:"
-  txt: type(x) in ['bfloat16', 'half', 'float', 'double']
+  txt: x.dtype in ['bfloat16', 'half', 'float', 'double']
 time_cost: 141.40030145645142
 title: tf.raw_ops.Ceil
 tokens_used: 5346

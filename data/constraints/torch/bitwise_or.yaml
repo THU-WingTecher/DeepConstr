@@ -32,7 +32,7 @@ rules:
     it looks like ''other'' tensor has float16 data type but ''input'' and ''out''
     tensors have int32 data type. Therefore, Left : ''other''.dtype, Op : ==, Right
     : ''input''.dtype, ''out''.dtype. Also, it should match with int32, so Left :
-    ''other''.dtype, Op : ==, Right : TensorDType.int32'
+    ''other''.dtype, Op : ==, Right :  int32'
   target: result type Half can't be cast to the desired output type Int
   txt: (input.dtype in [out.dtype, 'bool', 'int8']) and ('other'.dtype == 'out'.dtype)
 - cot: "The error message suggests that there's a mismatch in the dimension sizes\
@@ -61,8 +61,8 @@ rules:
     : input.dtype, other.dtype, out.dtype. It says that cannot be float, so Op : !=,
     and Right : float32.'
   target: '"bitwise_or_cpu" not implemented for ''Float'''
-  txt: (out.dtype != float32) and ((type(input) != 'Float' and type(other) != 'Float'
-    and type(out) != 'Float') or (type(input) in ["int8", "int16", "int32", "int64",
+  txt: (out.dtype != float32) and ((input.dtype != 'Float' and other.dtype != 'Float'
+    and out.dtype != 'Float') or (input.dtype in ["int8", "int16", "int32", "int64",
     "uint8", "uint16", "uint32", "uint64"])) and (out.dtype != float32)
 time_cost: 3335.0507202148438
 title: torch.bitwise_or

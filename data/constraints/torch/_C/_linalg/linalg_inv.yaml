@@ -39,11 +39,11 @@ rules:
     have a double data type, but currently it has a float data type. Let''s see what
     the args were. According to the values, the ''out'' tensor is of dtype float32,
     but the ''A'' tensor is of dtype float64 (double). Therefore, the data type of
-    ''out'' tensor should be corrected. Left : type(out), which is the data type of
+    ''out'' tensor should be corrected. Left : out.dtype, which is the data type of
     ''out'' tensor. It says that should be equal to the datatype of ''A'' tensor,
-    so Op : ==, and Right : type(A).'
+    so Op : ==, and Right : A.dtype.'
   target: Expected out tensor to have dtype double, but got float instead
-  txt: type(out) == type(A)
+  txt: out.dtype == A.dtype
 - cot: 'Error is triggered because of wrong input type. Let''s see what the args were.
     The input tensor type is Bool, and error message says it expects a floating point
     or complex tensor. So, I guess the input tensor type should be floating point

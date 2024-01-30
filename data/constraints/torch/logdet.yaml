@@ -28,9 +28,9 @@ rules:
     type of either floating point or complex, but the provided input tensor is of
     type Boolean. So, the input tensor type needs to be corrected. Therefore, let''s
     define a constraint where the type of the input tensor, should be floating point
-    or complex. Therefore, Left : type(input), Op : in, Right : [float, complex]'
+    or complex. Therefore, Left : input.dtype, Op : in, Right : [float, complex]'
   target: 'logdet: Expected a floating point or complex tensor as input. Got Bool'
-  txt: type(input) in [float, complex]
+  txt: input.dtype in [float, complex]
 time_cost: 203.56251311302185
 title: torch.logdet
 tokens_used: 4552

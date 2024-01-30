@@ -23,9 +23,9 @@ rules:
 - cot: 'The error is due to the ''xlogy_cpu'' function not being implemented for ''ComplexFloat''.
     Looking at the values, the ''input'' tensor is of type ''complex64'', which seems
     to be causing the issue. Therefore, the type of the ''input'' tensor should not
-    be ''complex64''. Hence, Left : type(input), Op : !=, and Right : ''complex64''.'
+    be ''complex64''. Hence, Left : input.dtype, Op : !=, and Right : ''complex64''.'
   target: '"xlogy_cpu" not implemented for ''ComplexFloat'''
-  txt: type(input) != 'complex64'
+  txt: input.dtype != 'complex64'
 - cot: 'Looking at the values provided, it seems that ''out'' tensor has a shape of
     [0] which is not matching either ''input'' or ''other'' tensor shape of [5]. Therefore,
     the ''out'' tensor is trying to resize to match the input and causing the error.
@@ -37,9 +37,9 @@ rules:
 - cot: 'The error is triggered because the ''other'' input is of complex64 type, but
     the function is expecting a float32 type and can''t cast the complex64 to float32.
     Therefore, the dtype of ''other'' should match the dtype of ''input'' and ''out''.
-    Left : type(other), Op : ==, Right : type(input) or type(out)'
+    Left : other.dtype, Op : ==, Right : input.dtype or out.dtype'
   target: result type Float can't be cast to the desired output type Int
-  txt: type(input)==type(other)
+  txt: input.dtype==other.dtype
 - cot: 'Based on given values, Error is triggered because size of tensors at non-singleton
     dimension 3 doesn''t match. It seems that ''input'' with size 9 and ''other''
     with size 13 on 3rd dim are not matching, so input.shape[3] or other.shape[3]

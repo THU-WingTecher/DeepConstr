@@ -23,10 +23,10 @@ rules:
 - cot: 'The error message indicates that the ''axis'' argument to the ''squeeze''
     operation was expected to be a list, but an integer (3) was given instead. This
     means that the type of ''axis'' is incorrect. To resolve this error, we need to
-    ensure that ''axis'' is a list. Therefore, Left : type(axis), Op : ==, and Right
+    ensure that ''axis'' is a list. Therefore, Left : axis.dtype, Op : ==, and Right
     : list.'
   target: Expected list for 'axis' argument to 'squeeze' Op, not 3.
-  txt: type(axis) == list
+  txt: isinstance(axis, list)
 - cot: The error is because of the attempt to squeeze a dimension of the tensor that
     does not exist. Here, it tried to squeeze the dimension at index -456 of a tensor
     with 6 dimensions which is invalid. For the squeeze operation to be successful,

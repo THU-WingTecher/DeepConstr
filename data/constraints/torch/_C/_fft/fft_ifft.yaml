@@ -43,7 +43,7 @@ rules:
     \ to prevent this error would be to ensure that the dtype of the 'out' tensor\
     \ matches the expected dtype. This can be enforced with the following constraint:"
   target: Found dtype ComplexDouble but expected ComplexFloat
-  txt: out.dtype == TensorDType.ComplexFloat
+  txt: out.dtype ==  ComplexFloat
 - cot: 'The error message indicates that there is an attempt to resize a storage that
     is not resizable. This could be due to the ''dim'' value being 0. It could also
     be due to the mismatch between the input and output tensor data types. Therefore,
@@ -57,10 +57,10 @@ rules:
     to produce a complex output tensor, but the provided output tensor ''out'' is
     of type Float. To fix this error, the ''out'' tensor should be a complex tensor.
     Let''s look at the args. It indicates ''out'' tensor is of type float32. Therefore,
-    Left : type(out). It says that the type of ''out'' should be complex, so Op :
+    Left : out.dtype. It says that the type of ''out'' should be complex, so Op :
     ==, and Right : complex.'
   target: ifft expects a complex output tensor, but got Float
-  txt: type(out) == complex
+  txt: out.dtype == complex
 - cot: "The error occurs because the 'dim' value provided is 7, which is out of the\
     \ valid range. The tensor has 3 dimensions, so valid 'dim' values are in the range\
     \ [-3, 2] (inclusive). The 'dim' value should be greater than or equal to -3 and\

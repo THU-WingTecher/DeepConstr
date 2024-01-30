@@ -72,7 +72,7 @@ rules:
 - cot: 'The error is due to the onesided output when either the window or input is
     complex. Based on the given values, the ''input'' tensor is of complex64 type
     and ''onesided'' is True. Therefore, to prevent the error, the ''onesided'' parameter
-    should be False when the ''input'' or ''window'' is of complex type. Left : type(input)
+    should be False when the ''input'' or ''window'' is of complex type. Left : input.dtype
     or type(window), Op : in, Right : [complex64, complex128], and Constraint : onesided
     == False.'
   target: Cannot have onesided output if window or input is complex

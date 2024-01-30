@@ -34,11 +34,11 @@ rules:
   txt: len(input.shape) >= 2
 - cot: 'Based on the problem, it is clear that the ''out'' tensor''s datatype is not
     matching with the expected datatype. The expected datatype is complex64 but the
-    provided datatype is float32. Therefore, Left : type(out), which refers to the
+    provided datatype is float32. Therefore, Left : out.dtype, which refers to the
     datatype of ''out'' tensor, should be corrected. It says that should be equal
-    to the datatype of ''input'' tensor, so Op : ==, and Right : type(input).'
+    to the datatype of ''input'' tensor, so Op : ==, and Right : input.dtype.'
   target: Expected out tensor to have dtype c10::complex<float>, but got float instead
-  txt: type(out)==type(input)
+  txt: out.dtype==input.dtype
 time_cost: 2343.7839839458466
 title: torch.tril
 tokens_used: 17354

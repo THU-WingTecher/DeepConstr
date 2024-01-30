@@ -23,19 +23,19 @@ rules:
   target: "Value for attr 'T' of int32 is not in the list of allowed values: bfloat16,\
     \ half, float, double\n ; NodeDef: ; Op y:T; attr=T:type,allowed=[DT_BFLOAT16,\
     \ DT_HALF, DT_FLOAT, DT_DOUBLE]> [Op:Ndtri] name:"
-  txt: type(x) in ["bfloat16", "half", "float", "double"]
+  txt: x.dtype in ["bfloat16", "half", "float", "double"]
 - cot: 'The error arises when the device could not be found for the node due to the
     type of ''x'' being DT_HALF. Although DT_HALF is compatible with the op Ndtri,
     the device for executing this operation is not available. Therefore, to prevent
     this error, we should ensure that the type of ''x'' is either DT_FLOAT or DT_DOUBLE
-    which are compatible with all devices. Therefore, the correct constraint is type(x)
+    which are compatible with all devices. Therefore, the correct constraint is x.dtype
     in [''DT_FLOAT'', ''DT_DOUBLE'']. The Op: in, and the Right: [''DT_FLOAT'', ''DT_DOUBLE''].'
   target: "Could not find device for node: = Ndtri[T=DT_BFLOAT16]\nAll kernels registered\
     \ for op Ndtri:\n device='XLA_CPU_JIT'; T in [DT_FLOAT, DT_DOUBLE, DT_BFLOAT16,\
     \ DT_HALF]\n device='XLA_GPU_JIT'; T in [DT_FLOAT, DT_DOUBLE, DT_BFLOAT16, DT_HALF]\n\
     \ device='CPU'; T in [DT_DOUBLE]\n device='CPU'; T in [DT_FLOAT]\n device='GPU';\
     \ T in [DT_DOUBLE]\n device='GPU'; T in [DT_FLOAT]\n [Op:Ndtri] name:"
-  txt: type(x) in ['DT_FLOAT', 'DT_DOUBLE']
+  txt: x.dtype in ['DT_FLOAT', 'DT_DOUBLE']
 time_cost: 320.90779995918274
 title: tf.raw_ops.Ndtri
 tokens_used: 4542

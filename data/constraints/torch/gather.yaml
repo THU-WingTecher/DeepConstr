@@ -29,39 +29,22 @@ infered_times: 57
 package: torch
 pass_rate: 0.0
 rules:
-- cot: 'The error is due to an invalid dimension index. Let''s see what the args were.
-    The function is trying to access the 6th dimension of the input tensor, but the
-    valid range is -5 to 4. This means that the ''dim'' should be in the range of
-    -input.rank to input.rank - 1. Therefore, ''dim'' should be corrected. It says
-    it should fall between -input.rank and input.rank - 1, so Operation : >= and <=;
-    and Right : -input.rank and input.rank-1 respectively.'
-  target: Dimension out of range (expected to be in range of [-5, 4], but got 6)
-  txt: (-2<=dim and dim<=1) and (dim < len(input.shape))
-- cot: "The error occurs because the provided index is out of the valid range for\
-    \ the given dimension. It appears that the index value is 962705, which is out\
-    \ of bounds for dimension 1 with size 3. Given the args, the 'index' value should\
-    \ be less than the size of the 'dim' dimension of the input tensor. \n\nIf we\
-    \ denote the shape of the tensor as 'input_shape', the constraint for the 'index'\
-    \ parameter can be expressed as:"
-  target: index 962705 is out of bounds for dimension 1 with size 3
-  txt: (index < input.shape[0]) and ((index < input.shape[dim]) and ((all(i >= 0 and
-    i < input.shape[dim] for i in index)) and (dim >= -len(input.shape))))
 - cot: 'The error is due to an invalid datatype for the ''index'' parameter in the
     gather() function. The function is expecting int64 but is getting float32. So
-    the datatype of ''index'' should be corrected. The Left : type(index), should
+    the datatype of ''index'' should be corrected. The Left : index.dtype, should
     be corrected to int64. Op : ==, and Right : int64. Also, the ''index'' values
     should be less than the dimension length of ''input''. So, all(index < len(input.shape)
     for index in index), Op : <, and Right : len(input.shape).'
   target: 'gather(): Expected dtype int64 for index'
-  txt: (type(index) == 'int64')
+  txt: (index.dtype == 'int64')
 - cot: 'The error is caused because the output tensor''s data type (''out'') is not
     as expected. It is expected to be ''float'', but it is ''int'' instead. The input
     tensor is of type ''float32'' and the operation requires the output tensor to
     be of the same data type. Therefore, the data type of ''out'' should be corrected,
-    which is type(out). Therefore, Left : type(out). It says that should be equal
-    to the datatype of ''input'', so Op : ==, and Right : type(input).'
+    which is out.dtype. Therefore, Left : out.dtype. It says that should be equal
+    to the datatype of ''input'', so Op : ==, and Right : input.dtype.'
   target: Expected out tensor to have dtype float, but got int instead
-  txt: type(out) == type(input)
+  txt: out.dtype == input.dtype
 - cot: 'This error arises because the index tensor and input tensor do not have the
     same number of dimensions. Let''s see what the args were. The ''input'' tensor
     has 3 dimensions, but the ''index'' tensor has only 1 dimension. Therefore, Left

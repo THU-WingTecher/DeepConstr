@@ -21,7 +21,7 @@ rules:
     output tensor should match to avoid this error. Therefore, Left : dtype of ''input'',
     Op : ==, Right : dtype of ''out''.'
   target: result type Float can't be cast to the desired output type Long
-  txt: (type(out) == float) and (type(input)==type(out))
+  txt: (out.dtype == float) and (input.dtype==out.dtype)
 - cot: 'The error occurs because the ''out'' tensor is not of the same shape as the
     ''input'' tensor. The ''out'' tensor has a shape of [1, 3], while the ''input''
     tensor has a shape of [9, 8]. Therefore, the operation to resize the ''out'' tensor

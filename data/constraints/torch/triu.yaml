@@ -36,11 +36,11 @@ rules:
 - cot: 'Based on the given values, the error arises because the output tensor ''out''
     data type is integer instead of float. Let''s see what the args were. The output
     tensor ''out'' data type is integer, but it is expected to be float. Therefore,
-    Left : type(out), which is the type of tensor ''out'', should be corrected. It
+    Left : out.dtype, which is the type of tensor ''out'', should be corrected. It
     says that should be equal to the datatype of tensor ''input'', so Op : ==, and
-    Right : type(input).'
+    Right : input.dtype.'
   target: Expected out tensor to have dtype float, but got int instead
-  txt: type(out)==type(input)
+  txt: out.dtype==input.dtype
 time_cost: 906.1355800628662
 title: torch.triu
 tokens_used: 15632

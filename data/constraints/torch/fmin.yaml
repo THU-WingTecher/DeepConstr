@@ -41,9 +41,9 @@ rules:
     with the desired output data type. What the args were? The ''out'' tensor is of
     data type ''int32'', but the function is trying to cast it to ''float32''. Therefore,
     the data type of the output tensor ''out'' should be changed to ''float32'' to
-    prevent this error. Left : type(out). Op : == Right : ''float32'''
+    prevent this error. Left : out.dtype. Op : == Right : ''float32'''
   target: result type Float can't be cast to the desired output type Int
-  txt: type(out) == 'float32'
+  txt: out.dtype == 'float32'
 time_cost: 1262.5828330516815
 title: torch.fmin
 tokens_used: 10093

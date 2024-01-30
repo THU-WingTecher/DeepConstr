@@ -35,8 +35,8 @@ rules:
   txt: bins > 0
 - cot: 'The error is caused because the dtypes of the tensors input and hist are not
     the same. The dtype of input is int while the dtype of hist is float. Let''s see
-    what the args were. It seems the dtype of input is TensorDType.int32 and the dtype
-    of out is TensorDType.float32. Therefore, they should be corrected to have the
+    what the args were. It seems the dtype of input is  int32 and the dtype
+    of out is  float32. Therefore, they should be corrected to have the
     same dtype. Therefore, Left : input.dtype, and Op : ==, Right : out.dtype'
   target: 'torch.histogram: input tensor and hist tensor should have the same dtype,
     but got input int and hist float'

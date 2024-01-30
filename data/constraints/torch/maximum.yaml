@@ -30,10 +30,10 @@ rules:
     Let''s see what the args were. In the given values, the dtype of ''input'' is
     float32, ''other'' is float64, and ''out'' is int8. The dtypes are inconsistent
     which is causing the issue. Therefore, the dtypes of all arguments should be the
-    same to avoid this error. Left : type(input), op : ==, comparator : type(other)
-    or type(out)'
+    same to avoid this error. Left : input.dtype, op : ==, comparator : other.dtype
+    or out.dtype'
   target: result type Double can't be cast to the desired output type Char
-  txt: (type(input)==type(other)) and (type(other)==type(out))
+  txt: (input.dtype==other.dtype) and (other.dtype==out.dtype)
 time_cost: 3005.1630878448486
 title: torch.maximum
 tokens_used: 16841

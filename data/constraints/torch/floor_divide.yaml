@@ -22,11 +22,11 @@ rules:
 - cot: 'This error is caused because the operation "div_floor_cpu" is not implemented
     for ''Bool'' types. Looking at the values, ''input'', ''other'', and ''out'' are
     all tensors of type bool. So, the types of ''input'', ''other'', and ''out'' need
-    to be checked and corrected. Therefore, Left : type(input), type(other), type(out).
+    to be checked and corrected. Therefore, Left : input.dtype, other.dtype, out.dtype.
     Since ''div_floor_cpu'' is not implemented for ''Bool'', these should not be ''Bool''.
     So, Op : !=, and Right : ''Bool''.'
   target: '"div_floor_cpu" not implemented for ''Bool'''
-  txt: type(out) != 'Bool'
+  txt: out.dtype != 'Bool'
 - cot: 'Error is due to an unsupported operation for the data type. Here we have complex64
     data type. The operation "div_floor_cpu" is not implemented for ''ComplexFloat''.
     So the types of ''input'', ''other'' and ''out'' tensors should be corrected.
@@ -69,7 +69,7 @@ rules:
     of ''input'', ''other'', and ''out'' are consistent. Thus, the constraint will
     be:'
   target: result type Float can't be cast to the desired output type Int
-  txt: (type(input)==int8) and ((out.dtype == input.dtype) and (type(input)==type(other)))
+  txt: (input.dtype==int8) and ((out.dtype == input.dtype) and (input.dtype==other.dtype))
 time_cost: 1465.7916722297668
 title: torch.floor_divide
 tokens_used: 11385

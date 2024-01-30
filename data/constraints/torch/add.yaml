@@ -28,10 +28,10 @@ rules:
 - cot: 'The error is triggered because result type ComplexFloat cannot be cast to
     the Float. Let''s see the what''s args were. The dtype of ''input'' and ''other''
     is inconsistent, each for float32, complex64. Therefore, the dtypes of two arguments
-    should be consistent. Left : type(input), op : ==, comparator : type(other) or
-    type(out)'
+    should be consistent. Left : input.dtype, op : ==, comparator : other.dtype or
+    out.dtype'
   target: result type ComplexFloat can't be cast to the desired output type Float
-  txt: (type(other)==type(out)) and (type(input)==type(other))
+  txt: (other.dtype==out.dtype) and (input.dtype==other.dtype)
 - cot: The error is due to the mismatch in shape and rank between 'out' tensor and
     'input' tensor. The 'out' tensor is not resizable. Hence, in the initial stage,
     the 'out' tensor should be defined with a shape and rank that matches with the

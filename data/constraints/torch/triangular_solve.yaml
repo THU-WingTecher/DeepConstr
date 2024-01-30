@@ -38,14 +38,14 @@ rules:
   txt: (len(A.shape)==len(input.shape)) and (input.shape[4] == A.shape[4])
 - cot: 'The error is due to mismatched data types between b and A. It is expecting
     b and A to have the same data type, but currently, b is of type Float and A is
-    of type Double. From the given values, ''A'' seems to be of type TensorDType.float32,
-    and ''input'' of type TensorDType.float16. We can assume ''input'' to be ''b''.
+    of type Double. From the given values, ''A'' seems to be of type  float32,
+    and ''input'' of type  float16. We can assume ''input'' to be ''b''.
     Therefore, the data type of ''A'' and ''input'' should be the same. Therefore,
-    Left : type(A) and type(input), the expected operation is that both types should
+    Left : A.dtype and input.dtype, the expected operation is that both types should
     be equal, so Op : ==.'
   target: Expected b and A to have the same dtype, but found b of type Float and A
     of type Double instead.
-  txt: type(A) == type(input)
+  txt: A.dtype == input.dtype
 - cot: 'The error states that ''A'' should be batches of square matrices, but the
     current ''A'' are 8 by 6 matrices. A square matrix means the number of rows and
     columns are equal. Let''s analyze the shape of ''A''. ''A'' is a tensor with shape:
@@ -68,11 +68,11 @@ rules:
     with ''Int'' data type, which is not supported. The function is expected to receive
     a tensor of type ''Float'' or ''Complex''. Therefore, one must make sure that
     the input data type of the tensor passed to the function is not ''Int''. So the
-    Left : type(input). Op : !=, and Right : int. Furthermore, the data type should
-    be either ''Float'' or ''Complex''. So the Left : type(input). Op : in, and Right
+    Left : input.dtype. Op : !=, and Right : int. Furthermore, the data type should
+    be either ''Float'' or ''Complex''. So the Left : input.dtype. Op : in, and Right
     : [float, complex].'
   target: '"triangular_solve_cpu" not implemented for ''Int'''
-  txt: type(input) in [float, complex]
+  txt: input.dtype in [float, complex]
 - cot: 'Error is triggered because ''A'' has 1 dimension. It expects ''A'' to have
     at least 2 dimensions. Let''s see what the args were. It seems ''A'' has 1 dimension,
     and is the problem. So the value of ''A'' should be corrected. So the number of

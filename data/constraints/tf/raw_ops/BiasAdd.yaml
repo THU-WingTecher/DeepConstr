@@ -24,7 +24,7 @@ pass_rate: 0.0
 rules:
 - cot: 'The error is due to the incorrect value for ''data_format'' in args. The provided
     value for ''data_format'' is ''not defined'', which is not in the allowed list:
-    "NHWC", "NCHW". So, the type(data_format) should be corrected to either "NHWC"
+    "NHWC", "NCHW". So, the data_format should be corrected to either "NHWC"
     or "NCHW", which is ["NHWC", "NCHW"]. Op : in, and Right : ["NHWC", "NCHW"].'
   target: "Value for attr 'data_format' of \"not defined\" is not in the list of allowed\
     \ values: \"NHWC\", \"NCHW\"\n ; NodeDef: ; Op output:T; attr=T:type,allowed=[DT_FLOAT,\
@@ -32,7 +32,7 @@ rules:
     \ DT_QUINT8, DT_QINT32, DT_BFLOAT16, DT_QINT16, DT_QUINT16, DT_UINT16, DT_COMPLEX128,\
     \ DT_HALF, DT_UINT32, DT_UINT64]; attr=data_format:string,default=\"NHWC\",allowed=[\"\
     NHWC\", \"NCHW\"]> [Op:BiasAdd] name:"
-  txt: type(data_format) in ["NHWC", "NCHW"]
+  txt: data_format in ["NHWC", "NCHW"]
 skipped: True 
 skipped_reason: Bug
 title: tf.raw_ops.BiasAdd

@@ -68,10 +68,10 @@ rules:
     \ from Long data type. Let's see what the args were. The dtype of 'out' seems\
     \ to be the cause of the issue. \n\nTherefore, the constraint that needs to be\
     \ corrected would be the data type of 'out'. The data type of 'out' should be\
-    \ 'Long'. Hence, Left : type(out) Op : == Right : Long."
+    \ 'Long'. Hence, Left : out.dtype Op : == Right : Long."
   target: 'torch.linalg.matrix_rank: Expected result to be safely castable from Long
     dtype, but got result with dtype Bool'
-  txt: type(out) == Long
+  txt: out.dtype == Long
 time_cost: 23972.046797037125
 title: torch._C._linalg.linalg_matrix_rank
 tokens_used: 35740

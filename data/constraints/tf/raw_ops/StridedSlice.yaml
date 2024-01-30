@@ -58,26 +58,6 @@ infered_times: 14
 package: tf
 pass_rate: 0.32
 rules:
-- cot: 'The error is due to the incorrect data type of ''begin_mask''. It''s provided
-    as a list, while an integer was expected. Thus, the operation failed while trying
-    to convert ''begin_mask'' to an integer. The same issue may occur for ''end_mask'',
-    ''new_axis_mask'' and ''shrink_axis_mask'' as they also expect integers. Therefore,
-    the Left : type(begin_mask), type(end_mask), type(new_axis_mask), type(shrink_axis_mask)
-    should be corrected to int.'
-  target: "int() argument must be a string, a bytes-like object or a number, not 'list'\n\
-    \nDuring handling of the above exception, another exception occurred:\n\nTraceback\
-    \ (most recent call last):\n File \"/home/guihuan/LLM/train/trainer.py\", line\
-    \ 311, in execute\n  self.generator.execute()\n File \"/home/guihuan/LLM/generators.py\"\
-    , line 476, in execute\n  output = instance(**forward_values)\n File \"/home/guihuan/.conda/envs/py39/lib/python3.9/site-packages/tensorflow/python/util/tf_export.py\"\
-    , line 403, in wrapper\n  return f(**kwargs)\n File \"/home/guihuan/.conda/envs/py39/lib/python3.9/site-packages/tensorflow/python/ops/gen_array_ops.py\"\
-    , line 10941, in strided_slice\n  return strided_slice_eager_fallback(\n File\
-    \ \"/home/guihuan/.conda/envs/py39/lib/python3.9/site-packages/tensorflow/python/ops/gen_array_ops.py\"\
-    , line 10991, in strided_slice_eager_fallback\n  begin_mask = _execute.make_int(begin_mask,\
-    \ \"begin_mask\")\n File \"/home/guihuan/.conda/envs/py39/lib/python3.9/site-packages/tensorflow/python/eager/execute.py\"\
-    , line 159, in make_int\n  raise TypeError(\"Expected int for argument '%s' not\
-    \ %s.\" %\nType"
-  txt: type(begin_mask) == int and type(end_mask) == int and type(new_axis_mask) ==
-    int and type(shrink_axis_mask) == int
 - cot: 'The error is caused because the ''begin'', ''end'', and ''strides'' are not
     equal size 1D tensors, their shapes are different. Let''s see what the args were.
     It seems ''begin'', ''end'', and ''strides'' values are not same. So, len(begin),

@@ -18,10 +18,10 @@ rules:
 - cot: 'The error is triggered because result type Float cannot be cast to the Int.
     Let''s see the what''s args were. The dtype of ''input'' and ''out'' is int32,
     but the result type is Float. Therefore, the dtypes of ''input'' and ''out'' should
-    be consistent with the result type. Left : type(input), op : ==, Right : type(out),
-    and also the output type should be float. Left : type(out), op : ==, Right : float'
+    be consistent with the result type. Left : input.dtype, op : ==, Right : out.dtype,
+    and also the output type should be float. Left : out.dtype, op : ==, Right : float'
   target: result type Float can't be cast to the desired output type Int
-  txt: type(out)==float
+  txt: out.dtype==float
 - cot: "The error indicates that a non-resizable storage is being attempted to be\
     \ resized. Based on the values provided, the 'out' tensor has a different dimension\
     \ size from the 'input' tensor. \n\nFirstly, we could enforce a constraint that\

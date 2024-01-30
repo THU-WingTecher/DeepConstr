@@ -29,11 +29,11 @@ rules:
 - cot: 'The error arises because the function is expecting a boolean tensor as input,
     but it is receiving a float tensor. Looking at the inputs provided, ''input''
     is a Tensor of type float32. This should be changed to match the expected type.
-    Therefore, the operation is Left : type(input), and it needs to be corrected to
+    Therefore, the operation is Left : input.dtype, and it needs to be corrected to
     boolean tensor so Op : ==, and Right : bool.'
   target: 'cannot compute All as input #0(zero-based) was expected to be a bool tensor
     but is a float tensor [Op:All] name:'
-  txt: type(input)==bool
+  txt: input.dtype==bool
 - cot: 'The error indicates that the reduction operation is trying to be performed
     on dimension 10, but the input tensor only has 4 dimensions. Hence, the maximum
     valid dimension for reduction is 3. The ''axis'' symbol needs to be corrected.
