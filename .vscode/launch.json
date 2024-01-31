@@ -11,6 +11,9 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
+            "env" : {
+                "PYTHONPATH": "/artifact/:/artifact/neuri/"
+            },
             "justMyCode": true
         },       
         {
@@ -65,7 +68,7 @@
                     "mgen.record_path=data/constraints/torch",
                     "fuzz.root=gen/torch-constrinf-n3",
                     "filter.type=['nan','dup','inf']",
-                    "backend.type=torchjit",
+                    "backend.type=torchcomp",
                     "model.type=torch",
                     "fuzz.save_test=gen/torch-constrinf-n3.models",
                     "debug.viz=true",
@@ -73,7 +76,9 @@
                     "fuzz.resume=false",
                     "mgen.method=constrinf",
                     "mgen.max_nodes=3",
-                    "mgen.test_pool=['torch.addr', 'torch.as_strided', 'torch.atan2', 'torch.cross', 'torch.floor', 'torch.imag', 'torch.logaddexp2']",
+                    "mgen.test_pool=['torch.as_tensor', 'Slice']",
+                    // "mgen.test_pool=['torch.acos', 'Slice']",
+                    // "mgen.test_pool=['torch.addr', 'torch.as_strided', 'torch.atan2', 'torch.cross', 'torch.floor', 'torch.imag', 'torch.logaddexp2']",
         ],
             "justMyCode": true
         },

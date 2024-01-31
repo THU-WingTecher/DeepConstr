@@ -3,7 +3,6 @@ from functools import partial, reduce
 from typing import Any, Callable, Dict, List, Tuple, Union
 
 import numpy as np
-from neuri.abstract.dtype import DType
 from neuri.abstract.tensor import AbsTensor
 from neuri.autoinf.inference.rules import (
     gen_nnsmith_rules,

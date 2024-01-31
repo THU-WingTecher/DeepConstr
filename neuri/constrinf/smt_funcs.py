@@ -1,6 +1,5 @@
 import z3
 from typing import *
-from neuri.abstract.dtype import DType
 from neuri.error import IncompatiableConstrError, IncorrectConstrError
 ###### TENSOR DTYPE DEINITION ######
 
@@ -10,12 +9,36 @@ from neuri.error import IncompatiableConstrError, IncorrectConstrError
 
 ### add is_iter attribute True 
 
+SUPPORTED_DTYPES = [
+    "float32",
+    "int32",
+    "int64",
+    "bool",
+    "complex32",
+    "complex64",
+    "float16",
+    "float64",
+    "int8",
+    "int16",
+    "complex128",
+    "quint8",
+    "qint8",
+    "qint16",
+    "qint32",
+    "bfloat16",
+    "uint8",
+    "uint16",
+    "uint32",
+    "uint64",
+    ]
+
+Z3DTYPE = z3.Datatype("DType")
+for dtype in SUPPORTED_DTYPES : 
+    Z3DTYPE.declare(dtype)
+Z3DTYPE = Z3DTYPE.create()
+
 iter_specific_funcs = ["len", "rank", "sorted", "min", "max", "dim", "ndim"]
 tensor_dtype_check_funcs = ["dtype"]
-Z3DTYPE = z3.Datatype("DType")
-for dtype in DType : 
-    Z3DTYPE.declare(dtype.name)
-Z3DTYPE = Z3DTYPE.create()
 
 Complex = z3.Datatype("complex")
 Complex.declare("complex_instance", ("real", z3.RealSort()), ("imag", z3.RealSort()))
@@ -44,6 +67,26 @@ ComplexArr = DeclareArr(Complex)
 TensorArr = DeclareArr(TensorZ3)
 ARRTYPES = [IntArr, FloatArr, StrArr, BoolArr, ComplexArr, TensorArr]
 
+def is_equiv_constraint(A : z3.ExprRef, B : z3.ExprRef) -> bool :
+    s = z3.Solver()
+    s.add(z3.Not(z3.Implies(A, B)))
+    if s.check() == z3.unsat:
+        s.reset()
+        s.add(z3.Not(z3.Implies(B, A)))
+        if s.check() == z3.unsat:
+            return True
+    return False
+
+def is_implies(A : z3.ExprRef, B : z3.ExprRef) -> bool :
+    s = z3.Solver()
+    s.push()
+    s.add(z3.And(A,z3.Not(B)))
+    if s.check() == z3.unsat: return True 
+    s.pop()
+    s.add(z3.And(B,z3.Not(A)))
+    if s.check() == z3.unsat: return True 
+    return False 
+
 def gen_type_constr(z3instance, flag):
     if flag == "must_iter":
         # Check if the z3instance is of any array type
@@ -70,6 +113,15 @@ class BaseWrapper():
 
         }
     
+    def evaluate(self, model, instance, attr : str = "len", idx : int = None) : 
+        if attr in ["len", "rank"] : 
+            return model.evaluate(self.len_func(instance))
+        elif attr in ["value", "shape"] : 
+            return model.evaluate(self.value_func(instance)[idx])
+        elif attr in ["dtype"] : 
+            return model.evaluate(self.dtype_func(instance))
+            return self.dtype_func(model_value)
+        
     def corrected_idx(self, idx, datatype = None, len_func_name = "len"):
         """ 
         return corrected idx for possible negative index
@@ -206,7 +258,7 @@ def is_wrapper(obj) :
 def change_val_from_expr(expr, target, new_target):
     return z3.substitute(expr, (target, new_target))
 
-class z3funcs:
+class SMTFuncs:
     """
     Class to hold custom Z3 functions.
     """
@@ -239,7 +291,10 @@ class z3funcs:
     @staticmethod
     def not_in(a,b) : 
         pass 
-    
+    @staticmethod
+    def gen_sym(a):
+        # Check if 'a' is a Z3 expression or sort
+        return z3.Int(a)    
     @staticmethod 
     def is_func_applied(v) : 
         if hasattr(v, "num_args") :
@@ -324,7 +379,7 @@ class z3funcs:
         if a.num_args() == 0 : 
             return a.decl().name()
         else :
-            return z3funcs.get_name(a.arg(0))
+            return SMTFuncs.get_name(a.arg(0))
 
     @staticmethod
     def range(start, end=None, step=None):

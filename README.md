@@ -1,3 +1,14 @@
+Todo : 
+
+- [ ] replace z3 object generation logic 
+- [ ] test whole rules converting is ok or not
+- [ ] type rule prioritizing logic while rule solving 
+- [ ] solving logic check
+- [ ] *args operation with yaml module 
+- [ ] transfer train codes and make it multicoreable
+- [ ] retrain apis and reevaluate 
+
+
 # Towards More Sound and Complete Constraints for Deep Learning Framework Testing
 
 ## Commands

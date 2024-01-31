@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Tuple, Type
 from neuri.abstract.dtype import DTYPE_GEN_ALL, DType
 from neuri.abstract.op import *
 from neuri.abstract.op import __MAX_RANK__
-# from neuri.abstract.tensor import AbsTensor
+from neuri.abstract.tensor import AbsTensor
 from neuri.autoinf.instrument.categorize import gen_inst_with_records
 from neuri.autoinf.instrument.op import OpInstance
 from neuri.logger import AUTOINF_LOG

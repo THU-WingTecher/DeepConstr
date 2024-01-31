@@ -47,22 +47,26 @@ def set_seed(seed: int, names: List = None):
 
 
 def mkdir(dir: os.PathLike, yes=False):
-    if os.path.exists(dir):
-        decision = ""
-        if yes:
-            decision = "y"
-        while decision.lower() not in ["y", "n"]:
-            CORE_LOG.warning(
-                "Report folder already exists. Press [Y/N] to continue or exit..."
-            )
-            decision = input()
-        if decision.lower() == "n":
-            CORE_LOG.error(f"{dir} already exist... Remove it or use a different name.")
-            raise RuntimeError("Folder already exists")
-        else:
-            shutil.rmtree(dir)
+    # if os.path.exists(dir):
+    #     decision = ""
+    #     if yes:
+    #         decision = "y"
+    #     while decision.lower() not in ["y", "n"]:
+    #         CORE_LOG.warning(
+    #             "Report folder already exists. Press [Y/N] to continue or exit..."
+    #         )
+    #         decision = input()
+    #     if decision.lower() == "n":
+    #         CORE_LOG.error(f"{dir} already exist... Remove it or use a different name.")
+    #         raise RuntimeError("Folder already exists")
+    #     else:
+    #         shutil.rmtree(dir)
 
-    os.makedirs(dir)
+    # os.makedirs(dir)
+    CORE_LOG.warning(
+                f"TESTING ::: We are dumping with existing dir : {dir}"
+            )
+    os.makedirs(dir, exist_ok=True)
 
 
 def parse_timestr(timestr: str):

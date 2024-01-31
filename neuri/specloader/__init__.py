@@ -12,14 +12,12 @@ TYPE_ATTR = 'type'
 MAX_ARR_LEN = 6
 # MAX_SHAPE_SUM = 2 * 1024**3 / 16
 MAX_SHAPE_SUM = 2 * 1024**2 / 16
-MIN_VALUE = -500
-MAX_VALUE = 500
+MIN_VALUE = -4
+MAX_VALUE = 9
 NONE_VALUE = -999
 Z3_SOLVERABLE_FUNCS = ['all', 'any', 'min', 'max', 'abs']
 TYPE_FUNCS = ['type', 'isinstance']
-DEFAULT_PREMISES = [
-]
-CONSTRAINTS = []
+
 TENSOR_SIZE_EXPRS = ('shape', 'size', 'numel')
 
 TENSOR_ATTRS_MAPPING = {
@@ -52,6 +50,11 @@ NEG_OPS = [ast.NotIn, ast.IsNot, ast.NotEq]
 BOOL_POOLS = [op.ne, op.eq,]
 
 ###### TENSOR DTYPE DEINITION ######
+
+## Define : tensor, int, float, bool, complex, str
+## Define : Array(tensor, int, float, bool, complex, str)
+## Will be updated to support Dict, object
+
 Z3DTYPE = z3.Datatype('DType')
 Z3DTYPE.declare('float32')
 Z3DTYPE.declare('int32')
@@ -75,22 +78,23 @@ Z3DTYPE.declare("complex32")
 Z3DTYPE.declare("complex64")
 Z3DTYPE.declare("complex128")
 Z3DTYPE = Z3DTYPE.create()
-Z3TENSOR = z3.Datatype('z3tensor')
-Z3TENSOR.declare('tensor_instance', 
+TensorZ3 = z3.Datatype('z3tensor')
+TensorZ3.declare('tensor_instance', 
                 ('shape', z3.ArraySort(z3.IntSort(), z3.IntSort())),
                 ('dtype', Z3DTYPE),
                 ('rank', z3.IntSort())),
-Z3TENSOR = Z3TENSOR.create()
+TensorZ3 = TensorZ3.create()
+
 ###### TENSOR DTYPE DEINITION ######
 class z3_funcs():
-
+    func_names = ['all', 'len', 'any', 'min', 'max', 'abs', 'in_', 'not_in']
     # @staticmethod
     # def numel(vs, length=None):
     #     numel = z3.Int('numel')
     #     z3.ForAll([z3.Int('i')], 
     #               z3.Implies(z3.And(0 <= z3.Int('i'), z3.Int('i') < length), A[z3.Int('i')] != 0)))
 
-
+    # re
     @staticmethod
     def sorted(vs, length=None):
         if isinstance(vs, int):
@@ -190,17 +194,17 @@ def gen_len_obj(obj : z3.ExprRef, suff_conds_needed : Dict[str, bool] = {}) -> z
     Therefore, for generatorexpr, we disable suff_cond building.
     """
     if len(suff_conds_needed) != 0 :
-        if obj.decl().name() == Z3TENSOR.shape.name() :
+        if obj.decl().name() == TensorZ3.shape.name() :
             if suff_conds_needed[obj.arg(0).decl().name()] :
-                return Z3TENSOR.rank(obj.arg(0))
+                return TensorZ3.rank(obj.arg(0))
             else :
                 return None
         else : 
             if suff_conds_needed[obj.decl().name()] :
                 return gen_arr_len_z3(obj.decl().name())
     else :
-        if obj.decl().name() == Z3TENSOR.shape.name() :
-            return Z3TENSOR.rank(obj.arg(0))
+        if obj.decl().name() == TensorZ3.shape.name() :
+            return TensorZ3.rank(obj.arg(0))
         else : 
             return gen_arr_len_z3(obj.decl().name())
 def length_default_constraints(length) : 

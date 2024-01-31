@@ -28,14 +28,12 @@ export CUDA_VISIBLE_DEVICES=""
 echo "CUDA_VISIBLE_DEVICES: $CUDA_VISIBLE_DEVICES"
 
 if [ $MODEL = "tensorflow" ]; then
-    BACKEND="xla"
     if [ $METHOD = "constrinf" ]; then
         RECORD="$(pwd)/data/constraints/tf"
     else 
         RECORD="$(pwd)/data/tf_records"
     fi
 elif [ $MODEL = "torch" ]; then
-    BACKEND="torchjit"
     if [ $METHOD = "constrinf" ]; then
         RECORD="$(pwd)/data/constraints/torch"
     else 
@@ -48,8 +46,8 @@ fi
 
 mkdir $(pwd)/gen -p
 
-# attempt at most 32 times
-for i in {1..32}
+# attempt at most 2 times
+for i in {1..2}
 do
     echo "Attempt $i"
     PYTHONPATH=$(pwd):$(pwd)/neuri python neuri/cli/fuzz.py fuzz.time=${TIME} \

@@ -19,11 +19,11 @@ from neuri.abstract.op import (
     rank_all,
 )
 from neuri.autoinf import AutoInfOpBase, OpInstance, OpRecordFinder
+from neuri.constrinf.smt_funcs import TensorZ3
 from neuri.error import ConstraintCheck, ConstraintError, SanityCheck
 from neuri.gir import GraphIR, InstExpr, InstIR
 from neuri.logger import MGEN_LOG, SMT_LOG
 from neuri.materialize import Model
-from neuri.specloader import Z3TENSOR
 from neuri.specloader.smt import DEFAULT_DTYPE_CONSTR, gen_val
 from neuri.util import HAS_PYGRAPHVIZ, set_seed, viz_dot
 
@@ -830,7 +830,7 @@ class NeuriR(ConcolicGen):
         self.record_finder = record_finder
         self.init_first_node(init_fp)
 
-    def init_first_node(self, init_fp) : 
+    def init_first_node(self, init_fp=False) : 
         # Insert the first node.
         self.forward_insert_node(
             self.make_random_concrete_placeholder(
@@ -1162,21 +1162,30 @@ class ConstrInf(NeuriR):
     def init_first_node(self, init_fp) :
         # overload concolicgen
         pass
-
+    
+    def insert_place_holder(self, init_fp = False) :
+        self.forward_insert_node(
+            self.make_random_concrete_placeholder(
+                self.random_rank(), dtype=DType.float32 if init_fp else None
+            ),
+            [],
+        )
     def new_dtype_sym(self, name):
-        return Z3TENSOR.dtype(AbsTensor.z3()(name))
+        return AbsTensor.z3()(name).dtype
 
     def pick_next_record(self):
         return random.choice(self.record_finder)
     
     def try_insert(self):
-        if not self.is_inited() : 
-            return self.try_autoinf_insert_forward() 
-        else :
-            meta_selector = random.random()  # [0, 1]
-            if meta_selector < 0.5:
-                return self.try_autoinf_insert_forward()
-            else : 
+        # if not self.is_inited() : 
+        #     return self.try_autoinf_insert_forward() 
+        # else :
+        meta_selector = random.random()  # [0, 1]
+        if meta_selector < 0.5:
+            return self.try_autoinf_insert_forward()
+        else : 
+            if not self.is_inited() : 
+                self.insert_place_holder()
                 return BaseGen.try_insert(self)
     
     def is_inited(self) : 
@@ -1194,14 +1203,19 @@ class ConstrInf(NeuriR):
             )
         )
         return ph
-    
+
+    def record_output_info(self, record, values) : 
+        for i_arg, arg_name, in enumerate(record['args']['name']) :
+            record['args']['value'][i_arg] = values[arg_name]
     def try_autoinf_insert_forward(self, init=False) -> bool:
 
-        record = self.pick_next_record()
         chosen_dtype = {}
         input_tensor_candidates = []
         input_vars = []
         temp_vars = []
+        consistent_constrs = []
+        default_dtype_constr = True
+        record = self.pick_next_record()
         for i_arg, arg_name, in enumerate(record['args']['name']) :
             if len(record['args']['dtype'][i_arg]) > 0 :
                 chosen_dtype[arg_name] = random.choice(record['args']['dtype'][i_arg])
@@ -1210,29 +1224,29 @@ class ConstrInf(NeuriR):
 
             if isinstance(chosen_dtype[arg_name], AbsTensor) :
                 input_tensor_candidates.append(arg_name)
+        # assert len(input_tensor_candidates) > 0, f"No input tensor candidates with {record['name']}"
         
-        assert len(input_tensor_candidates) > 0, "No input tensor candidates"
+
         var_indicates = self.ir.vars.keys()
         var_indicates = list(var_indicates)
-
+        default_dtype_generator : Callable = DEFAULT_DTYPE_CONSTR.get(self.model.package)
+        assert default_dtype_generator is not None, "default dtype constraint not defined"
         for _ in range(self.num_of_try) :
+            if len(input_tensor_candidates) > 0 : 
+                connected_key_name = random.choice(input_tensor_candidates)
 
-            connected_key_name = random.choice(input_tensor_candidates)
-
-            if var_indicates : # constrained generation by ir var : k
-                ir_var_k = random.choice(var_indicates)
-                v = self.ir.vars[ir_var_k]
-                
-                consistent_constrs = v.consistent_constr(
-                    other = connected_key_name
-                )
-            else : 
-                ir_var_k = None 
-                consistent_constrs = []
-                
-            default_dtype_generator : Callable = DEFAULT_DTYPE_CONSTR.get(self.model.package)
-            assert default_dtype_generator is not None, "default dtype constraint not defined"
-            default_dtype_constr = default_dtype_generator(connected_key_name)
+                if var_indicates : # constrained generation by ir var : k
+                    ir_var_k = random.choice(var_indicates)
+                    v = self.ir.vars[ir_var_k]
+                    
+                    consistent_constrs = v.consistent_constr(
+                        other = connected_key_name
+                    )
+                else : 
+                    ir_var_k = None 
+                    consistent_constrs = []
+                    
+                default_dtype_constr = default_dtype_generator(connected_key_name)
 
             values = gen_val(chosen_dtype, 
                             record['constraints'],
@@ -1247,25 +1261,24 @@ class ConstrInf(NeuriR):
 
         if values is None : 
             return False # failed to find a solution
-        
-        if var_indicates : 
-            # if ir_var is not empty - connected_key must recieve exist tensor value from ir.vars
-            # if ir_var is empty - all connected tensor will be generated and add to ir.vars
-            input_vars.append(ir_var_k)
-            input_tensor_candidates = [k for k in input_tensor_candidates if k != connected_key_name]
+    
+        if len(input_tensor_candidates) > 0 : 
+            if var_indicates :
+                # if ir_var is not empty - connected_key must recieve exist tensor value from ir.vars
+                # if ir_var is empty - all connected tensor will be generated and add to ir.vars
+                input_vars.append(ir_var_k)
+                input_tensor_candidates = [k for k in input_tensor_candidates if k != connected_key_name]
 
-        phs = [
-            self.make_concrete_placeholder(values[name].shape, values[name].dtype) 
-            for name in input_tensor_candidates
-            ]
-        
-        for ph in phs : 
-            new_inst = self.forward_insert_node(ph, [])
-            temp_vars.append(new_inst)
+            phs = [
+                self.make_concrete_placeholder(values[name].shape, values[name].dtype) 
+                for name in input_tensor_candidates
+                ]
+            
+            for ph in phs : 
+                new_inst = self.forward_insert_node(ph, [])
+                temp_vars.append(new_inst)
 
-        for i_arg, arg_name, in enumerate(record['args']['name']) :
-            record['args']['value'][i_arg] = values[arg_name]
-        
+        self.record_output_info(record, values)
         inst = OpInstance(record)
         opbase = AutoInfOpBase(inst, {
             sym : inst.input_symb_2_value[sym] for sym in inst.A

@@ -28,7 +28,7 @@ rules:
     ('ComplexDouble' and 'Float' respectively). Therefore, the constraint would be
     that the 'input' tensor type should be the same as the 'out' tensor type.
   target: result type ComplexDouble can't be cast to the desired output type Float
-  txt: (out.dtype == tf.float32) and (input.type == out.type)
+  txt: input.dtype == out.dtype
 time_cost: 629.8396844863892
 title: torch.atanh
 tokens_used: 8059

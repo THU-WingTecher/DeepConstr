@@ -36,18 +36,17 @@ def test_whole_constraints(dir_path = None ) :
         # if i < idx : continue
         arg_names = record['args']['name']
         dtypes = record['args']['dtype']
-        rule_txts = [r['txt'] for r in record['rules']]
-        for constr in rule_txts:
+        for constr in record['rules']:
             cnt+=1
             result = "error"
             converter  = Ast2z3(arg_names, dtypes, constr, record['name'])
-            print(f"{record['name']}-Constraint: {constr}")
+            print(f"{record['name']}-Constraint: {constr['txt']}")
             result = converter.convert()
             print(f"Z3: {result}\n")
             print(f"suff conds : {converter.pretty_flags()}\n")
 
     print(f"NL_CONSTR ------> SMT CONSTR : {cnt} CASES TEST COMPLETED")
-    
+
 if __name__ == "__main__" :
     test_whole_constraints()
     #  Example Usage : test_with_given_constraints

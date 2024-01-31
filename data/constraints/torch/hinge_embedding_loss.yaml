@@ -41,8 +41,8 @@ rules:
     can''t be broadcasted. Therefore, the constraints should be:'
   target: The size of tensor a (2) must match the size of tensor b (6) at non-singleton
     dimension 9
-  txt: (all(input[i].size() == target[i].size() for i in range(len(input)))) and ((input[8].size()
-    == target[8].size()) and (len(input.shape) == len(target.shape) and all(input.shape[i]
+  txt: (all(input[i] == target[i] for i in range(len(input)))) and ((input[8]
+    == target[8]) and (len(input.shape) == len(target.shape) and all(input.shape[i]
     == target.shape[i] or input.shape[i] == 1 or target.shape[i] == 1 for i in range(-1,
     -min(len(input.shape), len(target.shape))-1, -1))))
 title: torch.nn.functional.hinge_embedding_loss

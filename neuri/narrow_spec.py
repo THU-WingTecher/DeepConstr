@@ -194,18 +194,23 @@ def infer_topset_from_scratch(
 
             if factory:
                 # Test compilation + simple inference;
-                out = factory.make_testcase(model)
-                if isinstance(out, TestCase):  # Pass
-                    DTEST_LOG.info(
-                        f"=====> [OK][Compile] at {concrete_op}({itypes}) => {otypes}"
-                    )
-                    op_itypes.add(itypes)
-                    op_otypes.add(otypes)
-                else:  # Fail
+                succeeded = False
+                try :
+                    out = factory.make_testcase(model)
+                    if isinstance(out, TestCase):  # Pass
+                        succeeded = True
+                        DTEST_LOG.info(
+                            f"=====> [OK][Compile] at {concrete_op}({itypes}) => {otypes}"
+                        )
+                        op_itypes.add(itypes)
+                        op_otypes.add(otypes)
+                except : 
+                    succeeded = False
+                if not succeeded : # Fail
                     DTEST_LOG.warning(
                         f"=====> [FailF][Compile] at {concrete_op}({itypes}) => {otypes}"
                     )
-                    DTEST_LOG.debug(f"{out.log}")
+                    # DTEST_LOG.debug(f"{out.log}")
 
         if op_itypes:
             topset[op.name()] = OpConfig(

@@ -684,7 +684,7 @@ def collect_tf(input_dir, out_dir):
 if __name__ == "__main__":
     import sys
 
-    from hanging_threads import start_monitoring
+    # from hanging_threads import start_monitoring
 
     # start_monitoring(seconds_frozen=10, test_interval=100)
 

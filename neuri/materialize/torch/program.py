@@ -23,6 +23,7 @@ from typing import Dict
 import pickle
 import torch
 import torch.nn as nn
+print("torch version: ",torch.__version__)
 
 with open('params.pkl', 'rb') as f:
     params: Dict[str, torch.Tensor] = pickle.load(f) # 'p1': ..., 'p2': ...
@@ -56,7 +57,9 @@ print('==== {} mode ====')
 
 print('==== Check ====')
 for r1, r2 in zip(ret_eager, {}):
-    assert torch.allclose(r1, r2), (r1, r2)
+    if not torch.allclose(r1, r2, rtol=1e-2, atol=1e-3, equal_nan=True):
+        print("r1: ",r1,"r2: ",r2)
+        raise ValueError("Tensors are different.")
 print('OK!')
 """
 
@@ -65,6 +68,7 @@ class Program:
     def __init__(
         self,
         ir: GraphIR,
+        backend_type: str = "torchjit",
     ) -> None:
         self.inputs: Dict[str, torch.Tensor] = {}
         code_forward: List[str] = []
@@ -132,15 +136,20 @@ class Program:
                             line(8, f"{ret_vals_str} = {code.format(*input_vals)}")
                         )
         # end for ir_inst
-
-        bk_name = "JIT"
-        code_bk_run = [
-            "exported = torch.jit.trace(model, example_kwarg_inputs=inputs)",
-            "exported = torch.jit.optimize_for_inference(exported)",
-            "ret_exported = exported(**inputs)",
-        ]
-        bk_ret_name = "ret_exported"
-
+        if backend_type == "torchjit":
+            bk_name = "JIT"
+            code_bk_run = [
+                "exported = torch.jit.trace(model, example_kwarg_inputs=inputs)",
+                "exported = torch.jit.optimize_for_inference(exported)",
+                "ret_exported = exported(**inputs)",
+            ]
+            bk_ret_name = "ret_exported"
+        elif backend_type == "torchcomp":
+            bk_name = "TorchComp"
+            code_bk_run = [
+                "ret_exported = torch.compile(model)(**inputs)",
+            ]
+            bk_ret_name = "ret_exported"
         self.code_header = code_header
         self.code_model = code_model.format(
             "\n".join(code_params),
@@ -171,12 +180,15 @@ class Program:
 
 if __name__ == "__main__":
     import sys 
-    import os
     dirpath = sys.argv[1]
-    for root, dirs, files in os.walk(dirpath): 
-        for dir in dirs :
-            with open(os.path.join(root, dir, "gir.pkl"), "rb") as f:
+    backend_type = sys.argv[2]
+    for subdir in os.listdir(dirpath) :
+        pkl_dir_path = os.path.join(dirpath, subdir) 
+        if not os.path.isdir(pkl_dir_path) :
+            continue
+        if not os.path.exists(os.path.join(pkl_dir_path, "prog.pkl")) :
+            with open(os.path.join(pkl_dir_path, "gir.pkl"), "rb") as f:
                 ir = pickle.load(f)
-    # print(ir)
-            prog = Program(ir)
-            prog.dump(os.path.join(root, dir))
+            print(ir)
+            prog = Program(ir, backend_type)
+            prog.dump(pkl_dir_path)

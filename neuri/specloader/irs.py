@@ -4,7 +4,7 @@ import z3
 from neuri.abstract.tensor import AbsTensor
 from specloader import SHAPE_ATTR, RANK_ATTR, LEN_ATTR, \
         TYPE_ATTRS, gen_arr_len_z3
-from specloader import Z3TENSOR
+from neuri.constrinf.smt_funcs import TensorZ3
 
 SYM_LEN = {}
 class Select : 
@@ -26,15 +26,15 @@ class Select :
         if isinstance(dtype, AbsTensor) : 
             z3 = dtype.z3()(self.name)
             if self.attr is None :
-                return Z3TENSOR.shape(z3)
+                return TensorZ3.shape(z3)
             elif self.attr == SHAPE_ATTR :
-                return Z3TENSOR.shape(z3)
+                return TensorZ3.shape(z3)
             elif self.attr in TYPE_ATTRS :
-                return Z3TENSOR.dtype(z3)
+                return TensorZ3.dtype(z3)
             elif self.attr in [LEN_ATTR, RANK_ATTR] :
-                return Z3TENSOR.rank(z3)
+                return TensorZ3.rank(z3)
             else : #attr not assigned -> default : shape
-                return Z3TENSOR.shape(z3)
+                return TensorZ3.shape(z3)
         else : 
             if self.attr is None :
                 return dtype.z3()(self.name)
@@ -49,7 +49,7 @@ class Select :
     def export_len_var(self, dtype_dict) :
         dtype = dtype_dict[self.name]
         if isinstance(dtype, AbsTensor) :
-            return Z3TENSOR.rank(dtype.z3()(self.name))
+            return TensorZ3.rank(dtype.z3()(self.name))
         else :
             return gen_arr_len_z3(self.name)
     def gen_idx(self, length) :

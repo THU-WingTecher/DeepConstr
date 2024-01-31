@@ -104,9 +104,9 @@ def load_api_names_from_json(path) :
 
 @hydra.main(version_base=None, config_path="../neuri/config", config_name="main")
 def main(cfg) : 
-    api_names = load_api_names_from_json("/artifact/temp.json")
-    func_name = collect_cov#run_fuzz_script
-    # api_names = load_api_names_from_data(cfg["mgen"]["record_path"], cfg["mgen"]["pass_rate"])
+    func_name = run_fuzz_script #run_fuzz_script
+    # api_names = load_api_names_from_json("/artifact/temp.json")
+    api_names = load_api_names_from_data(cfg["mgen"]["record_path"], cfg["mgen"]["pass_rate"])
     with concurrent.futures.ProcessPoolExecutor(max_workers=cfg["exp"]["parallel"]) as executor:
         futures = [executor.submit(func_name, api_name, cfg) for api_name in api_names]
         for future in concurrent.futures.as_completed(futures):
@@ -115,9 +115,17 @@ def main(cfg) :
             except Exception as e:
                 print(f"An error occured: {e}")
 
-        # collect_cov(api_name, cfg)
-    for api_name in api_names :
-        run_draw_script(api_name, cfg)
+    # func_name = collect_cov
+    # with concurrent.futures.ProcessPoolExecutor(max_workers=cfg["exp"]["parallel"]) as executor:
+    #     futures = [executor.submit(func_name, api_name, cfg) for api_name in api_names]
+    #     for future in concurrent.futures.as_completed(futures):
+    #         try:
+    #             result = future.result()
+    #         except Exception as e:
+    #             print(f"An error occured: {e}")
+    #     # collect_cov(api_name, cfg)
+    # for api_name in api_names :
+    #     run_draw_script(api_name, cfg)
 
 if __name__ == "__main__":
     main()

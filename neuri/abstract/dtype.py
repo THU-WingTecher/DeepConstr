@@ -7,7 +7,6 @@ from z3 import Const, BoolSort, IntSort, RealSort, StringSort, Array, Datatype, 
 
 
 
-
 @unique
 class DType(Enum):
     qint8 = "qint8"
@@ -107,6 +106,7 @@ class DType(Enum):
             "c32": DType.complex32,
             "c64": DType.complex64,
             "c128": DType.complex128,
+            "quint8": DType.quint8,
             "qint8": DType.qint8,
             "qint16": DType.qint16,
             "qint32": DType.qint32,
@@ -128,7 +128,7 @@ class DType(Enum):
             "bool": DType.bool,
         }[s]
     def z3_const(self) -> str:
-        from neuri.constrinf.z3const import Z3DTYPE
+        from neuri.constrinf.smt_funcs import Z3DTYPE
         return {
             DType.quint8: Z3DTYPE.quint8,
             DType.float16: Z3DTYPE.float16,
@@ -156,7 +156,7 @@ class DType(Enum):
             # DType.qint8: "q8",
             # DType.qint16: "q16",
             # DType.qint32: "q32",
-            # DType.bfloat16: "bf16",
+            DType.bfloat16: np.bfloat16,
             # DType.complex32: "c32",
             DType.float16: np.float16,
             DType.float32: np.float32,
@@ -429,6 +429,7 @@ DTYPE_NOT_SUPPORTED : Dict[str, List[DType]] = {
     ],
     "torch" : [
     DType.qint8,
+    DType.quint8,
     DType.qint16,
     DType.qint32,
     DType.uint8,

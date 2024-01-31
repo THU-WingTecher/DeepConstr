@@ -25,8 +25,7 @@ rules:
     and ''other''. Therefore, left : out.shape, out.rank op : == right : input.shape,
     other.shape'
   target: Trying to resize storage that is not resizable
-  txt: (out.shape == (input.shape[0], other.shape[1])) and (out.rank==input.rank and
-    all(out.shape[i]==input.shape[i] for i in range(out.rank)) and out.rank==other.rank
+  txt: (out.rank==input.rank and all(out.shape[i]==input.shape[i] for i in range(out.rank)) and out.rank==other.rank
     and all(out.shape[i]==other.shape[i] for i in range(other.rank)))
 - cot: 'The error is due to an invalid operation being performed on data types. The
     function ''bitwise_and_cpu'' is not implemented for ''Float'' data type. From

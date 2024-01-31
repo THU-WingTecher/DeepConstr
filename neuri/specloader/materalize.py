@@ -155,6 +155,8 @@ STR_TO_ABS = {
     'tf.uint64': DType.uint64,
     'torch.uint64': DType.uint64,
     #int
+    "quint8": DType.quint8,
+    "dt_quint8": DType.quint8,
     'tf.int': DType.int32,
     'torch.int': DType.int32,
     'dt_int32': DType.int32,
@@ -177,11 +179,13 @@ STR_TO_ABS = {
     'tf.bool': DType.bool,
     'torch.bool': DType.bool,
     'tf.complex': DType.complex64,
-    'torch.complex': DType.complex64,
+    'tf.complex32': DType.complex32,
     'tf.complex64': DType.complex64,
+    'tf.complex128': DType.complex128,
+    'torch.complex': DType.complex64,
     'torch.complex64': DType.complex64,
     'complex64': DType.complex64,
-    'tf.complex128': DType.complex128,
+    'complex32': DType.complex32,
     'torch.complex128': DType.complex128,
     'complex128': DType.complex128,
 
@@ -193,6 +197,9 @@ STR_TO_ABS = {
     'torch.tensors': AbsTensor,
     'longtensor': AbsTensor,
     'sequence of Tensors':  AbsTensor.to_iter(),
+    'list[tensor]':  AbsTensor.to_iter(),
+    'sequence[tensor]':  AbsTensor.to_iter(),
+    'sequences[tensor]':  AbsTensor.to_iter(),
 
     # torch 
     'complexfloat' : AbsDType.complex,
@@ -292,7 +299,7 @@ def materalize_dtypes(dtypes : str, merge_tensor : bool = True) -> List[Any] :
             to_merge.append(abs) 
         elif isinstance(abs, AbsDType) :
             if any([isinstance(ele, DType) for ele in res]) :
-                to_merge.extend(abs.to_tensor_dtype())
+                to_merge.extend(abs.z3_const())
             else :
                 final.append(abs) 
         elif isinstance(abs, AbsTensor) :

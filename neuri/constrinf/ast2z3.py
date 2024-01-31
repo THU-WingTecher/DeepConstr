@@ -6,10 +6,10 @@ import string
 import traceback
 import z3
 from typing import *
-from neuri.abstract.dtype import AbsDType, AbsIter, DType
 from neuri.constrinf.ast_tool import *
-from neuri.constrinf.z3const import *
+from neuri.constrinf.smt_funcs import *
 from neuri.error import IncompatiableConstrError
+from neuri.logger import AUTOINF_LOG
 
 def get_bool_operator(astop : str): 
     if is_same_ast_name(astop, ast.And):
@@ -42,8 +42,13 @@ def get_dtype_z3_obj(arg, is_tensor_dtype=False) :
     #         return [dtype.z3_const() for dtype in dtypeobj.z3_const()]
     return dtypeobj.z3_const()
 
-def merge_constr(constrs) : 
-    return z3.And(constrs)
+def merge_constr(*args, conn : Literal["and", "or"] = "and") : 
+    res = []
+    boolop = z3.And if conn == "and" else z3.Or
+    for arg in args : 
+        if arg : 
+            res.append(arg)
+    return boolop(*res)
 
 def dict_combinations(input_dict):
     # Create a list of tuples where each tuple is (key, option)
@@ -63,13 +68,15 @@ def dict_combinations(input_dict):
 
 FLAGS = ["must_iter", "must_int", "must_not_iter", "must_str"]
 
-class Ast2z3(z3funcs) : 
+class Ast2z3(SMTFuncs) : 
     
-    def __init__(self, arg_names, dtypes, txt, func_name) -> None : 
+    def __init__(self, arg_names, dtypes, info, func_name) -> None : 
         super().__init__()
         self.need_hijack = False
+        self.txt = info['txt']
+        self.cot = info['cot']
+        self.target = info['target']
         self.func_name = func_name
-        self.txt = txt
         self.arg_names = arg_names
         self.related_args = []
         self.arg_map = {
@@ -98,7 +105,7 @@ class Ast2z3(z3funcs) :
             return arg # constant
         if is_wrapper(z3obj) and not ret_wrapper :
             # array but need to its const, why?
-            return z3obj.get_wrapped_object()
+            return z3obj.value
         else :
             return z3obj
 
@@ -115,7 +122,7 @@ class Ast2z3(z3funcs) :
                 is_z3_array = isinstance(iter, z3.ArrayRef)
                 range = iter.range()
                 lower_bound = range[0] if not is_z3_array else 0
-                upper_bound = range[1] if not is_z3_array else z3funcs.len(iter)
+                upper_bound = range[1] if not is_z3_array else SMTFuncs.len(iter)
                 step = 1
                 if ifs :
                     ifs = change_val_from_expr(ifs, target, iter[target])
@@ -298,19 +305,14 @@ class Ast2z3(z3funcs) :
                     self.set_flag(self.get_name(arg), 
                                   container=self.other_flags,
                                   is_tensor_dtype=True)
-    @staticmethod
-    def gen_sym(a):
-        # Check if 'a' is a Z3 expression or sort
-        return z3.Int(a)
-
 
     def gen_basic_constr(self, op, *args) : 
         if len(args) > 1 : 
-            if not all(
-                self.is_sym(arg) or is_wrapper(arg) for arg in args
-            ) : 
-                args = list(args)
-                args[0] = self.gen_z3_obj(args[0], self.arg_map, no_const=True, ret_wrapper = False)  
+            # if not all(
+            #     self.is_sym(arg) or is_wrapper(arg) for arg in args
+            # ) : 
+            args = list(args)
+            args[0] = self.gen_z3_obj(args[0], self.arg_map, no_const=True, ret_wrapper = False)  
             
             left_name = self.get_name(args[0]) if self.is_sym(args[0]) or is_wrapper(args[0]) else args[0]
             right_name = self.get_name(args[1]) if self.is_sym(args[1]) or is_wrapper(args[1]) else args[1]
@@ -322,7 +324,7 @@ class Ast2z3(z3funcs) :
         try :
             res = get_operator(op)(*args)
         except :
-            raise IncompatiableConstrError(f"INCOMPATIABLE : {op}, {args}")
+            raise IncompatiableConstrError(f"INCOMPATIABLE : {op}, {args}\n{traceback.format_exc()}")
         return res
     
     def gen_sliced_obj(self, obj, arg_map, start = None, end = None) :
@@ -366,6 +368,12 @@ class Ast2z3(z3funcs) :
                 return ast.NotIn.__name__
         return op
 
+    def get_dynamic_constrs(self) : 
+        """ 
+        get sub constrs that is generated in the process of converting
+        For example, existing constr while converting min/max function 
+        """
+        return self.constrs
     
     def convert(self) : 
         result = None 
@@ -382,14 +390,20 @@ class Ast2z3(z3funcs) :
                     name : dtype.z3()(name) for name, dtype in dtype_map.items()
                 }
             try : 
-                result = self._convert(ast, z3_type_objs)
-                if result is not None :
-                    result = self.conn_suff_conds(result, z3_type_objs)        
+                constr_body = self._convert(ast, z3_type_objs)
+                constr_body = constr_body[0] if isinstance(constr_body, list) else constr_body
+                dynamic_constrs = self.get_dynamic_constrs()
+                if dynamic_constrs :
+                    constr_body = merge_constr(dynamic_constrs + [constr_body])
+                if constr_body is not None :
+                    result = self.conn_suff_conds(constr_body, z3_type_objs)        
                 break
-            except IncompatiableConstrError :
+            except IncompatiableConstrError as e :
+                AUTOINF_LOG.warning(f"{e}")
                 continue
             # except :
             #     raise ValueError(f"Unexpected error : {traceback.format_exc()}")
+        AUTOINF_LOG.info(f"{self.txt} ==> {result}")
         return result
     def gen_z3_obj_from_all_defined_field(self, val, arg_map, ret_wrapper=True, no_const=False) :
         if not self.is_in_argnames(val) and is_dtype_constant(val) : # TODO : very inefficient(every conversion need to check)
@@ -429,7 +443,7 @@ class Ast2z3(z3funcs) :
             else:
                 func_name = node.func.id
                 args = [self._convert(arg, arg_map) for arg in node.args]
-                assert func_name in z3funcs.function_names, f"Unsupported function {func_name}"
+                assert func_name in SMTFuncs.function_names, f"Unsupported function {func_name}"
                 return self.gen_func_obj(func_name, *args)
             
         elif isinstance(node, ast.Attribute):

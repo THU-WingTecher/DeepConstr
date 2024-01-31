@@ -38,9 +38,7 @@ rules:
     and ((out.rank==input.rank and all(out.shape[i]==input.shape[i] for i in range(out.rank))
     or out.rank==tensor1.rank and all(out.shape[i]==tensor1.shape[i] for i in range(out.rank))
     or out.rank==tensor2.rank and all(out.shape[i]==tensor2.shape[i] for i in range(out.rank)))
-    and ((all(out.shape[i]==tensor1.shape[i] for i in range(out.rank))) and ((input.shape
-    == value and tensor1.shape == value and tensor2.shape == value and out.shape ==
-    value) and (out.rank==input.rank and all(out.shape[i]==input.shape[i] for i in
+    and ((all(out.shape[i]==tensor1.shape[i] for i in range(out.rank))) and ((out.rank==input.rank and all(out.shape[i]==input.shape[i] for i in
     range(out.rank)))))))
 - cot: 'The error is triggered because the type Long cannot be cast to the type Bool.
     Let''s see what the args were. The dtype of ''tensor1'' is Long and the dtype

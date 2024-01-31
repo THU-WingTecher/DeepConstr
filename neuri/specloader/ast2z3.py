@@ -166,7 +166,7 @@ class Ast2z3 :
             del self.types_map[key]
     def is_unsolverable_dtype(self, orig_type, materalized) :
         ## materalized dtype is one of literal or iter(Tuple, list) -> z3 unsolverable ex) type(a) == list[int], or type(a) == Literal['a', 'b']
-        ## if orig_type is not tensor, materalized dtype is absdtype -> z3 unsolverable ex) type(a) == int (if tensor -> to_tensor_dtype)
+        ## if orig_type is not tensor, materalized dtype is absdtype -> z3 unsolverable ex) type(a) == int (if tensor -> z3_const)
         return any(isinstance(materalized, dtype) for dtype in \
                    [AbsLiteral,
                     AbsIter]) or \
@@ -278,11 +278,11 @@ class Ast2z3 :
                         dtype = self.materalize_dtype(_dtype)
                         if not isinstance(dtype, DType) :
                             ## currently only allowed btw tensor dtypes.
-                            if hasattr(dtype, 'to_tensor_dtype') :
-                                if isinstance(astop, ast.Eq) and len(dtype.to_tensor_dtype())>1: 
+                            if hasattr(dtype, 'z3_const') :
+                                if isinstance(astop, ast.Eq) and len(dtype.z3_const())>1: 
                                     astop = ast.In()
                                     op = convert_ops([astop])
-                                temp = dtype.to_tensor_dtype()
+                                temp = dtype.z3_const()
                                 z3s = [d.z3() for d in temp]
                                 z3dtypes.update(z3s)
                             elif hasattr(dtype, 'z3') : 

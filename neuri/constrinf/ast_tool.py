@@ -51,11 +51,11 @@ def get_operator(astop : str):
     elif is_same_ast_name(astop, ast.IsNot):
         return lambda a,b : op.ne(a, b)
     elif is_same_ast_name(astop, ast.In):
-        from neuri.constrinf.z3const import z3funcs
-        return lambda a,b : z3funcs.in_(a,b)
+        from neuri.constrinf.smt_funcs import SMTFuncs
+        return lambda a,b : SMTFuncs.in_(a,b)
     elif is_same_ast_name(astop, ast.NotIn):
-        from neuri.constrinf.z3const import z3funcs
-        return lambda a,b : z3funcs.not_in(a,b)
+        from neuri.constrinf.smt_funcs import SMTFuncs
+        return lambda a,b : SMTFuncs.not_in(a,b)
     elif is_same_ast_name(astop, ast.Add):
         return lambda a,b : op.add(a, b)
     elif is_same_ast_name(astop, ast.Sub):

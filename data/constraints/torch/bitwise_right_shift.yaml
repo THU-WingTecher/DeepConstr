@@ -41,7 +41,7 @@ rules:
     results. In this operation, the result shape is ''input''.shape. Therefore, Left
     : out.shape, out.rank. Op : ==. Right : input.shape, input.rank.'
   target: Trying to resize storage that is not resizable
-  txt: (out.rank == 0) or ((other.dtype.shape == out.dtype.shape) and (out.rank==input.rank
+  txt: (out.rank == 0) or ((other.shape == out.shape) and (out.rank==input.rank
     and all(out.shape[i]==input.shape[i] for i in range(out.rank))))
 time_cost: 1415.0568990707397
 title: torch.bitwise_right_shift

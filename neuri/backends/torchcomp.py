@@ -40,12 +40,12 @@ class TorchCompFactory(BackendFactory):
 
         def closure(inputs: Dict[str, np.ndarray]) -> Dict[str, np.ndarray]:
             input_ts = {
-                k: torch.from_numpy(v).to(self.device) for k, v in inputs.items()
+                k: v.to(self.device) for k, v in inputs.items()
             }
             with torch.no_grad():
                 output = compiled(*input_ts.values())
             return {
-                k: v.cpu().detach().numpy()
+                k: v.cpu().detach()
                 for k, v in zip(torch_net.output_like.keys(), output)
             }
 

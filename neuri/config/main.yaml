@@ -93,11 +93,11 @@ cmp:
 
 test:
   task:
-    type: 4 
+    type: 5
   paths:
     rule: 'tests/test_rules.txt'
   package: 'tf'
-  func: 'raw_ops/QuantizeAndDequantizeV4'
+  func: 'tf/raw_ops/QuantizeAndDequantizeV4'
   model_type: 'tensorflow' 
   backend_type: 'xla'
 defaults:

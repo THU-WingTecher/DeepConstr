@@ -46,14 +46,10 @@ class Rule() :
                         self.ast,
                         self.args_type_dict
                     )
+            self.check() 
         except :
             AUTOINF_LOG.error(f"Rule({self.txt}) : Ast2z3 build failed.")
             AUTOINF_LOG.debug(f"{self.info()}\n{traceback.format_exc()}")
-            self.set_err_flag()
-        if self.ast2z3.error == False :
-            self.check() 
-        else : 
-            pass 
     def check(self) :
         if not self.ast2z3.is_unsolverable() :
             pass
@@ -70,13 +66,13 @@ class Rule() :
 
     def info(self) : 
         rule_txt = f'Rule : {self.txt}'
-        rule_ast = f'AST : {ast.dump(self.ast, indent=4)}'
+        rule_ast = f'AST : {ast.dump(self.ast)}'
         rule_args = f'Args : {self.related_args}'
-        if len(self.ast2z3.types_map) != 0 :
-            is_type_map = f'Type Map : {self.ast2z3.types_map}'
-        else :
-            is_type_map = f'Type Map : None'
-        return '\n'.join([rule_txt, rule_ast, rule_args, is_type_map])
+        # if len(self.ast2z3.types_map) != 0 :
+        #     is_type_map = f'Type Map : {self.ast2z3.types_map}'
+        # else :
+        #     is_type_map = f'Type Map : None'
+        return '\n'.join([rule_txt, rule_ast, rule_args])
     def rewrap_txt(self, merged_txts : List[str], method = ' or ') :
         res = ""
         for txt in merged_txts : 

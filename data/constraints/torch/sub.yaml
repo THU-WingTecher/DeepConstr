@@ -31,8 +31,7 @@ rules:
     the dimensions of these variables should be checked and corrected to ensure they
     are compatible for any operations that may be taking place.
   target: Trying to resize storage that is not resizable
-  txt: len(input).shape == len(out).shape and len(input).shape == len(other).shape
-    and len(out).shape == len(other).shape
+  txt: input.shape == out.shape and len(input) == len(other)
 - cot: 'The error is triggered because result type Float cannot be cast to the Bool.
     Looking at the arguments, ''input'' and ''other'' are of type Float and ''out''
     is of type Bool. So, we must ensure that the type of ''out'' is consistent with
@@ -41,15 +40,6 @@ rules:
     or other.dtype'
   target: result type Float can't be cast to the desired output type Bool
   txt: (out.dtype==input.dtype) and (out.dtype==other.dtype)
-- cot: 'The error indicates that the argument ''alpha'' should not be a floating point
-    number when the input tensors are integral. The provided alpha value is 1.17428,
-    which is a floating point number, and the input tensors are of int64 type. So,
-    the type of alpha must be corrected. Therefore, Left : alpha.dtype, Op : !=, and
-    Right : float. Also, alpha should be an integer when input is integral, so Left
-    : alpha.dtype, Op : ==, and Right : int when input.dtype == int.'
-  target: For integral input tensors, argument alpha must not be a floating point
-    number.
-  txt: alpha.dtype != float
 time_cost: 16184.411197662354
 title: torch.sub
 tokens_used: 22798

@@ -5,16 +5,16 @@ import z3
 
 from neuri.abstract.arith import *
 from neuri.abstract.dtype import DType
-from neuri.constrinf.ast2z3 import load_z3_const
+from neuri.constrinf.ast2z3 import load_z3_const, TensorZ3
 from neuri.error import ConstraintCheck, SanityCheck
-from neuri.specloader import Z3TENSOR
 
 
 class AbsTensor:
     def __init__(self, 
                  shape: List[Union[int, z3.ExprRef]] = [], 
                  dtype: DType = None,
-                 possible_dtypes : List[DType] = []):
+                 possible_dtypes : List[DType] = [],
+                 **kwargs):
         assert isinstance(
             shape, (list, tuple)
         ), f"Shape must be a list/tuple, but got {shape}"
@@ -143,13 +143,13 @@ class AbsTensor:
         ## gen z3 var 
         other_obj = self.z3()(other)
         ## rank consistent constr 
-        rank_cons = [Z3TENSOR.rank(other_obj) == self.ndims ]
+        rank_cons = [other_obj.rank == self.ndims]
         ## shape consistent constr 
         shape_cons = [
-            Z3TENSOR.shape(other_obj)[i] == self.shape[i] for i in range(self.ndims)
+            other_obj.shape[i] == self.shape[i] for i in range(self.ndims)
         ]
         ## dtype consistent constr
-        dtype_cons = [Z3TENSOR.dtype(other_obj) == self.dtype.z3()]
+        dtype_cons = [other_obj.dtype == self.dtype.z3_const()]
 
         return rank_cons + shape_cons + dtype_cons
     
