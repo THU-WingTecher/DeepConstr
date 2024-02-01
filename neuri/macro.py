@@ -14,7 +14,7 @@ python experiments/evaluate_apis.py  mgen.record_path=$(pwd)/data/constraints/to
 """
 
 """ FUZZING 
-python neuri/cli/fuzz.py fuzz.time=120m mgen.record_path=data/constraints/torch fuzz.root=gen/torch-constrinf-n3 filter.type=\[\'nan\',\'dup\',\'inf\'\] backend.type=torchjit model.type=torch fuzz.save_test=gen/torch-constrinf-n3.models debug.viz=true hydra.verbose=fuzz fuzz.resume=false mgen.method=constrinf mgen.max_nodes=3
+python neuri/cli/fuzz.py fuzz.time=120m mgen.record_path=data/constraints/torch fuzz.root=gen/torchcomp-fuzz-0201 filter.type=\[\'nan\',\'dup\',\'inf\'\] backend.type=torchcomp model.type=torch fuzz.save_test=gen/torchcomp-fuzz-0201.model debug.viz=true hydra.verbose=fuzz fuzz.resume=false mgen.method=constrinf mgen.max_nodes=3
 
 ./fuzz.sh 5 constrinf          torch torchcomp 4h
 """

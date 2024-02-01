@@ -3,58 +3,199 @@ import subprocess
 import os
 import hydra
 import concurrent.futures
-
+import subprocess
+import threading
+import multiprocessing
+from experiments.evaluate_models import model_exec, batched
 # Load the JSON file
 
 BASELINES = ["symbolic-cinit", "neuri", "constrinf"]
 FIXED_FUNC = "Slice"
+cov_parallel = 4
 
+def activate_conda_environment(env_name):
+    """
+    Activates the specified conda environment.
 
-def collect_cov(api_name, cfg):
-    #execute file is at folder1/api_name.models/
-    #execute file is at folder2/api_name.models/
-    print(f"dealing with {api_name}")
-    if cfg["model"]["type"] == "torch" :
-        for method in BASELINES :
-            command = (f"cd /artifact && "
-                        "bash collect_cov.sh "
-                        f"{cfg['mgen']['max_nodes']} "
-                        f"{cfg['model']['type']} "
-                        f"{method} "
-                        f"{','.join([FIXED_FUNC, api_name])} "
-                        f"{cfg['exp']['parallel']} "
-            )
-            process = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            if process.stderr:
-                print("Error:", process.stderr)
-            else:
-                print("Output:", process.stdout)
+    :param env_name: Name of the conda environment to activate.
+    """
+    activation_command = "source /opt/conda/etc/profile.d/conda.sh && conda activate " + env_name
+    subprocess.run(activation_command, shell=True, executable='/bin/bash')
 
-    else : #tensorflow
-        pass
-        # folder1 = f"$(pwd)/{folder1}/{api_name}.models"
-        # folder2 = f"$(pwd)/{folder2}/{api_name}.models"
-        # working_directory = "/artifact"
-        # pythonpath = f"{working_directory}/:{working_directory}/neuri"
-        # env = os.environ.copy()
-        # env['PYTHONPATH'] = pythonpath
-        # command_neuri1 = (
-        #     f"python3 experiments/evaluate_tf_models.py --root {folder1} --parallel $(nproc)"
-        # )
-        # command_neuri2 = (
-        #     f"python3 experiments/process_lcov.py --root {folder1} --parallel $(nproc)"
-        # )
+def batch_exec(batch, time2path, cov_save, model_type, backend_type, backend_target):
+    batch_paths = [time2path[time] for time in batch]
+    profraw_path = os.path.join(cov_save, f"{max(batch)}.profraw")
+    model_exec(
+        batch_paths,
+        model_type,
+        backend_type,
+        backend_target,
+        profraw_path,
+    )
 
-        # # Execute the command
-        # command_richerm1 = (
-        #     f"python experiments/evaluate_richerm_models.py --root {folder2} --parallel $(nproc) --package tensorflow"
-        # )
-        # command_richerm2 = (
-        #     f"python python3 experiments/process_lcov.py --root {folder2} --parallel $(nproc)"
-        # )
-    return process.stdout, process.stderr
+def collect_cov(root, model_type, backend_type, batch_size=100, backend_target="cpu", parallel=8):
+    """
+    Collects coverage data after fuzzing.
+    
+    :param root: Folder to all the tests.
+    :param model_type: Model type used in fuzzing.
+    :param backend_type: Backend type used in fuzzing.
+    :param batch_size: Size of each batch for processing.
+    :param backend_target: Backend target (cpu or cuda).
+    :param parallel: Number of processes for execution.
+    """
 
-def run_draw_script(api_name : str, cfg):
+    time2path = {}
+    for dir in os.listdir(root):
+        if dir != "coverage":
+            time2path[float(dir)] = os.path.join(root, dir)
+
+    time_stamps = sorted(time2path.keys())
+    batches = [time_stamps[i:i + batch_size] for i in range(0, len(time_stamps), batch_size)]
+
+    print(f"=> Number of batches: {len(batches)} of size {batch_size}")
+
+    cov_save = os.path.join(root, "coverage")
+    if not os.path.exists(cov_save):
+        os.mkdir(cov_save)
+
+    with concurrent.futures.ProcessPoolExecutor(max_workers=len(BASELINES)) as executor:
+        # Pass necessary arguments to the api_worker function
+        futures = [executor.submit(batch_exec, batch, time2path, cov_save, model_type, backend_type, backend_target) for batch in batches]
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                result = future.result()
+                print(result)
+            except Exception as e:
+                print(f"An error occured: {e}")
+
+def process_profraw(path):
+
+    activation_command = "source /opt/conda/etc/profile.d/conda.sh && conda activate " + "cov" + " && "
+    arguments = [
+        "python",
+        "experiments/process_profraws.py",
+        f"--root {path}",
+        "--llvm-config-path $(which llvm-config-14)",
+        '--instrumented-libs "$(pwd)/build/pytorch-cov/build/lib/libtorch_cpu.so" "$(pwd)/build/pytorch-cov/build/lib/libtorch.so"',
+        f"--batch-size 1000 --parallel {cov_parallel}",
+    ]
+    full_command = activation_command + " ".join(arguments)
+
+    p = subprocess.Popen(
+        full_command,  # Show all output
+        shell=True,
+        executable='/bin/bash',
+    )
+
+    p.communicate()
+    exit_code = p.returncode
+
+    if exit_code != 0:
+        print(
+            f"==> model_exec crashed when generating {os.path.join(path, 'coverage','merged_cov.pkl')}! => EXIT CODE {exit_code}"
+        )    
+def parallel_eval(api_list, BASELINES, config):
+    """
+    Runs fuzzing processes in parallel for each combination of API and baseline.
+    
+    :param api_list: List of APIs to fuzz.
+    :param baseline_list: List of baseline methods to use.
+    :param config: Configuration parameters for the fuzzing process.
+    """
+
+    with concurrent.futures.ProcessPoolExecutor(max_workers=config["exp"]["parallel"]) as executor:
+        # Pass necessary arguments to the api_worker function
+        futures = [executor.submit(api_worker, api, config, BASELINES) for api in api_list]
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                result = future.result()
+                print(result)
+            except Exception as e:
+                print(f"An error occured: {e}")
+
+def api_worker(api, cfg, BASELINES):
+    """
+    Top-level worker function for multiprocessing, handles each API task.
+    """
+    print("Running fuzzing for API", api)
+    with concurrent.futures.ProcessPoolExecutor(max_workers=len(BASELINES)) as executor:
+        # Pass necessary arguments to the api_worker function
+        futures = [executor.submit(run, api, baseline, cfg) for baseline in BASELINES]
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                result = future.result()
+                print(result)
+            except Exception as e:
+                print(f"An error occured: {e}")
+    # Trigger drawing after completing all baseline tasks for the current API
+    run_draw_script(api, cfg, BASELINES)
+
+def run(api_name, baseline, config, max_retries=100):
+    """
+    Runs the fuzzing process for a given API and baseline with the specified configuration.
+    Captures and displays output in real-time.
+    
+    :param api_name: The name of the API to fuzz.
+    :param baseline: The baseline method to use.
+    :param config: Configuration parameters for the fuzzing process.
+    :param max_retries: Maximum number of retries in case of failure.
+    """
+    print("Running fuzzing for API", api_name, "with baseline", baseline)
+    test_pool = [FIXED_FUNC, api_name]
+    test_pool_modified = '-'.join(test_pool)
+    save_path = f"{os.getcwd()}/gen/{config['model']['type']}-{baseline}-n{config['mgen']['max_nodes']}-{test_pool_modified}.models"
+    def execute_command(command):
+        """
+        Executes a given command and prints its output in real-time.
+        """
+        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        
+        # Print output as it's generated
+        while True:
+            output = process.stdout.readline()
+            if output == '' and process.poll() is not None:
+                break
+            if output:
+                print(output.strip())
+    if config['model']['type'] == "tensorflow":
+        if baseline == "constrinf":
+            RECORD = os.path.join(os.getcwd(), "data", "constraints", "tf")
+        else:
+            RECORD = os.path.join(os.getcwd(), "data", "tf_records")
+    elif config['model']['type'] == "torch":
+        if baseline == "constrinf":
+            RECORD = os.path.join(os.getcwd(), "data", "constraints", "torch")
+        else:
+            RECORD = os.path.join(os.getcwd(), "data", "torch_records")
+    # Construct the command to run fuzz.py
+    fuzz_command = f"PYTHONPATH=$(pwd):$(pwd)/neuri python neuri/cli/fuzz.py " \
+                   f"fuzz.time={config['fuzz']['time']} " \
+                   f"mgen.record_path={RECORD} " \
+                   f"fuzz.root=$(pwd)/gen/{config['model']['type']}-{baseline}-n{config['mgen']['max_nodes']}-{test_pool_modified} " \
+                   f"fuzz.save_test={save_path} " \
+                   f"model.type={config['model']['type']} backend.type={config['backend']['type']} filter.type=\"[nan,dup,inf]\" " \
+                   f"debug.viz=true hydra.verbose=fuzz fuzz.resume=true " \
+                   f"mgen.method={baseline} mgen.max_nodes={config['mgen']['max_nodes']} mgen.test_pool=\"{test_pool}\""
+
+    retries = 0
+    while retries < max_retries:
+        print(f"Attempt {retries + 1} for {api_name} with baseline {baseline}")
+        execute_command(fuzz_command)
+        retries += 1
+
+    print(f"Collect Cov for {api_name} with baseline {baseline}")
+    print("Activate Conda env -cov")
+    activate_conda_environment("cov")
+    collect_cov(root=save_path,
+                model_type=config['model']['type'],
+                backend_type=config['backend']['type'],
+                batch_size=100,  # or other desired default
+                backend_target="cpu",  # or config-specified
+                parallel=cov_parallel)  # or other desired default
+    process_profraw(save_path)
+
+def run_draw_script(api_name : str, cfg, BASELINES):
 
     print(f"drawing with {api_name}")
     folder_names = [f"$(pwd)/gen/{cfg['model']['type']}-{method}-n{cfg['mgen']['max_nodes']}-{'-'.join([FIXED_FUNC, api_name])}.models/coverage " for method in BASELINES]
@@ -65,26 +206,6 @@ def run_draw_script(api_name : str, cfg):
         f"--name {api_name}"
     )
     subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-def run_fuzz_script(api_name : str, cfg):
-    print(f"dealing with {api_name}")
-    for method in BASELINES :
-        command = (f"cd /artifact && "
-                    "bash fuzz.sh "
-                    f"{cfg['mgen']['max_nodes']} "
-                    f"{method} "
-                    f"{cfg['model']['type']} "
-                    f"{cfg['backend']['type']} "
-                    f"{cfg['fuzz']['time']} "
-                    f"{','.join([FIXED_FUNC, api_name])} "
-        )
-        process = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    
-    if process.stderr:
-        print("Error:", process.stderr)
-    else:
-        print("Output:", process.stdout)
-    return process.stdout, process.stderr
 
 def load_api_names_from_data(record_path, pass_rate) : 
     from neuri.constrinf import make_record_finder  
@@ -104,28 +225,13 @@ def load_api_names_from_json(path) :
 
 @hydra.main(version_base=None, config_path="../neuri/config", config_name="main")
 def main(cfg) : 
-    func_name = run_fuzz_script #run_fuzz_script
-    # api_names = load_api_names_from_json("/artifact/temp.json")
+    """
+    totally, cfg['exp']['parallel'] * cov_parallel * len(BASELINES) process will be craeted
+    """
+    print(f" Will run {cfg['exp']['parallel'] * cov_parallel * len(BASELINES)} process in parallel")
     api_names = load_api_names_from_data(cfg["mgen"]["record_path"], cfg["mgen"]["pass_rate"])
-    with concurrent.futures.ProcessPoolExecutor(max_workers=cfg["exp"]["parallel"]) as executor:
-        futures = [executor.submit(func_name, api_name, cfg) for api_name in api_names]
-        for future in concurrent.futures.as_completed(futures):
-            try:
-                result = future.result()
-            except Exception as e:
-                print(f"An error occured: {e}")
-
-    # func_name = collect_cov
-    # with concurrent.futures.ProcessPoolExecutor(max_workers=cfg["exp"]["parallel"]) as executor:
-    #     futures = [executor.submit(func_name, api_name, cfg) for api_name in api_names]
-    #     for future in concurrent.futures.as_completed(futures):
-    #         try:
-    #             result = future.result()
-    #         except Exception as e:
-    #             print(f"An error occured: {e}")
-    #     # collect_cov(api_name, cfg)
-    # for api_name in api_names :
-    #     run_draw_script(api_name, cfg)
+    print(f"Will run {len(api_names)} apis in total")
+    parallel_eval(api_names, BASELINES, cfg)
 
 if __name__ == "__main__":
     main()

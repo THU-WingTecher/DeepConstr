@@ -22,22 +22,24 @@ def model_exec(test_paths, model_type, backend_type, backend_target, profraw_pat
             if file.startswith("model"):
                 model_paths.append(os.path.join(test_path, file))
                 break
-
+    activation_command = "source /opt/conda/etc/profile.d/conda.sh && conda activate " + "cov" + " && "
     arguments = [
         "python3",
         "neuri/cli/model_exec.py",
         "model.type=" + model_type,
         "backend.type=" + backend_type,
         "backend.target=" + backend_target,
-        f"model.path={model_paths}",
+        f"'model.path={model_paths}'",
     ]
-
+    full_command = activation_command + " ".join(arguments)
     copied_env = os.environ.copy()
     copied_env["LLVM_PROFILE_FILE"] = profraw_path
 
     p = subprocess.Popen(
-        arguments,  # Show all output
+        full_command,  # Show all output
         env=copied_env,
+        shell=True,
+        executable='/bin/bash',
     )
     p.communicate()
     exit_code = p.returncode
