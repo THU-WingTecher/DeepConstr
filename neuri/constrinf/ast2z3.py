@@ -29,11 +29,11 @@ def is_tensor(arg) :
 
 def is_dtype_constant(arg) :
     from neuri.specloader.materalize import STR_TO_ABS
-    return isinstance(arg, str) and arg.lower() in STR_TO_ABS.keys()
+    return isinstance(arg, str) and arg.lower().strip() in STR_TO_ABS.keys()
 
 def get_dtype_z3_obj(arg, is_tensor_dtype=False) : 
     from neuri.specloader.materalize import STR_TO_ABS
-    dtypeobj = STR_TO_ABS[arg.lower()] 
+    dtypeobj = STR_TO_ABS[arg.lower().strip()] 
     # if is_tensor_dtype and hasattr(dtypeobj, "z3_const") :
     #     # Tensor dtype arg_name would not be changed dtype to int, or list[int], or bool.
     #     # dtype would be retrieved with args_type_dict that has been given when generating the rule.
@@ -73,9 +73,9 @@ class Ast2z3(SMTFuncs) :
     def __init__(self, arg_names, dtypes, info, func_name) -> None : 
         super().__init__()
         self.need_hijack = False
-        self.txt = info['txt']
-        self.cot = info['cot']
-        self.target = info['target']
+        self.txt = info.get('txt')
+        self.cot = info.get('cot')
+        self.target = info.get('target')
         self.func_name = func_name
         self.arg_names = arg_names
         self.related_args = []
@@ -269,7 +269,6 @@ class Ast2z3(SMTFuncs) :
         if not hasattr(self, func_name) : 
             raise IncorrectConstrError(f"func name : \"{func_name}\" is not implemented.")
         func_exec = getattr(self, func_name)
-        args = self.get_syms_from_wrappers(*args)
         res = func_exec(*args)
         return res
 
@@ -322,6 +321,12 @@ class Ast2z3(SMTFuncs) :
                 self.set_ele_type_flag(left_name, args[0])
         # set flag( len(args)> 2, not in, and not_in, make operation comparable )
         try :
+            if isinstance(op, list) : # special case 
+                left = args[0]
+                rights = args[1:][0]
+                return merge_constr([self.gen_basic_constr(_op, left[i], arg) for i, (_op, arg) in enumerate(zip(op, rights))])
+            
+            args = self.get_syms_from_wrappers(*args)
             res = get_operator(op)(*args)
         except :
             raise IncompatiableConstrError(f"INCOMPATIABLE : {op}, {args}\n{traceback.format_exc()}")
@@ -332,7 +337,8 @@ class Ast2z3(SMTFuncs) :
         if start is None : start = 0 
         if end is None : end = z3obj.rank
         idx_range = (z3obj.corrected_idx(start), z3obj.corrected_idx(end))
-        self.set_min_len
+        for idx in [start, end] : 
+            self.set_min_len(self.get_name(z3obj), idx)
         z3obj.update_info(sliced=idx_range)
         return z3obj
     
@@ -344,6 +350,9 @@ class Ast2z3(SMTFuncs) :
         new_right = right
         new_op = op
         if isinstance(right, list) : 
+            if self.is_iterable(left if not is_wrapper(left) else left.get_wrapped_object()) :
+                ## special case : left is iterable, right is list(a.shape = [1,2] -> a.shape[0] = 1 and a.shape[1] = 2)
+                return [op for _ in range(len(right))], right
             new_right = list(set(flatten_list(right)))
             new_op = self.replace_op_accord_constant(op, new_right)
             return new_op, new_right
@@ -437,12 +446,12 @@ class Ast2z3(SMTFuncs) :
                 results.append(self.gen_basic_constr(op_type, left, right))
             return merge_constr(results)
         elif isinstance(node, ast.Call):
+            args = [self._convert(arg, arg_map) for arg in node.args]
             if isinstance(node.func, ast.Attribute):
                 attribute_value = self._convert(node.func.value, arg_map)
-                return self.gen_func_obj(node.func.attr, attribute_value)
+                return self.gen_func_obj(node.func.attr, attribute_value, *args)
             else:
                 func_name = node.func.id
-                args = [self._convert(arg, arg_map) for arg in node.args]
                 assert func_name in SMTFuncs.function_names, f"Unsupported function {func_name}"
                 return self.gen_func_obj(func_name, *args)
             

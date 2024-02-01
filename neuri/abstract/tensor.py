@@ -27,8 +27,8 @@ class AbsTensor:
     @staticmethod
     def from_numpy(x: "np.ndarray") -> "AbsTensor":
         return AbsTensor(list(x.shape), str(x.dtype))
-    
-    def to_str(self) -> Any :
+    @staticmethod
+    def to_str() -> Any :
         return 'tensor'
     def downcast_rank(self):
         return AbsTensor(shape=[None] * self.ndims, dtype=self.dtype)
@@ -154,9 +154,9 @@ class AbsTensor:
         return rank_cons + shape_cons + dtype_cons
     
     @classmethod
-    def z3(self) -> "z3.Dtype" :
+    def z3(cls) -> "z3.Dtype" :
         z3_load_func = partial(load_z3_const, 
-                        var_type=self.to_str(self), 
+                        var_type=cls.to_str(), 
                         is_array=False)
         
         return z3_load_func

@@ -127,9 +127,9 @@ class BaseWrapper():
         return corrected idx for possible negative index
         """ 
         if datatype is None : datatype = self.datatype
-        if len_func is None : len_func = self.len_func
+        if len_func_name is None : len_func = self.len_func
         else : len_func = getattr(datatype, len_func_name)
-        return z3.If(idx >= 0, idx, self.len_func(self.const) + idx)  
+        return z3.If(idx >= 0, idx, len_func(self.const) + idx)  
     
     def len(self): 
         if self.info.get("sliced", None) is None :
@@ -245,7 +245,7 @@ def load_z3_const(name, var_type, is_array=False):
     elif var_type == "tensor":
         if is_array : 
             return ArrWrapper(z3.Const(name, TensorArr), 
-                              TensorWrapper(z3.Const(name, TensorZ3), TensorZ3),
+                              TensorWrapper(z3.Const(name, TensorZ3), TensorZ3, TensorZ3.shape, TensorZ3.rank),
                               TensorArr.value, TensorArr.len)
         else :
             return TensorWrapper(z3.Const(name, TensorZ3), TensorZ3, TensorZ3.shape, TensorZ3.rank)
@@ -264,7 +264,14 @@ class SMTFuncs:
     """
     # Class variable to hold names of all functions
     function_names = ["all", "any", "len", "type", "sorted", "abs", "min", "max", "in_", "not_in", "rank", "range", "isinstance", "T"]
-    _z3_dataarr = [IntArr, FloatArr, StrArr, ComplexArr, BoolArr, TensorArr, TensorZ3, TensorZ3.shape]
+    _z3_dataarr = [(IntArr, (IntArr, IntArr.value, IntArr.len)),
+                   (FloatArr, (FloatArr, FloatArr.value, FloatArr.len)),
+                   (StrArr, (StrArr, StrArr.value, StrArr.len)),
+                   (ComplexArr, (ComplexArr, ComplexArr.value, ComplexArr.len)),
+                   (BoolArr, (BoolArr, BoolArr.value, BoolArr.len)),
+                   (TensorArr, (TensorArr, TensorArr.value, TensorArr.len)),
+                   (TensorZ3, (TensorZ3, TensorZ3.shape, TensorZ3.dtype, TensorZ3.rank))
+                   ]
     iterables = []
     non_iterables= []
     rank_idx = 0
@@ -303,15 +310,24 @@ class SMTFuncs:
             return False
     @classmethod 
     def is_iterable(cls, v) :
-        return cls._find_datatype_by_id(v.sort().get_id(), pool = cls._z3_dataarr) is not None 
+        return cls._find_sort_by_id(
+            v.decl().get_id(), pool = [
+                                        IntArr.value,
+                                        FloatArr.value,
+                                        StrArr.value,
+                                        ComplexArr.value,
+                                        BoolArr.value,
+                                        TensorArr.value,
+                                        TensorZ3.shape,]
+                                        ) is not None 
     
     @classmethod 
     def is_int(cls, v) :
-        return cls._find_datatype_by_id(v.sort().get_id(), pool = [z3.IntSort(), z3.RealSort()]) is not None 
+        return cls._find_sort_by_id(v.sort().get_id(), pool = [z3.IntSort(), z3.RealSort()]) is not None 
     
     @classmethod 
     def is_str(cls, v) :
-        return cls._find_datatype_by_id(v.sort().get_id(), pool = [z3.StringSort()]) is not None 
+        return cls._find_sort_by_id(v.sort().get_id(), pool = [z3.StringSort()]) is not None 
     
     @classmethod
     def type(cls, v) : 
@@ -330,14 +346,23 @@ class SMTFuncs:
     
     def clear(self) :
         self.constrs.clear()
-    
+
     @classmethod
-    def _find_datatype_by_id(cls, id, pool = None):
+    def _find_datatype_by_decl_id(cls, id, pool = None):
         """
         Helper function to get a Z3 datatype by its id.
         """
         if pool is None : pool = cls._z3_dataarr
+        return next(((dv, dv.name()) for dv, attrs in pool if any(attr.get_id() == id for attr in attrs)), None)
+    
+    @classmethod
+    def _find_sort_by_id(cls, id, pool = None):
+        """
+        Helper function to get a Z3 datatype by its id.
+        """
+        assert pool is not None, "pool must be specified"
         return next(((dv, dv.name()) for dv in pool if dv.get_id() == id), None)
+    
     @staticmethod
     def all(input_array):
         """
@@ -353,6 +378,14 @@ class SMTFuncs:
         for i in range(len(args)) : 
             if is_wrapper(args[i]) :
                 args[i] = args[i].get_wrapped_object() 
+        
+        return args
+    @staticmethod
+    def get_syms_val_from_wrappers(*args) :
+        args = list(args)
+        for i in range(len(args)) : 
+            if is_wrapper(args[i]) :
+                args[i] = args[i].value
         
         return args
 
@@ -406,19 +439,22 @@ class SMTFuncs:
         if isinstance(v, str) : 
             raise IncorrectConstrError(f"the name \"{v}\" may not in the related args?")
         datatype = None
-        datatype = cls._find_datatype_by_id(v.sort().get_id())
+        is_attr = True
+        datatype = cls._find_datatype_by_decl_id(v.decl().get_id())
         if datatype is None :
              # Tensor.shape - dirty fix
-            datatype = cls._find_datatype_by_id(v.decl().get_id())
+            is_attr = False
+            datatype = cls._find_datatype_by_decl_id(v.decl().range().get_id())
 
         if datatype is None :
             raise IncompatiableConstrError(f"Unsupported datatype : {v.sort()} - {v.decl().name()}")
         else : 
             obj, name = datatype
+            v = v.arg(0) if is_attr else v
             if name == TensorZ3.name() : 
                 return obj.rank(v), obj.shape(v), obj.dtype(v)
-            elif name == "shape" : #shape(t) -> load name "t" -> TensorZ3.rank(t)
-                return TensorZ3.rank(v.arg(0)), v, TensorZ3.dtype(v.arg(0))
+            # elif v.decl().name() == "shape" : #shape(t) -> load name "t" -> TensorZ3.rank(t)
+            #     return TensorZ3.rank(v), v, TensorZ3.dtype(v)
             else : 
                 return obj.len(v), obj.value(v)
     @classmethod
@@ -445,8 +481,11 @@ class SMTFuncs:
             return attrs[cls.value_idx]
     
     @classmethod
-    def size(cls, v):
-        return cls.shape(v)
+    def size(cls, v, idx = None):
+        res = cls.shape(v) 
+        if idx is not None :
+            res = res[cls.get_corrected_idx(idx, v)]
+        return res
             
     @classmethod
     def dtype(cls, v):
@@ -473,7 +512,7 @@ class SMTFuncs:
             assert len(attrs) > cls.rank_idx, f"{v} seems not be Tensor object"
             return attrs[cls.rank_idx]
     @classmethod
-    def dim(cls, v) :
+    def dim(cls, v, idx=None) :
         return cls.len(v)
     @classmethod
     def ndims(cls, v) :
@@ -512,14 +551,17 @@ class SMTFuncs:
         corrected_idx = z3.If(idx >= 0, idx, rank + idx)
         return corrected_idx
     def min(self, *vs):
-        if len(vs) > 0 :
-            if len(vs) == 1 :
-                return vs[0]
+        if len(vs) > 1 :
+            # if len(vs) == 1 :
+            #     if self.is_sym(vs[0]) and self.is_iterable(vs[0]) :
+            #         return self.min(vs[0])
+            #     return vs[0]
             m = vs[0]
             for v in vs[1:]:
                 m = z3.If(v < m, v, m)
             return m
         else : 
+            vs = self.get_syms_val_from_wrappers(*vs)
             vs = vs[0]
             attrs = self._load_attrs(vs)
             lev_var = attrs[0]
@@ -545,6 +587,7 @@ class SMTFuncs:
                 m = z3.If(v > m, v, m)
             return m
         else : 
+            vs = self.get_syms_val_from_wrappers(*vs)
             vs = vs[0]
             attrs = self._load_attrs(vs)
             lev_var = attrs[0]

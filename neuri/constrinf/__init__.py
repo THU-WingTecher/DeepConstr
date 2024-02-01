@@ -6,6 +6,16 @@ from neuri.logger import AUTOINF_LOG
 # from neuri.specloader.rule import gen_rule
 from neuri.specloader.utils import load_yaml
 from neuri.constrinf.ast2z3 import Ast2z3
+
+
+uncompatiable_api_marks = ["tensor element", "bug", "no function"]
+def is_special_apis(record) : 
+    if record.get("skipped", False) :
+        skipped_reason = record.get("skipped_reason", " ").strip().lower()
+        if any([mark in skipped_reason for mark in uncompatiable_api_marks]) :
+            return True
+
+    return False 
 def gen_inst_with_records(
     data_dir: str,
     test_pool: List = [],
@@ -28,37 +38,46 @@ def gen_inst_with_records(
             record = {}
             path = os.path.join(root, file)
             cfg = load_yaml(path)
-            record['name'] = cfg['title']
             if test_pool :
-                if record['name'] not in test_pool :
+                if record["title"] not in test_pool :
                     continue
-            record['pass_rate'] = cfg['pass_rate']
-            if 'constraints' in cfg.keys() :
-                record['args'] = {'name' : [arg_name for arg_name in cfg['constraints'].keys()], 
-                                'is_pos' : [False] * len(cfg['constraints'].keys()), 
-                                'value' : [None] * len(cfg['constraints'].keys()),
-                                'dtype' : [None] * len(cfg['constraints'].keys()),
-                                }
-                record['rules'] = cfg['rules']
-                record['outputs'] = {
-                    'value' : [],
-                }
+
+            for key, item in cfg.items() :
+                record[key] = item
+                if key == "title" : 
+                    record['name'] = cfg[key]
+                elif key == "pass_rate" :
+                    record['pass_rate'] = cfg[key]
+                elif key == "constraints" :
+                    record['args'] = {'name' : [arg_name for arg_name in cfg[key].keys()], 
+                                    'is_pos' : [cfg[key][arg_name].get('is_pos', False) for arg_name in cfg[key].keys()], 
+                                    'value' : [None] * len(cfg[key].keys()),
+                                    'dtype' : [None] * len(cfg[key].keys()),
+                                    }
+                elif key == "rules" :
+                    record['rules'] = cfg['rules']
+                else :
+                    record[key] = cfg[key]
+
+            record['outputs'] = {
+                'value' : [],
+            }
+                    
+            if cfg.get('constraints') is not None :
                 for i_name, name in enumerate(record['args']['name']) :
-                    record['args']['dtype'][i_name] = materalize_dtypes(cfg['constraints'][name]['dtype'])   
-                yield record         
+                    dtype = materalize_dtypes(cfg['constraints'][name]['dtype']) 
+                    record['args']['dtype'][i_name] = dtype
+                    if dtype is None : 
+                        record['args']['name'].pop(i_name)
+                        record['args']['dtype'].pop(i_name)  
+                if len(record['args']['name']) > 0 :
+                    yield record         
             else : 
                 AUTOINF_LOG.warning(f"no constraints in {path}")
 
 def convert_rule_to_executable(record, rule_cnt) -> List["z3.Exr"] : 
 
-    chosn_dtypes = {} 
     exec_rules = []
-    # for i_arg, arg_name, in enumerate(record['args']['name']) : ## FIXME -> gen diff constr depend on diff dtype( adding suff_conds is enough)
-    #     if len(record['args']['dtype'][i_arg]) > 0 :
-    #         chosn_dtypes[arg_name] = record['args']['dtype'][i_arg][0]
-    #     else :
-    #         chosn_dtypes[arg_name] = record['args']['dtype'][i_arg]
-
     for rule in record['rules'] :
         AUTOINF_LOG.debug(f"rule : {rule['txt']}")
         converter = Ast2z3(record['args']['name'], record['args']['dtype'], rule, record['name'])
@@ -87,6 +106,7 @@ def make_record_finder(
     records = []
     total_rec = 0
     skipped_err = 0
+    unsupported_constr = 0
     skipped_blacklist = 0
     skipped_unenough_psrate = 0
     blacklisted = set()
@@ -98,6 +118,10 @@ def make_record_finder(
             if record['name'] not in test_pool :
                 continue 
         else : # when test_pool is defined; we don't check others
+            if is_special_apis(record) :
+                AUTOINF_LOG.info(f"unsupported constraint --> Skip {record['name']}")
+                unsupported_constr+=1
+                continue
             if record.get('skipped') is not None :
                 AUTOINF_LOG.info(f"skipped key --> Skip {record['name']}")
                 skipped_err+=1
@@ -117,13 +141,13 @@ def make_record_finder(
         record['constraints'] = convert_rule_to_executable(record, rule_cnt)
         records.append(record)
 
-    skipped_rec = skipped_err + skipped_unenough_psrate + skipped_blacklist
+    skipped_rec = skipped_err + skipped_unenough_psrate + skipped_blacklist + unsupported_constr
     AUTOINF_LOG.info(
         f"Got {len(records)} records of {total_rec} records with total {rule_cnt['cnt']} rules."
     )
     AUTOINF_LOG.info(f"Filtered {skipped_rec} records from {total_rec} initial set.")
     AUTOINF_LOG.info(
-        f" Skipped : {skipped_err} Lower_psrate : {skipped_unenough_psrate} black_list : {skipped_blacklist}"
+        f" Skipped : {skipped_err} Lower_psrate : {skipped_unenough_psrate} black_list : {skipped_blacklist} Unsupporting : {unsupported_constr}"
     )
 
     return records

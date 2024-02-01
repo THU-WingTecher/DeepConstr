@@ -1,3 +1,10 @@
+# env settings
+.envrc
+launch.json 
+
+# experiment data
+*.profraw 
+*.tar.gz
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

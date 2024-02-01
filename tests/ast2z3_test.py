@@ -38,8 +38,6 @@ def test_whole_constraints(dir_path = None ) :
             result = "error"
             converter  = Ast2z3(arg_names, dtypes, constr, record['name'])
             print(f"{record['name']}-Constraint: {constr['txt']}")
-            if constr['txt'] in ["min(other) >= 0", "(other.rank <= out.rank) and ((out.rank==input.rank and all(out.shape[i]==input.shape[i] for i in range(out.rank))) and ('out'.shape == [8, 7, 6]))"] :
-                print("stop")
             result = converter.convert()
             if "type(" not in constr['txt'] and "isinstance" not in constr['txt'] and result is None : 
                 print("stop")
