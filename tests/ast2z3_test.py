@@ -1,12 +1,6 @@
-import ast
-import random
-import string
 import traceback
-import operator as op 
-import z3
 from typing import *
-from neuri.abstract.dtype import AbsDType, DType
-from neuri.constrinf import gen_inst_with_records
+from neuri.constrinf import gen_inst_with_records, make_record_finder
 from neuri.constrinf.ast2z3 import Ast2z3
 
 def test_with_given_constraints(constrs, arg_names, dtypes) :
@@ -16,8 +10,11 @@ def test_with_given_constraints(constrs, arg_names, dtypes) :
     for constr in constrs:
         result = "error"
         try :
-            result = Ast2z3(arg_names, dtypes, constr, func_name).convert()
-            # print(result)
+            converter = Ast2z3(arg_names, dtypes, {'txt' : constr}, func_name)
+            print(f"{func_name}-Constraint: {constr}")
+            result = converter.convert()
+            print(f"Z3: {result}\n")
+            print(f"suff conds : {converter.pretty_flags()}\n")
         except :
             print(traceback.format_exc())
             print(constr, func_name)
@@ -41,20 +38,34 @@ def test_whole_constraints(dir_path = None ) :
             result = "error"
             converter  = Ast2z3(arg_names, dtypes, constr, record['name'])
             print(f"{record['name']}-Constraint: {constr['txt']}")
+            if constr['txt'] in ["min(other) >= 0", "(other.rank <= out.rank) and ((out.rank==input.rank and all(out.shape[i]==input.shape[i] for i in range(out.rank))) and ('out'.shape == [8, 7, 6]))"] :
+                print("stop")
             result = converter.convert()
+            if "type(" not in constr['txt'] and "isinstance" not in constr['txt'] and result is None : 
+                print("stop")
             print(f"Z3: {result}\n")
             print(f"suff conds : {converter.pretty_flags()}\n")
 
     print(f"NL_CONSTR ------> SMT CONSTR : {cnt} CASES TEST COMPLETED")
 
 if __name__ == "__main__" :
+     
+    #  (len(mat2.shape) == 2) or ((out.shape == [mat1.shape[0], mat2.shape[1]]) or (len(input) == len(mat1)))
+
+    from neuri.constrinf.smt_funcs import load_z3_const
+    from neuri.abstract.dtype import AbsDType
+    from neuri.abstract.tensor import AbsTensor
     test_whole_constraints()
     #  Example Usage : test_with_given_constraints
-    # arg_names = ['a', 'b']
-    # dtypes = [load_z3_const('a','int', is_array=True), load_z3_const('b','int', is_array=True)]
-    # test_constraints = [
-    #     "all((a[i]>1 and a[i]<4) for i in range(len(a[2:])))",
-    #     "((i>1 and i<4) for i in a[2:])",
-    #     'a[-1] > b[-2]', 'a[:-1] == b[1:]'
-    # ]
-    # test_with_given_constraints(test_constraints, arg_names, dtypes)
+    arg_names = ['a', 'b','c']
+    dtypes = [
+        [AbsDType.int.to_iter()],
+        [AbsDType.int.to_iter()],
+        [AbsTensor.to_iter()],
+        ]
+    test_constraints = [
+        "all((a[i]>1 and a[i]<4) for i in range(len(a[2:])))",
+        "c[0].shape == b[0].shape",
+        'a[-1] > b[-2]'
+    ]
+    test_with_given_constraints(test_constraints, arg_names, dtypes)
