@@ -95,10 +95,7 @@ rules:
     \ [DT_BFLOAT16]\n device='CPU'; T in [DT_FLOAT]\n device='GPU'; T in [DT_BFLOAT16]\n\
     \ device='GPU'; T in [DT_HALF]\n device='GPU'; T in [DT_FLOAT]\n [Op:MaxPool3DGradGrad]\
     \ name:"
-  txt: (len(ksize) >= 5 and orig_input != None and orig_output != None and grad !=
-    None and strides != None and padding != None and data_format != None) and (type(orig_input)
-    in ['DT_FLOAT', 'DT_BFLOAT16', 'DT_HALF'] and Device in ['XLA_CPU_JIT', 'XLA_GPU_JIT',
-    'CPU', 'GPU'])
+  txt: orig_input.dtype in ['DT_FLOAT', 'DT_BFLOAT16', 'DT_HALF']
 - cot: 'The error is due to the fact that the attribute ''ksize'' has a length of
     1, while the minimum required length is 5. This means that the ''ksize'' tensor
     does not have enough values. Hence, the Left : len(ksize) should be corrected.

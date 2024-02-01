@@ -18,5 +18,5 @@ package: torch
 pass_rate: 0.0
 rules: {}
 skipped: true 
-skipped_reason : not supported constraints(prod, numel)
+skipped_reason : tensor element
 title: torch._C._linalg.linalg_tensorinv

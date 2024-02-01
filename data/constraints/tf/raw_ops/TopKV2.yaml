@@ -40,7 +40,7 @@ rules:
     \ DT_INT32, DT_INT64]; attr=index_type:type,default=DT_INT32,allowed=[DT_INT16,\
     \ DT_INT32, DT_INT64]> [Op:TopKV2] name:"
   txt: (input.dtype in ["float", "double", "int32", "uint8", "int16", "int8", "int64",
-    "bfloat16", "uint16", "half", "uint32", "uint64"]) and (type(k) in ["int16", "int32",
+    "bfloat16", "uint16", "half", "uint32", "uint64"]) and (k.dtype in ["int16", "int32",
     "int64"]) and (input.dtype in ["float", "double", "int32", "uint8", "int16", "int8",
     "int64", "bfloat16", "uint16", "half", "uint32", "uint64"])
 - cot: 'The error has occurred because ''k'' is not scalar but it was supposed to

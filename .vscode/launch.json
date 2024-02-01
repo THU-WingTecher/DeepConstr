@@ -76,9 +76,9 @@
                     "fuzz.resume=false",
                     "mgen.method=constrinf",
                     "mgen.max_nodes=3",
-                    "mgen.test_pool=['torch.as_tensor', 'Slice']",
+                    // "mgen.test_pool=['torch.as_tensor', 'Slice']",
                     // "mgen.test_pool=['torch.acos', 'Slice']",
-                    // "mgen.test_pool=['torch.addr', 'torch.as_strided', 'torch.atan2', 'torch.cross', 'torch.floor', 'torch.imag', 'torch.logaddexp2']",
+                    "mgen.test_pool=['torch.addr', 'torch.as_strided', 'torch.atan2', 'torch.cross', 'torch.floor', 'torch.imag', 'torch.logaddexp2']",
         ],
             "justMyCode": true
         },
@@ -117,6 +117,19 @@
             "program": "experiments/evaluate_richerm_models.py",
             "console": "integratedTerminal",
             "args": ["--root", "/artifact/gen/richerm", "--parallel", "1"],
+            "justMyCode": true
+        },
+        {
+            "name": "eval_apis",
+            "type": "python",
+            "request": "launch",
+            "env" : {
+                "PYTHONPATH": "/artifact/:/artifact/neuri/"
+            },
+            "program": "experiments/evaluate_apis.py",
+            "console": "integratedTerminal",
+            "args": ["mgen.record_path=/artifact/data/constraints/torch/", "mgen.pass_rate=0.05",
+             "mgen.max_nodes=5", "model.type=torch", "backend.type=torchjit", "fuzz.time=10m", "exp.parallel=1", "mgen.noise=0.4"],
             "justMyCode": true
         },
         {

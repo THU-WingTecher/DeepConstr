@@ -6,7 +6,7 @@ constraints:
     required: true
   padding:
     default: null
-    dtype: int,int
+    dtype: int,list[int]
     init: true
     required: true
 infered_history: []

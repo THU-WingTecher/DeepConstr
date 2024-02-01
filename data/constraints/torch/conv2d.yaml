@@ -53,16 +53,6 @@ rules:
     be ''>'', Right : 0.'
   target: non-positive groups is not supported
   txt: groups > 0
-- cot: 'In this case, the stride of the convolution has an incorrect size. The stride
-    is set to [500, 500, 500, 500, 500, 500], which is a list of 6 values. The error
-    message suggests that the stride should be a single integer or a list of exactly
-    5 values to match the convolution dimensions. So, the length of the stride list,
-    which is len(stride), should be corrected. Therefore, Left : len(stride). It says
-    that stride length should be 5, so Op : ==, and Right : 5. Also, it could be a
-    single integer, so Op : ==, and Right : 1.'
-  target: expected stride to be a single integer value or a list of 5 values to match
-    the convolution dimensions, but got stride=[500, 500, 500, 500, 500, 500]
-  txt: (len(dilation) == 1) and ((len(padding) == 1) and (len(stride) == 1))
 - cot: 'The error is due to the wrong dimension of the input tensor. In the given
     values, input tensor is 2D with size [8, 2] which is not suitable for the conv2d
     function as it requires the input tensor to be 3D (unbatched) or 4D (batched).

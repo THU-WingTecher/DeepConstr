@@ -46,45 +46,6 @@ constraints:
     required: false
 package: torch
 pass_rate: 0.0
-rules:
-- cot: "It appears that the 'padding' parameter is not provided in the input values,\
-    \ which might be leading to an error. The 'padding' parameter is important in\
-    \ convolution operations to decide how much padding is needed on the input tensor.\
-    \ \n\nIf not provided, it might be set to a default value (often zero), which\
-    \ can cause problems, for example if the stride is 2 (as in this case), but the\
-    \ tensor dimensions are not divisible by 2.\n\nThe tensor rank or dimensions can\
-    \ also affect the padding. For example, for a 3D tensor, a padding of [1,1,1]\
-    \ would add padding to all three dimensions. If the tensor is 3D (as possibly\
-    \ indicated by the 'x' tensor shape [8,8,8] or 'ksize' tensor shape [8,8,8,8,8]),\
-    \ then a padding of a single integer or a three integer list will be required.\n\
-    \nHence, we can form the following constraints:\n\n1. The 'padding' parameter\
-    \ must be provided, it cannot be empty or None."
-  target: '''padding'''
-  txt: len('padding') == len('x')
-- cot: "The error is triggered due to an issue with the 'beta_initializer' value.\
-    \ What the args were? To prevent this error we need to ensure certain conditions\
-    \ are met. First is the 'input' tensor, it's a multi-dimensional array with 8\
-    \ dimensions. Second, 'ksize' is a tensor with 1 dimension of size 8. Third, 'strides'\
-    \ is a scalar value. Fourth, 'padding' is a list of two items where both are undefined.\
-    \ Fifth, 'axis' is a scalar value. Sixth, 'x' is a tensor with 2 dimensions, shapes\
-    \ are 2 and 3. The last is 'center', a tensor with 8 dimensions.\n\nTo prevent\
-    \ error from 'beta_initializer', we need to make sure that 'beta_initializer'\
-    \ is a valid initializer in terms of type and value. The 'beta_initializer' is\
-    \ commonly used in layers like batch normalization. \n\nTherefore, Left : 'beta_initializer',\
-    \ should be a valid initializer, Op : 'is', Right : 'valid initializer'. The initializer\
-    \ should be one of the pre-defined initializers or a custom one which is correctly\
-    \ defined."
-  target: '''beta_initializer'''
-  txt: (input.rank > axis) and ('beta_initializer' in valid_initializers)
-- cot: "The error seems to be related to the 'beta_regularizer' which is not mentioned\
-    \ in the given values. It might be possible that 'beta_regularizer' is expected\
-    \ as an argument but not provided. Let's see what the args were. \nTo prevent\
-    \ this error, a 'beta_regularizer' should be provided and it should be in the\
-    \ 'valid_initializers' list. So, 'beta_regularizer' should be in the 'valid_initializers'\
-    \ list. Therefore, Left : 'beta_regularizer'. Op : in. Right : 'valid_initializers'."
-  target: '''beta_regularizer'''
-  txt: (padding != 'not defined') and ('beta_regularizer' in valid_initializers)
-skipped: true
-skipped_reason: dupe
+rules: {}
 title: torch.Tensor.log_
 dupe_with: torch.Tensor.log

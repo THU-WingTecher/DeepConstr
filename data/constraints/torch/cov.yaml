@@ -38,4 +38,4 @@ time_cost: 121.92429757118225
 title: torch.cov
 tokens_used: 3913
 skipped: true 
-skipped_reason: unsupport constraints (numel)
+skipped_reason: tensor element

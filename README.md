@@ -1,11 +1,12 @@
 Todo : 
 
-- [ ] replace z3 object generation logic 
-- [ ] test whole rules converting is ok or not
+- [ ] sliced list logic check,
+- [ ] isinstance, type implementation
+- [ ] dtype rule prioritizing
 - [ ] type rule prioritizing logic while rule solving 
-- [ ] solving logic check
 - [ ] *args operation with yaml module 
 - [ ] transfer train codes and make it multicoreable
+- [ ] DB revision(type, dtype, ...)
 - [ ] retrain apis and reevaluate 
 
 

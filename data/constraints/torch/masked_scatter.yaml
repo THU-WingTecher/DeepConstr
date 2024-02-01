@@ -42,22 +42,6 @@ rules:
     \ tensor shape."
   target: Number of elements of source < number of ones in mask
   txt: mask.shape == source.shape
-- cot: 'Error is triggered because size of tensors at non-singleton dimension 6 doesn''t
-    match. What the args were? the two tensors matching problem at non-singleton dimension
-    looks like broadcasting request. Broadcasting in tensor operations requires that
-    the trailing dimensions of the tensors are either 1 or the same. Therefore, we
-    can revise the constraints as follows:'
-  target: The size of tensor a (2) must match the size of tensor b (3) at non-singleton
-    dimension 6
-  txt: (all(input.shape[i] == mask.shape[i] or input.shape[i] == 1 or mask.shape[i]
-    == 1 for i in range(-1, -min(len(input.shape), len(mask.shape))-1, -1)) and all(input.shape[i]
-    == source.shape[i] or input.shape[i] == 1 or source.shape[i] == 1 for i in range(-1,
-    -min(len(input.shape), len(source.shape))-1, -1))) and ((all(mask.shape[i] ==
-    source.shape[i] or mask.shape[i] == 1 or source.shape[i] == 1 for i in range(-1,
-    -min(len(mask.shape), len(source.shape))-1, -1))) and ((input.dim(i) == 1) and
-    ((input[6] == source[6]) and (all(input.shape[i] == source.shape[i] or input.shape[i]
-    == 1 or source.shape[i] == 1 for i in range(-1, -min(len(input.shape), len(source.shape))-1,
-    -1))))))
 - cot: "The error is due to the usage of a mask of float datatype in the function\
     \ 'masked_scatter_', which only supports boolean masks. Let's see what the args\
     \ were. The mask provided is of type 'float32'. To prevent this error from occurring\

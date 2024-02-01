@@ -58,13 +58,7 @@ rules:
   target: stride should not be zero
   txt: ((stride != 0) and ((len(stride)>0) or (kernel_size > 0))) or (stride > 0)
     or ((stride != 0) and ((len(stride)>0) or (kernel_size > 0)))
-- cot: Error is triggered because of the calculated output size being too small. Let's
-    see what the args were. The input size is (2x1x6) and kernel_size is [39] and
-    output size is (2x1x0). So the problem is that the kernel size is greater than
-    the input size, causing the output size to be 0. Therefore,
-  target: 'Given input size: (2x1x6). Calculated output size: (2x1x0). Output size
-    is too small'
-  txt: kernel_size <= input_size
+
 - cot: 'Error is triggered because of 0-dimensional tensor. It expects to have 2 or
     3 dimensions. Let''s see what the args were. It seems ''input'' has 0 dimension,
     and is the problem. So, the number of dimensions of ''input'' should be corrected,

@@ -1,6 +1,8 @@
 #!/bin/bash
-
 set -x
+
+source /opt/conda/etc/profile.d/conda.sh
+conda activate cov
 
 cd "$(dirname "$0")"
 

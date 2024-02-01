@@ -32,7 +32,6 @@ rules:
     \ parameter can be expressed as:"
   target: Dimension out of range (expected to be in range of [-8, 7], but got 10)
   txt: (all(dim[i] >= -len(input.shape) and dim[i] < len(input.shape) for i in range(len(dim))))
-    or (dim < len(input.shape))
 - cot: 'The error is due to the input tensor''s data type being int8, whereas the
     std_mean function only supports floating point and complex data types. When we
     assess the args, it seems that the ''input'' tensor has a dtype of int8, which

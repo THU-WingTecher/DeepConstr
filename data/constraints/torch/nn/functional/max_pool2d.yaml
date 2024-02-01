@@ -17,7 +17,7 @@ constraints:
     required: true
   padding:
     default: null
-    dtype: list[int]
+    dtype: list[int], int
     init: false
     required: true
   return_indices:

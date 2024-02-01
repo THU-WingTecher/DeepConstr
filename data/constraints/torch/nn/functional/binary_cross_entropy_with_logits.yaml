@@ -58,5 +58,5 @@ rules:
     == 1 for i in range(-1, -min(len(input.shape), len(pos_weight.shape))-1, -1)))
     and ((pos_weight.shape[1] == len(weight)) or (input.shape[1] == pos_weight.shape[0]))
 skipped: true
-skipped_reason: Segmentation fault (core dumped)
+skipped_reason: bug
 title: torch.nn.functional.binary_cross_entropy_with_logits
