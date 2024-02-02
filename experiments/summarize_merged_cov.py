@@ -1,7 +1,8 @@
 import os
 import pickle
 import pandas as pd
-
+pd.set_option('display.max_rows', None)
+pd.set_option('display.max_columns', None)
 def parse_directory_name(dirname):
     """
     Parses the directory name to classify information into columns and API names.
