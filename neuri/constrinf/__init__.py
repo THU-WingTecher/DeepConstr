@@ -39,7 +39,7 @@ def gen_inst_with_records(
             path = os.path.join(root, file)
             cfg = load_yaml(path)
             if test_pool :
-                if record["title"] not in test_pool :
+                if cfg["title"] not in test_pool :
                     continue
 
             for key, item in cfg.items() :

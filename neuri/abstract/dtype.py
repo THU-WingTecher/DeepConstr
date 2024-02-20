@@ -156,7 +156,7 @@ class DType(Enum):
             # DType.qint8: "q8",
             # DType.qint16: "q16",
             # DType.qint32: "q32",
-            DType.bfloat16: np.bfloat16,
+            # DType.bfloat16: np.bfloat16,
             # DType.complex32: "c32",
             DType.float16: np.float16,
             DType.float32: np.float32,

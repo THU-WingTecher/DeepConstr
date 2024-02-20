@@ -1,10 +1,11 @@
 # env settings
 .envrc
-launch.json 
+.vscode/
 
 # experiment data
 *.profraw 
 *.tar.gz
+bugs/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
