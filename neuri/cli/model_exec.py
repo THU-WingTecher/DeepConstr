@@ -190,20 +190,21 @@ def main(cfg: DictConfig):
                 test_outputs = res["output"]
                 provider = res["provider"]
 
+        this_fac = BackendFactory.init(
+            cfg["backend"]["type"],
+            target=cfg["backend"]["target"],
+            optmax=cfg["backend"]["optmax"],
+        )
+
         if test_inputs is None:
             EXEC_LOG.info("Generating input data from BackendFactory.make_random_input")
-            test_inputs = BackendFactory.make_random_input(model.input_like)
+            test_inputs = this_fac.make_random_input(model.input_like)
             provider = f"random inputs"
 
         # the oracle might not have oracle outputs.
         oracle = Oracle(test_inputs, test_outputs, provider)
         testcase = TestCase(model, oracle)
 
-        this_fac = BackendFactory.init(
-            cfg["backend"]["type"],
-            target=cfg["backend"]["target"],
-            optmax=cfg["backend"]["optmax"],
-        )
 
         output_dir = None if output_dirs is None else output_dirs[i]
         verify_testcase(

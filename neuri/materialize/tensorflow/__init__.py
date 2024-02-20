@@ -1,4 +1,5 @@
 from __future__ import annotations
+from copy import deepcopy
 
 import logging
 import os
@@ -155,7 +156,14 @@ class TFModel(Model, ABC):  # Don't directly instantiate this class
     @staticmethod
     def name_suffix() -> str:
         return ""
-
+    
+    @staticmethod
+    def make_random_input(input_like: Dict[str, tf.Tensor], low=1, high=2) -> Dict[str, tf.Tensor]:
+        return {
+            name: tf.cast(low + (high - low) * tf.random.uniform(shape=aten.shape, dtype=aten.dtype.tensorflow()), aten.dtype.tensorflow())
+            for name, aten in input_like.items()
+        }
+    
     def make_oracle(
         self, inputs: Dict[str, tf.Tensor | tf.TensorSpec] = None
     ) -> Oracle:
@@ -168,7 +176,9 @@ class TFModel(Model, ABC):  # Don't directly instantiate this class
         # To pre-check the graph integrity, we use graph mode
         # instead of eager mode.
         concrete_net = self.concrete_net(self.input_specs)
-        output_dict = concrete_net(**input_dict)
+        model = deepcopy(concrete_net)
+        copied_input = deepcopy(input_dict)
+        output_dict = model(**copied_input)
 
         input_dict = np_dict_from_tf(input_dict)
         output_dict = np_dict_from_tf(output_dict)

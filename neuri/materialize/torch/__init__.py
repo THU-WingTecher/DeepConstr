@@ -1,3 +1,4 @@
+from copy import deepcopy
 import pickle
 from os import PathLike
 from typing import Dict, List, Tuple, Type
@@ -90,7 +91,9 @@ class TorchModel(Model):
                 inputs = self.torch_model.get_random_inps()
             else:
                 inputs = self.sat_inputs
-            outputs: Tuple[torch.Tensor] = self.torch_model.forward(**inputs)
+            model = deepcopy(self.torch_model)
+            copied_input = deepcopy(inputs)
+            outputs: Tuple[torch.Tensor] = model.forward(**copied_input)
 
         # numpyify
         input_dict = {k: v.cpu().detach() for k, v in inputs.items()}

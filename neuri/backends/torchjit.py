@@ -32,6 +32,13 @@ class TorchJITFactory(BackendFactory):
     def system_name(self) -> str:
         return "torchjit"
 
+    @staticmethod
+    def make_random_input(input_like: Dict[str, torch.Tensor], low=1, high=2) -> Dict[str, torch.Tensor]:
+        return {
+            name: (low + (high - low) * torch.rand(aten.shape, dtype=aten.dtype.torch()))
+            for name, aten in input_like.items()
+        }
+    
     @dispatch(TorchModel)
     def make_backend(self, model: TorchModel) -> BackendCallable:
         torch_net = model.torch_model.to(self.device).eval()

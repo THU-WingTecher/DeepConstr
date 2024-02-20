@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from typing import Callable, Dict, List, Optional, Type, Union
 
 import numpy as np
-
+from copy import deepcopy
 from neuri.abstract.dtype import DType
 from neuri.abstract.extension import BACKEND_REQUIRES
 from neuri.abstract.op import AbsOpBase
@@ -93,7 +93,9 @@ class BackendFactory(ABC):
             )
 
         try:  # execution
-            return executable(input)
+            copied = deepcopy(input)
+            output = executable(copied)
+            return output
         except InternalError as e:
             raise e
         except Exception:
@@ -291,7 +293,8 @@ class BackendFactory(ABC):
             input = self.make_random_input(model.input_like)
 
         try:  # execution
-            output = executable(input)
+            copied = deepcopy(input)
+            output = executable(copied)
         except InternalError as e:
             raise e
         except Exception:
