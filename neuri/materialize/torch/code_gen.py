@@ -131,7 +131,7 @@ def gen_code(op: Div):
     return "torch.div" + braces_template(
         len(op.input_like),
         rounding_mode="floor" if op.input_like[0].dtype in DTYPE_GEN_INTS else None,
-    )
+    ), False
     return lambda up, down: torch.div(
         up,
         down,
