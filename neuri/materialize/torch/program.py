@@ -91,7 +91,7 @@ class Program:
             # )  # do NOT use cuda here, or the input tensors will not be pickle.dump correctly
                 self.inputs[input_var_name] = random_input
             code_forward.append(
-                line(8, f"# {input_var_name}: {list(self.inputs[input_var_name].shape)}")
+                line(8, f"# {input_var_name}: {list(self.inputs[input_var_name].shape)}, {self.inputs[input_var_name].dtype}")
             )
 
         self.params: Dict[str, torch.Tensor] = {}
@@ -113,7 +113,7 @@ class Program:
                 code_params.append(
                     line(
                         8,
-                        f'self.{p_name} = torch.nn.parameter.Parameter(params["{p_name}"], requires_grad={p_data.is_floating_point()}) # {list(p_data.shape)}',
+                        f'self.{p_name} = torch.nn.parameter.Parameter(params["{p_name}"], requires_grad=False) # {list(p_data.shape)}, {p_data.dtype}',
                     )
                 )
                 retvals = ir_inst.retvals()
