@@ -26,7 +26,6 @@ TENSOR_ATTRS_MAPPING = {
     'ndim' : 'rank',
     'ndims' : 'rank'
 }
-NOT_SIGN = "~"
 COMPARISON_KINDS = [
     z3.Z3_OP_GE,  # Greater than or equal
     z3.Z3_OP_GT,  # Greater than

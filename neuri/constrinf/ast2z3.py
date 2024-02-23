@@ -70,12 +70,10 @@ FLAGS = ["must_iter", "must_int", "must_not_iter", "must_str"]
 
 class Ast2z3(SMTFuncs) : 
     
-    def __init__(self, arg_names, dtypes, info, func_name) -> None : 
+    def __init__(self, arg_names, dtypes, txt, func_name = None) -> None : 
         super().__init__()
         self.need_hijack = False
-        self.txt = info.get('txt')
-        self.cot = info.get('cot')
-        self.target = info.get('target')
+        self.txt = txt
         self.func_name = func_name
         self.arg_names = arg_names
         self.related_args = []
@@ -384,7 +382,7 @@ class Ast2z3(SMTFuncs) :
         """
         return self.constrs
     
-    def convert(self) : 
+    def convert(self, no_suff : bool =False) : 
         result = None 
         ast = self.load_ast_with_hooks(self.txt, self.arg_names)
         self.constr_flags = self.gen_empty_constr_flags(self.related_args)
@@ -400,12 +398,12 @@ class Ast2z3(SMTFuncs) :
                 }
             try : 
                 constr_body = self._convert(ast, z3_type_objs)
-                constr_body = constr_body[0] if isinstance(constr_body, list) else constr_body
+                result = constr_body[0] if isinstance(constr_body, list) else constr_body
                 dynamic_constrs = self.get_dynamic_constrs()
                 if dynamic_constrs :
-                    constr_body = merge_constr(dynamic_constrs + [constr_body])
-                if constr_body is not None :
-                    result = self.conn_suff_conds(constr_body, z3_type_objs)        
+                    result = merge_constr(dynamic_constrs + [result])
+                if result is not None and not no_suff:
+                    result = self.conn_suff_conds(result, z3_type_objs)        
                 break
             except IncompatiableConstrError as e :
                 AUTOINF_LOG.warning(f"{e}")

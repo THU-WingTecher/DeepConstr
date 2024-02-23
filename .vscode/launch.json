@@ -76,9 +76,10 @@
                     "fuzz.resume=false",
                     "mgen.method=constrinf",
                     "mgen.max_nodes=3",
+                    // "mgen.test_pool=['torch.reciprocal', 'torch.asin', 'torch.gt','Slice']",
                     // "mgen.test_pool=['torch.as_tensor', 'Slice']",
                     // "mgen.test_pool=['torch.acos', 'Slice']",
-                    "mgen.test_pool=['torch.addr', 'torch.as_strided', 'torch.atan2', 'torch.cross', 'torch.floor', 'torch.imag', 'torch.logaddexp2']",
+                    // "mgen.test_pool=['torch.addr', 'torch.as_strided', 'torch.atan2', 'torch.cross', 'torch.floor', 'torch.imag', 'torch.logaddexp2']",
         ],
             "justMyCode": true
         },
@@ -91,10 +92,10 @@
             "env" : {
                 "PYTHONPATH": "/artifact/:/artifact/neuri/"
             },
-            "args": ["model.type=tensorflow",
-                    "backend.type=xla",
+            "args": ["model.type=torch",
+                    "backend.type=torchcomp",
                     "backend.target=cpu",
-                    "model.path=/artifact/gen/tensorflow-neuri-n1/bug-Symptom.INCONSISTENCY-Stage.VERIFICATION-2/model"
+                    "model.path=/artifact/bugs/torchcomp-fuzz-0220_final/bug-Symptom.EXCEPTION-Stage.VERIFICATION-0/model.pth"
         ],
             "justMyCode": true
         },

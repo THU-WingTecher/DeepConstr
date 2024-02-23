@@ -1,0 +1,541 @@
+import copy
+from multiprocessing import Pool
+import random
+import os
+import time
+import traceback
+from importlib.util import module_from_spec, spec_from_file_location
+from pathlib import Path
+from types import FunctionType
+from typing import Any, Dict, List, Literal, Tuple, Type
+
+import yaml
+from neuri.constrinf import process_record, record_args_info
+from neuri.constrinf.constr import Constraint, convert_constr_to_executable
+from neuri.constrinf.errmsg import ErrorMessage
+from neuri.constrinf.executor import Executor
+from neuri.constrinf.inferencer import Inferencer
+import hydra
+from omegaconf import DictConfig
+
+
+from neuri.backends.factory import BackendFactory
+from neuri.constrinf.parser import segment_constr, parse_from_raw_txt
+from neuri.constrinf.prompter import Prompter
+from neuri.constrinf.synthesizer import Synthesizer
+from neuri.error import InternalError
+from neuri.filter import FILTERS
+from neuri.gir import GraphIR
+from neuri.graph_gen import model_gen
+from neuri.logger import FUZZ_LOG, AUTOINF_LOG, TRAIN_LOG
+from neuri.macro import NNSMITH_BUG_PATTERN_TOKEN
+from neuri.materialize import BugReport, Model, TestCase
+from neuri.narrow_spec import auto_opset
+from neuri.util import mkdir, parse_timestr, set_seed
+
+# Status.csv
+# Each line represents the status of one generation.
+# META: seed,stat,tgen,tsmt,tsave,trun,elapsed_s
+# stat can be one of:
+#  - "ok": no error.
+#  - "fail": invalid testcase.
+#  - "bug": bug found.
+class ErrMsgs:
+    def __init__(self, err_msgs, args) :
+        self.err_msgs = err_msgs
+        self.args = args
+        self.sim_threshold = 0.8
+    def is_similar(self, a, b, threshold=None) :
+        if threshold is None :
+            threshold = self.sim_threshold
+        return is_similar(a, b, threshold=threshold)
+    def find_by_similar(self, target) :
+        for msg in enumerate(self.err_msgs) :
+            if self.is_similar(target, msg) :
+                return msg
+        return None
+
+def find_sim_msgs(target, msgs : List[str], threshold=0.8) :
+    for msg in msgs :
+        if is_similar(target, msg, threshold) :
+            return msg
+    return None
+
+def transform_record_for_saving(record: dict) -> dict:
+    """
+    Transform the record dictionary to the original format expected for saving.
+
+    Args:
+        record (dict): The modified record dictionary.
+
+    Returns:
+        dict: The transformed record dictionary suitable for saving.
+    """
+    transformed = {}
+    for key, value in record.items():
+        if key == 'name':
+            transformed['title'] = value
+        elif key == 'args':
+            constraints = {}
+            for i, name in enumerate(value['name']):
+                constraints[name] = {
+                    'is_pos': value['is_pos'][i],
+                    'dtype': value['dtype'][i]  # Assuming dtype should be reverted; adjust as necessary
+                }
+            transformed['constraints'] = constraints
+        else:
+            transformed[key] = value
+
+def save_record(record: dict, path: str) -> None:
+    """
+    Save a given record dictionary to a YAML file, ensuring that the dictionary is
+    transformed back to its original expected format before saving.
+
+    Args:
+        record (dict): The record dictionary to be saved.
+        path (str): The file path where the record should be saved.
+
+    Raises:
+        FileNotFoundError: If the directory specified in the path does not exist.
+        Exception: For any unexpected errors during the save operation.
+    """
+    # Transform the record back to the expected format
+    save_format_record = transform_record_for_saving(record)
+
+    # Ensure the directory exists
+    directory = os.path.dirname(path)
+    if not os.path.exists(directory):
+        raise FileNotFoundError(f"The directory {directory} does not exist.")
+    
+    try:
+        with open(path, 'w') as file:
+            yaml.dump(save_format_record, file)
+    except FileNotFoundError as e:
+        raise FileNotFoundError(f"The directory {directory} does not exist.") from e
+    except Exception as e:
+        raise Exception(f"An error occurred while saving the record to {path}.") from e
+
+    print(f"Record saved successfully to {path}.")
+
+class StatusCollect:
+    def __init__(self, root, resume=False, op_usage=False):
+        self.root = Path(root)
+        stat_fname = self.root / "status.csv"
+        self.n_infer = 0
+        self.cur_high_score = 0
+        self.n_bugs = 0
+        self.n_fail_make_test = 0
+        self.n_testcases = 0
+        self._elapsed_s = 0
+        self.infer_history = {}
+        if (
+            os.path.exists(self.root) and resume
+        ):  # parse n_bugs, n_fail_make_test, n_testcases.
+            with open(stat_fname, "r") as f:
+                lines = f.readlines()
+            for line in lines[1:]:
+                if line == "":
+                    continue
+                tokens = line.split(",")
+                stat = tokens[1]
+                self._elapsed_s = float(tokens[-1])
+                if stat == "bug":
+                    self.n_bugs += 1
+                elif stat == "fail":
+                    self.n_fail_make_test += 1
+                elif stat != "ok":
+                    raise ValueError(f"Unknown stat: {stat}")
+                self.n_testcases += 1
+            FUZZ_LOG.info(f"Resuming from {self.n_testcases} testcases.")
+        else:
+            mkdir(self.root)
+            with open(stat_fname, "w") as f:
+                f.write("seed,stat,tgen(ms),tsmt(ms),tsave(ms),trun,elapsed(s)\n")
+
+        self.stat_file = open(
+            self.root / "status.csv", "a", buffering=1024
+        )  # 1KB buffer
+        self.tik = None
+
+        self.op_usage = op_usage
+        if self.op_usage:
+            self.op_used_file = open(self.root / "op_used.txt", "a", buffering=128)
+            self.op_rej_file = open(self.root / "op_rej.txt", "a", buffering=128)
+
+    def ok_inst(self, ir: GraphIR):
+        if self.op_usage:
+            insts = ir.leaf_inst()
+            if insts and insts[0].iexpr.op.__class__.__name__ == "AutoInfOpBase":
+                self.op_used_file.write(f"{insts[0].iexpr.op.inst.name_index}\n")
+
+    def rej_inst(self, ir: GraphIR):
+        if self.op_usage:
+            insts = ir.leaf_inst()
+            if insts and insts[0].iexpr.op.__class__.__name__ == "AutoInfOpBase":
+                self.op_rej_file.write(f"{insts[0].iexpr.op.inst.name_index}\n")
+                self.op_rej_file.flush()  # flush every time to avoid losing data.
+
+    @property
+    def elapsed_s(self) -> float:
+        if self.tik is None:
+            self.tik = time.time()
+        else:
+            tok = time.time()
+            self._elapsed_s += tok - self.tik
+            self.tik = tok
+        return self._elapsed_s
+
+    def record(self, seed, stat, tgen, tsmt=0, trun=0, tsave=0):
+        self.n_testcases += 1
+        if stat == "bug":
+            self.n_bugs += 1
+        elif stat == "fail":
+            self.n_fail_make_test += 1
+        elif stat != "ok":
+            raise ValueError(f"Unknown stat: {stat}")
+        self.stat_file.write(
+            f"{seed},{stat},{tgen},{tsmt},{tsave},{trun},{self.elapsed_s:.3f}\n"
+        )
+        self.stat_file.flush()
+        FUZZ_LOG.info(
+            f"tgen={tgen:.1f}ms, tsmt={tsmt:.1f}ms, trun={trun:.1f}ms, tsave={tsave:.1f}ms"
+        )
+
+    def get_next_bug_path(self):
+        return self.root / f"bug-{NNSMITH_BUG_PATTERN_TOKEN}-{self.n_bugs}"
+
+class FuzzingLoop:
+    def __init__(
+        self,
+        cfg: DictConfig,
+    ):
+        
+        self.cfg = cfg
+        self.inferencer = Inferencer(cfg['llm']['settings'])
+        cmpwith = cfg["cmp"]["with"]
+        if cfg["backend"]["type"] == "tflite" and (
+            cmpwith is None or cmpwith["target"] != "cuda"
+        ):
+            os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
+        if (
+            cfg["train"]["crash_safe"]
+            and cfg["backend"]["type"] == "xla"
+            and cfg["backend"]["target"] == "cuda"
+        ) or (
+            cmpwith is not None
+            and cmpwith["type"] == "xla"
+            and cmpwith["target"] == "cuda"
+        ):
+            raise ValueError(
+                "Please set `fuzz.crash_safe=false` for XLA on CUDA. "
+                "Also see https://github.com/ise-uiuc/nnsmith/blob/main/doc/known-issues.md"
+            )
+
+        self.crash_safe = bool(cfg["train"]["crash_safe"])
+        self.n_infer = int(cfg["train"]["n_infer"])
+        resume = cfg["train"]["resume"]
+        self.status = StatusCollect(
+            cfg["train"]["root"],
+            resume=resume,
+            op_usage=(
+                cfg["mgen"]["max_nodes"] == 1 and cfg["mgen"]["method"] == "neuri-i"
+            ),
+        )
+
+        self.factory = BackendFactory.init(
+            cfg["backend"]["type"],
+            target=cfg["backend"]["target"],
+            optmax=cfg["backend"]["optmax"],
+        )
+
+        model_cfg = self.cfg["model"]
+        self.constr_target_map = {}
+        self.ModelType = Model.init(
+            model_cfg["type"], backend_target=cfg["backend"]["target"]
+        )
+        self.ModelType.add_seed_setter()
+        self.executor : Executor = Executor(self.ModelType, cfg["train"]["parallel"])
+        self.train_list = self.get_train_list()
+        FUZZ_LOG.info(
+            f"{len(self.train_list)} opsets wait for inferring"
+        )
+        self.save_test = cfg["train"]["save_test"]
+        if isinstance(self.save_test, str) and not (
+            os.path.exists(self.save_test) and resume
+        ):  # path of root dir.
+            FUZZ_LOG.info(f"Saving all intermediate testcases to {self.save_test}")
+            mkdir(self.save_test)
+
+    def get_train_list(self, module=None) -> List[str]:
+        """
+        get operator yaml file path
+        """
+        li = []
+        root_path = self.cfg["train"]["record_path"] 
+        if module is not None :
+            raise NotImplementedError("module is not implemented")
+        
+        for root, _, files in os.walk(root_path):
+            for file in files:
+                if file.endswith(".yaml"):
+                    li.append(os.path.join(root, file))
+        return li
+  
+    def get_pass_rate_and_err_msgs(self, record, ntimes) -> Tuple[float, ErrorMessage]:
+        # Assuming `run` is replaced with `self.execute` as per the revised requirement
+        success_count = 0
+        error_messages = {}
+        executable_constr = convert_constr_to_executable(record["constraints"]) # unactivated
+        results = self.executor.execute(record, 
+                                        executable_constr,
+                                        ntimes, 
+                                        noise = self.cfg["train"]["noise"],
+                                        allow_zero_length_rate = self.cfg["train"]["allow_zero_length_rate"],
+                                        allow_zero_rate = self.cfg["train"]["allow_zero_rate"],
+                                        num_of_try = self.cfg["train"]["num_of_try"]
+                                        )
+        for result in results:
+            success, error_instance = result
+            if success:
+                success_count += 1
+            else:
+                # Extract error details from the ErrorMessage instance
+                errmsg = error_instance.get_core_msg()
+                if errmsg not in error_messages:
+                    error_messages[errmsg] = {'instance': error_instance, 'count': 0}
+                error_messages[errmsg]['count'] += 1
+
+        # Calculate success rate
+        success_rate = success_count / ntimes if ntimes else 0
+
+        # Process error messages and their frequencies
+        errmsg_counts = {errmsg: details['count'] for errmsg, details in error_messages.items()}
+
+        # Sort error messages by frequency
+        sorted_errmsgs = sorted(errmsg_counts.items(), key=lambda item: item[1], reverse=True)
+
+        sorted_error_instances = [error_messages[errmsg]['instance'] for errmsg, _ in sorted_errmsgs]
+
+        # Log the most frequent error message
+        if sorted_errmsgs:
+            most_frequent_errmsg, count = sorted_errmsgs[0]
+            TRAIN_LOG.info(f"Most frequent error message: {most_frequent_errmsg} with {count}")
+            if self.is_special_err_msg(most_frequent_errmsg):
+                raise Exception("Special error message encountered. Cannot proceed.")
+        else:
+            TRAIN_LOG.info("No error messages encountered.")
+
+        # Return success rate and the sorted list of error message instances
+        return success_rate, sorted_error_instances
+    
+    def select_train_op(self) :
+        set_seed(self.cfg["train"]["seed"])
+        return random.choice(self.train_list)
+
+    def parse_and_generate_rules(self, raw_infered, target, arg_names) -> List[Constraint]:
+        """
+        Parse LLM response and generate rules.
+        Filter ill-formed rules and return the valid ones.
+        """
+        generated = []
+        rules = []
+        infered, cot = parse_from_raw_txt(raw_infered)
+        dtypes = target.get_dtypes()
+        for rule_txt in infered.split(';'):
+            generated.append(rule_txt)
+            generated.extend(segment_constr(rule_txt))
+        
+        for rule_txt in generated:
+            rule = Constraint(rule_txt, cot, target, arg_names, dtypes)
+            if rule.check(arg_names, dtypes) :
+                rules.append(rule)
+        return rules
+
+    def update_tolerance_and_history(self, result : Tuple[Dict[str, float], Constraint], tolerance, highest_prev, prev_answer):
+        """
+        Update the training session's state based on the latest rule evaluation results.
+        
+        :param results: The results from the latest round of rule evaluations.
+        :param tolerance: The current tolerance level.
+        :param highest_prev: The highest score achieved so far.
+        :param prev_answer: The current best rule based on previous evaluations.
+        :return: A tuple containing updated tolerance, highest_prev, and prev_answer.
+        """
+        if highest_prev["overall_score"] >= result[0]["overall_score"] :
+            # No new rules to evaluate or no improvement found, increase tolerance
+            tolerance += 1
+        else:
+            # Extract the best result from the current evaluation
+            best_current_score, best_constr = result
+            # Found a better rule, reset tolerance and update history
+            TRAIN_LOG.info(f"New highest score: from {highest_prev["overall_score"]} to {best_current_score["overall_score"]} with rule {best_constr.txt}")
+            highest_prev = best_current_score
+            prev_answer = best_constr
+            tolerance = 0  # Reset tolerance since we found an improvement
+        
+        # Check if an optimal rule has been found
+        solved = highest_prev["overall_score"] == 100
+        return solved, tolerance, highest_prev, prev_answer
+
+    def finalize_training_session(self, highest_prev : Dict[str, float], synthesizer, prev_answer):
+        """
+        Finalize the training session, handling the selection of the most optimal rule.
+        
+        :param highest_prev: The highest score achieved during training.
+        :param synthesizer: The synthesizer instance used during training.
+        :param prev_answer: The rule corresponding to the highest score.
+        :return: Boolean indicating whether a satisfactory rule was found.
+        """
+        # Log the tried rules and their outcomes
+        TRAIN_LOG.info(f"Tried rules:\n{'\n'.join([r.txt for r in synthesizer.tried])}")
+        
+        if highest_prev["overall_score"] == 0:
+            # No improvement found
+            TRAIN_LOG.info("No improvement found.")
+            return False
+        elif highest_prev["overall_score"] == 100:
+            # A rule with perfect score found
+            TRAIN_LOG.info(f"Perfect rule found: {prev_answer.txt}")
+            self.handle_solved_rule(prev_answer, highest_prev)
+            return True
+        else:
+            # Select the best rule based on the training outcome
+            if synthesizer.non_FP:
+                # Select the first non-false positive rule if available
+                best_rule = synthesizer.non_FP[0][1]
+            else:
+                # Fallback to the best seed rule if the precision threshold is met
+                if synthesizer.seeds[0][0]["precision"] <= self.cfg['precision_threshold']:
+                    TRAIN_LOG.info("Best rule does not meet the precision threshold.")
+                    return False
+                best_rule = synthesizer.seeds[0][1]
+            
+            TRAIN_LOG.info(f"Applying best found rule: {best_rule.txt}")
+            self.handle_solved_rule(best_rule, highest_prev) ## save rule to record
+            return True   
+    def get_only_acc_save_path(self, record_path) :
+        ## change constraints -> only_acc
+        new_path = record_path.replace("constraints", "only_acc")
+        if os.path.exists(new_path) :
+            return new_path
+        else :
+            os.makedirs(new_path, exist_ok=True)
+            return new_path
+    
+    def get_retrain_list(self, op_record) -> List[Tuple[ErrorMessage, Constraint]] :
+        pass_rate, sorted_err_instances = self.get_pass_rate_and_err_msgs(op_record)
+        return [(target, constr) for target, constr in self.constr_target_map.items()]
+    
+    def pop_constr_from_record(self, txt : str, record) :
+        for const_instance in record["constraints"] :
+            if const_instance["txt"] == txt :
+                record["constraints"].remove(const_instance)
+                return True
+        raise ValueError(f"no such constraint in record : {txt}")
+    
+    def run(self):
+        n_try = 0
+        record_path = self.select_train_op()
+        op_record = process_record(record_path)
+        while pass_rate < 100 and n_try < self.cfg["train"]["n_try"] :
+            pass_rate, sorted_err_instances = self.get_pass_rate_and_err_msgs(op_record)
+            succeed = self.train(op_record, sorted_err_instances[0], mode="acc")
+            if succeed :
+                save_record(op_record, record_path)
+            else :
+                break
+        
+        save_record(op_record, self.get_only_acc_save_path())
+        queue = self.get_retrain_list(op_record)
+        while queue :
+            target_err, (scores, constr) = queue.pop()
+            self.pop_constr_from_record(constr.txt, op_record)
+            succeed = self.train(op_record, target_err, mode="f1", seeds = [(scores, constr)])
+            if succeed :
+                save_record(op_record, record_path)
+            else :
+                break
+    
+    def fix_record_attrs(self, record, target) :
+        """
+        fix dtypes and rules
+        multiple dtypes -> single dtype
+        txt rule -> executable rule(unactivated)
+        """
+        copied = copy.deepcopy(record)
+        copied["constraints"] = convert_constr_to_executable(copied["constraints"])
+        copied["args"]["dtype"] = target.get_dtypes()
+        return copied
+    
+    def train(self, record, target : ErrorMessage, mode : Literal["acc", "f1"], seeds = []):
+        # Initialize training session
+
+        solved = False
+        infer_times = 0
+        prev_answer = None
+        highest_prev : Dict[str, float] = {}
+        tolerance = 0
+        new_rules : List[Constraint] = []
+        record = self.fix_record_attrs(record, target)
+        prompter = Prompter(record)
+        synthesizer = Synthesizer(target, self.executor, record, self.cfg["train"])
+        # Synthesizer responsible for filtering, evaluating, and finding the best rule
+        synthesizer.set_mode(mode)
+        if seeds : 
+            synthesizer.save_state(seeds)
+        while self.cfg["train"]['infer_asset_per_epoch'] >= infer_times and not solved:
+            if tolerance >= self.cfg["train"]['tolerance']:
+                break
+            
+            # Generate prompts for inference
+            context, prompts = prompter.gen([target.get_core_msg()], 
+                                    args_values=target.get_values_map(record["args"]["name"]),
+                                    num_of_ex=random.randint(2, 3),
+                                    prev_answer=prev_answer)
+            
+            raw_infered = self.inferencer.inference(prompts, context)
+            infer_times += 1
+            
+            # Parse LLM response and generate rules
+            new_rules = self.parse_and_generate_rules(raw_infered, 
+                                                      target, 
+                                                      record["args"]["name"]
+                                                      )
+            # Evaluate and optimize generated rules
+            result = synthesizer.run(new_rules)
+            # Update tolerance, history, and select the best rule based on results
+            solved, tolerance, highest_prev, prev_answer = self.update_tolerance_and_history(result, tolerance, highest_prev, prev_answer)
+        
+        # Finalize training session and handle rule selection
+        return self.finalize_training_session(highest_prev, synthesizer, prev_answer)
+    
+    def update_record_constr(self, constr, record, scores) :
+        record["constraints"].append({
+            "txt" : constr.txt,
+            "cot" : constr.cot,
+            "target" : constr.target.get_core_msg(),
+            "scores" : scores
+        })
+
+    def handle_solved_rule(self, 
+                           constr : Constraint, 
+                           scores : Dict[str, Any], 
+                           record : Dict[str, Any]) : 
+        self.self.constr_target_map.update({constr.target : (scores, constr)})
+        self.update_record_constr(constr, record, scores)
+  
+
+    def is_special_err_msg(self, errmsg) :
+        lowered = errmsg.lower()
+        if "typeerror" in lowered :
+            return True
+
+
+@hydra.main(version_base=None, config_path="../config", config_name="main")
+def main(cfg: DictConfig):
+    FuzzingLoop(cfg).run()
+
+
+if __name__ == "__main__":
+    main()

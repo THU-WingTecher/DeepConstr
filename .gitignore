@@ -1,6 +1,6 @@
 # env settings
 .envrc
-.vscode/
+.vscode
 
 # experiment data
 *.profraw 

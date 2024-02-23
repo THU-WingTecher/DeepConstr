@@ -10,7 +10,7 @@ def test_with_given_constraints(constrs, arg_names, dtypes) :
     for constr in constrs:
         result = "error"
         try :
-            converter = Ast2z3(arg_names, dtypes, {'txt' : constr}, func_name)
+            converter = Ast2z3(arg_names, dtypes, constr, func_name)
             print(f"{func_name}-Constraint: {constr}")
             result = converter.convert()
             print(f"Z3: {result}\n")
@@ -36,7 +36,7 @@ def test_whole_constraints(dir_path = None ) :
         for constr in record['rules']:
             cnt+=1
             result = "error"
-            converter  = Ast2z3(arg_names, dtypes, constr, record['name'])
+            converter  = Ast2z3(arg_names, dtypes, constr['txt'], record['name'])
             print(f"{record['name']}-Constraint: {constr['txt']}")
             result = converter.convert()
             if "type(" not in constr['txt'] and "isinstance" not in constr['txt'] and result is None : 

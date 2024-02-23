@@ -67,7 +67,7 @@ ComplexArr = DeclareArr(Complex)
 TensorArr = DeclareArr(TensorZ3)
 ARRTYPES = [IntArr, FloatArr, StrArr, BoolArr, ComplexArr, TensorArr]
 
-def is_equiv_constraint(A : z3.ExprRef, B : z3.ExprRef) -> bool :
+def is_same_constr(A : z3.ExprRef, B : z3.ExprRef) -> bool :
     s = z3.Solver()
     s.add(z3.Not(z3.Implies(A, B)))
     if s.check() == z3.unsat:
@@ -76,6 +76,9 @@ def is_equiv_constraint(A : z3.ExprRef, B : z3.ExprRef) -> bool :
         if s.check() == z3.unsat:
             return True
     return False
+
+def has_same_rule(A : List[z3.ExprRef], B : z3.ExprRef) -> bool :
+    return any(is_same_constr(B, a) for a in A)
 
 def is_implies(A : z3.ExprRef, B : z3.ExprRef) -> bool :
     s = z3.Solver()

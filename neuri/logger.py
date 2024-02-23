@@ -10,7 +10,9 @@ EXEC_LOG = logging.getLogger("exec")
 DTEST_LOG = logging.getLogger("dtest")
 CORE_LOG = logging.getLogger("core")
 AUTOINF_LOG = logging.getLogger("autoinf")
-
+CONSTR_LOG = logging.getLogger("constr")
+LLM_LOG = logging.getLogger("llm")
+TRAIN_LOG = logging.getLogger("train")
 TF_LOG = logging.getLogger("gen|tf")
 TORCH_LOG = logging.getLogger("gen|torch")
 

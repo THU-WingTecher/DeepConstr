@@ -4,6 +4,7 @@ import random
 import string
 import z3
 from abstract.dtype import DTYPE_GEN_ALL, DTYPE_NOT_SUPPORTED, AbsDType, AbsIter, AbsLiteral, DType
+from neuri.constrinf.constr import activate_constrs
 from neuri.constrinf.smt_funcs import SMTFuncs
 from neuri.logger import SMT_LOG
 # from specloader.materalize import RandomGenerator
@@ -12,6 +13,7 @@ from typing import Callable, Dict, Any, List, Literal, Optional, Tuple, Union
 from specloader import  BOOL_POOLS, MAX_ARR_LEN, MAX_SHAPE_SUM, MAX_VALUE, MIN_VALUE, OP_POOLS, Z3DTYPE, TensorZ3, check_numel_constr, \
     length_default_constraints, length_not_zero_constraints, pos_constraints
 import operator
+
 
 def gen_dtype_constraints(arg_name : str, not_supported_dtypes : List[DType]) -> z3.ExprRef :
     
@@ -120,18 +122,6 @@ def gen_noise(arg_name, arg_type, args_length, noise_prob):
             noises.append(dtype_noise)
 
     return noises
-
-def activate_constrs(constrs : List[Callable], 
-                    args_types : Dict[str, Union[AbsDType, AbsTensor, AbsLiteral]]) -> List[z3.ExprRef] :
-    activated_constrs = []
-    for constr in constrs : 
-        activated_constrs.append(constr(
-                        {
-                        name : abs.z3()(name) 
-                        for name, abs in args_types.items()
-                        }
-                    ))
-    return activated_constrs
 
 def sym_to_conc(model, z3_arg, args_types, args_values, args_lengths) : 
     """
@@ -256,9 +246,18 @@ def process_model(solver, args_types : Dict[str, Any]) :
             args_values[key] = AbsTensor(**value["tensor"])
     return args_values, args_lengths
 
-def gen_val(
+def gen_val(num_of_try, *args, **kwargs) -> Optional[Dict[str, Any]] : 
+    values = None 
+    tries = 0
+    num_of_try = int(num_of_try * kwargs["noise_prob"])
+    while values is None and tries <= num_of_try :
+        values = _gen_val(*args, **kwargs)
+        tries += 1
+    return values
+
+def _gen_val(
           args_types : Dict[str, Union[AbsDType, AbsTensor, AbsLiteral]],
-          rules : List[Callable] = [], 
+          constrs : List[Callable] = [], 
           noise_prob : float = 0.0,
           allow_zero_length_rate : float = 0.5,
           allow_zero_rate : float = 0.5,
@@ -269,7 +268,7 @@ def gen_val(
     Gen failed -> return None 
     """
     args_lengths = {}
-    constrs = activate_constrs(rules, args_types)
+    constrs = activate_constrs(constrs, args_types)
     solver = init_solver()
     solver.add(constrs)
     len_rules = process_len(args_types, args_lengths, solver, noise=noise_prob, allow_zero_length_rate=allow_zero_length_rate)

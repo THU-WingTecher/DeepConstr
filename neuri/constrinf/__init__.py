@@ -9,6 +9,12 @@ from neuri.constrinf.ast2z3 import Ast2z3
 
 
 uncompatiable_api_marks = ["tensor element", "bug", "no function"]
+
+
+def record_args_info(record, values) : 
+    for i_arg, arg_name, in enumerate(record['args']['name']) :
+        record['args']['value'][i_arg] = values[arg_name]
+
 def is_special_apis(record) : 
     if record.get("skipped", False) :
         skipped_reason = record.get("skipped_reason", " ").strip().lower()
@@ -16,83 +22,62 @@ def is_special_apis(record) :
             return True
 
     return False 
-def gen_inst_with_records(
-    data_dir: str,
-    test_pool: List = [],
-):
+
+def process_record(file_path: str, test_pool: list = []) -> dict:
     """
-    yield: record dict
-        name : api_name 
-        args :
-            names : List[str] := names
-            dtypes : List[dtype] := dtypes
-            is_pos : List[bool] := whether the arg is positioned??
-            values : args_values
-        outputs :
-            values List[Any](mainly AbsTensor):
-        constraints : List[Rule]
+    Process a single file and return the configuration as a record dictionary.
     """
-    from neuri.specloader.materalize import materalize_dtypes
+    from neuri.specloader.materalize import materalize_dtypes  # Assumed to be a necessary import
+    # Assuming load_yaml is defined elsewhere or is a known function for loading YAML files
+    record = {}
+    cfg = load_yaml(file_path)
+    if test_pool and cfg["title"] not in test_pool:
+        return None
+
+    for key, item in cfg.items():
+        record[key] = item
+        if key == "title":
+            record['name'] = cfg[key]
+        elif key == "pass_rate":
+            record['pass_rate'] = cfg[key]
+        elif key == "constraints":
+            record['args'] = {'name': [arg_name for arg_name in cfg[key].keys()],
+                              'is_pos': [cfg[key][arg_name].get('is_pos', False) for arg_name in cfg[key].keys()],
+                              'value': [None] * len(cfg[key].keys()),
+                              'dtype': [None] * len(cfg[key].keys())}
+        elif key == "rules":
+            record['rules'] = cfg['rules']
+        else:
+            record[key] = cfg[key]
+
+    record['outputs'] = {'value': []}
+
+    if cfg.get('constraints') is not None:
+        for i_name, name in enumerate(record['args']['name']):
+            dtype = materalize_dtypes(cfg['constraints'][name]['dtype'])
+            record['args']['dtype'][i_name] = dtype
+            if dtype is None:
+                record['args']['name'].pop(i_name)
+                record['args']['dtype'].pop(i_name)
+        if len(record['args']['name']) > 0:
+            return record
+    else:
+        AUTOINF_LOG.warning(f"no constraints in {file_path}")
+        return None
+
+# Step 2: Define the traversal function
+
+def gen_inst_with_records(data_dir: str, test_pool: list = []):
+    """
+    Traverse directories to process files and yield configuration records.
+    """
+    import os
     for root, _, files in os.walk(data_dir):
-        for file in files : 
-            record = {}
+        for file in files:
             path = os.path.join(root, file)
-            cfg = load_yaml(path)
-            if test_pool :
-                if cfg["title"] not in test_pool :
-                    continue
-
-            for key, item in cfg.items() :
-                record[key] = item
-                if key == "title" : 
-                    record['name'] = cfg[key]
-                elif key == "pass_rate" :
-                    record['pass_rate'] = cfg[key]
-                elif key == "constraints" :
-                    record['args'] = {'name' : [arg_name for arg_name in cfg[key].keys()], 
-                                    'is_pos' : [cfg[key][arg_name].get('is_pos', False) for arg_name in cfg[key].keys()], 
-                                    'value' : [None] * len(cfg[key].keys()),
-                                    'dtype' : [None] * len(cfg[key].keys()),
-                                    }
-                elif key == "rules" :
-                    record['rules'] = cfg['rules']
-                else :
-                    record[key] = cfg[key]
-
-            record['outputs'] = {
-                'value' : [],
-            }
-                    
-            if cfg.get('constraints') is not None :
-                for i_name, name in enumerate(record['args']['name']) :
-                    dtype = materalize_dtypes(cfg['constraints'][name]['dtype']) 
-                    record['args']['dtype'][i_name] = dtype
-                    if dtype is None : 
-                        record['args']['name'].pop(i_name)
-                        record['args']['dtype'].pop(i_name)  
-                if len(record['args']['name']) > 0 :
-                    yield record         
-            else : 
-                AUTOINF_LOG.warning(f"no constraints in {path}")
-
-def convert_rule_to_executable(record, rule_cnt) -> List["z3.Exr"] : 
-
-    exec_rules = []
-    for rule in record['rules'] :
-        AUTOINF_LOG.debug(f"rule : {rule['txt']}")
-        converter = Ast2z3(record['args']['name'], record['args']['dtype'], rule, record['name'])
-        rule = converter.convert()
-        if rule is None : 
-            AUTOINF_LOG.warning(f"rule generation Failed : {rule}")
-            # raise ValueError(f"rule generation Failed : {rule}")
-            continue
-        
-        AUTOINF_LOG.debug(f"{converter.pretty_flags()}")
-        exec_rules.append(rule)
-
-    rule_cnt["cnt"] += len(exec_rules)
-    AUTOINF_LOG.info(f"{len(exec_rules)} rules are generated")
-    return exec_rules
+            record = process_record(path, test_pool)
+            if record:
+                yield record
 
 def make_record_finder(
     path: PathLike = None,
@@ -101,6 +86,7 @@ def make_record_finder(
 ) -> List[Dict[str, Any]]:
     
     from neuri.autoinf import BLACKLIST
+    from neuri.constrinf.constr import convert_constr_to_executable
     gen_inst_records = gen_inst_with_records(data_dir=path, test_pool=test_pool)
 
     records = []
@@ -138,7 +124,7 @@ def make_record_finder(
                 continue
 
         AUTOINF_LOG.info(f"Loading record name : {record['name']}")
-        record['constraints'] = convert_rule_to_executable(record, rule_cnt)
+        record['constraints'] = convert_constr_to_executable(record, rule_cnt)
         records.append(record)
 
     skipped_rec = skipped_err + skipped_unenough_psrate + skipped_blacklist + unsupported_constr

@@ -9,3 +9,5 @@ numpy
 rich
 tqdm
 matplotlib
+python-dotenv
+openai

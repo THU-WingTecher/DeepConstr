@@ -55,34 +55,6 @@ def divide(target : str) :
         parts.append(part)
     return parts
 
-def is_mergeable(rules : List[Rule]) : 
-    
-    if len(rules) < 2 :
-        return False 
-    
-    z3_rules, non_z3_rules = classify_rules(rules) # z3_rules, type_rules, type_match_rules, others
-    if len(non_z3_rules) > 0 :
-        return False 
-    return True 
-
-def gen_opposed_rule(rule : Rule) : 
-    """
-    return (opposed_rule, orig_rule)"""
-    from specloader import NOT_SIGN
-    if rule.ast2z3.is_unsolverable() :
-        for arg_name in rule.related_args :
-            if not rule.ast2z3.is_in_types_map(arg_name) :
-                continue
-            for i, mapped_tupple in enumerate(rule.ast2z3.types_map[arg_name]) :
-                mapped_tupple = list(mapped_tupple)
-                mapped_tupple[0] = NOT_SIGN if mapped_tupple[0] is None else None
-                rule.ast2z3.types_map[arg_name][i] = tuple(mapped_tupple)
-        return rule
-    else :
-        opposed_rule = copy.deepcopy(rule) 
-        opposed_rule.re_init(rule.export_opposed())
-        return opposed_rule
-
 ##
 def add_noises(args_types, args_lengths, noise):
     noises = []
