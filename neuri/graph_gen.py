@@ -19,6 +19,7 @@ from neuri.abstract.op import (
     rank_all,
 )
 from neuri.autoinf import AutoInfOpBase, OpInstance, OpRecordFinder
+from neuri.constrinf import record_args_info
 from neuri.constrinf.smt_funcs import TensorZ3
 from neuri.error import ConstraintCheck, ConstraintError, SanityCheck
 from neuri.gir import GraphIR, InstExpr, InstIR
@@ -1204,9 +1205,6 @@ class ConstrInf(NeuriR):
         )
         return ph
 
-    def record_output_info(self, record, values) : 
-        for i_arg, arg_name, in enumerate(record['args']['name']) :
-            record['args']['value'][i_arg] = values[arg_name]
     def try_autoinf_insert_forward(self, init=False) -> bool:
 
         chosen_dtype = {}
@@ -1254,7 +1252,8 @@ class ConstrInf(NeuriR):
                             allow_zero_length_rate=self.allow_zero_length_rate,
                             allow_zero_rate=self.allow_zero_rate,
                             constraints=consistent_constrs + [default_dtype_constr],
-                            api_name=record['name'],)
+                            api_name=record['name'],
+                            num_of_try=self.num_of_try)
 
             if values is not None : 
                 break 
@@ -1278,7 +1277,7 @@ class ConstrInf(NeuriR):
                 new_inst = self.forward_insert_node(ph, [])
                 temp_vars.append(new_inst)
 
-        self.record_output_info(record, values)
+        record_args_info(record, values)
         inst = OpInstance(record)
         opbase = AutoInfOpBase(inst, {
             sym : inst.input_symb_2_value[sym] for sym in inst.A

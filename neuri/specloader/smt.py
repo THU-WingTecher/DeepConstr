@@ -4,7 +4,6 @@ import random
 import string
 import z3
 from abstract.dtype import DTYPE_GEN_ALL, DTYPE_NOT_SUPPORTED, AbsDType, AbsIter, AbsLiteral, DType
-from neuri.constrinf.constr import activate_constrs
 from neuri.constrinf.smt_funcs import SMTFuncs
 from neuri.logger import SMT_LOG
 # from specloader.materalize import RandomGenerator
@@ -268,7 +267,11 @@ def _gen_val(
     Gen failed -> return None 
     """
     args_lengths = {}
-    constrs = activate_constrs(constrs, args_types)
+    ## activate constrs
+    constrs = [constr({
+                        name : abs.z3()(name)
+                        for name, abs in args_types.items()
+                    }) for constr in constrs]
     solver = init_solver()
     solver.add(constrs)
     len_rules = process_len(args_types, args_lengths, solver, noise=noise_prob, allow_zero_length_rate=allow_zero_length_rate)
