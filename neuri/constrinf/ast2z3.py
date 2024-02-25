@@ -66,6 +66,16 @@ def dict_combinations(input_dict):
 
     return result
 
+def inspect_suff_conds(constr_flags : Dict[str, Dict[str, bool]], body : z3.ExprRef, z3objs : List[z3.Var]) :
+    for name, flag in constr_flags.items() :
+        z3obj = z3objs[name].get_wrapped_object() if is_wrapper(z3objs[name]) else z3objs[name]
+        if flag["must_iter"] and not Ast2z3.is_iterable(z3obj) : return True 
+        elif flag["must_not_iter"] and Ast2z3.is_iterable(z3obj) : return True
+        elif flag["must_int"] and not Ast2z3.is_int(z3obj) : return True
+        elif flag["must_str"] and not Ast2z3.is_str(z3obj) : return True
+
+    return body
+
 FLAGS = ["must_iter", "must_int", "must_not_iter", "must_str"]
 
 class Ast2z3(SMTFuncs) : 
@@ -247,22 +257,12 @@ class Ast2z3(SMTFuncs) :
         else : return 
 
     def conn_suff_conds(self, constr, z3_type_objs) -> z3.ExprRef : 
-
-        def inspect_suff_conds(z3objs : List[z3.Var], body : z3.ExprRef) :
-            for name, flag in self.constr_flags.items() :
-                z3obj = z3objs[name].get_wrapped_object() if is_wrapper(z3objs[name]) else z3objs[name]
-                if flag["must_iter"] and not self.is_iterable(z3obj) : return True 
-                elif flag["must_not_iter"] and self.is_iterable(z3obj) : return True
-                elif flag["must_int"] and not self.is_int(z3obj) : return True
-                elif flag["must_str"] and not self.is_str(z3obj) : return True
-
-            return body
         
         len_suff_con = self.gen_len_suff_cond(z3_type_objs)
         if len_suff_con is not None :
             constr = z3.Implies(len_suff_con, constr)
 
-        return partial(inspect_suff_conds, body = constr)
+        return partial(inspect_suff_conds, constr_flags=self.constr_flags, body = constr)
 
     def gen_func_obj(self, func_name, *args) :
         if all(isinstance(arg, str) for arg in args) :

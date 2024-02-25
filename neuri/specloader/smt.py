@@ -268,7 +268,7 @@ def _gen_val(
     """
     args_lengths = {}
     ## activate constrs
-    constrs = [constr({
+    constrs = [constr(z3objs={
                         name : abs.z3()(name)
                         for name, abs in args_types.items()
                     }) for constr in constrs]

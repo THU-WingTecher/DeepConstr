@@ -73,7 +73,7 @@ train:
   test_timeout: null
   resume: false
   parallel: 1
-  noise: 0.15 # 0 ~ 1
+  noise: 0.6 # 0 ~ 1
   allow_zero_length_rate: 0.1 # 0 ~ 1
   allow_zero_rate: 0.1 # 0 ~ 1
   num_of_try: 10 ## num_of_try * noise will be the number of trials for each input generation

@@ -39,7 +39,7 @@ class Synthesizer:
         else :
             beta = 5
             score = alpha * scores.get("f1_score", 0) + beta * (1 / length)
-        scores["overall"] = score
+        scores["overall_score"] = score
 
     def save_state(self, seeds) :
         self.update_seeds(({}, seed) for seed in seeds)
@@ -49,11 +49,10 @@ class Synthesizer:
         scores = {}
         evaluator = Evaluator(self.target, constraint, self.record, self.executor, self.cfg)
         if self.goal_is_acc() :
-            evaluator.score_TP(num_of_check=self.cfg['simple_eval_asset'] if skim else self.cfg['eval_asset'])
+            evaluator.get_precision(num_of_check=self.cfg['simple_eval_asset'] if skim else self.cfg['eval_asset'])
             scores["precision"] = evaluator.precision
         else :
-            evaluator.score_F1(self.generator, 
-                            num_of_check=self.cfg['simple_eval_asset'] if skim else self.cfg['eval_asset'])
+            evaluator.get_f1(num_of_check=self.cfg['simple_eval_asset'] if skim else self.cfg['eval_asset'])
             scores["precision"] = evaluator.precision
             scores["recall"] = evaluator.recall
             scores["f1_score"] = evaluator.f1_score
@@ -163,18 +162,18 @@ class Synthesizer:
             if not skim :
                 if scores.get("f1_score", 0) == 100:
                     found_complete = True
-                    TRAIN_LOG.debug(f"Found optimal({self.mode}) constraint = {constraint.txt}. Ending search.")
+                    TRAIN_LOG.debug(f"Found optimal({self.mode}) constraint[{constraint.txt}]. Ending search.")
                     break
                 if scores.get("precision", 0) == 100 :
                     if self.goal_is_acc() : 
                         found_complete = True
-                        TRAIN_LOG.debug(f"Found optimal({self.mode}) constraint = {constraint.txt}. Ending search.")
+                        TRAIN_LOG.debug(f"Found optimal({self.mode}) constraint[{constraint.txt}]. Ending search.")
                         break
                     self.non_FP.append((scores, constraint))
-                    TRAIN_LOG.debug(f"Found Non FP constraint = {constraint.txt}.")
+                    TRAIN_LOG.debug(f"Found Non FP constraint[{constraint.txt}].")
                 if scores.get("recall", 0) == 100:
                     self.non_FN.append((scores, constraint))
-                    TRAIN_LOG.debug(f"Found NON FN constraint = {constraint.txt}.")
+                    TRAIN_LOG.debug(f"Found NON FN constraint[{constraint.txt}]")
             res.append((scores, constraint))
         
         if not skim and found_complete :

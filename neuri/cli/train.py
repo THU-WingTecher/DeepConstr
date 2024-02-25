@@ -220,8 +220,8 @@ class TrainingLoop:
         self.ModelType = Model.init(
             model_cfg["type"], backend_target=cfg["backend"]["target"]
         )
-        set_seed(self.cfg["train"]["seed"])
-        self.ModelType.add_seed_setter()
+        # set_seed(self.cfg["train"]["seed"])
+        # self.ModelType.add_seed_setter()
         self.executor : Executor = Executor(self.ModelType, cfg["train"]["parallel"])
         self.train_list = self.get_train_list()
         TRAIN_LOG.info(
@@ -263,7 +263,8 @@ class TrainingLoop:
         success_count = 0
         error_messages = {}
         copied_record = copy.deepcopy(record)
-        executable_constr = convert_constr_to_executable(copied_record["constraints"]) # unactivated
+        executable_constr = convert_constr_to_executable(copied_record) # unactivated
+        # wrapped = wrap(executable_constr)
         # copied_record["args"]["dtype"] = convert_dtypes_to_z3s(copied_record["args"]["dtype"])
         results = self.executor.execute(record = copied_record, 
                                         constraints = executable_constr,
@@ -427,15 +428,20 @@ class TrainingLoop:
     def run(self, op_record, record_path):
         n_try = 0
         pass_rate = 0
+        record_path = "test.yaml" # for debugging
+        op_record['rules'] = [] # for debugging
         while pass_rate < 100 and n_try < self.cfg["train"]["n_try"] :
             pass_rate, sorted_err_instances = self.get_pass_rate_and_err_msgs(op_record, self.cfg["train"]["eval_asset"])
-            succeed = self.train(op_record, sorted_err_instances[0], mode="acc")
-            if succeed :
-                save_record(op_record, record_path)
+            if sorted_err_instances :
+                succeed = self.train(op_record, sorted_err_instances[0], mode="acc")
+                if succeed :
+                    save_record(op_record, record_path)
+                else :
+                    break
             else :
                 break
         
-        save_record(op_record, self.get_only_acc_save_path())
+        save_record(op_record, self.get_only_acc_save_path(record_path))
         queue = self.get_retrain_list(op_record)
         while queue :
             target_err, (scores, constr) = queue.pop()

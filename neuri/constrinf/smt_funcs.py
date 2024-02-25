@@ -314,14 +314,19 @@ class SMTFuncs:
     @classmethod 
     def is_iterable(cls, v) :
         return cls._find_sort_by_id(
-            v.decl().get_id(), pool = [
-                                        IntArr.value,
-                                        FloatArr.value,
-                                        StrArr.value,
-                                        ComplexArr.value,
-                                        BoolArr.value,
-                                        TensorArr.value,
-                                        TensorZ3.shape,]
+            v.sort().get_id(), pool = [
+                                        IntArr,
+                                        FloatArr,
+                                        StrArr,
+                                        ComplexArr,
+                                        BoolArr,
+                                        TensorArr,
+                                        TensorZ3,
+                                        # z3.ArraySort(z3.IntSort(), z3.IntSort()),
+                                        # z3.ArraySort(z3.IntSort(), z3.IntSort())
+                                        # z3.ArraySort(z3.IntSort(), z3.IntSort())
+                                        # z3.ArraySort(z3.IntSort(), z3.IntSort())
+                                        ]
                                         ) is not None 
     
     @classmethod 

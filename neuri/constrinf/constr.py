@@ -56,7 +56,7 @@ class Constraint:
     def activate(constr, arg_names, dtypes) :
         
         return constr(
-            {
+            z3objs = {
                 name : abs.z3()(name)
                 for name, abs in zip(arg_names, dtypes)
             }

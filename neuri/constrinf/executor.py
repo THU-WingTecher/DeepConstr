@@ -1,16 +1,16 @@
 
 from concurrent.futures import ProcessPoolExecutor
 import functools
-from multiprocessing import Pool
+from multiprocessing import Manager, Pool
 import random
 from typing import Any, Dict, List, Optional, Tuple
 from neuri.autoinf.instrument.op import OpInstance
 from neuri.constrinf import record_args_info
 from neuri.specloader.smt import gen_val
 from neuri.constrinf.errmsg import ErrorMessage
-import ctypes
 
 def contains_ctypes(obj, visited=None):
+    import ctypes
     if visited is None:
         visited = set()
     
@@ -69,7 +69,22 @@ class Executor:
         self.model = model
         self.parallel = parallel
     def execute(self, ntimes, *args, **kwargs) -> Optional[List[Tuple[bool, ErrorMessage]]]:
+        results = []
+        unable_to_gen_tor = 4
+        worker_fn = functools.partial(worker, self.model, *args, **kwargs)
+        for _ in range(ntimes):
+            res = worker_fn()
+            if res is None :
+                unable_to_gen_tor -= 1
+                if unable_to_gen_tor == 0 :
+                    return None
+            else :
+                unable_to_gen_tor = 4
+                results.append(res)
+        return results
+    def parallel_execute(self, ntimes, *args, **kwargs) -> Optional[List[Tuple[bool, ErrorMessage]]]:
         """
+        ctypes pickling problem.
         To support parallel execution, 
         Constr is converted to executable(Callable)
         dtypes are converted to z3 types
@@ -84,12 +99,16 @@ class Executor:
         A tuple (success_rate: float, error_messages: dict) where success_rate is the ratio of successful executions
         and error_messages is a dictionary mapping error messages to their corresponding argument values.
         """
-        # for key, item in kwargs["record"].items() :
+        # for key, item in kwargs.items() :
         #     if contains_ctypes(item) :
         #         for k, v in item.items() :
         #             if contains_ctypes(v) :
         #                 print(k, v[0][0])
-
+        manager = Manager()
+        
+        # Assuming self.model, args, and kwargs are already defined
+        args = list(args)
+ 
         with ProcessPoolExecutor(max_workers=self.parallel) as executor:
             # Generate a list of future tasks
             worker_fn = functools.partial(worker, self.model, *args, **kwargs)

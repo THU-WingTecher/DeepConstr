@@ -53,17 +53,17 @@ if __name__ == "__main__" :
     from neuri.constrinf.smt_funcs import load_z3_const
     from neuri.abstract.dtype import AbsDType
     from neuri.abstract.tensor import AbsTensor
-    # test_whole_constraints()
+    test_whole_constraints()
     #  Example Usage : test_with_given_constraints
-    arg_names = ['a', 'b','c']
-    dtypes = [
-        [AbsDType.int.to_iter()],
-        [AbsDType.int.to_iter()],
-        [AbsTensor.to_iter()],
-        ]
-    test_constraints = [
-        "all((a[i]>1 and a[i]<4) for i in a[2:])",
-        "c[0].shape[0] == b[0]",
-        'a[-1] > b[-2]'
-    ]
-    test_with_given_constraints(test_constraints, arg_names, dtypes)
+    # arg_names = ['a', 'b','c']
+    # dtypes = [
+    #     [AbsDType.int.to_iter()],
+    #     [AbsDType.int.to_iter()],
+    #     [AbsTensor.to_iter()],
+    #     ]
+    # test_constraints = [
+    #     "all((a[i]>1 and a[i]<4) for i in a[2:])",
+    #     "c[0].shape[0] == b[0]",
+    #     'a[-1] > b[-2]'
+    # ]
+    # test_with_given_constraints(test_constraints, arg_names, dtypes)
