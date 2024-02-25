@@ -77,8 +77,8 @@ def is_same_constr(A : z3.ExprRef, B : z3.ExprRef) -> bool :
             return True
     return False
 
-def has_same_rule(A : List[z3.ExprRef], B : z3.ExprRef) -> bool :
-    return any(is_same_constr(B, a) for a in A)
+def has_same_rule(B : z3.ExprRef, A : List[z3.ExprRef]) -> bool :
+    return any(is_same_constr(a, B) for a in A)
 
 def is_implies(A : z3.ExprRef, B : z3.ExprRef) -> bool :
     s = z3.Solver()

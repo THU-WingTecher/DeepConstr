@@ -339,6 +339,14 @@ class AbsDType(Enum):
             AbsDType.complex: [dtype.z3_const() for dtype in [DType.complex64, DType.complex128]],
             AbsDType.none: [None],
         }[self]
+    def get_tensor_dtypes(self) -> List[DType]:
+        return {
+            AbsDType.bool: [DType.bool],
+            AbsDType.int: [DType.int32, DType.int64, DType.int8, DType.int16],
+            AbsDType.float: [DType.float16,DType.float32,DType.float64],
+            AbsDType.complex: [DType.complex64, DType.complex128],
+            AbsDType.none: [None],
+        }[self]
     
 class AbsIter():
     def __init__(self, values : List[AbsDType]):

@@ -45,9 +45,12 @@ class AbsTensor:
         self,
         symb_2_value: Dict[str, Any],
         tensor_from_numpy: Callable = lambda x: x,
+        only_shape : bool = False,
         *args,
         **kwargs,
-    ):
+    ):  
+        if only_shape : 
+            return AbsTensor(shape=self.concrete_shape(symb_2_value), dtype=self.dtype)
         from neuri.autoinf.instrument.utils import (
             numpy_random,
         )

@@ -3,47 +3,18 @@ import sys
 from typing import Any, Dict, List
 from neuri.autoinf import AutoInfOpBase
 from neuri.autoinf.instrument.op import AbsTensor, OpInstance
-
-from neuri.specloader.rule import Rule, gen_rules;
 from neuri.specloader.materalize import materalize_dtypes
 from neuri.logger import LOGGER
 from neuri.specloader.smt import gen_val
-from neuri.specloader.utils import load_yaml    
-from neuri.specloader.rule import gen_rule
-from neuri.specloader.modify import gen_opposed_rule
 from neuri.specloader.utils import load_yaml
 
-def proxy_check() : 
-    from train.infer import Inferencer
-    from train.utils import load_json
-    model_settings = load_json('setting/model_settings.json')
-    inferencer = Inferencer(model_settings)
-    inferencer.update_setting(model_settings[0])
+def proxy_check(cfg) : 
+    from neuri.constrinf.inferencer import Inferencer
+    inferencer = Inferencer(cfg['llm']['settings'])
     inferencer.change_to_gpt3()
     prompts = 'hello'
     results = inferencer.inference(prompts)
     print(results)
-
-def gen_random_generator(package='tf', func='raw_ops/QuantizeAndDequantizeV4') :
-    from generators import ArgumentGenerator
-    
-    cfg_path = f"/home/guihuan/LLM/constraints/{package}/{func}.yaml"
-    cfg = load_yaml(cfg_path)
-    args_generator = ArgumentGenerator(cfg, cfg_path, package=package)
-
-    return args_generator
-
-def load_types_dict(package='tf', func='raw_ops/QuantizeAndDequantizeV4') :
-    
-    types_dict={}
-    cfg = load_yaml(f"/home/guihuan/LLM/constraints/{package}/{func}.yaml")
-    if 'constraints' in cfg.keys() :
-        if len(cfg['constraints']) == 0 : return {} 
-        for name, params in cfg['constraints'].items() :
-            types_dict[name] = materalize_dtypes(cfg['constraints'][name]['dtype'])
-            # if len(types_dict[name]) > 0 : 
-            #     types_dict[name] = types_dict[name][0] 
-    return types_dict
 
 def gen_record(func='raw_ops.QuantizeAndDequantizeV4') :
     
@@ -96,56 +67,6 @@ def test_whole_rules(data_dir = None) :
         arg_names = record['args']['name']
         rule_txts = [r['txt'] for r in record['rules']]
         ##test function(arg_names, rule_txts)
-def test_rule_parsing(rules : List[str], record) : 
-
-    chosn_dtypes = {} 
-    for i_arg, arg_name, in enumerate(record['args']['name']) :
-        if len(record['args']['dtype'][i_arg]) > 0 :
-            chosn_dtypes[arg_name] = record['args']['dtype'][i_arg][0]
-        else :
-            chosn_dtypes[arg_name] = record['args']['dtype'][i_arg]
-
-    for rule in rules :
-        print(f'rule : {rule}')
-        rule = gen_rule('','', rule, {name : dtype for name, dtype in zip(record['args']['name'], record['args']['dtype'])},
-                                    ) # multiple dtype list
-        if rule is None : continue
-        rule.ast2z3.set_args_types(chosn_dtypes) # only one dtypes 
-        c1 = rule.ast2z3.gen_constraints()
-        rules.append(c1)
-        if c1 == True :
-            c1 = f"Not z3 able, {rule.ast2z3.types_map}"
-        opposed_rule = gen_opposed_rule(rule)
-        opposed_rule.ast2z3.set_args_types(chosn_dtypes)
-        print(f'opposed rule : {opposed_rule}')
-        c2 = opposed_rule.ast2z3.gen_constraints()
-        if c2 == True :
-            c2 = f"Not z3 able, {opposed_rule.ast2z3.types_map}"
-        LOGGER.info(f'rule : {rule.txt} has passed parsing test!\nGenerated constraints : {c1}, {c2}')
-    return rules
-
-def load_inferencer() : 
-    from train.prompt import Prompter
-    from train.infer import Inferencer
-    from train.utils import load_json 
-    def parse(raw) : 
-        if ':' in raw :
-            temp = ''.join(raw.split(':')[1:])
-        else : 
-            temp = raw
-        return temp
-    args_generator = gen_random_generator()
-    prompter = Prompter(args_generator.func, args_values={}, def_type_dict=args_generator.def_type_dict, forward_type_dict=args_generator.forward_type_dict)
-    model_settings = load_json('setting/model_settings.json')
-    inferencer = Inferencer(model_settings)
-    task = "generate test cases based on the following rules, do not explain." 
-    examples = f"ex1) Answers : {list(args_generator.args_info.keys())[1]} > 1\ntype({list(args_generator.args_info.keys())[1]}) == list \
-        ex2) Answers : {list(args_generator.args_info.keys())[1]} == [1,2]\ntype({list(args_generator.args_info.keys())[1]}) in [tf.int64, tf.complex64]"
-
-    grammar = prompter.rule_grammar()
-    prompts = f"{task}\n{examples}\n{grammar}"
-    raw_res = inferencer.inference(prompts)
-    rules = parse(raw_res)   
 
 def read_rule_file(path) : 
 
@@ -182,7 +103,7 @@ def add_info_to_error_DB(cfg) :
     save_cfg(db, db_path)
 
 
-def test_solving(rules : List[Rule], record) : # return the values params and input tensor shape&dtype
+def test_solving(rules, record) : # return the values params and input tensor shape&dtype
 
     chosn_dtypes = {} 
     for i_arg, arg_name, in enumerate(record['args']['name']) :
@@ -254,24 +175,23 @@ import hydra
 from omegaconf import DictConfig
 @hydra.main(version_base=None, config_path="../neuri/config", config_name="main")
 def main(cfg: DictConfig):
-    cfg = cfg['test']
-    if cfg['task']['type'] == 1 :
-        proxy_check()
-    elif cfg['task']['type'] in [3, 'db']:
-        add_info_to_error_DB(cfg['db'])
-    elif cfg['task']['type'] == 5 : # with cfg['paths']['rule'] rules
-        # Solve rule of the func.yaml file" 
-        record = gen_record(cfg['func'])
-        rules = test_rule_parsing([r["txt"] for r in record['rules']], record)     
-        test_solving(rules, record)
-    elif cfg['task']['type'] == 6 : # with real rules
-        record = gen_record(cfg['func'])
-        rules = convert_rule_to_executable(record)
-        updated_record = test_solving(rules, record)
-        op_inst = gen_op_inst(updated_record)
-    elif cfg['task']['type'] == 7 :
-        record_finder = gen_record_finder(cfg['paths']['rule'], 1)
-        test_insert_node(record_finder, cfg['model_type'], cfg['backend_type'])
+    proxy_check(cfg)
+    # if cfg['task']['type'] == 1 :
+    #     proxy_check(cfg)
+    # elif cfg['task']['type'] in [3, 'db']:
+    #     add_info_to_error_DB(cfg['db'])
+    # elif cfg['task']['type'] == 5 : # with cfg['paths']['rule'] rules
+    #     # Solve rule of the func.yaml file" 
+    #     record = gen_record(cfg['func'])
+    #     rules = test_rule_parsing([r["txt"] for r in record['rules']], record)     
+    #     test_solving(rules, record)
+    # elif cfg['task']['type'] == 6 : # with real rules
+    #     record = gen_record(cfg['func'])
+    #     rules = convert_rule_to_executable(record)
+    #     updated_record = test_solving(rules, record)
+    #     op_inst = gen_op_inst(updated_record)
+    # elif cfg['task']['type'] == 7 :
+    #     record_finder = gen_record_finder(cfg['paths']['rule'], 1)
+    #     test_insert_node(record_finder, cfg['model_type'], cfg['backend_type'])
 if __name__ == "__main__" :
-
     main()

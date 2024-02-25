@@ -1,36 +1,29 @@
 import copy
-from multiprocessing import Pool
 import random
 import os
 import time
 import traceback
-from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
-from types import FunctionType
 from typing import Any, Dict, List, Literal, Tuple, Type
 
 import yaml
-from neuri.constrinf import process_record, record_args_info
-from neuri.constrinf.constr import Constraint, convert_constr_to_executable
+from neuri.constrinf import process_record
+from neuri.constrinf.constr import Constraint, convert_constr_to_executable, convert_dtypes_to_z3s
 from neuri.constrinf.errmsg import ErrorMessage
 from neuri.constrinf.executor import Executor
 from neuri.constrinf.inferencer import Inferencer
 import hydra
 from omegaconf import DictConfig
 
-
 from neuri.backends.factory import BackendFactory
 from neuri.constrinf.parser import segment_constr, parse_from_raw_txt
 from neuri.constrinf.prompter import Prompter
 from neuri.constrinf.synthesizer import Synthesizer
-from neuri.error import InternalError
-from neuri.filter import FILTERS
+from neuri.error import WrongInferenceError
 from neuri.gir import GraphIR
-from neuri.graph_gen import model_gen
-from neuri.logger import FUZZ_LOG, AUTOINF_LOG, TRAIN_LOG
+from neuri.logger import TRAIN_LOG, AUTOINF_LOG, TRAIN_LOG
 from neuri.macro import NNSMITH_BUG_PATTERN_TOKEN
 from neuri.materialize import BugReport, Model, TestCase
-from neuri.narrow_spec import auto_opset
 from neuri.util import mkdir, parse_timestr, set_seed
 
 # Status.csv
@@ -40,27 +33,7 @@ from neuri.util import mkdir, parse_timestr, set_seed
 #  - "ok": no error.
 #  - "fail": invalid testcase.
 #  - "bug": bug found.
-class ErrMsgs:
-    def __init__(self, err_msgs, args) :
-        self.err_msgs = err_msgs
-        self.args = args
-        self.sim_threshold = 0.8
-    def is_similar(self, a, b, threshold=None) :
-        if threshold is None :
-            threshold = self.sim_threshold
-        return is_similar(a, b, threshold=threshold)
-    def find_by_similar(self, target) :
-        for msg in enumerate(self.err_msgs) :
-            if self.is_similar(target, msg) :
-                return msg
-        return None
-
-def find_sim_msgs(target, msgs : List[str], threshold=0.8) :
-    for msg in msgs :
-        if is_similar(target, msg, threshold) :
-            return msg
-    return None
-
+SPLITTER = "\n"
 def transform_record_for_saving(record: dict) -> dict:
     """
     Transform the record dictionary to the original format expected for saving.
@@ -122,7 +95,9 @@ class StatusCollect:
         self.root = Path(root)
         stat_fname = self.root / "status.csv"
         self.n_infer = 0
+        self.n_synthesized = 0 
         self.cur_high_score = 0
+        self.score_history = []
         self.n_bugs = 0
         self.n_fail_make_test = 0
         self.n_testcases = 0
@@ -146,7 +121,7 @@ class StatusCollect:
                 elif stat != "ok":
                     raise ValueError(f"Unknown stat: {stat}")
                 self.n_testcases += 1
-            FUZZ_LOG.info(f"Resuming from {self.n_testcases} testcases.")
+            TRAIN_LOG.info(f"Resuming from {self.n_testcases} testcases.")
         else:
             mkdir(self.root)
             with open(stat_fname, "w") as f:
@@ -197,14 +172,14 @@ class StatusCollect:
             f"{seed},{stat},{tgen},{tsmt},{tsave},{trun},{self.elapsed_s:.3f}\n"
         )
         self.stat_file.flush()
-        FUZZ_LOG.info(
+        TRAIN_LOG.info(
             f"tgen={tgen:.1f}ms, tsmt={tsmt:.1f}ms, trun={trun:.1f}ms, tsave={tsave:.1f}ms"
         )
 
     def get_next_bug_path(self):
         return self.root / f"bug-{NNSMITH_BUG_PATTERN_TOKEN}-{self.n_bugs}"
 
-class FuzzingLoop:
+class TrainingLoop:
     def __init__(
         self,
         cfg: DictConfig,
@@ -232,16 +207,7 @@ class FuzzingLoop:
                 "Also see https://github.com/ise-uiuc/nnsmith/blob/main/doc/known-issues.md"
             )
 
-        self.crash_safe = bool(cfg["train"]["crash_safe"])
-        self.n_infer = int(cfg["train"]["n_infer"])
-        resume = cfg["train"]["resume"]
-        self.status = StatusCollect(
-            cfg["train"]["root"],
-            resume=resume,
-            op_usage=(
-                cfg["mgen"]["max_nodes"] == 1 and cfg["mgen"]["method"] == "neuri-i"
-            ),
-        )
+        self.n_infer = int(cfg["train"]["n_infer_per_round"])
 
         self.factory = BackendFactory.init(
             cfg["backend"]["type"],
@@ -254,18 +220,28 @@ class FuzzingLoop:
         self.ModelType = Model.init(
             model_cfg["type"], backend_target=cfg["backend"]["target"]
         )
+        set_seed(self.cfg["train"]["seed"])
         self.ModelType.add_seed_setter()
         self.executor : Executor = Executor(self.ModelType, cfg["train"]["parallel"])
         self.train_list = self.get_train_list()
-        FUZZ_LOG.info(
+        TRAIN_LOG.info(
             f"{len(self.train_list)} opsets wait for inferring"
         )
-        self.save_test = cfg["train"]["save_test"]
-        if isinstance(self.save_test, str) and not (
-            os.path.exists(self.save_test) and resume
-        ):  # path of root dir.
-            FUZZ_LOG.info(f"Saving all intermediate testcases to {self.save_test}")
-            mkdir(self.save_test)
+        # self.crash_safe = bool(cfg["train"]["crash_safe"])
+        # self.save_test = cfg["train"]["save_test"]
+        # resume = cfg["train"]["resume"]
+        # self.status = StatusCollect(
+        #     cfg["train"]["root"],
+        #     resume=resume,
+        #     op_usage=(
+        #         cfg["mgen"]["max_nodes"] == 1 and cfg["mgen"]["method"] == "neuri-i"
+        #     ),
+        # )
+        # if isinstance(self.save_test, str) and not (
+        #     os.path.exists(self.save_test) and resume
+        # ):  # path of root dir.
+        #     TRAIN_LOG.info(f"Saving all intermediate testcases to {self.save_test}")
+        #     mkdir(self.save_test)
 
     def get_train_list(self, module=None) -> List[str]:
         """
@@ -281,15 +257,17 @@ class FuzzingLoop:
                 if file.endswith(".yaml"):
                     li.append(os.path.join(root, file))
         return li
-  
+    
     def get_pass_rate_and_err_msgs(self, record, ntimes) -> Tuple[float, ErrorMessage]:
         # Assuming `run` is replaced with `self.execute` as per the revised requirement
         success_count = 0
         error_messages = {}
-        executable_constr = convert_constr_to_executable(record["constraints"]) # unactivated
-        results = self.executor.execute(record, 
-                                        executable_constr,
-                                        ntimes, 
+        copied_record = copy.deepcopy(record)
+        executable_constr = convert_constr_to_executable(copied_record["constraints"]) # unactivated
+        # copied_record["args"]["dtype"] = convert_dtypes_to_z3s(copied_record["args"]["dtype"])
+        results = self.executor.execute(record = copied_record, 
+                                        constraints = executable_constr,
+                                        ntimes = ntimes, 
                                         noise = self.cfg["train"]["noise"],
                                         allow_zero_length_rate = self.cfg["train"]["allow_zero_length_rate"],
                                         allow_zero_rate = self.cfg["train"]["allow_zero_rate"],
@@ -300,7 +278,6 @@ class FuzzingLoop:
             if success:
                 success_count += 1
             else:
-                # Extract error details from the ErrorMessage instance
                 errmsg = error_instance.get_core_msg()
                 if errmsg not in error_messages:
                     error_messages[errmsg] = {'instance': error_instance, 'count': 0}
@@ -330,10 +307,12 @@ class FuzzingLoop:
         return success_rate, sorted_error_instances
     
     def select_train_op(self) :
-        set_seed(self.cfg["train"]["seed"])
-        return random.choice(self.train_list)
+        if self.train_list :
+            return self.train_list.pop()
+        else :
+            return None 
 
-    def parse_and_generate_rules(self, raw_infered, target, arg_names) -> List[Constraint]:
+    def parse_and_generate_rules(self, raw_infered : str, target : ErrorMessage, arg_names : List[str]) -> List[Constraint]:
         """
         Parse LLM response and generate rules.
         Filter ill-formed rules and return the valid ones.
@@ -347,9 +326,10 @@ class FuzzingLoop:
             generated.extend(segment_constr(rule_txt))
         
         for rule_txt in generated:
-            rule = Constraint(rule_txt, cot, target, arg_names, dtypes)
-            if rule.check(arg_names, dtypes) :
-                rules.append(rule)
+            if rule_txt :
+                rule = Constraint(rule_txt, cot, target, arg_names, dtypes)
+                if not rule.is_error() and rule.check() :
+                    rules.append(rule)
         return rules
 
     def update_tolerance_and_history(self, result : Tuple[Dict[str, float], Constraint], tolerance, highest_prev, prev_answer):
@@ -369,7 +349,7 @@ class FuzzingLoop:
             # Extract the best result from the current evaluation
             best_current_score, best_constr = result
             # Found a better rule, reset tolerance and update history
-            TRAIN_LOG.info(f"New highest score: from {highest_prev["overall_score"]} to {best_current_score["overall_score"]} with rule {best_constr.txt}")
+            TRAIN_LOG.info(f'New highest score: from {highest_prev["overall_score"]} to {best_current_score["overall_score"]} with rule {best_constr.txt}')
             highest_prev = best_current_score
             prev_answer = best_constr
             tolerance = 0  # Reset tolerance since we found an improvement
@@ -378,7 +358,7 @@ class FuzzingLoop:
         solved = highest_prev["overall_score"] == 100
         return solved, tolerance, highest_prev, prev_answer
 
-    def finalize_training_session(self, highest_prev : Dict[str, float], synthesizer, prev_answer):
+    def finalize_training_session(self, highest_prev : Dict[str, float], synthesizer : Synthesizer, prev_answer):
         """
         Finalize the training session, handling the selection of the most optimal rule.
         
@@ -388,7 +368,7 @@ class FuzzingLoop:
         :return: Boolean indicating whether a satisfactory rule was found.
         """
         # Log the tried rules and their outcomes
-        TRAIN_LOG.info(f"Tried rules:\n{'\n'.join([r.txt for r in synthesizer.tried])}")
+        TRAIN_LOG.info(f"Tried rules:\n{SPLITTER.join([r.txt for r in synthesizer.tried])}")
         
         if highest_prev["overall_score"] == 0:
             # No improvement found
@@ -433,13 +413,22 @@ class FuzzingLoop:
                 record["constraints"].remove(const_instance)
                 return True
         raise ValueError(f"no such constraint in record : {txt}")
-    
-    def run(self):
+
+    def runs(self) :
+        while True :
+            record_path = self.select_train_op()
+            if record_path is None :
+                break
+            op_record = process_record(record_path)
+            if op_record is None :
+                continue
+            self.run(op_record, record_path)
+
+    def run(self, op_record, record_path):
         n_try = 0
-        record_path = self.select_train_op()
-        op_record = process_record(record_path)
+        pass_rate = 0
         while pass_rate < 100 and n_try < self.cfg["train"]["n_try"] :
-            pass_rate, sorted_err_instances = self.get_pass_rate_and_err_msgs(op_record)
+            pass_rate, sorted_err_instances = self.get_pass_rate_and_err_msgs(op_record, self.cfg["train"]["eval_asset"])
             succeed = self.train(op_record, sorted_err_instances[0], mode="acc")
             if succeed :
                 save_record(op_record, record_path)
@@ -457,7 +446,7 @@ class FuzzingLoop:
             else :
                 break
     
-    def fix_record_attrs(self, record, target) :
+    def fix_record_attrs(self, record, target : ErrorMessage) :
         """
         fix dtypes and rules
         multiple dtypes -> single dtype
@@ -477,7 +466,7 @@ class FuzzingLoop:
         highest_prev : Dict[str, float] = {}
         tolerance = 0
         new_rules : List[Constraint] = []
-        record = self.fix_record_attrs(record, target)
+        record = self.fix_record_attrs(record, target) # deep copy and fix dtypes and rules
         prompter = Prompter(record)
         synthesizer = Synthesizer(target, self.executor, record, self.cfg["train"])
         # Synthesizer responsible for filtering, evaluating, and finding the best rule
@@ -490,11 +479,13 @@ class FuzzingLoop:
             
             # Generate prompts for inference
             context, prompts = prompter.gen([target.get_core_msg()], 
-                                    args_values=target.get_values_map(record["args"]["name"]),
+                                    args_values=target.get_values_map(),
                                     num_of_ex=random.randint(2, 3),
                                     prev_answer=prev_answer)
             
-            raw_infered = self.inferencer.inference(prompts, context)
+            # raw_infered = self.inferencer.inference(prompts, context) # for debugging
+            raw_infered = """Error is triggered because the input tensor A must have at least 2 dimensions, but the provided value is a 1-dimensional tensor. To prevent this error from occurring again, we can generate constraints that ensure the input tensor has at least 2 dimensions. We can define the constraint as follows:
+```len(input.shape) >= 2```"""
             infer_times += 1
             
             # Parse LLM response and generate rules
@@ -534,7 +525,7 @@ class FuzzingLoop:
 
 @hydra.main(version_base=None, config_path="../config", config_name="main")
 def main(cfg: DictConfig):
-    FuzzingLoop(cfg).run()
+    TrainingLoop(cfg).runs()
 
 
 if __name__ == "__main__":

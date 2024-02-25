@@ -1,4 +1,7 @@
-from typing import Any, Dict
+import re
+from typing import Any, Dict, List
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 
 class ErrorMessage:
@@ -11,31 +14,30 @@ class ErrorMessage:
         :param kwargs: The keyword arguments associated with the error.
         """
         self.msg = msg
-        self.values = values
-        self.chooen_dtype = choosen_dtype
+        self.values : Dict[str, Any] = values
+        self.chooen_dtype : Dict[str, Any] = choosen_dtype
     
-    def get_values_map(self, arg_names) -> Dict[str, Any]:
+    def __repr__(self):
+        return f"ErrMeg({self.get_core_msg()}, {self.values})"
+    
+    def get_values_map(self) -> Dict[str, Any]:
         """
         Retrieve the error details.
 
         :return: A tuple containing the error message, args, and kwargs.
         """
-        return {
-            name : value for name, value in zip(arg_names, self.values)
-        }
+        return self.values
     
     def get_dtypes(self) -> List[Any] :
-        return self.chooen_dtype
+        return list(self.chooen_dtype.values())
 
-    def get_dtypes_map(self, arg_names) -> Dict[str, Any]:
+    def get_dtypes_map(self, *args, **kwargs) -> Dict[str, Any]:
         """
         Retrieve the error details.
 
         :return: A tuple containing the error message, args, and kwargs.
         """
-        return {
-            name : dtype for name, dtype in zip(arg_names, self.chooen_dtype)
-        }
+        return self.chooen_dtype
     
     def sculpt_msg(self):
         """
@@ -58,6 +60,8 @@ class ErrorMessage:
         return res
 
     def get_core_msg(self) -> str :
+        if self.msg == "no error" :
+            return self.msg
         first_pos = self.msg.find("Error:")
         if first_pos != -1 and self.msg.count('a') > 1:
             error = self.msg[first_pos:].strip()

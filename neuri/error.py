@@ -2,6 +2,11 @@ import logging
 from abc import ABC, abstractmethod
 
 
+class WrongInferenceError(Exception):
+    """The error is raised when the inference is not correct."""
+
+    pass
+
 class InternalError(Exception):
     """Fatal unexpected internal errors in NNSmith that should shut down the program immediately."""
 

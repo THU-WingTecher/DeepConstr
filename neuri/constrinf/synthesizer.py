@@ -47,7 +47,7 @@ class Synthesizer:
     def evaluate(self, constraint : Constraint, skim : bool = False) -> Dict[str, Any]:
         # Placeholder: Calculate F1, precision, and recall for the given constraint
         scores = {}
-        evaluator = Evaluator(self.target, constraint, self.executor, self.record, self.cfg)
+        evaluator = Evaluator(self.target, constraint, self.record, self.executor, self.cfg)
         if self.goal_is_acc() :
             evaluator.score_TP(num_of_check=self.cfg['simple_eval_asset'] if skim else self.cfg['eval_asset'])
             scores["precision"] = evaluator.precision
@@ -63,13 +63,19 @@ class Synthesizer:
         # Placeholder: Combine the given 'best' constraint with all other atomic constraints
         # and add them to the queue for further testing
         res = []
+        changed = False
         for constr in constraints :
             synthesized = constr 
-            synthesized = self.synthesize_constrs(constr, self.non_FP[0][1], OR)
-            assert synthesized is not None
-            synthesized = self.synthesize_constrs(constr, self.non_FN[0][1], AND)
-            assert synthesized is not None
-            res.append(synthesized)
+            if self.non_FP :
+                changed = True
+                synthesized = self.synthesize_constrs(constr, self.non_FP[0][1], OR)
+                assert synthesized is not None
+            if self.non_FN :
+                changed = True
+                synthesized = self.synthesize_constrs(constr, self.non_FN[0][1], AND)
+                assert synthesized is not None
+            if changed :
+                res.append(synthesized)
         return res
     def update_seeds(self, new_seeds : List[Tuple[Dict[str,float], Constraint]]):
         for _, seed in new_seeds :
@@ -135,9 +141,9 @@ class Synthesizer:
         queue.extend(synthesized)
         if len(queue) > self.cfg['top_k']*2 :
             filtered_res = self.find_optimal_constrs(queue, skim=True)
-            filtered = filtered_res[:self.cfg['top_k']*2]
+            queue = [c for _, c in filtered_res][:self.cfg['top_k']*2]
 
-        results = self.find_optimal_constrs([t[1] for t in filtered])
+        results = self.find_optimal_constrs(queue)
         self.update_seeds(results)
         return self.load_high_quality_constrs(top_k=1, return_score=True)[0]
     

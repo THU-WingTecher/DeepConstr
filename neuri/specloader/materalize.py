@@ -299,7 +299,7 @@ def materalize_dtypes(dtypes : str, merge_tensor : bool = True) -> List[Any] :
             to_merge.append(abs) 
         elif isinstance(abs, AbsDType) :
             if any([isinstance(ele, DType) for ele in res]) :
-                to_merge.extend(abs.z3_const())
+                to_merge.extend(abs.get_tensor_dtypes())
             else :
                 final.append(abs) 
         elif isinstance(abs, AbsTensor) :

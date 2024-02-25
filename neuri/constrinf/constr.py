@@ -1,6 +1,7 @@
 
 from neuri.constrinf.ast2z3 import Ast2z3
 from typing import Callable, Dict, Any, List, Literal, Optional, Tuple, Union
+from neuri.constrinf.errmsg import ErrorMessage
 
 from neuri.logger import CONSTR_LOG
 
@@ -13,8 +14,17 @@ class Constraint:
         self.arg_names : List[str] = arg_names
         self.dtypes : List[Any] = dtypes # chosen dtypes, should be able to activated
         self.unactivated = self.z3(self.arg_names, self.dtypes) 
-        self.z3expr = Constraint.activate(self.unactivated, self.arg_names, self.dtypes)
+        if self.unactivated is not None :
+            self.z3expr = Constraint.activate(self.unactivated, self.arg_names, self.dtypes)
+        else :
+            self.z3expr = None
 
+    def __repr__(self) -> str:
+        return f"Constr({self.txt})"
+    
+    def is_error(self) -> bool :
+        return self.z3expr is None 
+    
     def get_executable(self) :
         return self.unactivated
     
@@ -26,7 +36,7 @@ class Constraint:
             arg_names = self.arg_names
         if dtypes is None :
             dtypes = self.dtypes
-        converter = Ast2z3(arg_names, dtypes, self.txt)
+        converter = Ast2z3(arg_names, [[dtype] for dtype in dtypes], self.txt)
         result = converter.convert(no_suff=True)
         if result is None or result == True :
             return False 
@@ -38,12 +48,13 @@ class Constraint:
             arg_names = self.arg_names
         if dtypes is None :
             dtypes = self.dtypes
-        converter = Ast2z3(arg_names, dtypes, self.txt)
+        converter = Ast2z3(arg_names, [[dtype] for dtype in dtypes], self.txt)
         unactivated_constr = converter.convert()
         return unactivated_constr
     
     @staticmethod
     def activate(constr, arg_names, dtypes) :
+        
         return constr(
             {
                 name : abs.z3()(name)
@@ -73,12 +84,13 @@ def opposed_rule_txt(txt : str) :
     return res
 
 
-def convert_constr_to_executable(record, rule_cnt = None) -> List["z3.Exr"] : 
+def convert_constr_to_executable(record, rule_cnt = None) -> List[Callable] : 
     """
     convert to unactivated executable constr
     """
     exec_rules = []
-    for rule in record['rules'] :
+    rules = record.get('rules', [])
+    for rule in rules :
         CONSTR_LOG.debug(f"rule : {rule['txt']}")
         converter = Ast2z3(record['args']['name'], record['args']['dtype'], rule['txt'], record['name'])
         rule = converter.convert()
@@ -93,3 +105,6 @@ def convert_constr_to_executable(record, rule_cnt = None) -> List["z3.Exr"] :
         rule_cnt["cnt"] += len(exec_rules)
         CONSTR_LOG.info(f"{len(exec_rules)} rules are generated")
     return exec_rules
+
+def convert_dtypes_to_z3s(dtypes : List[Any]) -> List["z3.ExprRef"]:
+    return [[dtype.z3() for dtype in dtypes] for dtypes in dtypes]

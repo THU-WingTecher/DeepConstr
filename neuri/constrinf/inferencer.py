@@ -5,26 +5,27 @@ from typing import Dict, Any, List, Tuple
 import os 
 import openai
 from logger import LLM_LOG
+
+load_dotenv(override=True)
+
 class Inferencer() :
     def __init__(self, 
                  setting : Dict[str, Any]) -> None:
         self.setting = setting 
         self.model = None
         self.args = None
-        self.update_setting(self.settings)
-        load_dotenv()
+        self.update_setting(self.setting)
+        
         self.key1 = os.getenv('OPENAI_API_KEY1')
         self.key2 = os.getenv('OPENAI_API_KEY2')
         self.using_key = 1
-        os.environ['ALL_PROXY'] =os.getenv("MYPROXY")
-
-    def flip_key(self) -> None :
-        if self.using_key == 1 : 
-            openai.api_key = self.key2
-            self.using_key = 2
-        else :
-            openai.api_key = self.key1
-            self.using_key = 1
+    # def flip_key(self) -> None :
+    #     if self.using_key == 1 : 
+    #         openai.api_key = self.key2
+    #         self.using_key = 2
+    #     else :
+    #         openai.api_key = self.key1
+    #         self.using_key = 1
 
     def up_temp(self, temp : float) -> None :
         while self.args['temperature']+temp > 2 :
@@ -46,7 +47,7 @@ class Inferencer() :
     def change_to_gpt3(self) -> None :
         self.set_model('gpt-3.5-turbo-16k-0613')
         self.set_temp(0.7)
-    def update_setting(self, setting) -> None :
+    def update_setting(self, setting : Dict[str, Any]) -> None :
         self.model = setting['model_name']
         self.args = {arg_name : val for arg_name, val in setting.items() if arg_name != 'model_name'}
     def setting_change(self) -> None :
@@ -63,27 +64,28 @@ class Inferencer() :
                   contexts : str = '', 
                   update : bool = False
                   ) -> str :
-        self.flip_key()
+        # self.flip_key()
+        os.environ['ALL_PROXY'] =os.getenv("MYPROXY")
         completion = None
 
         start = time.time()
         
-        if update :
-            self.update_setting(random.choice(self.settings))
-        
-        LLM_LOG.info(f'### Inferencing with {self.model}\{self.args} \n')
-        # input_token_count = self.token_counter(self.model, prompts)
-        LLM_LOG.info(f'Prompts : \n {prompts} \n')
-        
+        # if update :
+        #     self.update_setting(random.choice(self.settings))
+        LLM_LOG.info(f'### Inferencing with {self.model}\{self.args} \nSystem : \n {contexts} \nPrompts : \n {prompts} \n')
+        client = openai.OpenAI(
+            api_key=os.getenv('OPENAI_API_KEY1'),
+            timeout=self.setting['timeout']
+        )
         try:
-            completion = openai.ChatCompletion.create(
+            stream = client.chat.completions.create(
                     model=self.model,
                     messages=[
                         {'role' : "system", 'content' : contexts},
                         {'role': 'user', 'content': prompts},
                     ],
                     **self.args
-                    )
+            )
         except openai.APIConnectionError as e:
             LLM_LOG.error("The server could not be reached")
             LLM_LOG.error(e.__cause__)  # an underlying Exception, likely raised within httpx.
@@ -94,8 +96,8 @@ class Inferencer() :
             LLM_LOG.error(e.status_code)
             LLM_LOG.error(e.response)   
 
-        response = completion.choices[0]['message']['content']
+        response = stream.choices[0].message.content
         time_cost = time.time() - start
-        LLM_LOG.info(f'Output : \n {response} \n Time cost : {time_cost} seconds \n')
+        LLM_LOG.info(f'Output(Ptk{stream.usage.prompt_tokens}-OtkPtk{stream.usage.completion_tokens}) : \n {response} \n Time cost : {time_cost} seconds \n')
         return response
     

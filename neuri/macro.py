@@ -10,18 +10,22 @@ def onnx2external_data_dir(onnx_file):
 
 
 # can be changing variables (drag and cntrl + shift + l)
-# save directory : torchcomp-fuzz-0220_2_record
-# save directory : torchcomp-fuzz-0220_2
+# save directory : torchcomp-fuzz-0221_record
+# save directory : torchcomp-fuzz-0221
 """ API TEST
 python experiments/evaluate_apis.py  mgen.record_path=$(pwd)/data/constraints/torch/ mgen.pass_rate=0.05 mgen.max_nodes=5 model.type=torch backend.type=torchjit fuzz.time=20m exp.parallel=6 mgen.noise=0.4
 """
 
 """ FUZZING 
-python neuri/cli/fuzz.py fuzz.time=1h mgen.record_path=data/constraints/torch fuzz.root=bugs/torchcomp-fuzz-0220_2 filter.type=\[\'nan\',\'dup\',\'inf\'\] backend.type=torchcomp model.type=torch fuzz.save_test=bugs/torchcomp-fuzz-0220_2_record debug.viz=true hydra.verbose=fuzz fuzz.resume=false mgen.method=constrinf mgen.max_nodes=3
+python neuri/cli/fuzz.py fuzz.time=24h mgen.record_path=data/constraints/torch fuzz.root=bugs/torchcomp-fuzz-0221 filter.type=\[\'nan\',\'dup\',\'inf\'\] backend.type=torchcomp model.type=torch fuzz.save_test=bugs/torchcomp-fuzz-0221_record debug.viz=true hydra.verbose=fuzz fuzz.resume=false mgen.method=constrinf mgen.max_nodes=3 mgen.pass_rate=0.6
 
 ./fuzz.sh 5 constrinf          torch torchcomp 4h
 """
 
 """ to_reproduce_code 
-python neuri/materialize/torch/program.py /artifact/gen/torch-constrinf-n3 torchcomp
+python neuri/materialize/torch/program.py /artifact/bugs/torchcomp-fuzz-0220_final_record torchcomp
+"""
+
+"""train
+python neuri/cli/train.py train.record_path=data/constraints/torch train.root=infer/torch backend.type=torchcomp model.type=torch hydra.verbose=train train.resume=false
 """

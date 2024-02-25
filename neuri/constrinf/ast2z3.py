@@ -8,7 +8,7 @@ import z3
 from typing import *
 from neuri.constrinf.ast_tool import *
 from neuri.constrinf.smt_funcs import *
-from neuri.error import IncompatiableConstrError
+from neuri.error import IncompatiableConstrError, WrongInferenceError
 from neuri.logger import AUTOINF_LOG
 
 def get_bool_operator(astop : str): 
@@ -208,7 +208,7 @@ class Ast2z3(SMTFuncs) :
             ast_tree = ast.parse(txt, mode='eval')
             return ast_tree.body
         except :
-            raise ValueError(f"Unsupported AST node {ast.dump(txt)})")
+            raise WrongInferenceError(f"Unsupported AST node {ast.dump(txt)})")
     def set_flag(self, name, container = None, **kwargs) :
         #must_iter=None, must_int=None, must_not_iter=None, must_str= 
         if self.is_in_argnames(name, self.related_args) : 
@@ -223,9 +223,15 @@ class Ast2z3(SMTFuncs) :
         identify the name in the txt with given arg_names
         """
         cleaned_txt = clean_txt(txt)
-        ast_tree = self.parse(cleaned_txt)
-        related_args = identify_related_args(ast_tree, arg_names)
-        self.update_related_args(related_args)
+        ast_tree = None 
+        try :
+            ast_tree = self.parse(cleaned_txt)
+            related_args = identify_related_args(ast_tree, arg_names)
+            self.update_related_args(related_args)
+        except IncorrectConstrError as e :
+            AUTOINF_LOG.warning(f"{e}")
+        except WrongInferenceError as e :
+            AUTOINF_LOG.warning(f"{e}")
         return ast_tree
     
     def gen_len_suff_cond(self, z3objs : Dict[str, z3.Var]) -> z3.ExprRef : 
@@ -385,6 +391,8 @@ class Ast2z3(SMTFuncs) :
     def convert(self, no_suff : bool =False) : 
         result = None 
         ast = self.load_ast_with_hooks(self.txt, self.arg_names)
+        if ast is None : 
+            return result
         self.constr_flags = self.gen_empty_constr_flags(self.related_args)
         self.other_flags = {name : {} for name in self.related_args}
         self.min_len = {name : None for name in self.related_args}

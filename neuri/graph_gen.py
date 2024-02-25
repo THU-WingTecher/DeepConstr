@@ -1246,14 +1246,16 @@ class ConstrInf(NeuriR):
                     
                 default_dtype_constr = default_dtype_generator(connected_key_name)
 
-            values = gen_val(chosen_dtype, 
-                            record['constraints'],
-                            noise_prob=self.noise,
-                            allow_zero_length_rate=self.allow_zero_length_rate,
-                            allow_zero_rate=self.allow_zero_rate,
-                            constraints=consistent_constrs + [default_dtype_constr],
-                            api_name=record['name'],
-                            num_of_try=self.num_of_try)
+            values = gen_val(
+                self.num_of_try,
+                chosen_dtype, 
+                record['constraints'],
+                noise_prob=self.noise,
+                allow_zero_length_rate=self.allow_zero_length_rate,
+                allow_zero_rate=self.allow_zero_rate,
+                constraints=consistent_constrs + [default_dtype_constr],
+                api_name=record['name'],
+                )
 
             if values is not None : 
                 break 

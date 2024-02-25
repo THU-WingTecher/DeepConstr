@@ -1,32 +1,29 @@
 import re 
-from logger import LOGGER
-import copy
 from typing import Dict, Any, Optional, List
-from train.semantic import Error_Messages, sort_sentences_by_similarity
-from generators import ArgumentGenerator
-from schema.rule import Rule
 import random
+
+from neuri.constrinf.constr import Constraint
+from neuri.constrinf.errmsg import sort_sentences_by_similarity
 
 PROMPT_EXAMPLE_PATH = "data/prompts/cot.json"
 
+def load_json(path) :
+    import json
+    with open(path, 'r') as f :
+        data = json.load(f)
+    return data
 class Prompter() :
     def __init__(self, record : Dict[str, Any]) :
         self.func = record['name']
         self.err_db = load_json(PROMPT_EXAMPLE_PATH)
-        self.args_names = [arg['name'] for arg in record['args']]
-        self.args_values = [arg['value'] for arg in record['args']]
-        self.collected_error_messages = ''
-        self.max_error_message_tokens = 10000
-        self.keys_print = ' | '.join([f"{key}" for key in self.args_names()])
+        self.args_names = record['args']['name']
+        self.keys_print = ' | '.join([f"{key}" for key in self.args_names])
         self.cases : Dict[str, List[Dict[str, Any]]] = {'FN' : [], 'FP' : []}
         self.collect_switch : Dict[str, bool] = {'FN' : False, 'FP' : False}
         self.asset = 3
         self.errmsgs_of_FP_cases = []
 
-    def update_values(self, args_values) -> None :
-        self.args_values = args_values
-
-    def FP_history(self, prev_answer : Rule, FP_example, target) -> None :
+    def FP_history(self, prev_answer : Constraint, FP_example, target) -> None :
         """create history prompts with False Positive examples """
         txt = prev_answer.txt
         ex = [f"{key}:{str(vals)}" for key, vals in FP_example.items()]
@@ -34,7 +31,7 @@ class Prompter() :
 propose other constraints that would not trigger the below error.
 Q :relate this values({FP_example}) to generate constraints that do not trigger -> {target} \nAnswers :"""  
         return template
-    def FN_history(self, prev_answer : Rule, FN_example) -> None :
+    def FN_history(self, prev_answer : Constraint, FN_example) -> None :
         """create history prompts with False Negative examples """
         txt = prev_answer.txt
         correct_discription = "complete"
@@ -42,7 +39,7 @@ Q :relate this values({FP_example}) to generate constraints that do not trigger 
         template = f"""Your previous answer({txt}) was partly correct. There are cases like {', '.join(ex)} would not trigger the error even though it doesn't satisfy your answer.
 Q : try to make constraints {correct_discription} so that it can make the whole input space not to trigger {prev_answer.target}.\nA : """
         return template
-    def gen_history(self, prev_answer : Rule) :
+    def gen_history(self, prev_answer : Constraint) :
         prompts = ""
         if "FP" in self.cases.keys() and len(self.cases['FP']) > 0 and len(self.cases['FP'][0]) > 0 : # "FP" is more important in general 
             idx =0
@@ -62,46 +59,46 @@ Q : try to make constraints {correct_discription} so that it can make the whole 
        return f"""Q : {err_msg}\nAnswers : {cot}\n```{answers}```"""
     def task_introduce(self) :
         return """You are a logical relationship constraints extractor. Thinking step by step how to prevent the error from occur again."""
-    def rule_grammar(self) : 
+    def Constraint_grammar(self) : 
         return f"""<symbol> ::= {self.keys_print} | type(<symbol>) | len(<symbol>) | <symbol>[<int>] | <symbol>.dim | <symbol>.shape
 <ops> ::= + | - | * | / | == | != | > | >= | < | <= | in | not in"""
 # <comparator> ::= dtype | integer | tensor.dtype | List[int]"""
     def get_closet_examples(self, err_msgs, num_of_ex=[0,3]) : 
-        sorted_li =[ele[0] for ele in sort_sentences_by_similarity(err_msgs[0], list(self.err_db.keys()))[num_of_ex[0]:num_of_ex[1]]]
+        sorted_li =[ele[0] for ele in sort_sentences_by_similarity(err_msgs[0], list(self.err_db.keys()))[:num_of_ex]]
         sorted_li = sorted_li[::-1]
         examples = '\n'.join([self.dynamic_template(errmsg, self.err_db[errmsg]['cot'], self.err_db[errmsg]['answers']) for errmsg in sorted_li])
         return examples
     def question(self, target, args_values) :
-        value_mapped = {key : str(val) for key, val in zip(self.args_names, args_values)}
-        return f"""Q : relate this values({value_mapped}) to generate constraints that do not trigger -> {target} \nAnswers :"""  
+        
+        return f"""Q : relate this values({args_values}) to generate constraints that do not trigger -> {target} \nAnswers :"""  
     
     def gen_infer_history(self, ans_history : str) : 
         if ans_history is None or len(ans_history) == 0 :
             return ""
         introduce = "avoid same answer with your prev answer : "
         return introduce + '```' + ans_history + '```'
-    def gen(self, err_msgs, args_values, num_of_ex=[0,3], prev_answer : Optional[Rule]=None, ans_history : Optional[str]=None) :
+    def gen_contexts(self) :
+        return ""
+    def gen(self, err_msgs, args_values, num_of_ex=[0,3], prev_answer : Optional[Constraint]=None, ans_history : Optional[str]=None) :
         prompts = ""
         history = ""
         task_introduce= self.task_introduce()
-        grammar = self.rule_grammar() if random.choice([0,1]) else ""
+        grammar = self.Constraint_grammar() if random.choice([0,1]) else ""
         examples = self.get_closet_examples(err_msgs, num_of_ex = num_of_ex)
+        contexts = self.gen_contexts()
         # history = self.gen_history(prev_answer) if prev_answer is not None else ""
         # infer_history = self.gen_infer_history(ans_history)
         if len(history) == 0 : 
-            task_discription = self.question(err_msgs[0], args_values)
-            prompts = '\n'.join([task_introduce, 
+            contexts = '\n'.join([task_introduce, 
                                 grammar, 
-                                examples, 
-                                # infer_history,
-                                task_discription])
+                                examples])
+            prompts = self.question(err_msgs[0], args_values)
         else : 
-            prompts = '\n'.join([task_introduce, 
-                    grammar, 
-                    examples, 
-                    # infer_history,
-                    history])
-        return prompts
+            contexts = '\n'.join([task_introduce, 
+                                grammar, 
+                                examples])
+            prompts = self.question(history, args_values)
+        return contexts, prompts
     def _CoT_template(self) -> None :
         """
         Q : Errmsg with error triggering args values
@@ -117,23 +114,6 @@ Q : try to make constraints {correct_discription} so that it can make the whole 
         """
         pass
 
-    def gen_err_msg(self, 
-                    error_messages : str, 
-                    simple : bool = True,
-                    func_argument_print=False,
-                    input_argument_print=False
-                    ) -> str :
-        err_msg = Error_Messages(self.func,
-                            error_messages,
-                            self.args_values,
-                            self.def_type_dict,
-                            self.args_type_dict,
-                            self.input_related_keys,
-                            self.generator.package)
-        return err_msg.get(simple=simple,
-                            func_argument_print=func_argument_print,
-                            input_argument_print=input_argument_print
-                            )
     def collect_error_messages(self, 
                                error_messages : str, 
                                simple : bool = True,
@@ -149,11 +129,6 @@ Q : try to make constraints {correct_discription} so that it can make the whole 
             self.collected_error_messages += whole_error_messages+'\n'
     def get_last_err_msg(self) -> str :
         return self.collected_error_messages.strip().split('\n')[-1]
-    def enrich_error_mssage(self, 
-                            system_error_message : str) -> str :   
-        # args_types_msgs = f"Arguments Type : {self.generator.args_type_dict}"
-        args_values_msgs = f"Arguments Values of {self.func.__name__} : {self.args_values}"
-        return '\n'.join([args_values_msgs, system_error_message])
 
     def generate_func_doc(self) -> str :
         doc_str = self.func.__doc__

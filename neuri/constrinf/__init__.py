@@ -50,7 +50,7 @@ def process_record(file_path: str, test_pool: list = []) -> dict:
         else:
             record[key] = cfg[key]
 
-    record['outputs'] = {'value': []}
+    record['outputs'] = {'value': []} # Placeholder for the output values
 
     if cfg.get('constraints') is not None:
         for i_name, name in enumerate(record['args']['name']):
@@ -62,7 +62,7 @@ def process_record(file_path: str, test_pool: list = []) -> dict:
         if len(record['args']['name']) > 0:
             return record
     else:
-        AUTOINF_LOG.warning(f"no constraints in {file_path}")
+        AUTOINF_LOG.warning(f"no dtype info in {file_path}")
         return None
 
 # Step 2: Define the traversal function
