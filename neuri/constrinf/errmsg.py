@@ -1,11 +1,11 @@
 import re
+import traceback
 from typing import Any, Dict, List
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-
 class ErrorMessage:
-    def __init__(self, msg: str, values, choosen_dtype):
+    def __init__(self, msg: str, traceback_msg : str, values, choosen_dtype):
         """
         Initialize an instance with error details.
 
@@ -13,7 +13,12 @@ class ErrorMessage:
         :param args: The positional arguments associated with the error.
         :param kwargs: The keyword arguments associated with the error.
         """
+        self.error_type = None 
         self.msg = msg
+        if isinstance(msg, Exception) :
+            self.error_type = type(msg)
+            self.msg = str(msg)
+        self.traceback = traceback_msg
         self.values : Dict[str, Any] = values
         self.chooen_dtype : Dict[str, Any] = choosen_dtype
     
