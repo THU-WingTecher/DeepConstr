@@ -31,7 +31,12 @@ def contains_ctypes(obj, visited=None):
     
     return False
 
-def worker(model, record, constraints, noise, allow_zero_length_rate, allow_zero_rate, num_of_try):
+_gloabl_constraints = []
+def set_global_constraints(constraints) :
+    global _gloabl_constraints
+    _gloabl_constraints = constraints
+
+def worker(model, record, noise, allow_zero_length_rate, allow_zero_rate, num_of_try):
     chosen_dtype = {}
     for i_arg, arg_name in enumerate(record['args']['name']):
         if len(record['args']['dtype'][i_arg]) > 0:
@@ -42,7 +47,7 @@ def worker(model, record, constraints, noise, allow_zero_length_rate, allow_zero
     values = gen_val(
                 num_of_try,
                 chosen_dtype, 
-                constraints,
+                _gloabl_constraints, # constraints
                 noise_prob=noise,
                 allow_zero_length_rate=allow_zero_length_rate,
                 allow_zero_rate=allow_zero_rate,
@@ -58,7 +63,6 @@ def worker(model, record, constraints, noise, allow_zero_length_rate, allow_zero
     try:
         # Assuming record_args_info is a function to log or record argument info
         # self.record_args_info(record, values)  # Placeholder for actual logging or recording
-        
         res_or_bug = model.execute_op(inst)
         return True, ErrorMessage("no error", concretized_values, chosen_dtype)  # Assuming execution success
     except Exception as e:
@@ -68,7 +72,7 @@ class Executor:
     def __init__(self, model, parallel=8) :
         self.model = model
         self.parallel = parallel
-    def execute(self, ntimes, *args, **kwargs) -> Optional[List[Tuple[bool, ErrorMessage]]]:
+    def _execute(self, ntimes, *args, **kwargs) -> Optional[List[Tuple[bool, ErrorMessage]]]:
         results = []
         unable_to_gen_tor = 4
         worker_fn = functools.partial(worker, self.model, *args, **kwargs)
@@ -82,7 +86,7 @@ class Executor:
                 unable_to_gen_tor = 4
                 results.append(res)
         return results
-    def parallel_execute(self, ntimes, *args, **kwargs) -> Optional[List[Tuple[bool, ErrorMessage]]]:
+    def execute(self, ntimes, constraints, *args, **kwargs) -> Optional[List[Tuple[bool, ErrorMessage]]]:
         """
         ctypes pickling problem.
         To support parallel execution, 
@@ -104,11 +108,8 @@ class Executor:
         #         for k, v in item.items() :
         #             if contains_ctypes(v) :
         #                 print(k, v[0][0])
-        manager = Manager()
-        
-        # Assuming self.model, args, and kwargs are already defined
-        args = list(args)
  
+        set_global_constraints(constraints) # to be used in worker(parallel execution)
         with ProcessPoolExecutor(max_workers=self.parallel) as executor:
             # Generate a list of future tasks
             worker_fn = functools.partial(worker, self.model, *args, **kwargs)
