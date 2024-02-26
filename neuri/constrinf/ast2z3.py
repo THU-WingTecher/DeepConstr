@@ -67,15 +67,22 @@ def dict_combinations(input_dict):
     return result
 
 def inspect_suff_conds(constr_flags : Dict[str, Dict[str, bool]], body : z3.ExprRef, z3objs : List[z3.Var]) :
+    satisfied = True 
     for name, flag in constr_flags.items() :
         z3obj = z3objs[name].get_wrapped_object() if is_wrapper(z3objs[name]) else z3objs[name]
-        if flag["must_iter"] and not Ast2z3.is_iterable(z3obj) : return True 
-        elif flag["must_not_iter"] and Ast2z3.is_iterable(z3obj) : return True
-        elif flag["must_int"] and not Ast2z3.is_int(z3obj) : return True
-        elif flag["must_str"] and not Ast2z3.is_str(z3obj) : return True
-
-    return body
-
+        if flag["must_iter"] and not Ast2z3.is_iterable(z3obj) : 
+            satisfied = False
+        elif flag["must_not_iter"] and Ast2z3.is_iterable(z3obj) : 
+            satisfied = False
+        elif flag["must_int"] and not Ast2z3.is_int(z3obj) : 
+            satisfied = False
+        elif flag["must_str"] and not Ast2z3.is_str(z3obj) : 
+            satisfied = False
+    if satisfied :
+        return body
+    else : 
+        return True 
+    
 FLAGS = ["must_iter", "must_int", "must_not_iter", "must_str"]
 
 class Ast2z3(SMTFuncs) : 
@@ -249,10 +256,9 @@ class Ast2z3(SMTFuncs) :
         for name, flag in self.min_len.items() :
             if flag is not None :
                 z3obj = z3objs[name].get_wrapped_object() if is_wrapper(z3objs[name]) else z3objs[name]
-                results.append(z3.And(
-                    self.min_len[name] >= 0,
-                    self.min_len[name] < self.len(z3obj)
-                ))
+                results.append(
+                    self.len(z3obj) >= self.min_len[name] 
+                )
         if results : return z3.And(results)
         else : return 
 
@@ -291,6 +297,10 @@ class Ast2z3(SMTFuncs) :
 
     def set_min_len(self, name, idx) : 
         if isinstance(idx, int) :      
+            if idx < 0 : 
+                idx = abs(idx)
+            else : 
+                idx = idx + 1
             if name in self.min_len.keys() : 
                 if self.min_len[name] is None :
                     self.min_len[name] = idx
