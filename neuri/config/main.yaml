@@ -84,6 +84,8 @@ train:
   simple_eval_asset: 10 # recommend to be parallel of executor
   eval_asset: 2
   n_infer_per_round: 10
+  str_sim_threshold: 0.8
+  precision_threshold: 100 # 0 ~ 100
 
 llm:
   settings:

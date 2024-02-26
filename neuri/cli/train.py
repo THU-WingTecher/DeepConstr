@@ -49,15 +49,10 @@ def transform_record_for_saving(record: dict) -> dict:
         if key == 'name':
             transformed['title'] = value
         elif key == 'args':
-            constraints = {}
-            for i, name in enumerate(value['name']):
-                constraints[name] = {
-                    'is_pos': value['is_pos'][i],
-                    'dtype': value['dtype'][i]  # Assuming dtype should be reverted; adjust as necessary
-                }
-            transformed['constraints'] = constraints
+            pass
         else:
             transformed[key] = value
+    return transformed
 
 def save_record(record: dict, path: str) -> None:
     """
@@ -73,16 +68,18 @@ def save_record(record: dict, path: str) -> None:
         Exception: For any unexpected errors during the save operation.
     """
     # Transform the record back to the expected format
-    save_format_record = transform_record_for_saving(record)
+    record = copy.deepcopy(record)
+    record = transform_record_for_saving(record)
 
     # Ensure the directory exists
     directory = os.path.dirname(path)
     if not os.path.exists(directory):
-        raise FileNotFoundError(f"The directory {directory} does not exist.")
+        os.makedirs(directory, exist_ok=True)
+        # raise FileNotFoundError(f"The directory {directory} does not exist.")
     
     try:
         with open(path, 'w') as file:
-            yaml.dump(save_format_record, file)
+            yaml.dump(record, file)
     except FileNotFoundError as e:
         raise FileNotFoundError(f"The directory {directory} does not exist.") from e
     except Exception as e:
@@ -359,7 +356,12 @@ class TrainingLoop:
         solved = highest_prev["overall_score"] == 100
         return solved, tolerance, highest_prev, prev_answer
 
-    def finalize_training_session(self, highest_prev : Dict[str, float], synthesizer : Synthesizer, prev_answer):
+    def finalize_training_session(self, 
+                                  highest_prev : Dict[str, float], 
+                                  record : Dict[str, Any], 
+                                  constr_target_map : Dict[ErrorMessage, Tuple[Dict[str, float],Constraint]], 
+                                  synthesizer : Synthesizer, 
+                                  prev_answer : Constraint = None) -> bool:
         """
         Finalize the training session, handling the selection of the most optimal rule.
         
@@ -369,7 +371,7 @@ class TrainingLoop:
         :return: Boolean indicating whether a satisfactory rule was found.
         """
         # Log the tried rules and their outcomes
-        TRAIN_LOG.info(f"Tried rules:\n{SPLITTER.join([r.txt for r in synthesizer.tried])}")
+        TRAIN_LOG.info(f"Tried rules:\n{SPLITTER.join(map(str, synthesizer.tried))}")
         
         if highest_prev["overall_score"] == 0:
             # No improvement found
@@ -378,7 +380,7 @@ class TrainingLoop:
         elif highest_prev["overall_score"] == 100:
             # A rule with perfect score found
             TRAIN_LOG.info(f"Perfect rule found: {prev_answer.txt}")
-            self.handle_solved_rule(prev_answer, highest_prev)
+            self.handle_solved_rule(prev_answer, highest_prev, record, constr_target_map)
             return True
         else:
             # Select the best rule based on the training outcome
@@ -387,7 +389,7 @@ class TrainingLoop:
                 best_rule = synthesizer.non_FP[0][1]
             else:
                 # Fallback to the best seed rule if the precision threshold is met
-                if synthesizer.seeds[0][0]["precision"] <= self.cfg['precision_threshold']:
+                if synthesizer.seeds[0][0]["precision"] < self.cfg["train"]['precision_threshold']:
                     TRAIN_LOG.info("Best rule does not meet the precision threshold.")
                     return False
                 best_rule = synthesizer.seeds[0][1]
@@ -404,14 +406,19 @@ class TrainingLoop:
             os.makedirs(new_path, exist_ok=True)
             return new_path
     
-    def get_retrain_list(self, op_record) -> List[Tuple[ErrorMessage, Constraint]] :
-        pass_rate, sorted_err_instances = self.get_pass_rate_and_err_msgs(op_record)
-        return [(target, constr) for target, constr in self.constr_target_map.items()]
+    def get_retrain_list(self, record, constr_target_map) -> List[Tuple[ErrorMessage, Constraint]] :
+        # pass_rate, sorted_err_instances = self.get_pass_rate_and_err_msgs(op_record)
+        return [(target, constr) for target, constr in constr_target_map.items()]
+    
+    @staticmethod
+    def get_constrs_from_rules(record) :
+        return record["rules"]
     
     def pop_constr_from_record(self, txt : str, record) :
-        for const_instance in record["constraints"] :
+        constrs = self.get_constrs_from_rules(record)
+        for const_instance in constrs :
             if const_instance["txt"] == txt :
-                record["constraints"].remove(const_instance)
+                constrs.remove(const_instance)
                 return True
         raise ValueError(f"no such constraint in record : {txt}")
 
@@ -428,12 +435,13 @@ class TrainingLoop:
     def run(self, op_record, record_path):
         n_try = 0
         pass_rate = 0
-        record_path = "test.yaml" # for debugging
+        record_path =record_path.replace("constraints", "debug") # for debugging
         op_record['rules'] = [] # for debugging
+        constr_target_map : Dict[ErrorMessage, Tuple[Dict[str, float],Constraint]] = {}
         while pass_rate < 100 and n_try < self.cfg["train"]["n_try"] :
             pass_rate, sorted_err_instances = self.get_pass_rate_and_err_msgs(op_record, self.cfg["train"]["eval_asset"])
             if sorted_err_instances :
-                succeed = self.train(op_record, sorted_err_instances[0], mode="acc")
+                succeed = self.train(op_record, sorted_err_instances[0], constr_target_map, mode="acc")
                 if succeed :
                     save_record(op_record, record_path)
                 else :
@@ -442,11 +450,11 @@ class TrainingLoop:
                 break
         
         save_record(op_record, self.get_only_acc_save_path(record_path))
-        queue = self.get_retrain_list(op_record)
+        queue = self.get_retrain_list(op_record, constr_target_map)
         while queue :
             target_err, (scores, constr) = queue.pop()
             self.pop_constr_from_record(constr.txt, op_record)
-            succeed = self.train(op_record, target_err, mode="f1", seeds = [(scores, constr)])
+            succeed = self.train(op_record, target_err, constr_target_map, mode="f1", seeds = [(scores, constr)])
             if succeed :
                 save_record(op_record, record_path)
             else :
@@ -459,20 +467,25 @@ class TrainingLoop:
         txt rule -> executable rule(unactivated)
         """
         copied = copy.deepcopy(record)
-        copied["constraints"] = convert_constr_to_executable(copied["constraints"])
+        copied["rules"] = convert_constr_to_executable(copied)
         copied["args"]["dtype"] = target.get_dtypes()
         return copied
     
-    def train(self, record, target : ErrorMessage, mode : Literal["acc", "f1"], seeds = []):
+    def train(self, 
+              orig_record, 
+              target : ErrorMessage,
+              constr_target_map : Dict[ErrorMessage, Tuple[Dict[str, float],Constraint]],  
+              mode : Literal["acc", "f1"], 
+              seeds = []):
         # Initialize training session
 
         solved = False
         infer_times = 0
         prev_answer = None
-        highest_prev : Dict[str, float] = {}
+        highest_prev : Dict[str, float] = {"overall_score" : 0, "precision" : 0, "recall" : 0, "f1_score" : 0}
         tolerance = 0
         new_rules : List[Constraint] = []
-        record = self.fix_record_attrs(record, target) # deep copy and fix dtypes and rules
+        record = self.fix_record_attrs(orig_record, target) # deep copy and fix dtypes and rules
         prompter = Prompter(record)
         synthesizer = Synthesizer(target, self.executor, record, self.cfg["train"])
         # Synthesizer responsible for filtering, evaluating, and finding the best rule
@@ -505,23 +518,23 @@ class TrainingLoop:
             solved, tolerance, highest_prev, prev_answer = self.update_tolerance_and_history(result, tolerance, highest_prev, prev_answer)
         
         # Finalize training session and handle rule selection
-        return self.finalize_training_session(highest_prev, synthesizer, prev_answer)
+        return self.finalize_training_session(highest_prev, orig_record, constr_target_map, synthesizer, prev_answer)
     
     def update_record_constr(self, constr, record, scores) :
-        record["constraints"].append({
+        self.get_constrs_from_rules(record).append({
             "txt" : constr.txt,
             "cot" : constr.cot,
             "target" : constr.target.get_core_msg(),
             "scores" : scores
         })
-
     def handle_solved_rule(self, 
                            constr : Constraint, 
                            scores : Dict[str, Any], 
-                           record : Dict[str, Any]) : 
-        self.self.constr_target_map.update({constr.target : (scores, constr)})
+                           record : Dict[str, Any],
+                           constr_target_map : Dict[ErrorMessage, Tuple[Dict[str, float],Constraint]]
+                           ) : 
+        constr_target_map.update({constr.target : (scores, constr)})
         self.update_record_constr(constr, record, scores)
-  
 
     def is_special_err_msg(self, errmsg) :
         lowered = errmsg.lower()

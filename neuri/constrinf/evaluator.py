@@ -117,7 +117,7 @@ class Evaluator() :
                     ##FN_case
                     TRAIN_LOG.debug(f'###Changed : No error occured with {errmsg.get_values_map()}')
                     solved+=1
-                elif self.is_same(errmsg.get_core_msg(), self.target) == False : 
+                elif self.is_same(errmsg.get_core_msg(), self.target.get_core_msg()) == False : 
                     TRAIN_LOG.debug(f'###Changed : Diff error with {errmsg.get_values_map()}')
                     TRAIN_LOG.info(f'Changed {self.target.get_core_msg()} -> {errmsg.get_core_msg()}')
                     solved+=1

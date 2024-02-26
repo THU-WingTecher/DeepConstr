@@ -4,6 +4,7 @@ import random
 import string
 import z3
 from abstract.dtype import DTYPE_GEN_ALL, DTYPE_NOT_SUPPORTED, AbsDType, AbsIter, AbsLiteral, DType
+from neuri.autoinf.instrument.op import AbsValue
 from neuri.constrinf.smt_funcs import SMTFuncs
 from neuri.logger import SMT_LOG
 # from specloader.materalize import RandomGenerator
@@ -134,13 +135,13 @@ def sym_to_conc(model, z3_arg, args_types, args_values, args_lengths) :
     if arg_name not in args_types:
         return None
     if datatype == z3.IntSort():
-        return z3_instance.as_long()
+        args_values[arg_name] = AbsValue(z3_instance.as_long())
     elif datatype == z3.RealSort():
-        return float(z3_instance.as_decimal(prec=7).rstrip('?'))
+        args_values[arg_name] = AbsValue(float(z3_instance.as_decimal(prec=7).rstrip('?')))
     elif datatype == z3.BoolSort():
-        return bool(z3_instance)
+        args_values[arg_name] = AbsValue(bool(z3_instance))
     elif datatype == z3.StringSort():
-        return str(z3_instance).replace('"', '').replace("'", "")
+        args_values[arg_name] = AbsValue(str(z3_instance).replace('"', '').replace("'", ""))
     else : 
         wrapper = args_types[arg_name].z3()(arg_name)
         if isinstance(args_types[arg_name], AbsTensor) :
@@ -317,18 +318,20 @@ def _random_gen(datatype):
     """
     Randomly generate a value based on the given datatype.
     """
+    value = None
     if datatype == AbsDType.bool:
-        return random.choice([True, False])
+        value = random.choice([True, False])
     elif datatype == AbsDType.int:
-        return random.randint(0, 100)  # Adjust range as needed
+        value = random.randint(0, 100)  # Adjust range as needed
     elif datatype == AbsDType.float:
-        return random.uniform(0, 1)
+        value = random.uniform(0, 1)
     elif datatype == AbsDType.str:
-        return ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+        value = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
     elif isinstance(datatype, AbsLiteral):
-        return random.choices(datatype.choices)[0]
+        value = random.choices(datatype.choices)[0]
     else:
         raise NotImplementedError(f"Unsupported datatype {datatype}")
+    return AbsValue(value)
 
 def random_gen(abs, length=None):
     """

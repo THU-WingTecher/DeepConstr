@@ -6,6 +6,7 @@
 *.profraw 
 *.tar.gz
 bugs/
+data/debug/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

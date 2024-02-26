@@ -18,7 +18,7 @@ class Synthesizer:
         self.executor = executor
         self.record = record
         self.cfg = cfg
-        self.has_save_point = False
+        self.saved_state : List[Tuple[Dict[str, float], Constraint]] = []
         self.seeds : List[Tuple[Dict[str, float], Constraint]] = []
         self.non_FP : List[Tuple[Dict[str, float], Constraint]] = []  # For storing the best constraints found so far
         self.non_FN : List[Tuple[Dict[str, float], Constraint]] = []  # For storing the best constraints found so far
@@ -42,8 +42,9 @@ class Synthesizer:
         scores["overall_score"] = score
 
     def save_state(self, seeds) :
-        self.update_seeds(({}, seed) for seed in seeds)
-        self.has_save_point = True
+        for seed in seeds :
+            self.saved_state.append(seed)
+
     def evaluate(self, constraint : Constraint, skim : bool = False) -> Dict[str, Any]:
         # Placeholder: Calculate F1, precision, and recall for the given constraint
         scores = {}
@@ -77,10 +78,13 @@ class Synthesizer:
                 res.append(synthesized)
         return res
     def update_seeds(self, new_seeds : List[Tuple[Dict[str,float], Constraint]]):
-        for _, seed in new_seeds :
-            self.seeds.append(seed)
-        self.seeds = [(score, seed) for score, seed in sorted(self.seeds, \
-                                                 key=lambda pair: pair[0]["overall_score"], reverse=True)][:self.cfg['max_num_of_seeds']]
+        for new_seed in new_seeds :
+            if self.seeds and has_same_rule(new_seed[1].z3expr, [c.z3expr for _, c in self.seeds]) :
+                pass 
+            else :
+                self.seeds.append(new_seed)
+        self.seeds.sort(key=lambda pair: pair[0].get("overall_score", 0), reverse=True)
+        self.seeds = self.seeds[:self.cfg['max_num_of_seeds']]
         TRAIN_LOG.debug(f"current seeds : {[(score, c.txt, c.length) for score, c in self.seeds]}")
 
     def need_synthesis(self, left : Constraint, right : Constraint) -> bool :
@@ -121,16 +125,15 @@ class Synthesizer:
         else :
             return [seed[1] for seed in self.seeds][:top_k]
     
-    def load_save_point(self) :
-        seeds = self.load_high_quality_constrs()
-        self.has_save_point = False
-        return seeds
+    def load_saved_state(self) :
+        return [state[1] for state in self.saved_state]
+    
     def run(self, new_rules : List[Constraint]) -> Tuple[float, Constraint] :
 
         queue : List[Constraint]= []
         high_quality = self.load_high_quality_constrs()
-        if self.has_save_point : 
-            saved_rules = self.load_save_point()
+        if self.saved_state : 
+            saved_rules = self.load_saved_state()
             queue.extend(saved_rules)
         filtered_new = self.rm_dupe(new_rules) 
         queue.extend(filtered_new)
