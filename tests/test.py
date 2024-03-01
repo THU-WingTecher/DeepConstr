@@ -2,8 +2,8 @@ import os
 import sys
 from typing import Any, Dict, List
 from neuri.autoinf import AutoInfOpBase
-from neuri.autoinf.instrument.op import AbsTensor, OpInstance
-from neuri.specloader.materalize import materalize_dtypes
+from neuri.autoinf.instrument.op import OpInstance
+from neuri.abstract.dtype import AbsTensor, materalize_dtypes
 from neuri.logger import LOGGER
 from neuri.specloader.smt import gen_val
 from neuri.specloader.utils import load_yaml

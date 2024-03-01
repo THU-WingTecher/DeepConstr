@@ -1,7 +1,11 @@
 import traceback
 from typing import *
+
+import hydra
+from omegaconf import DictConfig
 from neuri.constrinf import gen_inst_with_records, make_record_finder
 from neuri.constrinf.ast2z3 import Ast2z3
+from tests.smt import test_smt
 
 def test_with_given_constraints(constrs, arg_names, dtypes) :
 
@@ -13,14 +17,14 @@ def test_with_given_constraints(constrs, arg_names, dtypes) :
             converter = Ast2z3(arg_names, dtypes, constr, func_name)
             print(f"{func_name}-Constraint: {constr}")
             result = converter.convert()
+            all_results.append(result)
             print(f"Z3: {result}\n")
             print(f"suff conds : {converter.pretty_flags()}\n")
         except :
             print(traceback.format_exc())
             print(constr, func_name)
         print(f"Constraint: {constr}\nMimic Z3: {result}\n")
-
-
+    return all_results
 def test_whole_constraints(dir_path = None ) :
 
     if dir_path is None :
@@ -45,25 +49,48 @@ def test_whole_constraints(dir_path = None ) :
             print(f"suff conds : {converter.pretty_flags()}\n")
 
     print(f"NL_CONSTR ------> SMT CONSTR : {cnt} CASES TEST COMPLETED")
-
-if __name__ == "__main__" :
-     
-    #  (len(mat2.shape) == 2) or ((out.shape == [mat1.shape[0], mat2.shape[1]]) or (len(input) == len(mat1)))
-
+    
+@hydra.main(version_base=None, config_path="../neuri/config/", config_name="main")
+def main(cfg: DictConfig):
     from neuri.constrinf.smt_funcs import load_z3_const
     from neuri.abstract.dtype import AbsDType
-    from neuri.abstract.tensor import AbsTensor
-    test_whole_constraints()
-    #  Example Usage : test_with_given_constraints
-    # arg_names = ['a', 'b','c']
-    # dtypes = [
-    #     [AbsDType.int.to_iter()],
-    #     [AbsDType.int.to_iter()],
-    #     [AbsTensor.to_iter()],
-    #     ]
-    # test_constraints = [
-    #     "all((a[i]>1 and a[i]<4) for i in a[2:])",
-    #     "c[0].shape[0] == b[0]",
-    #     'a[-1] > b[-2]'
-    # ]
-    # test_with_given_constraints(test_constraints, arg_names, dtypes)
+    from neuri.abstract.dtype import AbsTensor
+    ## whole constraints testing ##
+    # test_whole_constraints()
+
+    ## target constr testing ##
+    """
+    Example Usage : test_with_given_constraints
+    arg_names = ['a', 'b','c']
+    dtypes = [
+        [AbsDType.int.to_iter()],
+        [AbsDType.int.to_iter()],
+        [AbsTensor.to_iter()],
+        ]
+    test_constraints = [
+        "all((a[i]>1 and a[i]<4) for i in a[2:])",
+        "c[0].shape[0] == b[0]",
+        'a[-1] > b[-2]'
+    ]
+    test_with_given_constraints(test_constraints, arg_names, dtypes)
+    test_smt(arg_names, [d[0] for d in dtypes], constrs, noise_prob=0.3)
+    """
+    arg_names = ['a', 'b','c']
+    dtypes = [
+        [AbsDType.int.to_iter()],
+        [AbsDType.int.to_iter()],
+        [AbsTensor.to_iter()],
+        ]
+    test_constraints = [
+        "all((a[i]>1 and a[i]<4) for i in a[2:])",
+        "c[0].shape[0] == b[0]",
+        'a[-1] > b[-2]'
+    ]
+    constrs = test_with_given_constraints(test_constraints, arg_names, dtypes)
+    test_smt(arg_names, [d[0] for d in dtypes], constrs, noise_prob=0.3)
+
+
+if __name__ == "__main__" :
+     main()
+    #  (len(mat2.shape) == 2) or ((out.shape == [mat1.shape[0], mat2.shape[1]]) or (len(input) == len(mat1)))
+
