@@ -8,7 +8,7 @@ from abc import ABC
 from os import PathLike
 from typing import Callable, Dict, List, Type
 
-from neuri.abstract.dtype import DType
+from neuri.abstract.dtype import AbsTensor, DType
 from neuri.logger import TF_LOG
 from neuri.materialize.tensorflow.code_gen import gen_code
 
@@ -32,7 +32,7 @@ def configure_tf_gpu_mem(max_megabytes=None):
 
 configure_tf_gpu_mem()
 
-from neuri.abstract.op import AbsOpBase, AbsTensor
+from neuri.abstract.op import AbsOpBase
 from neuri.gir import GraphIR
 from neuri.materialize import Model, Oracle
 from neuri.materialize.tensorflow.forward import ALL_TF_OPS

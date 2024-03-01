@@ -3,7 +3,7 @@ import types
 from typing import List
 
 from neuri.abstract.op import AbsOpBase
-from neuri.abstract.tensor import AbsTensor
+from neuri.abstract.dtype import AbsTensor
 
 BACKEND_REQUIRES = {}
 

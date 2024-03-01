@@ -2,10 +2,10 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Set, Tuple, Union
 
 from z3 import ModelRef
+from neuri.abstract.dtype import AbsTensor
 
 from neuri.abstract.op import (
     AbsOpBase,
-    AbsTensor,
     Constant,
     Input,
     Placeholder,

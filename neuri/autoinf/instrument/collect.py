@@ -6,7 +6,7 @@ from functools import partial
 from typing import Any, Callable, Dict, List
 
 import numpy as np
-from natsort import natsorted
+# from natsort import natsorted
 from tqdm import tqdm
 
 from neuri.autoinf.instrument.utils import (

@@ -14,7 +14,7 @@ from onnx.external_data_helper import load_external_data_for_model
 from onnx.tools import update_model_dims
 
 from neuri.abstract.dtype import DType
-from neuri.abstract.op import AbsTensor
+from neuri.abstract.dtype import AbsTensor
 from neuri.gir import GraphIR
 from neuri.macro import onnx2external_data_dir
 from neuri.materialize.torch import SymbolNet, TorchModel

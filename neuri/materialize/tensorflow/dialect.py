@@ -16,7 +16,7 @@ from neuri.abstract.op import (
     rank_all,
     rank_from,
 )
-from neuri.abstract.tensor import AbsTensor
+from neuri.abstract.dtype import AbsTensor
 from neuri.error import ConstraintCheck
 
 

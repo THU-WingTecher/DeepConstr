@@ -29,11 +29,10 @@ from appdirs import user_cache_dir
 from omegaconf import OmegaConf
 
 from neuri import __version__
-from neuri.abstract.dtype import DType
+from neuri.abstract.dtype import AbsTensor, DType
 from neuri.abstract.extension import BACKEND_REQUIRES
 from neuri.abstract.op import (
     AbsOpBase,
-    AbsTensor,
     Constant,
     Input,
     Placeholder,

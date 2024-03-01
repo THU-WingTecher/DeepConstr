@@ -16,7 +16,7 @@ from neuri.abstract.dtype import (
     DTYPE_GEN_NON_BOOL,
     DType,
 )
-from neuri.abstract.tensor import AbsTensor
+from neuri.abstract.dtype import AbsTensor
 from neuri.error import ConstraintCheck, SanityCheck
 # from neuri.specloader import MAX_ARR_LEN
 # There are following types of constraints at this point:

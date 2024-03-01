@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 
 from neuri.abstract.op import Constant, Input
-from neuri.abstract.tensor import AbsTensor
+from neuri.abstract.dtype import AbsTensor
 from neuri.autoinf import AutoInfOpBase
 from neuri.gir import GraphIR
 from neuri.materialize.torch.code_gen import gen_code

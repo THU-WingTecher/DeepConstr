@@ -1,10 +1,13 @@
+import collections
 from enum import Enum, unique
-from functools import partial
-from typing import Any, Dict, List
-
+from functools import partial, reduce
+import random
+from typing import Any, Callable, Dict, List, Literal, Tuple, Union, get_args, get_origin
 import numpy as np
 from z3 import Const, BoolSort, IntSort, RealSort, StringSort, Array, Datatype, Const
-
+from neuri.abstract.arith import ConstraintCheck, SanityCheck, nnsmith_eq, nnsmith_ge, nnsmith_gt, nnsmith_mul, z3
+from neuri.error import ConstraintCheck, SanityCheck
+from neuri.logger import LOGGER
 
 
 @unique
@@ -352,7 +355,7 @@ class AbsIter():
     def __init__(self, values : List[AbsDType]):
         self.values = values
         self.length = len(values)
-        self.arg_type = values[0]
+        self.arg_type = values[0]() if isinstance(values[0], Callable) else values[0]
         self._values = values
         self._length = len(values)
         self._arg_type = values[0]
@@ -487,3 +490,508 @@ DTYPE_ALL = {
             DType.bool,
     ]
 }
+
+TYPE_TO_ABS = {
+    ## __origin__ of typing object
+    int : AbsDType.int,
+    float : AbsDType.float,
+    bool : AbsDType.bool,
+    str : AbsDType.str,
+    list : AbsIter([AbsDType.int]),
+    tuple : AbsIter([AbsDType.int]),
+    type(None) : AbsDType.none,
+}
+
+
+class AbsTensor:
+    def __init__(self,
+                 shape: List[Union[int, z3.ExprRef]] = [],
+                 dtype: DType = None,
+                 possible_dtypes : List[DType] = [],
+                 **kwargs):
+        assert isinstance(
+            shape, (list, tuple)
+        ), f"Shape must be a list/tuple, but got {shape}"
+        self.shape = list(shape)
+        self.rank = len(self.shape)
+        # assert possible_dtypes or dtype, "Must provide dtype or possible_dtypes"
+        self.possible_dtypes : List[DType] = possible_dtypes
+        self.dtype = dtype
+
+    @staticmethod
+    def from_numpy(x: "np.ndarray") -> "AbsTensor":
+        return AbsTensor(list(x.shape), str(x.dtype))
+    @staticmethod
+    def to_str() -> Any :
+        return 'tensor'
+    def downcast_rank(self):
+        return AbsTensor(shape=[None] * self.ndims, dtype=self.dtype)
+
+    def concrete_shape(self, symb_2_value: Dict[str, Any]) -> List[int]:
+        return [symb_2_value[s] for s in self.shape]
+
+    def set_shape(self, shape: List[Union[int, z3.ExprRef]]):
+        self.shape = shape
+        if len(self.shape) != self.rank:
+            self.rank = len(self.shape)
+
+    def concretize(
+        self,
+        symb_2_value: Dict[str, Any],
+        tensor_from_numpy: Callable = lambda x: x,
+        only_shape : bool = False,
+        *args,
+        **kwargs,
+    ):
+        if only_shape :
+            return AbsTensor(shape=self.concrete_shape(symb_2_value), dtype=self.dtype)
+        from neuri.autoinf.instrument.utils import (
+            numpy_random,
+        )
+        shape = [symb_2_value[s] for s in self.shape]
+        return tensor_from_numpy(numpy_random(shape, str(self.dtype)))
+
+    def concretize_with_concrete_values(
+        self,
+        tensor_from_numpy: Callable = lambda x: x,
+    ):
+        from neuri.autoinf.instrument.utils import (
+            numpy_random,
+        )
+        return tensor_from_numpy(numpy_random(self.shape, str(self.dtype)))
+
+    def __hash__(self) -> int:
+        return hash((tuple(self.shape), self.dtype))
+
+    def __repr__(self) -> str:
+
+        if self.dtype is None :
+            return f"AbsTensor<null[{str(len(self.possible_dtypes))}]>{str(self.shape)}"
+        else :
+            return f"AbsTensor<{self.dtype.short()}>{str(self.shape)}"
+
+    def pretty(self) -> str:
+        return f"{self.dtype.short()}{self.shape}"
+
+    def weak_compare(self, other: "AbsTensor") -> bool:
+        if self.dtype != other.dtype or self.ndims != other.ndims:
+            return False
+        for l, r in zip(self.shape, other.shape):
+            if isinstance(l, z3.ExprRef) or isinstance(r, z3.ExprRef):
+                continue
+            if l != r:
+                return False
+        return True
+
+    def strong_compare(self, other: "AbsTensor") -> bool:
+        return self.shape == other.shape and self.dtype == other.dtype
+
+    def __eq__(self, other: "AbsTensor") -> bool:
+        return isinstance(other, AbsTensor) and self.strong_compare(other)
+
+    def ge_zero(self):
+        ret = []
+        for s in self.shape:
+            if isinstance(s, z3.ExprRef):
+                ret.append(nnsmith_ge(s, 0))
+            else:
+                ConstraintCheck.ge(s, 0)
+        return ret
+
+    def sym_gt_conc_ge_zero(self):
+        ret = []
+        for s in self.shape:
+            if isinstance(s, z3.ExprRef):
+                ret.append(nnsmith_gt(s, 0))
+            else:
+                ConstraintCheck.ge(s, 0)
+        return ret
+
+    def gt_zero(self):
+        ret = []
+        for s in self.shape:
+            if isinstance(s, z3.ExprRef):
+                ret.append(nnsmith_gt(s, 0))
+            else:
+                ConstraintCheck.gt(s, 0)
+        return ret
+
+    def eq(self, other):
+        SanityCheck.eq(self.ndims, other.ndims)
+        ret = []
+        for i in range(self.ndims):
+            if isinstance(self.shape[i], z3.ExprRef) or isinstance(
+                other.shape[i], z3.ExprRef
+            ):
+                ret.append(nnsmith_eq(self.shape[i], other.shape[i]))
+            else:
+                ConstraintCheck.eq(self.shape[i], other.shape[i])
+        return ret
+
+    def torch(self):
+        import torch
+
+        return torch.Size(self.shape)
+    def consistent_constr(self, other : str) -> List[z3.BoolRef] :
+        """ 
+        generate constraints that ensure the shape, rank, and dtype as consistent with
+        the name of $other tensor
+        """
+        ## gen z3 var 
+        other_obj = self.z3()(other)
+        ## rank consistent constr 
+        rank_cons = [other_obj.rank == self.ndims]
+        ## shape consistent constr 
+        shape_cons = [
+            other_obj.shape[i] == self.shape[i] for i in range(self.ndims)
+        ]
+        ## dtype consistent constr
+        dtype_cons = [other_obj.dtype == self.dtype.z3_const()]
+
+        return rank_cons + shape_cons + dtype_cons
+
+    @classmethod
+    def z3(cls) -> "z3.Dtype" :
+        from neuri.constrinf.ast2z3 import load_z3_const
+        z3_load_func = partial(load_z3_const,
+                        var_type=cls.to_str(),
+                        is_array=False)
+
+        return z3_load_func
+
+    def constains_symbol(self) -> bool:
+        return any(isinstance(s, z3.ExprRef) for s in self.shape)
+
+    def nelement(self):
+        if len(self.shape) == 0:  # Scalar
+            return 1
+        return reduce(lambda x, y: nnsmith_mul(x, y), self.shape, 1)
+
+    def nbytes(self) -> int:
+        return self.nelement() * self.dtype.sizeof()
+
+    def deepcopy(self):
+        return AbsTensor(shape=list(self.shape), dtype=self.dtype)
+    @staticmethod
+    def to_iter() :
+        from neuri.abstract.dtype import AbsIter
+        return AbsIter([AbsTensor])
+    @property
+    def ndims(self):
+        return len(self.shape)
+
+    def is_concrete(self) -> bool:
+        return all(isinstance(s, int) for s in self.shape)
+
+    def htype(self):  # High-level type
+        return (self.dtype, self.ndims)
+STR_TO_ABS = {
+    # AbsDType
+    'float': AbsDType.float,
+    'real': AbsDType.float,
+    'complex': AbsDType.complex,
+    'floats': AbsDType.float,
+    'floating': AbsDType.float,
+    'int': AbsDType.int,
+    'ints': AbsDType.int,
+    'integer': AbsDType.int,
+    'numeric': AbsDType.int,
+    'number': AbsDType.int,
+    'bool': AbsDType.bool,
+    'boolean': AbsDType.bool,
+    'str': AbsDType.str,
+    'strings': AbsDType.str,
+    'string': AbsDType.str,
+    'tf.str': AbsDType.str,
+    'torch.str': AbsDType.str,
+    'list[int]': AbsDType.int.to_iter(),
+    'list[bool]': AbsDType.bool.to_iter(),
+    'list[float]': AbsDType.float.to_iter(),
+    'list[complex]': AbsDType.complex.to_iter(),
+    'list[str]': AbsDType.str.to_iter(),
+    'list[none]': AbsDType.none.to_iter(),
+    'list[tensor]': AbsTensor().to_iter(),
+    'list': AbsDType.int.to_iter(),
+    'lists': AbsDType.int.to_iter(),
+    'array': AbsDType.int.to_iter(),
+    'arrays': AbsDType.int.to_iter(),
+    'vector': AbsDType.int.to_iter(),
+    'vectors': AbsDType.int.to_iter(),
+    'tuple': AbsDType.int.to_iter(),
+    'array_like': AbsDType.int.to_iter(),
+    'sequence[tensor]': AbsTensor().to_iter(),
+    'sequence[int]': AbsDType.int.to_iter(),
+    'sequences[int]': AbsDType.int.to_iter(),
+    'sequence': AbsDType.int.to_iter(),
+    'sequences': AbsDType.int.to_iter(),
+    'optional[number]': [AbsDType.int, AbsDType.none],
+    # DType
+    #qint
+
+    'dt_uint8': DType.uint8,
+    'dt_int16': DType.int16,
+    'dt_int8': DType.int8,
+    'dt_complex64': DType.complex64,
+    'dt_bool': DType.bool,
+    'dt_qint8': DType.qint8,
+    'dt_quint8': DType.qint8,
+    'dt_qint32': DType.qint32,
+    'dt_uint16': DType.uint16,
+    'dt_complex128': DType.complex128,
+    'dt_uint32': DType.uint32,
+    'dt_uint64': DType.uint64,
+    'dt_float8_e5m2': DType.float32,
+    'dt_float8_e4m3fn': DType.float32,
+    'dt_int4': DType.uint8,
+    'dt_uint4': DType.uint8,
+    'dt_uint8': DType.uint8,
+    'dt_int16': DType.int16,
+    'dt_int8': DType.int8,
+    'dt_complex64': DType.complex64,
+    'complexdouble': DType.complex128,
+    'dt_bool': DType.bool,
+    'dt_qint8': DType.qint8,
+    'dt_quint8': DType.qint8,
+    'dt_qint32': DType.qint32,
+    'dt_uint16': DType.uint16,
+    'dt_complex128': DType.complex128,
+    'dt_uint32': DType.uint32,
+    'dt_uint64': DType.uint64,
+    'dt_float8_e5m2': DType.float32,
+    'dt_float8_e4m3fn': DType.float32,
+    'dt_int4': DType.uint8,
+    'dt_uint4': DType.uint8,
+    'dt_uint8': DType.uint8,
+    'dt_int16': DType.int16,
+    'dt_int8': DType.int8,
+    'dt_complex64': DType.complex64,
+    'dt_bool': DType.bool,
+    'dt_qint8': DType.qint8,
+    'dt_quint8': DType.qint8,
+    'dt_qint32': DType.qint32,
+    'dt_uint16': DType.uint16,
+    'dt_complex128': DType.complex128,
+    'dt_uint32': DType.uint32,
+    'dt_uint64': DType.uint64,
+    'dt_float8_e5m2': DType.float32,
+    'dt_float8_e4m3fn': DType.float32,
+    'dt_int4': DType.int8,
+    'dt_uint4': DType.uint8,
+    'tf.qint8': DType.qint8,
+    'torch.qint8': DType.qint8,
+    'qint8': DType.qint8,
+    'tf.qint16': DType.qint16,
+    'torch.qint16': DType.qint16,
+    'qint16': DType.qint16,
+    'tf.qint32': DType.qint32,
+    'torch.qint32': DType.qint32,
+    'qint32': DType.qint32,
+    #float,bfloat
+    'dt_float': DType.float32,
+    'dt_double': DType.float64,
+    'dt_bfloat16': DType.bfloat16,
+    'dt_half' : DType.float16,
+    'tf.float': DType.float32,
+    'torch.float': DType.float32,
+    'tf.float16': DType.float16,
+    'torch.float16': DType.float16,
+    'float16': DType.float16,
+    'half': DType.float16,
+    'double': DType.float64,
+    'tf.float32': DType.float32,
+    'torch.float32': DType.float32,
+    'float32': DType.float32,
+    'tf.float64': DType.float64,
+    'torch.float64': DType.float64,
+    'float64': DType.float64,
+    'bfloat': DType.bfloat16,
+    'bfloat16': DType.bfloat16,
+    'tf.bfloat': DType.bfloat16,
+    'torch.bfloat': DType.bfloat16,
+    'tf.bfloat16': DType.bfloat16,
+    'torch.bfloat16': DType.bfloat16,
+    #uint
+    'uint8': DType.uint8,
+    'tf.uint8': DType.uint8,
+    'torch.uint8': DType.uint8,
+    'uint16': DType.uint16,
+    'tf.uint16': DType.uint16,
+    'torch.uint16': DType.uint16,
+    'uint32': DType.uint32,
+    'tf.uint32': DType.uint32,
+    'torch.uint32': DType.uint32,
+    'uint64': DType.uint64,
+    'tf.uint64': DType.uint64,
+    'torch.uint64': DType.uint64,
+    #int
+    "quint8": DType.quint8,
+    "dt_quint8": DType.quint8,
+    'tf.int': DType.int32,
+    'torch.int': DType.int32,
+    'dt_int32': DType.int32,
+    'dt_int64': DType.int64,
+    'int8': DType.int8,
+    'tf.int8': DType.int8,
+    'torch.int8': DType.int8,
+    'int16': DType.int16,
+    'tf.int16': DType.int16,
+    'torch.int16': DType.int16,
+    'int32': DType.int32,
+    'tf.int32': DType.int32,
+    'torch.int32': DType.int32,
+    'int64': DType.int64,
+    'tf.int64': DType.int64,
+    'torch.int64': DType.int64,
+    #bool&complex
+    'tf.boolean': DType.bool,
+    'torch.boolean': DType.bool,
+    'tf.bool': DType.bool,
+    'torch.bool': DType.bool,
+    'tf.complex': DType.complex64,
+    'tf.complex32': DType.complex32,
+    'tf.complex64': DType.complex64,
+    'tf.complex128': DType.complex128,
+    'torch.complex': DType.complex64,
+    'torch.complex64': DType.complex64,
+    'complex64': DType.complex64,
+    'complex32': DType.complex32,
+    'torch.complex128': DType.complex128,
+    'complex128': DType.complex128,
+
+    # AbsTensor and List[AbsTensor]
+    'tf.tensor': AbsTensor(),
+    'torch.tensor': AbsTensor(),
+    'tensor': AbsTensor(),
+    'tf.tensors': AbsTensor(),
+    'torch.tensors': AbsTensor(),
+    'longtensor': AbsTensor(),
+    'sequence of Tensors':  AbsTensor.to_iter(),
+    'list[tensor]':  AbsTensor.to_iter(),
+    'sequence[tensor]':  AbsTensor.to_iter(),
+    'sequences[tensor]':  AbsTensor.to_iter(),
+
+    # torch 
+    'complexfloat' : AbsDType.complex,
+    'cfloat' : DType.complex64,
+    'cdouble' : DType.complex128,
+    'short' : DType.int16,
+    'long' : DType.int64,
+}
+
+
+def typing_to_abs(dtype : Any) -> Any :
+    origin = get_origin(dtype)
+    if origin is Union :
+        abs_types = [typing_to_abs(dtype_arg) for dtype_arg in get_args(dtype)]
+        return abs_types
+    elif origin is Tuple :
+        tuple_types = get_args(dtype)
+        if (...) in tuple_types :
+            length = random.randint(MIN_LENGTH, MAX_LENGTH)
+        else :
+            length = len(tuple_types)
+
+        tuple_types = tuple_types[0]
+        return AbsIter(values = [typing_to_abs(tuple_types) for _ in length])
+    elif origin in [List, collections.abc.Sequence, list] :
+        list_type = get_args(dtype)[0]
+        return AbsIter(values = [typing_to_abs(list_type)])
+
+    elif origin is Literal :
+        args = get_args(dtype)
+        return AbsLiteral(args)
+    elif origin is None :
+        if dtype in TYPE_TO_ABS.keys() :
+            return TYPE_TO_ABS[dtype]
+        else :
+            raise NotImplementedError(f"Unsupported type {dtype}")
+    else :
+        return None
+
+
+def materalize_typing_obj(target_str : str) :
+    try :
+        obj = eval(target_str)
+        return typing_to_abs(obj)
+    except :
+        return None
+
+
+def materalize_dtype(target_str : str) -> Any :
+
+    target_str = target_str.replace("null", "None")\
+                            .replace('`','')\
+                            .replace(' ','')\
+                            .replace('\'','')\
+                            .replace('\"','')
+
+    lowered = target_str.lower()
+    if lowered in STR_TO_ABS.keys() :
+        materalized = STR_TO_ABS[lowered]
+        return materalized
+    else :
+        LOGGER.debug(f"Unsupported type {target_str}, may be literal arg")
+        return target_str
+
+
+def materalize_dtypes(dtypes : str, merge_tensor : bool = True) -> List[Any] :
+    targets : List[str] = []
+    res : List[Any] = []
+    typing_obj = materalize_typing_obj(dtypes)
+    if typing_obj is not None :
+        return typing_obj if isinstance(typing_obj, list) else [typing_obj]
+    dtypes = str(dtypes)
+    # if "tensor" in dtypes.lower() : 
+    #     dtypes = "tensor"
+    dtypes = dtypes.replace(':',',').replace('->',',').replace('-',',')
+    if dtypes.startswith('[') and dtypes.endswith(']') or \
+        dtypes.startswith('(') and dtypes.endswith(')') or \
+        dtypes.startswith('{') and dtypes.endswith('}') :
+        dtypes = dtypes[1:-1]
+    if ' or ' in dtypes :
+        for splited in dtypes.split(' or ') :
+            targets.append(splited)
+    elif ',' in dtypes :
+        for splited in dtypes.split(',') :
+            targets.append(splited)
+    else :
+        targets.append(dtypes)
+
+    for target_str in targets :
+        dtype = materalize_dtype(target_str)
+        if dtype is not None :
+            if isinstance(dtype, list) :
+                res.extend(dtype)
+            else :
+                res.append(dtype)
+
+    LOGGER.debug(f"form {dtypes} -> to {res}")
+    if not merge_tensor :
+        return res
+
+    to_merge = []
+    final = []
+    for abs in res :
+        if isinstance(abs, DType) :
+            to_merge.append(abs)
+        elif isinstance(abs, AbsDType) :
+            if any([isinstance(ele, DType) for ele in res]) :
+                to_merge.extend(abs.get_tensor_dtypes())
+            else :
+                final.append(abs)
+        elif isinstance(abs, AbsTensor) :
+            if any([isinstance(ele, DType) for ele in res]) :
+                pass
+            else :
+                final.append(abs)
+        elif isinstance(abs, (AbsIter, AbsLiteral)) :
+            final.append(abs)
+        else :
+            pass
+    if len(to_merge) > 0 :
+        final.append(AbsTensor(possible_dtypes=to_merge))
+    if len(final) == 0 :
+        return None
+    else :
+        LOGGER.debug(f"[merged] from {dtypes} To {final}")
+        return final

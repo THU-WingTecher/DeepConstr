@@ -32,7 +32,7 @@ def get_ret_list(ret):
     return ret_list
 
 def tensor_to_abs(tensor, abs_from_dtype : Callable) : 
-    from neuri.abstract.tensor import AbsTensor
+    from neuri.abstract.dtype import AbsTensor
     return AbsTensor(list(tensor.shape), abs_from_dtype(tensor.dtype))
 
 def data_type_str(x: Any, keep_int_value: bool = True, dtype_class: Any = None) -> str:

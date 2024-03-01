@@ -5,9 +5,9 @@ from typing import Dict, List, Tuple, Type
 import numpy as np
 
 import torch
-from neuri.abstract.dtype import DType
+from neuri.abstract.dtype import AbsTensor, DType
 
-from neuri.abstract.op import AbsOpBase, AbsTensor
+from neuri.abstract.op import AbsOpBase
 from neuri.gir import GraphIR
 from neuri.logger import TORCH_LOG
 from neuri.materialize import Model, Oracle

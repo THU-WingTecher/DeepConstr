@@ -11,7 +11,7 @@ import numpy as np
 from multipledispatch import dispatch
 
 from neuri.abstract.op import AbsOpBase, Constant
-from neuri.abstract.tensor import AbsTensor
+from neuri.abstract.dtype import AbsTensor
 from neuri.error import SanityCheck
 from neuri.gir import GraphIR
 from neuri.util import HAS_PYGRAPHVIZ, viz_dot

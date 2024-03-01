@@ -9,7 +9,7 @@ from torch import nn
 
 from neuri.abstract.dtype import DType
 from neuri.abstract.op import AbsOpBase, Input
-from neuri.abstract.tensor import AbsTensor
+from neuri.abstract.dtype import AbsTensor
 from neuri.error import ConstraintCheck, ConstraintError, SanityCheck
 from neuri.gir import GraphIR
 from neuri.logger import TORCH_LOG

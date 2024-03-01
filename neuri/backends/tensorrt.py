@@ -12,7 +12,7 @@ from neuri.abstract.arith import *
 from neuri.abstract.dtype import DType
 from neuri.abstract.extension import patch_requires
 from neuri.abstract.op import AbsOpBase
-from neuri.abstract.tensor import AbsTensor
+from neuri.abstract.dtype import AbsTensor
 from neuri.backends import BackendFactory
 from neuri.materialize.onnx import ONNXModel
 

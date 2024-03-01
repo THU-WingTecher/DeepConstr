@@ -2,13 +2,9 @@ import argparse
 import multiprocessing as mp
 import os
 import pickle
-from collections import defaultdict
 from copy import deepcopy
-
-import z3
-
 from neuri.abstract.op import *
-from neuri.abstract.tensor import AbsTensor
+from neuri.abstract.dtype import AbsTensor
 from neuri.autoinf import ATTR_FREE_RULES
 from neuri.autoinf.inference.const import DATA_DIR, GEN_DIR, ROOT_DIR
 from neuri.autoinf.inference.invocations import (

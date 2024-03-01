@@ -28,11 +28,11 @@ def is_tensor(arg) :
     return hasattr(arg, 'dtype') or (hasattr(arg, "decl") and hasattr(arg.decl(), 'dtype'))
 
 def is_dtype_constant(arg) :
-    from neuri.specloader.materalize import STR_TO_ABS
+    from neuri.abstract.dtype import STR_TO_ABS
     return isinstance(arg, str) and arg.lower().strip() in STR_TO_ABS.keys()
 
 def get_dtype_z3_obj(arg, is_tensor_dtype=False) : 
-    from neuri.specloader.materalize import STR_TO_ABS
+    from neuri.abstract.dtype import STR_TO_ABS
     dtypeobj = STR_TO_ABS[arg.lower().strip()] 
     # if is_tensor_dtype and hasattr(dtypeobj, "z3_const") :
     #     # Tensor dtype arg_name would not be changed dtype to int, or list[int], or bool.

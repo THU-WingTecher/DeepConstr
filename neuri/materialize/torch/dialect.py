@@ -10,7 +10,7 @@ from neuri.abstract.dtype import (
     DType,
 )
 from neuri.abstract.op import ReduceBase, UnaryOpBase, mark_materialize, rank_from
-from neuri.abstract.tensor import AbsTensor
+from neuri.abstract.dtype import AbsTensor
 from neuri.error import ConstraintCheck
 
 

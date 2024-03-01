@@ -9,7 +9,7 @@ from copy import deepcopy
 from neuri.abstract.dtype import DType
 from neuri.abstract.extension import BACKEND_REQUIRES
 from neuri.abstract.op import AbsOpBase
-from neuri.abstract.tensor import AbsTensor
+from neuri.abstract.dtype import AbsTensor
 from neuri.difftest import assert_allclose
 from neuri.error import InternalError
 from neuri.logger import CORE_LOG

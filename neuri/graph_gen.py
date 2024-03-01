@@ -10,9 +10,9 @@ import z3
 
 from neuri.abstract.arith import *
 from neuri.abstract.dtype import *
+from neuri.abstract.dtype import AbsTensor
 from neuri.abstract.op import (
     AbsOpBase,
-    AbsTensor,
     Expand,
     Placeholder,
     concretize_op,
@@ -1313,8 +1313,8 @@ class ConstrInf(NeuriR):
     ) -> bool:
 
         itensors = [self.ir.vars[vname] for vname in input_vars]
-        res = self.try_execute_op(node.inst) # if failed, raise exception
-        output_info = node.inst.output_info(res)
+        _, abs_ret_list = self.try_execute_op(node.inst) # if failed, raise exception
+        output_info = node.inst.output_info(abs_ret_list)
         node.inst.add_output_arg(*output_info)
 
         otensors = [
