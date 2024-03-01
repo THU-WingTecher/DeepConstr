@@ -1,6 +1,7 @@
 import z3
 from typing import *
 from neuri.error import IncompatiableConstrError, IncorrectConstrError
+import operator as op
 ###### TENSOR DTYPE DEINITION ######
 
 ## Define : tensor, int, float, bool, complex, str``
@@ -67,6 +68,45 @@ ComplexArr = DeclareArr(Complex)
 TensorArr = DeclareArr(TensorZ3)
 ARRTYPES = [IntArr, FloatArr, StrArr, BoolArr, ComplexArr, TensorArr]
 
+MAX_ARR_LEN = 6
+MAX_SHAPE_SUM = 2 * 1024**2 / 16
+MIN_VALUE = -4
+MAX_VALUE = 9
+
+OP_POOLS = [
+           op.lt,
+           op.le,
+           op.gt,
+           op.ge]
+# POS_OPS = [ast.In, ast.Is, ast.Eq]
+# NEG_OPS = [ast.NotIn, ast.IsNot, ast.NotEq]
+BOOL_POOLS = [op.ne, op.eq,]
+
+def length_default_constraints(length) : 
+    return z3.And(length >= 0, length <= MAX_ARR_LEN)
+def length_not_zero_constraints(length) : 
+    return z3.And(length > 0, length <= MAX_ARR_LEN)
+def pos_constraints(z3obj, len_var, include_zero) : 
+    i = z3.Int('i')
+    if include_zero :
+        return z3.ForAll([i], z3.Implies(z3.And(i>=0, i<=len_var), z3obj[i] >= 0))
+    else :
+        return z3.ForAll([i], z3.Implies(z3.And(i>=0, i<=len_var), z3obj[i] > 0))
+    
+def check_numel_constr(shape, len_var=None) :
+    # Create a Z3 array of integers
+
+    # Recursive function to calculate the product of elements in the array
+    def array_product(arr, length):
+        if length == 0:
+            return 1
+        else:
+            return arr[length - 1] * array_product(arr, length - 1)
+
+    if len_var is None : len_var = MAX_ARR_LEN
+    product_constraint = array_product(shape, len_var) < MAX_SHAPE_SUM
+    return product_constraint
+
 def is_same_constr(A : z3.ExprRef, B : z3.ExprRef) -> bool :
     s = z3.Solver()
     s.add(z3.Not(z3.Implies(A, B)))
@@ -116,7 +156,7 @@ class BaseWrapper():
 
         }
     
-    def evaluate(self, model, instance, attr : str = "len", idx : int = None) : 
+    def evaluate(self, model, instance, attr : str = "len", idx : int = None, *args, **kwargs) : 
         if attr in ["len", "rank"] : 
             return model.evaluate(self.len_func(instance))
         elif attr in ["value", "shape"] : 
@@ -174,8 +214,10 @@ class BaseWrapper():
 class TensorWrapper(BaseWrapper):
     def __init__(self, const, datatype, value_func, len_func):
         super().__init__(const, datatype, value_func, len_func)
-        self.dtype_func = datatype.dtype
-     
+        self.dtype_func = TensorZ3.dtype
+        self.shape_func = TensorZ3.shape
+        self.rank_func = TensorZ3.rank
+
     def __str__(self):
         return f"Tensor:{self.const.decl()}"
     
@@ -186,6 +228,60 @@ class TensorWrapper(BaseWrapper):
     @property
     def dtype(self):
         return self.dtype_func(self.const)
+class TensorArrWrapper(TensorWrapper):
+    def __init__(self, const, datatype, value_func, len_func, dtype_func, shape_func):
+        super().__init__(const, datatype, value_func, len_func)        
+
+    def __getitem__(self, idx):
+        ## should return wrapper -> a[0].shape > 1 -> <Tensorwrapper>.shape
+
+        return super().__getitem__(idx)
+    def __str__(self):
+        return f"TensorArr:{self.const.decl()}"
+    
+    def get_arg_attr(self, idx, attr):
+        arg = self.__getitem__(idx)
+        if attr in ["value", "shape"] : 
+            return self.shape_func(arg)
+        elif attr in ["dtype"] : 
+            return self.dtype_func(arg)
+        elif attr in ["rank"] :
+            return self.rank_func(arg)
+        
+    def evaluate(self, model, instance, attr : str = "len", idx : int = None, arg_attr : str = None, arg_idx : int = None) : 
+        if arg_attr is not None or arg_idx is not None :
+            return self.evaluate(model, instance, attr = arg_attr, idx = arg_idx)
+        if attr in ["len"] : 
+            return model.evaluate(self.len_func(instance))
+        elif attr in ["rank"] : 
+            return model.evaluate(self.rank_func(instance))
+        elif attr in ["value"] :
+            assert idx is not None , "idx must be specified"
+            return model.evaluate(self.value_func(instance)[idx])
+        elif attr in ["shape"] : 
+            return model.evaluate(self.shape_func(instance)[idx])
+        elif attr in ["dtype"] : 
+            return model.evaluate(self.dtype_func(instance))
+        
+    def evaluate_arg(self, model, instance, idx: int, attr : str, *args, **kwargs):
+        func = None
+        if attr in ["value", "shape"] : 
+            func = self.shape_func
+        elif attr in ["dtype"] : 
+            func = self.dtype_func
+        idx_instance = instance[idx]
+        attr_inst = self.get_arg_attr(idx, attr)
+        conc_attr = model.evaluate(attr_inst)
+        return conc_attr
+    
+    @property
+    def shape(self):
+        raise NotImplementedError
+    
+    @property
+    def dtype(self):
+        raise NotImplementedError
+    
 class ArrWrapper(BaseWrapper):
     def __init__(self, const, datatype, value_func, len_func):
         super().__init__(const, datatype, value_func, len_func)
@@ -247,9 +343,12 @@ def load_z3_const(name, var_type, is_array=False):
             return z3.Const(name, z3.BoolSort())
     elif var_type == "tensor":
         if is_array : 
-            return ArrWrapper(z3.Const(name, TensorArr), 
-                              TensorWrapper(z3.Const(name, TensorZ3), TensorZ3, TensorZ3.shape, TensorZ3.rank),
-                              TensorArr.value, TensorArr.len)
+            return TensorArrWrapper(z3.Const(name, TensorArr),
+                                    TensorArr, 
+                                    TensorArr.value, 
+                                    TensorArr.len, 
+                                    TensorZ3.dtype, 
+                                    TensorZ3.shape)
         else :
             return TensorWrapper(z3.Const(name, TensorZ3), TensorZ3, TensorZ3.shape, TensorZ3.rank)
     else:
@@ -465,6 +564,7 @@ class SMTFuncs:
             #     return TensorZ3.rank(v), v, TensorZ3.dtype(v)
             else : 
                 return obj.len(v), obj.value(v)
+
     @classmethod
     def is_tensor(cls, v):
         return cls.sort(v) == TensorZ3.name()
@@ -481,7 +581,9 @@ class SMTFuncs:
         Custom "len" function for Z3 arrays and tensors.
         Returns the length of an array or the rank of a tensor.
         """
-        if hasattr(v, "shape") :
+        if hasattr(v, "sort") and v.sort() == TensorZ3 :
+            return TensorZ3.shape(v)
+        elif hasattr(v, "shape") :
             return v.shape
         else :
             attrs = cls._load_attrs(v)
@@ -497,7 +599,9 @@ class SMTFuncs:
             
     @classmethod
     def dtype(cls, v):
-        if hasattr(v, "dtype") :
+        if hasattr(v, "sort") and v.sort() == TensorZ3 :
+            return TensorZ3.dtype(v)
+        elif hasattr(v, "dtype") :
             return v.dtype
         else :
             attrs = cls._load_attrs(v)
@@ -513,7 +617,9 @@ class SMTFuncs:
         Custom "len" function for Z3 arrays and tensors.
         Returns the length of an array or the rank of a tensor.
         """
-        if hasattr(v, "len") :
+        if hasattr(v, "sort") and v.sort() == TensorZ3 :
+            return TensorZ3.rank(v)
+        elif hasattr(v, "len") :
             return v.len()
         else :
             attrs = cls._load_attrs(v)
@@ -530,8 +636,8 @@ class SMTFuncs:
         return cls.dim(v)
     @staticmethod
     def in_(a,b) : 
-        from specloader.irs import SYM_LEN
         if isinstance(b[0], z3.ArrayRef) : 
+            raise NotImplementedError
             b_len = SYM_LEN[b[0].arg(0).decl().name()] if b[0].num_args() else SYM_LEN[b[0].decl().name()]
             i = z3.Int("i")
             exists = z3.Exists([i], z3.Implies(z3.And(i >= 0, i < b_len), b[0][i] == a))
@@ -544,8 +650,9 @@ class SMTFuncs:
     @staticmethod
     def not_in(a,b) : 
         if isinstance(b[0], z3.ArrayRef) : 
+            raise NotImplementedError
             from specloader.irs import SYM_LEN
-            b_len = SYM_LEN[b[0].arg(0).decl().name()] if b[0].num_args() else SYM_LEN[b[0].decl().name()]
+            b_len = b[0].arg(0).decl().name() if b[0].num_args() else SYM_LEN[b[0].decl().name()]
             i = z3.Int("i")
             exists = z3.ForAll([i], z3.Implies(z3.And(i >= 0, i < b_len), b[0][i] != a))
             return exists

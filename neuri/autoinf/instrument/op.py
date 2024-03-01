@@ -3,7 +3,7 @@ from functools import partial, reduce
 from typing import Any, Callable, Dict, List, Tuple, Union
 
 import numpy as np
-from neuri.abstract.tensor import AbsTensor
+from neuri.abstract.dtype import AbsTensor
 from neuri.autoinf.inference.rules import (
     gen_nnsmith_rules,
     gen_requires_trees,
@@ -28,10 +28,10 @@ class AbsValue:
         return self.value
 
     def __str__(self) -> str:
-        return str(self.value)
+        return f"AbsValue({str(self.value)})"
 
     def __repr__(self) -> str:
-        return repr(self.value)
+        return f"AbsValue({str(self.value)})"
 
     def concrete_str(self, *args, **kwargs) -> str:
         return self.__str__()
@@ -530,4 +530,4 @@ class OpInstance:
         ret = func(*args, **kwargs)
         ret_list = get_ret_list(ret)
         abs_ret_list = [tensor_to_abs(tensor, abs_from_dtype) for tensor in ret_list if is_tensor(tensor)]
-        return abs_ret_list
+        return ret, abs_ret_list

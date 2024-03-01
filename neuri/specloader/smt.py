@@ -3,14 +3,14 @@ import logging
 import random
 import string
 import z3
-from abstract.dtype import DTYPE_GEN_ALL, DTYPE_NOT_SUPPORTED, AbsDType, AbsIter, AbsLiteral, DType
+from neuri.abstract.dtype import DTYPE_GEN_ALL, DTYPE_NOT_SUPPORTED, AbsDType, AbsIter, AbsLiteral, DType
 from neuri.autoinf.instrument.op import AbsValue
-from neuri.constrinf.smt_funcs import SMTFuncs
+from neuri.constrinf.smt_funcs import SMTFuncs, TensorArrWrapper
 from neuri.logger import SMT_LOG
 # from specloader.materalize import RandomGenerator
-from neuri.abstract.tensor import AbsTensor 
+from neuri.abstract.dtype import AbsTensor 
 from typing import Callable, Dict, Any, List, Literal, Optional, Tuple, Union
-from specloader import  BOOL_POOLS, MAX_ARR_LEN, MAX_SHAPE_SUM, MAX_VALUE, MIN_VALUE, OP_POOLS, Z3DTYPE, TensorZ3, check_numel_constr, \
+from neuri.constrinf.smt_funcs import TensorZ3, Z3DTYPE, BOOL_POOLS, MAX_ARR_LEN, MAX_VALUE, MIN_VALUE, OP_POOLS, check_numel_constr, \
     length_default_constraints, length_not_zero_constraints, pos_constraints
 import operator
 
@@ -31,24 +31,37 @@ DEFAULT_DTYPE_CONSTR : Dict[str, z3.ExprRef] = {
     "tensorflow" : partial(gen_dtype_constraints, not_supported_dtypes=DTYPE_NOT_SUPPORTED.get("tensorflow")),
 }
 
+def tensor_default_constr(
+        tensor_shape,
+        length,
+        include_zero
+    ) :
+    return pos_constraints(tensor_shape, length, include_zero)
+
 def gen_default_constr(
         args_types : Dict[str, Union[AbsDType, AbsTensor, AbsLiteral]],
         args_lengths : Dict[str, Optional[int]],
         allow_zero_rate : float = 0.5,
                         ) -> List[z3.ExprRef] :
     rules = []
+    if should_generate_noise(allow_zero_rate) : 
+        include_zero = True
+    else :
+        include_zero = False
     for arg_name in args_types.keys() :
         if isinstance(args_types[arg_name], AbsTensor) :
-            tensor_wrapper = args_types[arg_name].z3()(arg_name)
-            if should_generate_noise(allow_zero_rate) : 
-                include_zero = True
-            else :
-                include_zero = False
+            shape_var = args_types[arg_name].z3()(arg_name)
+            length_var = args_lengths[arg_name]
             rules.append(
-                pos_constraints(tensor_wrapper.shape,
-                                args_lengths[arg_name],
+                pos_constraints(shape_var,
+                                length_var,
                                 include_zero)
                 )
+        elif isinstance(args_types[arg_name], AbsIter) and isinstance(args_types[arg_name].get_arg_dtype(), AbsTensor) :
+            arr_wrapper = args_types[arg_name].z3()(arg_name)
+            for idx in range(len(args_lengths[arg_name])) :
+                rules.append(pos_constraints(arr_wrapper.get_arg_attr(idx, "shape"), args_lengths[arg_name][idx], include_zero))
+
         elif isinstance(args_types[arg_name], AbsLiteral) :
             rules.append(SMTFuncs.in_(args_types[arg_name].z3()(arg_name), args_types[arg_name].choices))
         else :
@@ -70,60 +83,150 @@ def add_noises(args_types, args_lengths, noise_prob):
 def should_generate_noise(noise_prob):
     return random.random() < noise_prob
 
+CHARACTER_POOL = string.ascii_letters + string.digits
+
+def gen_random_string_constr(z3obj, op_pools=None):
+    """Generates a "noisy" string based on the input string by applying a random operation."""
+    if op_pools is None:
+        op_pools = BOOL_POOLS
+    return random.choice(op_pools)(z3obj, random.choice(CHARACTER_POOL))
+
 def gen_random_int_constr(z3obj, min = None, max = None, op_pools = None):
     if min is None : min = MIN_VALUE
     if max is None : max = MAX_VALUE
     if op_pools is None : op_pools = OP_POOLS
     return random.choice(op_pools)(z3obj, random.randint(min, max))
 
-def gen_radnom_list_choice_constr(z3obj, pools, bool_pools = None):
-    if bool_pools is None : 
-        bool_pools = BOOL_POOLS
-    return random.choice(bool_pools)(z3obj, random.choice(pools))
+def gen_radnom_list_choice_constr(z3obj, pools, op_pools = None):
+    if op_pools is None : 
+        op_pools = BOOL_POOLS
+    return random.choice(op_pools)(z3obj, random.choice(pools))
 
 def gen_noise(arg_name, arg_type, args_length, noise_prob):
     noises = []
-
+    if arg_type is AbsDType.none :
+        return noises
     if isinstance(arg_type, AbsLiteral) and should_generate_noise(noise_prob):
         literal_noise = gen_radnom_list_choice_constr(arg_type.z3()(arg_name), arg_type.choices)
         noises.append(literal_noise)
 
     elif isinstance(arg_type, AbsTensor):
-        tensor_wrapper = arg_type.z3()(arg_name)
+        if isinstance(arg_name, z3.ExprRef): # TensorARR
+            shape_var = TensorZ3.shape(arg_name)
+            dtype_var = TensorZ3.dtype(arg_name)
+        else :
+            shape_var = arg_type.z3()(arg_name).shape
+            dtype_var = arg_type.z3()(arg_name).dtype
+            # args_length = len(args_length)
         for idx in range(args_length) :
             if should_generate_noise(noise_prob):
                 # Generate noise for each dimension
-                noise = gen_random_int_constr(tensor_wrapper.shape[idx], 0, MAX_VALUE)
+                noise = gen_random_int_constr(shape_var[idx], 0, MAX_VALUE)
                 noises.append(noise)
 
         if should_generate_noise(noise_prob):
             # Generate dtype noise
-            dtype_noise = gen_radnom_list_choice_constr(tensor_wrapper.dtype, [dtype.z3_const() for dtype in DType], [operator.ne])
+            dtype_noise = gen_radnom_list_choice_constr(dtype_var, [dtype.z3_const() for dtype in DType], [operator.ne])
             noises.append(dtype_noise)
 
     elif isinstance(arg_type, AbsIter):
         arr_wrapper = arg_type.z3()(arg_name)
-        for idx in range(args_length) :
+        for idx in range(len(args_length) if isinstance(args_length, list) else args_length):
             if should_generate_noise(noise_prob):
-                # Generate noise for each dimension
-                noise = gen_random_int_constr(arr_wrapper[idx], MIN_VALUE, MAX_VALUE)
+                if arg_type.get_arg_dtype() in [AbsDType.complex] :
+                    raise NotImplementedError
+                elif isinstance(arg_type.get_arg_dtype(), AbsTensor) :
+                    noise = z3.And(gen_noise(arr_wrapper[idx], arg_type.get_arg_dtype(), args_length[idx], noise_prob))
+                elif arg_type.get_arg_dtype() in [AbsDType.str] :
+                    noise = gen_random_string_constr(arr_wrapper[idx])
+                elif arg_type.get_arg_dtype() in [AbsDType.bool] :
+                    noise = gen_radnom_list_choice_constr(arr_wrapper[idx], [True, False])
+                else :
+                    # Generate noise for each dimension
+                    noise = gen_random_int_constr(arr_wrapper[idx], MIN_VALUE, MAX_VALUE)
                 noises.append(noise)
 
     elif isinstance(arg_type, AbsDType) : 
         if should_generate_noise(noise_prob) : 
             if arg_type in [AbsDType.bool] :
-
-                dtype_noise = gen_radnom_list_choice_constr(arg_type.z3()(arg_name), [True, False])
+                noise = gen_radnom_list_choice_constr(arg_type.z3()(arg_name), [True, False])
             elif arg_type in [AbsDType.int, AbsDType.float, AbsDType.complex] :
-                dtype_noise = gen_random_int_constr(arg_type.z3()(arg_name), MIN_VALUE, MAX_VALUE)
+                noise = gen_random_int_constr(arg_type.z3()(arg_name), MIN_VALUE, MAX_VALUE)
             else : # AbsDType.str 
-                dtype_noise = []
+                noise = gen_random_string_constr(arg_type.z3()(arg_name))
                 pass # dont generate noise for str 
-            noises.append(dtype_noise)
-
+            noises.append(noise)
+    else : 
+        pass 
     return noises
 
-def sym_to_conc(model, z3_arg, args_types, args_values, args_lengths) : 
+def handle_int_sort(model, z3_instance):
+    return clip_unbound_val(z3_instance.as_long())
+
+def handle_real_sort(model, z3_instance):
+    return clip_unbound_val(float(z3_instance.as_decimal(prec=7).rstrip('?')))
+
+def handle_bool_sort(model, z3_instance):
+    return bool(z3_instance)
+
+def handle_string_sort(model, z3_instance):
+    return str(z3_instance).replace('"', '').replace("'", "")
+
+def gen_abs_tensor(dtype, shape):
+    return AbsTensor(dtype=DType.from_str(str(dtype)), shape=shape)
+
+def handle_abs_tensor(model, z3_instance, arg_name, args_types, args_values, args_lengths, ret_len=False):
+    wrapper = args_types[arg_name].z3()(arg_name)
+    dtype = wrapper.evaluate(model, z3_instance, attr="dtype")
+    rank = wrapper.evaluate(model, z3_instance, attr="rank")
+    rank = random_gen_arr_len() if rank is None else handle_int_sort(model, rank)
+    if ret_len : 
+        args_lengths[arg_name] = rank
+        return 
+    shapes = [wrapper.evaluate(model, z3_instance, attr="shape", idx=i) for i in range(rank)]
+    for i, shape in enumerate(shapes):
+        if shape is None:
+            shapes[i] = random_gen(AbsDType.int)  # Assuming random_gen and AbsDType are defined
+        else:
+            shapes[i] = handle_int_sort(model, shape)
+    
+    # Assuming AbsTensor and DType are defined and have a suitable constructor
+    return gen_abs_tensor(dtype, shapes)
+
+def handle_abs_iter(model, z3_instance, arg_name, args_types, args_values, args_lengths, ret_len=False):
+    """
+    Refactored to call sym_to_conc for each element value.
+    """
+    wrapper = args_types[arg_name].z3()(arg_name)
+    length = wrapper.evaluate(model, z3_instance, attr="len")
+    length = random_gen_arr_len() if length is None else handle_int_sort(model, length)
+    if isinstance(wrapper, TensorArrWrapper) :
+        length = [random_gen_arr_len() for _ in range(length)]
+    if ret_len : 
+        args_lengths[arg_name] = length
+        return 
+    values = [wrapper.evaluate(model, z3_instance, attr="value", idx=i) for i in range(len(length) if isinstance(length, list) else length)]
+    for i, value in enumerate(values):
+        if value is None:
+            values[i] = random_gen(args_types[arg_name].get_arg_dtype())
+        else:
+            # Recursively handle nested abstract types
+            if hasattr(value, "sort") and value.sort() == TensorZ3 :
+                rank = handle_int_sort(model, wrapper.evaluate(model, value, arg_attr="rank"))
+                shapes = [None] * rank
+                for j in range(rank):
+                    shapes[j] = handle_int_sort(model, wrapper.evaluate(model, value, arg_attr="shape", arg_idx=j))
+                dtype = wrapper.evaluate(model, value, arg_attr="dtype")
+                values[i] = gen_abs_tensor(dtype, shapes)
+            else:
+                values[i] = to_conc_py_val(model, value)
+    
+    if args_types[arg_name].get_arg_dtype() == AbsDType.str:
+        return "".join(map(str, values)).replace('""', '')
+    else:
+        return values
+
+def sym_to_conc(model, z3_arg, args_types, args_values, args_lengths, ret_len) : 
     """
     fill the args_values and args_lengths based on model of solver
     """
@@ -135,48 +238,40 @@ def sym_to_conc(model, z3_arg, args_types, args_values, args_lengths) :
     if arg_name not in args_types:
         return None
     if datatype == z3.IntSort():
-        args_values[arg_name] = AbsValue(z3_instance.as_long())
+        args_values[arg_name] = handle_int_sort(model, z3_instance)
     elif datatype == z3.RealSort():
-        args_values[arg_name] = AbsValue(float(z3_instance.as_decimal(prec=7).rstrip('?')))
+        args_values[arg_name] = handle_real_sort(model, z3_instance)
     elif datatype == z3.BoolSort():
-        args_values[arg_name] = AbsValue(bool(z3_instance))
+        args_values[arg_name] = handle_bool_sort(model, z3_instance)
     elif datatype == z3.StringSort():
-        args_values[arg_name] = AbsValue(str(z3_instance).replace('"', '').replace("'", ""))
+        args_values[arg_name] = handle_string_sort(model, z3_instance)
     else : 
         wrapper = args_types[arg_name].z3()(arg_name)
         if isinstance(args_types[arg_name], AbsTensor) :
-            dtype = wrapper.evaluate(model, z3_instance, attr = "dtype")
-            args_lengths[arg_name] = wrapper.evaluate(model, z3_instance, attr = "rank")
-            if args_lengths[arg_name] is None : 
-                args_lengths[arg_name] = random_gen_arr_len()
-            else :
-                args_lengths[arg_name] = clip_unbound_val(args_lengths[arg_name].as_long(), max = MAX_ARR_LEN)
-            values = [wrapper.evaluate(model, z3_instance, attr = "shape", idx = i) for i in range(args_lengths[arg_name])]
-            for i in range(len(values)) :
-                if values[i] is None :
-                    values[i] = random_gen(AbsDType.int)
-                else :
-                    values[i] = clip_unbound_val(values[i].as_long(), max = MAX_VALUE)
-            args_values[arg_name] = AbsTensor(dtype=DType.from_str(str(dtype)), shape=values)
-            return args_values[arg_name]
+            args_values[arg_name] = handle_abs_tensor(model, z3_instance, arg_name, args_types, args_values, args_lengths, ret_len=ret_len)
         elif isinstance(args_types[arg_name], AbsIter):
-            if args_types[arg_name].get_arg_dtype() in [AbsDType.complex, AbsTensor] : 
+            if args_types[arg_name].get_arg_dtype() in [AbsDType.complex] : 
                 raise NotImplementedError
-            args_lengths[arg_name] = wrapper.evaluate(model, z3_instance, attr="len")
-            if args_lengths[arg_name] is None :
-                args_lengths[arg_name] = random_gen_arr_len()
-            else :
-                args_lengths[arg_name] = clip_unbound_val(args_lengths[arg_name].as_long(), max = MAX_ARR_LEN)
-            args_values[arg_name] = [wrapper.evaluate(model, z3_instance, attr = "value", idx = i) for i in range(args_lengths[arg_name])]
-            for i in range(len(args_values[arg_name])) :
-                if args_values[arg_name][i] is None :
-                    args_values[arg_name][i] = random_gen(args_types[arg_name].get_arg_dtype())
-                else :
-                    args_values[arg_name][i] = clip_unbound_val(to_conc_py_val(args_values[arg_name][i]), max = MAX_VALUE)
-            return args_values[arg_name]  # Returning only the values, not the length
+            args_values[arg_name] = handle_abs_iter(model, z3_instance, arg_name, args_types, args_values, args_lengths, ret_len=ret_len)
+            # args_lengths[arg_name] = wrapper.evaluate(model, z3_instance, attr="len")
+            # if args_lengths[arg_name] is None :
+            #     args_lengths[arg_name] = random_gen_arr_len()
+            # else :
+            #     args_lengths[arg_name] = clip_unbound_val(args_lengths[arg_name].as_long(), max = MAX_ARR_LEN)
+            # args_values[arg_name] = [wrapper.evaluate(model, z3_instance, attr = "value", idx = i) for i in range(args_lengths[arg_name])]
+            # if args_types[arg_name].get_arg_dtype() in [AbsDType.str] :
+            #     args_values[arg_name] = "".join(map(str, args_values[arg_name])).replace('""', '')
+            # else :
+            #     for i in range(len(args_values[arg_name])) :
+            #         if args_values[arg_name][i] is None :
+            #             args_values[arg_name][i] = random_gen(args_types[arg_name].get_arg_dtype())
+            #         elif args_types[arg_name].get_arg_dtype() in [AbsTensor] :
+            #             args_values[arg_name][i] = sym_to_conc(model, args_values[arg_name][i], args_types, args_values, args_lengths)
+            #         else :
+            #             args_values[arg_name][i] = clip_unbound_val(to_conc_py_val(args_values[arg_name][i]), max = MAX_VALUE)
+            # return args_values[arg_name]  # Returning only the values, not the length
         else :
             raise NotImplementedError(f"Unsupported type {z3_arg.range()}")
-        
 def process_len(
         args_types : Dict[str, Union[AbsDType, AbsTensor, AbsLiteral]],
         args_lengths : Dict[str, Optional[int]],
@@ -210,13 +305,20 @@ def process_len(
     model = solver.model()
     constrs.clear()
     for z3_arg in model.decls() :
-        sym_to_conc(model, z3_arg, args_types, {}, args_lengths)
+        sym_to_conc(model, z3_arg, args_types, {}, args_lengths, ret_len=True)
     
     for arg_name in args_lengths.keys() :
         if args_lengths[arg_name] is None :
             args_lengths[arg_name] = random.randint(0, MAX_ARR_LEN)
 
     for arg_name, len_val in args_lengths.items() :
+        if isinstance(len_val, list) :
+            for i, val in enumerate(len_val) :
+                constrs.append(
+                    args_types[arg_name].z3()(arg_name).get_arg_attr(i, "rank") == val
+                )
+                assert isinstance(val, int) and val <= MAX_ARR_LEN, f"Invalid length {val}"
+            len_val = len(len_val)
         constrs.append(args_types[arg_name].z3()(arg_name).rank == len_val)
         if isinstance(args_types[arg_name], AbsTensor) :
             assert isinstance(len_val, int) and len_val <= MAX_ARR_LEN, f"Invalid length {len_val}"
@@ -239,7 +341,7 @@ def process_model(solver, args_types : Dict[str, Any]) :
         SMT_LOG.debug(f"MODEL ---> {model}")
     model_decls = sorted(model.decls(), key=lambda d: d.name())
     for z3_arg in model_decls :
-        sym_to_conc(model, z3_arg, args_types, args_values, args_lengths)
+        sym_to_conc(model, z3_arg, args_types, args_values, args_lengths, ret_len=False)
 
     for key, value in args_values.items() : 
         if isinstance(value, dict) and "tensor" in value.keys() :
@@ -331,13 +433,15 @@ def _random_gen(datatype):
         value = random.choices(datatype.choices)[0]
     else:
         raise NotImplementedError(f"Unsupported datatype {datatype}")
-    return AbsValue(value)
+    return value
 
 def random_gen(abs, length=None):
     """
     Materialize an abstract data type into a concrete value.
     """
-    if isinstance(abs, AbsTensor):
+    if abs in [AbsDType.none, None] :
+        return None
+    elif isinstance(abs, AbsTensor) :
         if length is None :
             length = random_gen_arr_len()
         shape = [random_gen_arr_len() for _ in range(length)]
@@ -409,13 +513,15 @@ def clip_unbound_val(value, max = None, min = None) :
 #                 res.append(subscript_sufficient)
 #     return res
 
-def to_conc_py_val(z3_obj: z3.ExprRef) -> Any:
+def to_conc_py_val(model, z3_obj: z3.ExprRef) -> Any:
     if isinstance(z3_obj, z3.IntNumRef):
-        return z3_obj.as_long()
+        return handle_int_sort(model, z3_obj)
     elif isinstance(z3_obj, z3.RatNumRef):
-        return float(z3_obj.as_decimal(prec=7).rstrip('?'))
+        return handle_real_sort(model, z3_obj)
     elif isinstance(z3_obj, z3.BoolRef):
-        return bool(z3_obj)
+        return handle_bool_sort(model, z3_obj)
+    elif isinstance(z3_obj, z3.SeqRef):
+        return handle_string_sort(model, z3_obj)
     else :
         raise NotImplementedError
 
