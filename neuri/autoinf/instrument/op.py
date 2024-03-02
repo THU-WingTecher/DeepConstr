@@ -277,8 +277,11 @@ class OpInstance:
             value = self._concretize_input_arg(
                 abs_value, symb_2_value, tensor_from_numpy
             )
-            if is_pos:
-                args.append(value)
+            if is_pos :
+                if is_pos == "tensors": ## dirty fix for some tuple input 
+                    args.extend(list(value))
+                else :
+                    args.append(value)
             else:
                 kwargs[name] = value
         return args, kwargs
