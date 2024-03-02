@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - Tensor
+  - str
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - UPLO
+  - eigvals
+  - eigvecs
+  required:
+  - true
+  - false
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch._C._linalg.linalg_eigh
+package: torch
+pass_rate: 0

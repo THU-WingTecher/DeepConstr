@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - int
+  - List[Tensor]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - split_sizes
+  - dim
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+error: <class 'TypeError'>
+name: torch.unsafe_split_with_sizes
+package: torch
+pass_rate: 0

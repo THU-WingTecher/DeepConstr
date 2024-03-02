@@ -1,0 +1,21 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - sign
+  - logabsdet
+  required:
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.slogdet
+package: torch
+pass_rate: 0

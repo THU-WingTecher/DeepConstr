@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[float]
+  - Optional[float]
+  - bool
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - atol
+  - rtol
+  - hermitian
+  - out
+  required:
+  - true
+  - false
+  - false
+  - false
+  - true
+name: torch._C._linalg.linalg_pinv
+package: torch
+pass_rate: 0

@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - List[int]
+  - Tensor
+  is_pos:
+  - false
+  - false
+  name:
+  - size
+  - out
+  required:
+  - true
+  - true
+name: torch.randn
+package: torch
+pass_rate: 0

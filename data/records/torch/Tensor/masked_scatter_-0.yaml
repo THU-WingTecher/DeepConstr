@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - mask
+  - source
+  required:
+  - true
+  - true
+  - true
+name: torch.Tensor.masked_scatter_
+package: torch
+pass_rate: 0

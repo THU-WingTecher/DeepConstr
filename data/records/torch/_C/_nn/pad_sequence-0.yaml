@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - List[Tensor]
+  - bool
+  - float
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - sequences
+  - batch_first
+  - padding_value
+  required:
+  - true
+  - false
+  - false
+name: torch._C._nn.pad_sequence
+package: torch
+pass_rate: 0

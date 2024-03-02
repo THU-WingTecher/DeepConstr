@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - edge_order
+  required:
+  - true
+  - true
+  - false
+name: torch.gradient
+package: torch
+pass_rate: 0

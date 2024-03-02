@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - float
+  - float
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - min_val
+  - max_val
+  - inplace
+  required:
+  - true
+  - false
+  - false
+  - false
+name: torch.nn.functional.hardtanh
+package: torch
+pass_rate: 0

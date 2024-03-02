@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - number
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - pad
+  - value
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+error: <class 'TypeError'>
+name: torch.constant_pad_nd
+package: torch
+pass_rate: 0

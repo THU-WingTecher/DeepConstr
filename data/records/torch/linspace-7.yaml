@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - number
+  - Tensor
+  - int
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - start
+  - end
+  - steps
+  - out
+  required:
+  - true
+  - true
+  - true
+  - true
+name: torch.linspace
+package: torch
+pass_rate: 0

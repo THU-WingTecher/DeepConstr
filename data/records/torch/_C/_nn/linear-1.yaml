@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[Tensor]
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - weight
+  - bias
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+name: torch._C._nn.linear
+package: torch
+pass_rate: 0

@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - Tensor
+  - List[Optional[Tensor]]
+  - Tensor
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - indices
+  - values
+  - accumulate
+  required:
+  - true
+  - false
+  - true
+  - false
+error: <class 'TypeError'>
+name: torch.index_put_
+package: torch
+pass_rate: 0

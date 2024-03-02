@@ -1,0 +1,44 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[Tensor]
+  - List[int]
+  - List[int]
+  - List[int]
+  - bool
+  - List[int]
+  - int
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - weight
+  - bias
+  - stride
+  - padding
+  - dilation
+  - transposed
+  - output_padding
+  - groups
+  required:
+  - true
+  - true
+  - false
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+name: torch.convolution
+package: torch
+pass_rate: 0

@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - input
+  - packed_weight
+  - bias
+  required:
+  - true
+  - true
+  - true
+name: torch.fbgemm_linear_fp16_weight
+package: torch
+pass_rate: 0

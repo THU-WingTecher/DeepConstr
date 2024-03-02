@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[int]
+  - Optional[Device]
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - data
+  - dtype
+  - device
+  required:
+  - true
+  - false
+  - false
+name: torch.as_tensor
+package: torch
+pass_rate: 0

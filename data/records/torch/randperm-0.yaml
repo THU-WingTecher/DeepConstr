@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - int
+  - Tensor
+  is_pos:
+  - false
+  - false
+  name:
+  - n
+  - out
+  required:
+  - true
+  - true
+name: torch.randperm
+package: torch
+pass_rate: 0

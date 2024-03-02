@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - Optional[int]
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - dtype
+  required:
+  - true
+  - true
+  - false
+name: torch.Tensor.cumsum
+package: torch
+pass_rate: 0

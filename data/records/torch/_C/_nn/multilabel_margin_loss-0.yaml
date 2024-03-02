@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - target
+  - reduction
+  required:
+  - true
+  - true
+  - false
+name: torch._C._nn.multilabel_margin_loss
+package: torch
+pass_rate: 0

@@ -1,0 +1,32 @@
+args:
+  dtype:
+  - List[Tensor]
+  - List[Tensor]
+  - Optional[List[Optional[Tensor]]]
+  - Optional[bool]
+  - bool
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - outputs
+  - inputs
+  - grad_outputs
+  - retain_graph
+  - create_graph
+  - allow_unused
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+name: torch.autograd.grad
+package: torch
+pass_rate: 0

@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - input2
+  - upper
+  required:
+  - true
+  - true
+  - false
+name: torch.Tensor.cholesky_solve
+package: torch
+pass_rate: 0

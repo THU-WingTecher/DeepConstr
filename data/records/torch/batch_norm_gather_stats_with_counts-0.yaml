@@ -1,0 +1,49 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - float
+  - float
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - mean
+  - invstd
+  - running_mean
+  - running_var
+  - momentum
+  - eps
+  - counts
+  - out0
+  - out1
+  required:
+  - true
+  - true
+  - true
+  - false
+  - false
+  - true
+  - true
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.batch_norm_gather_stats_with_counts
+package: torch
+pass_rate: 0

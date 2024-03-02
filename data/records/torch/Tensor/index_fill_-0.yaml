@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - index
+  - value
+  required:
+  - true
+  - true
+  - true
+  - true
+name: torch.Tensor.index_fill_
+package: torch
+pass_rate: 0

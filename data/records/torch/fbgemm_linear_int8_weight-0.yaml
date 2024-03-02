@@ -1,0 +1,36 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - Tensor
+  - number
+  - number
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - weight
+  - packed
+  - col_offsets
+  - weight_scale
+  - weight_zero_point
+  - bias
+  required:
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+name: torch.fbgemm_linear_int8_weight
+package: torch
+pass_rate: 0

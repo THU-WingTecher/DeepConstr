@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[int]
+  is_pos:
+  - false
+  - false
+  name:
+  - repeats
+  - output_size
+  required:
+  - true
+  - false
+name: torch.repeat_interleave
+package: torch
+pass_rate: 0

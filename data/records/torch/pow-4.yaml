@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - exponent
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.pow
+package: torch
+pass_rate: 0

@@ -1,0 +1,32 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - bool
+  - bool
+  - float
+  - int
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - target
+  - log_input
+  - full
+  - eps
+  - reduction
+  required:
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+name: torch.poisson_nll_loss
+package: torch
+pass_rate: 0

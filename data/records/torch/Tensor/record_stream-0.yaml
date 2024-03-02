@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - Stream
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - s
+  required:
+  - true
+  - true
+name: torch.Tensor.record_stream
+package: torch
+pass_rate: 0

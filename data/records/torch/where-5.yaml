@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - false
+  - true
+  - false
+  - false
+  name:
+  - condition
+  - self
+  - other
+  - out
+  required:
+  - true
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.where
+package: torch
+pass_rate: 0

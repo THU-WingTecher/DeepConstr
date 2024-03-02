@@ -1,0 +1,17 @@
+args:
+  dtype:
+  - Tensor
+  - List[str]
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - names
+  required:
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.Tensor.refine_names
+package: torch
+pass_rate: 0

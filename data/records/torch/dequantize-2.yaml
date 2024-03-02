@@ -1,0 +1,17 @@
+args:
+  dtype:
+  - List[Tensor]
+  - List[Tensor]
+  is_pos:
+  - true
+  - false
+  name:
+  - tensors
+  - out
+  required:
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.dequantize
+package: torch
+pass_rate: 0

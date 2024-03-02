@@ -1,0 +1,21 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - eigenvalues
+  - eigenvectors
+  required:
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch._C._linalg.linalg_eig
+package: torch
+pass_rate: 0

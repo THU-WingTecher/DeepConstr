@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - Optional[Tensor]
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input1
+  - input2
+  - weight
+  - bias
+  required:
+  - true
+  - true
+  - true
+  - false
+name: torch.bilinear
+package: torch
+pass_rate: 0

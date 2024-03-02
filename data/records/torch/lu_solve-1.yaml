@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - LU_data
+  - LU_pivots
+  - out
+  required:
+  - true
+  - true
+  - true
+  - true
+name: torch.lu_solve
+package: torch
+pass_rate: 0

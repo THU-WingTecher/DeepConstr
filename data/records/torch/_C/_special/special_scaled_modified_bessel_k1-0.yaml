@@ -1,0 +1,12 @@
+args:
+  dtype:
+  - Tensor
+  is_pos:
+  - false
+  name:
+  - x
+  required:
+  - true
+name: torch._C._special.special_scaled_modified_bessel_k1
+package: torch
+pass_rate: 0

@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - str
+  - Optional[float]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - pad
+  - mode
+  - value
+  required:
+  - true
+  - true
+  - false
+  - false
+error: <class 'NotImplementedError'>
+name: torch._C._nn.pad
+package: torch
+pass_rate: 0

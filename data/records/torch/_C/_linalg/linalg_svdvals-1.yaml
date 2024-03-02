@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[str]
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - A
+  - driver
+  - out
+  required:
+  - true
+  - false
+  - true
+name: torch._C._linalg.linalg_svdvals
+package: torch
+pass_rate: 0

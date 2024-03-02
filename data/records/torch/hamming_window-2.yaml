@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - int
+  - bool
+  - float
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - window_length
+  - periodic
+  - alpha
+  - out
+  required:
+  - true
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.hamming_window
+package: torch
+pass_rate: 0

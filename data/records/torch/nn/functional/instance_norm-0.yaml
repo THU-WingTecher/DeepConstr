@@ -1,0 +1,40 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - bool
+  - float
+  - float
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - running_mean
+  - running_var
+  - weight
+  - bias
+  - use_input_stats
+  - momentum
+  - eps
+  required:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+name: torch.nn.functional.instance_norm
+package: torch
+pass_rate: 0

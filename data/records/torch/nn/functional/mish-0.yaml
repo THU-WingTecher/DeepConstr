@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - bool
+  is_pos:
+  - false
+  - false
+  name:
+  - input
+  - inplace
+  required:
+  - true
+  - false
+name: torch.nn.functional.mish
+package: torch
+pass_rate: 0

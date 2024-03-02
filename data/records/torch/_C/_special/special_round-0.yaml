@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - decimals
+  required:
+  - true
+  - false
+name: torch._C._special.special_round
+package: torch
+pass_rate: 0

@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - int
+  - float
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - x1
+  - x2
+  - dim
+  - eps
+  required:
+  - true
+  - true
+  - false
+  - false
+name: torch.cosine_similarity
+package: torch
+pass_rate: 0

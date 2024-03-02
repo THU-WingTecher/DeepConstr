@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - float
+  - bool
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - tol
+  - hermitian
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+name: torch._C._linalg.linalg_matrix_rank
+package: torch
+pass_rate: 0

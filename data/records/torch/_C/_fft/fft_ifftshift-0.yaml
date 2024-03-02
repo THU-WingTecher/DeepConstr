@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[List[int]]
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - dim
+  required:
+  - true
+  - false
+name: torch._C._fft.fft_ifftshift
+package: torch
+pass_rate: 0

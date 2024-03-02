@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - dim
+  required:
+  - true
+  - true
+name: torch.squeeze_copy
+package: torch
+pass_rate: 0

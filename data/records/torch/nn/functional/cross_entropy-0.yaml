@@ -1,0 +1,40 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[Tensor]
+  - Optional[bool]
+  - int
+  - Optional[bool]
+  - str
+  - float
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - target
+  - weight
+  - size_average
+  - ignore_index
+  - reduce
+  - reduction
+  - label_smoothing
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+name: torch.nn.functional.cross_entropy
+package: torch
+pass_rate: 0

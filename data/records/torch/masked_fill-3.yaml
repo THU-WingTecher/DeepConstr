@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - mask
+  - value
+  - out
+  required:
+  - true
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.masked_fill
+package: torch
+pass_rate: 0

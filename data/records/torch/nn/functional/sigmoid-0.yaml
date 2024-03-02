@@ -1,0 +1,12 @@
+args:
+  dtype:
+  - Tensor
+  is_pos:
+  - false
+  name:
+  - input
+  required:
+  - true
+name: torch.nn.functional.sigmoid
+package: torch
+pass_rate: 0

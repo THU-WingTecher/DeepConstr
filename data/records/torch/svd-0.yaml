@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - bool
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - some
+  - compute_uv
+  required:
+  - true
+  - false
+  - false
+name: torch.svd
+package: torch
+pass_rate: 0

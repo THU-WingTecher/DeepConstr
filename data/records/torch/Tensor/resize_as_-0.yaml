@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[int]
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - the_template
+  - memory_format
+  required:
+  - true
+  - true
+  - false
+name: torch.Tensor.resize_as_
+package: torch
+pass_rate: 0

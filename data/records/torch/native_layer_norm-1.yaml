@@ -1,0 +1,41 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - float
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - normalized_shape
+  - weight
+  - bias
+  - eps
+  - out0
+  - out1
+  - out2
+  required:
+  - true
+  - true
+  - false
+  - false
+  - true
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.native_layer_norm
+package: torch
+pass_rate: 0

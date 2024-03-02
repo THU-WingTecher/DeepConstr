@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[List[int]]
+  - Optional[number]
+  - bool
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - correction
+  - keepdim
+  - out
+  required:
+  - true
+  - false
+  - false
+  - false
+  - true
+name: torch.std
+package: torch
+pass_rate: 0

@@ -1,0 +1,13 @@
+args:
+  dtype:
+  - Tensor
+  is_pos:
+  - true
+  name:
+  - self
+  required:
+  - true
+error: <class 'NotImplementedError'>
+name: torch.int_repr
+package: torch
+pass_rate: 0

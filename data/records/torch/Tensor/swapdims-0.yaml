@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - dim0
+  - dim1
+  required:
+  - true
+  - true
+  - true
+name: torch.Tensor.swapdims
+package: torch
+pass_rate: 0

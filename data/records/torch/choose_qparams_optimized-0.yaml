@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - int
+  - float
+  - int
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - numel
+  - n_bins
+  - ratio
+  - bit_width
+  required:
+  - true
+  - true
+  - true
+  - true
+  - true
+name: torch.choose_qparams_optimized
+package: torch
+pass_rate: 0

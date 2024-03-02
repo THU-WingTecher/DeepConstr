@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - min
+  - max
+  - out
+  required:
+  - true
+  - false
+  - false
+  - true
+name: torch.clip
+package: torch
+pass_rate: 0

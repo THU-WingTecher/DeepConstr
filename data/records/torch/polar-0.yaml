@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - false
+  - false
+  name:
+  - abs
+  - angle
+  required:
+  - true
+  - true
+name: torch.polar
+package: torch
+pass_rate: 0

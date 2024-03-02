@@ -1,0 +1,32 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[Tensor]
+  - int
+  - int
+  - float
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - target
+  - weight
+  - reduction
+  - ignore_index
+  - label_smoothing
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+name: torch._C._nn.cross_entropy_loss
+package: torch
+pass_rate: 0

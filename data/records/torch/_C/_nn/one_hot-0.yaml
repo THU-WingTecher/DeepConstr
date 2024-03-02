@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - num_classes
+  required:
+  - true
+  - false
+name: torch._C._nn.one_hot
+package: torch
+pass_rate: 0

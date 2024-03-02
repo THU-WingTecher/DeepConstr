@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - bool
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - atol
+  - rtol
+  - hermitian
+  - out
+  required:
+  - true
+  - false
+  - false
+  - false
+  - true
+name: torch._C._linalg.linalg_matrix_rank
+package: torch
+pass_rate: 0

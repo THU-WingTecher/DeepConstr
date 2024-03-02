@@ -1,0 +1,33 @@
+args:
+  dtype:
+  - Tensor
+  - bool
+  - bool
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - A
+  - pivot
+  - check_errors
+  - LU
+  - pivots
+  - info
+  required:
+  - true
+  - false
+  - false
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch._C._linalg.linalg_lu_factor_ex
+package: torch
+pass_rate: 0

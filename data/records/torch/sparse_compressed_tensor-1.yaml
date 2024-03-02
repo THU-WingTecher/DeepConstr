@@ -1,0 +1,37 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - Optional[int]
+  - Optional[int]
+  - Optional[Device]
+  - Optional[bool]
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - compressed_indices
+  - plain_indices
+  - values
+  - dtype
+  - layout
+  - device
+  - pin_memory
+  required:
+  - true
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+error: <class 'TypeError'>
+name: torch.sparse_compressed_tensor
+package: torch
+pass_rate: 0

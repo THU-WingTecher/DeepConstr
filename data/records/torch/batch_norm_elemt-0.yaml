@@ -1,0 +1,37 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - Tensor
+  - Tensor
+  - float
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - weight
+  - bias
+  - mean
+  - invstd
+  - eps
+  - out
+  required:
+  - true
+  - false
+  - false
+  - true
+  - true
+  - true
+  - true
+error: <class 'NotImplementedError'>
+name: torch.batch_norm_elemt
+package: torch
+pass_rate: 0

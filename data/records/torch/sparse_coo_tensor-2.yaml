@@ -1,0 +1,17 @@
+args:
+  dtype:
+  - List[int]
+  - Tensor
+  is_pos:
+  - false
+  - false
+  name:
+  - size
+  - out
+  required:
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.sparse_coo_tensor
+package: torch
+pass_rate: 0

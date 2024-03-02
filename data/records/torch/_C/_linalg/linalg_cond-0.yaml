@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[number]
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - p
+  required:
+  - true
+  - false
+name: torch._C._linalg.linalg_cond
+package: torch
+pass_rate: 0

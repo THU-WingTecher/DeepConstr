@@ -1,0 +1,33 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - int
+  - bool
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - k
+  - dim
+  - keepdim
+  - values
+  - indices
+  required:
+  - true
+  - true
+  - false
+  - false
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.kthvalue
+package: torch
+pass_rate: 0

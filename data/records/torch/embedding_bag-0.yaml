@@ -1,0 +1,40 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - bool
+  - int
+  - bool
+  - Optional[Tensor]
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - weight
+  - indices
+  - offsets
+  - scale_grad_by_freq
+  - mode
+  - sparse
+  - per_sample_weights
+  - include_last_offset
+  required:
+  - true
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+name: torch.embedding_bag
+package: torch
+pass_rate: 0

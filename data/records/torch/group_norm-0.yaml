@@ -1,0 +1,32 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - float
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - num_groups
+  - weight
+  - bias
+  - eps
+  - cudnn_enabled
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+name: torch.group_norm
+package: torch
+pass_rate: 0

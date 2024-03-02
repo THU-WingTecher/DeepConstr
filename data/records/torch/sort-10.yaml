@@ -1,0 +1,17 @@
+args:
+  dtype:
+  - List[Tensor]
+  - bool
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - reverse
+  required:
+  - true
+  - false
+error: <class 'TypeError'>
+name: torch.sort
+package: torch
+pass_rate: 0

@@ -1,0 +1,32 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - float
+  - Optional[bool]
+  - Optional[bool]
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - target
+  - margin
+  - size_average
+  - reduce
+  - reduction
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+name: torch.nn.functional.hinge_embedding_loss
+package: torch
+pass_rate: 0

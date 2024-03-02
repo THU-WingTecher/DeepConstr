@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - Tensor
+  - str
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - values
+  - indices
+  required:
+  - true
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.cummax
+package: torch
+pass_rate: 0

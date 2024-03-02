@@ -1,0 +1,36 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - Optional[Tensor]
+  - float
+  - bool
+  - Optional[float]
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - query
+  - key
+  - value
+  - attn_mask
+  - dropout_p
+  - is_causal
+  - scale
+  required:
+  - true
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+name: torch._C._nn.scaled_dot_product_attention
+package: torch
+pass_rate: 0

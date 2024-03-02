@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  - bool
+  - bool
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - elements
+  - test_element
+  - assume_unique
+  - invert
+  - out
+  required:
+  - true
+  - true
+  - false
+  - false
+  - true
+name: torch.isin
+package: torch
+pass_rate: 0

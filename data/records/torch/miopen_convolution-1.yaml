@@ -1,0 +1,45 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[Tensor]
+  - List[int]
+  - List[int]
+  - List[int]
+  - int
+  - bool
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - weight
+  - bias
+  - padding
+  - stride
+  - dilation
+  - groups
+  - benchmark
+  - deterministic
+  required:
+  - true
+  - true
+  - false
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+error: <class 'NotImplementedError'>
+name: torch.miopen_convolution
+package: torch
+pass_rate: 0

@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - str
+  - Optional[bool]
+  - Optional[int]
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - filename
+  - shared
+  - size
+  - out
+  required:
+  - true
+  - false
+  - false
+  - true
+error: <class 'TypeError'>
+name: torch.from_file
+package: torch
+pass_rate: 0

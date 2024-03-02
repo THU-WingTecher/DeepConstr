@@ -1,0 +1,21 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - split_size
+  - dim
+  required:
+  - true
+  - true
+  - false
+error: <class 'TypeError'>
+name: torch.functional.split
+package: torch
+pass_rate: 0

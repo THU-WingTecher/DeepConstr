@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Tuple, Type
 from neuri.abstract.op import *
 from neuri.logger import AUTOINF_LOG
 # from neuri.specloader.rule import gen_rule
-from neuri.specloader.utils import load_yaml
+from neuri.constrinf.util import load_yaml
 from neuri.constrinf.ast2z3 import Ast2z3
 
 
@@ -23,11 +23,25 @@ def is_special_apis(record) :
 
     return False 
 
+def _process_record(file_path: str, test_pool: list = []) -> dict:
+    """
+    Process a single file and return the configuration as a record dictionary.
+    """
+    from neuri.abstract.dtype import materalize_dtypes  # Assumed to be a necessary import
+    # Assuming load_yaml is defined elsewhere or is a known function for loading YAML files
+    record = {}
+    record = load_yaml(file_path)
+    if test_pool and record["name"] not in test_pool:
+        return None
+    record['args']['dtype_obj'] = [materalize_dtypes(dtype) for dtype in record['args']['dtype']]
+    record['outputs'] = {'value': []} # Placeholder for the output values
+    return record
+    
 def process_record(file_path: str, test_pool: list = []) -> dict:
     """
     Process a single file and return the configuration as a record dictionary.
     """
-    from neuri.specloader.materalize import materalize_dtypes  # Assumed to be a necessary import
+    from neuri.abstract.dtype import materalize_dtypes  # Assumed to be a necessary import
     # Assuming load_yaml is defined elsewhere or is a known function for loading YAML files
     record = {}
     cfg = load_yaml(file_path)

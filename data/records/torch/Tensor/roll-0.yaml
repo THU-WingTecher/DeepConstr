@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - List[int]
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - shifts
+  - dims
+  required:
+  - true
+  - true
+  - false
+name: torch.Tensor.roll
+package: torch
+pass_rate: 0

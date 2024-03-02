@@ -1,0 +1,17 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - memory_format
+  required:
+  - true
+  - false
+error: <class 'TypeError'>
+name: torch.Tensor.contiguous
+package: torch
+pass_rate: 0

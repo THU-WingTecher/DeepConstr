@@ -1,0 +1,13 @@
+args:
+  dtype:
+  - List[Tensor]
+  is_pos:
+  - true
+  name:
+  - tensors
+  required:
+  - true
+error: <class 'NotImplementedError'>
+name: torch.align_tensors
+package: torch
+pass_rate: 0

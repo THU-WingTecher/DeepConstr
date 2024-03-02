@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - vec2
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.ger
+package: torch
+pass_rate: 0

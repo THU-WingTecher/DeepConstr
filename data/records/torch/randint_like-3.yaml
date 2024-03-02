@@ -1,0 +1,29 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - int
+  - Optional[int]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - low
+  - high
+  - memory_format
+  - out
+  required:
+  - true
+  - true
+  - true
+  - false
+  - true
+error: <class 'TypeError'>
+name: torch.randint_like
+package: torch
+pass_rate: 0

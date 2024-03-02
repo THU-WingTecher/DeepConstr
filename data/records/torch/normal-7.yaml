@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - float
+  - float
+  - List[int]
+  - Optional[Generator]
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - mean
+  - std
+  - size
+  - generator
+  - out
+  required:
+  - true
+  - true
+  - true
+  - false
+  - true
+name: torch.normal
+package: torch
+pass_rate: 0

@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - end
+  - weight
+  - out
+  required:
+  - true
+  - true
+  - true
+  - true
+name: torch.lerp
+package: torch
+pass_rate: 0

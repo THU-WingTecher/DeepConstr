@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[int]
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - memory_format
+  required:
+  - true
+  - false
+name: torch.Tensor.chalf
+package: torch
+pass_rate: 0

@@ -1,0 +1,64 @@
+args:
+  dtype:
+  - Tensor
+  - List[Tensor]
+  - Tensor
+  - Tensor
+  - Tensor
+  - Tensor
+  - Tensor
+  - Tensor
+  - Tensor
+  - Tensor
+  - number
+  - number
+  - number
+  - number
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - hx
+  - w_ih
+  - w_hh
+  - b_ih
+  - b_hh
+  - packed_ih
+  - packed_hh
+  - col_offsets_ih
+  - col_offsets_hh
+  - scale_ih
+  - scale_hh
+  - zero_point_ih
+  - zero_point_hh
+  required:
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+name: torch.quantized_lstm_cell
+package: torch
+pass_rate: 0

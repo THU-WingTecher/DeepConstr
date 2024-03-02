@@ -1,0 +1,12 @@
+args:
+  dtype:
+  - List[Tensor]
+  is_pos:
+  - true
+  name:
+  - tensors
+  required:
+  - true
+name: torch.vstack
+package: torch
+pass_rate: 0

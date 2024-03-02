@@ -1,0 +1,40 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[Tensor]
+  - List[int]
+  - List[int]
+  - List[int]
+  - int
+  - List[int]
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - weight
+  - bias
+  - stride
+  - padding
+  - output_padding
+  - groups
+  - dilation
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+name: torch.conv_transpose2d
+package: torch
+pass_rate: 0

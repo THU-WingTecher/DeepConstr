@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - float
+  - int
+  - int
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - scale
+  - zero_point
+  - quant_min
+  - quant_max
+  required:
+  - true
+  - true
+  - true
+  - true
+  - true
+name: torch.fake_quantize_per_tensor_affine
+package: torch
+pass_rate: 0

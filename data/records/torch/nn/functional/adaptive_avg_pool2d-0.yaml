@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  is_pos:
+  - false
+  - false
+  name:
+  - input
+  - output_size
+  required:
+  - true
+  - true
+name: torch.nn.functional.adaptive_avg_pool2d
+package: torch
+pass_rate: 0

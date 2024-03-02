@@ -1,0 +1,21 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[Tensor]
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - weight
+  - bias
+  required:
+  - true
+  - true
+  - false
+error: <class 'NotImplementedError'>
+name: torch._C._nn.mkldnn_linear
+package: torch
+pass_rate: 0

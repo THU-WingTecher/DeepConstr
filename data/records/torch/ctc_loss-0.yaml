@@ -1,0 +1,36 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - List[int]
+  - List[int]
+  - int
+  - int
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - log_probs
+  - targets
+  - input_lengths
+  - target_lengths
+  - blank
+  - reduction
+  - zero_infinity
+  required:
+  - true
+  - true
+  - true
+  - true
+  - false
+  - false
+  - false
+name: torch.ctc_loss
+package: torch
+pass_rate: 0

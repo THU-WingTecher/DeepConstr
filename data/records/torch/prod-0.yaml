@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[int]
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - dtype
+  required:
+  - true
+  - false
+name: torch.prod
+package: torch
+pass_rate: 0

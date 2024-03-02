@@ -1,0 +1,17 @@
+args:
+  dtype:
+  - number
+  - Tensor
+  is_pos:
+  - false
+  - false
+  name:
+  - s
+  - out
+  required:
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.scalar_tensor
+package: torch
+pass_rate: 0

@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - str
+  - Optional[float]
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - pad
+  - mode
+  - value
+  required:
+  - true
+  - true
+  - false
+  - false
+error: <class 'NotImplementedError'>
+name: torch.nn.functional.pad
+package: torch
+pass_rate: 0

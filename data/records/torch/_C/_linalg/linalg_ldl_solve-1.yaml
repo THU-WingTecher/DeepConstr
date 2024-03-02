@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - bool
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - LD
+  - pivots
+  - B
+  - hermitian
+  - out
+  required:
+  - true
+  - true
+  - true
+  - false
+  - true
+name: torch._C._linalg.linalg_ldl_solve
+package: torch
+pass_rate: 0

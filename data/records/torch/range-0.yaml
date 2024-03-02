@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - number
+  - number
+  - number
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - start
+  - end
+  - step
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+name: torch.range
+package: torch
+pass_rate: 0

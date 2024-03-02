@@ -1,0 +1,21 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[int]
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - repeats
+  - output_size
+  - out
+  required:
+  - true
+  - false
+  - true
+error: <class 'TypeError'>
+name: torch.repeat_interleave
+package: torch
+pass_rate: 0

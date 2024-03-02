@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - List[int]
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - source
+  - destination
+  required:
+  - true
+  - true
+  - true
+name: torch.movedim
+package: torch
+pass_rate: 0

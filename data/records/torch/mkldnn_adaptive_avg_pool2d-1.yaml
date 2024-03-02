@@ -1,0 +1,17 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - output_size
+  required:
+  - true
+  - true
+error: <class 'NotImplementedError'>
+name: torch.mkldnn_adaptive_avg_pool2d
+package: torch
+pass_rate: 0

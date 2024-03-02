@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - str
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - approximate
+  required:
+  - true
+  - false
+name: torch._C._nn.gelu_
+package: torch
+pass_rate: 0

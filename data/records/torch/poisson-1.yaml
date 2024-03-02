@@ -1,0 +1,21 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[Generator]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - generator
+  - out
+  required:
+  - true
+  - false
+  - true
+error: <class 'TypeError'>
+name: torch.poisson
+package: torch
+pass_rate: 0

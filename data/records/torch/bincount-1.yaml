@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[Tensor]
+  - int
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - weights
+  - minlength
+  - out
+  required:
+  - true
+  - false
+  - false
+  - true
+error: <class 'TypeError'>
+name: torch.bincount
+package: torch
+pass_rate: 0

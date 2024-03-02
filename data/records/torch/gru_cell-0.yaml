@@ -1,0 +1,32 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - Tensor
+  - Optional[Tensor]
+  - Optional[Tensor]
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - hx
+  - w_ih
+  - w_hh
+  - b_ih
+  - b_hh
+  required:
+  - true
+  - true
+  - true
+  - true
+  - false
+  - false
+name: torch.gru_cell
+package: torch
+pass_rate: 0

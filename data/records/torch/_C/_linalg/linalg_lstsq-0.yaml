@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[float]
+  - Optional[str]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - b
+  - rcond
+  - driver
+  required:
+  - true
+  - true
+  - false
+  - false
+name: torch._C._linalg.linalg_lstsq
+package: torch
+pass_rate: 0

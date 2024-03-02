@@ -1,0 +1,29 @@
+args:
+  dtype:
+  - Tensor
+  - str
+  - bool
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - keepdim
+  - values
+  - indices
+  required:
+  - true
+  - true
+  - false
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.median
+package: torch
+pass_rate: 0

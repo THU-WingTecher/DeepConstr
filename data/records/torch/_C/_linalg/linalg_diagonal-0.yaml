@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - int
+  - int
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - A
+  - offset
+  - dim1
+  - dim2
+  required:
+  - true
+  - false
+  - false
+  - false
+name: torch._C._linalg.linalg_diagonal
+package: torch
+pass_rate: 0

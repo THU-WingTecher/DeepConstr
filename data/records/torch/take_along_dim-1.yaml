@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[int]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - indices
+  - dim
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+name: torch.take_along_dim
+package: torch
+pass_rate: 0

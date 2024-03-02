@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - int
+  - List[int]
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - high
+  - size
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.randint
+package: torch
+pass_rate: 0

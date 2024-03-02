@@ -1,0 +1,17 @@
+args:
+  dtype:
+  - int
+  - Tensor
+  is_pos:
+  - false
+  - false
+  name:
+  - window_length
+  - out
+  required:
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.hann_window
+package: torch
+pass_rate: 0

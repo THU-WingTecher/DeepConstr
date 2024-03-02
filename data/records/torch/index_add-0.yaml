@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - Tensor
+  - Tensor
+  - number
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - index
+  - source
+  - alpha
+  required:
+  - true
+  - true
+  - true
+  - true
+  - false
+name: torch.index_add
+package: torch
+pass_rate: 0

@@ -1,0 +1,32 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - List[int]
+  - Optional[List[int]]
+  - List[int]
+  - Optional[List[int]]
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - indices
+  - kernel_size
+  - stride
+  - padding
+  - output_size
+  required:
+  - true
+  - true
+  - true
+  - false
+  - false
+  - false
+name: torch.nn.functional.max_unpool2d
+package: torch
+pass_rate: 0

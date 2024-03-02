@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - int
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - input
+  - K
+  - N
+  required:
+  - true
+  - true
+  - true
+name: torch.fbgemm_pack_quantized_matrix
+package: torch
+pass_rate: 0

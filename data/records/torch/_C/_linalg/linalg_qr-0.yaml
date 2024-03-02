@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - str
+  is_pos:
+  - false
+  - false
+  name:
+  - A
+  - mode
+  required:
+  - true
+  - false
+name: torch._C._linalg.linalg_qr
+package: torch
+pass_rate: 0

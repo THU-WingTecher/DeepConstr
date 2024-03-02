@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - bool
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - upper
+  - check_errors
+  required:
+  - true
+  - false
+  - false
+name: torch._C._linalg.linalg_cholesky_ex
+package: torch
+pass_rate: 0

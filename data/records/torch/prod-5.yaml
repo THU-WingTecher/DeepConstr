@@ -1,0 +1,21 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[int]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - dtype
+  - out
+  required:
+  - true
+  - false
+  - true
+error: <class 'TypeError'>
+name: torch.prod
+package: torch
+pass_rate: 0

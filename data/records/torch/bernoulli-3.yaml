@@ -1,0 +1,21 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[Generator]
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - p
+  - generator
+  required:
+  - true
+  - true
+  - false
+error: <class 'TypeError'>
+name: torch.bernoulli
+package: torch
+pass_rate: 0

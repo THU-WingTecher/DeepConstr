@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - List[int]
+  - List[int]
+  - Optional[int]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - src
+  - size
+  - stride
+  - storage_offset
+  required:
+  - true
+  - true
+  - true
+  - true
+  - false
+name: torch.as_strided_scatter
+package: torch
+pass_rate: 0

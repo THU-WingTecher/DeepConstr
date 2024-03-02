@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - int
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - size
+  - sparse_dim
+  - dense_dim
+  required:
+  - true
+  - true
+  - true
+  - true
+error: <class 'NotImplementedError'>
+name: torch.Tensor.sparse_resize_and_clear_
+package: torch
+pass_rate: 0

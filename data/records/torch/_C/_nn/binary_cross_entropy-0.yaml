@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[Tensor]
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - target
+  - weight
+  - reduction
+  required:
+  - true
+  - true
+  - false
+  - false
+name: torch._C._nn.binary_cross_entropy
+package: torch
+pass_rate: 0

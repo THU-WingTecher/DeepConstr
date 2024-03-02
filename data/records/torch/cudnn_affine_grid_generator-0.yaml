@@ -1,0 +1,33 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - int
+  - int
+  - int
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - theta
+  - N
+  - C
+  - H
+  - W
+  - out
+  required:
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.cudnn_affine_grid_generator
+package: torch
+pass_rate: 0

@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - Optional[int]
+  - Optional[Generator]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - from
+  - to
+  - generator
+  required:
+  - true
+  - true
+  - false
+  - false
+name: torch.Tensor.random_
+package: torch
+pass_rate: 0

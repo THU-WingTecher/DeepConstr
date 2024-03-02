@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - List[str]
+  - bool
+  - bool
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - unbiased
+  - keepdim
+  - out
+  required:
+  - true
+  - true
+  - false
+  - false
+  - true
+name: torch.var
+package: torch
+pass_rate: 0

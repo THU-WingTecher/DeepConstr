@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - keepdim
+  required:
+  - true
+  - true
+  - false
+name: torch.nanmedian
+package: torch
+pass_rate: 0

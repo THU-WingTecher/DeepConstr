@@ -1,0 +1,36 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - List[int]
+  - List[int]
+  - bool
+  - bool
+  - Optional[int]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - kernel_size
+  - stride
+  - padding
+  - ceil_mode
+  - count_include_pad
+  - divisor_override
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+name: torch._C._nn.avg_pool3d
+package: torch
+pass_rate: 0

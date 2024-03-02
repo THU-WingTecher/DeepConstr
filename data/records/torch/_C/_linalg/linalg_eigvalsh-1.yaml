@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - str
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - UPLO
+  - out
+  required:
+  - true
+  - false
+  - true
+name: torch._C._linalg.linalg_eigvalsh
+package: torch
+pass_rate: 0

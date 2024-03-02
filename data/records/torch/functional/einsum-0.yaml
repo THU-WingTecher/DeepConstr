@@ -1,0 +1,21 @@
+args:
+  dtype:
+  - str
+  - List[Tensor]
+  - Optional[List[int]]
+  is_pos:
+  - false
+  - true
+  - false
+  name:
+  - equation
+  - tensors
+  - path
+  required:
+  - true
+  - true
+  - false
+error: <class 'TypeError'>
+name: torch.functional.einsum
+package: torch
+pass_rate: 0

@@ -1,0 +1,21 @@
+args:
+  dtype:
+  - int
+  - bool
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - window_length
+  - periodic
+  - out
+  required:
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.blackman_window
+package: torch
+pass_rate: 0

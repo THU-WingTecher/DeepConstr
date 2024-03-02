@@ -1,0 +1,48 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - float
+  - float
+  - float
+  - bool
+  - Optional[bool]
+  - Optional[bool]
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - anchor
+  - positive
+  - negative
+  - margin
+  - p
+  - eps
+  - swap
+  - size_average
+  - reduce
+  - reduction
+  required:
+  - true
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+name: torch.nn.functional.triplet_margin_loss
+package: torch
+pass_rate: 0

@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - number
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - exponent
+  required:
+  - true
+  - true
+name: torch.float_power
+package: torch
+pass_rate: 0

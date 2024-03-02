@@ -1,0 +1,85 @@
+args:
+  dtype:
+  - Tensor
+  - List[Tensor]
+  - int
+  - Tensor
+  - Optional[Tensor]
+  - int
+  - int
+  - int
+  - bool
+  - float
+  - bool
+  - bool
+  - List[int]
+  - Optional[Tensor]
+  - Tensor
+  - Tensor
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - weight
+  - weight_stride0
+  - hx
+  - cx
+  - mode
+  - hidden_size
+  - num_layers
+  - batch_first
+  - dropout
+  - train
+  - bidirectional
+  - batch_sizes
+  - dropout_state
+  - out0
+  - out1
+  - out2
+  - out3
+  - out4
+  required:
+  - true
+  - true
+  - true
+  - true
+  - false
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - false
+  - true
+  - true
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.miopen_rnn
+package: torch
+pass_rate: 0

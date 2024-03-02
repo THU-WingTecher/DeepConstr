@@ -1,0 +1,44 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - List[Tensor]
+  - bool
+  - int
+  - float
+  - bool
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - data
+  - batch_sizes
+  - hx
+  - params
+  - has_biases
+  - num_layers
+  - dropout
+  - train
+  - bidirectional
+  required:
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+name: torch.rnn_relu
+package: torch
+pass_rate: 0

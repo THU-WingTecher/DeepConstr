@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - float
+  - int
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input1
+  - input2
+  - target
+  - margin
+  - reduction
+  required:
+  - true
+  - true
+  - true
+  - false
+  - false
+name: torch.margin_ranking_loss
+package: torch
+pass_rate: 0

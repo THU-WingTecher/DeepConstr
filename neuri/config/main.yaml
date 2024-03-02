@@ -65,7 +65,7 @@ fuzz:
   resume: false
 
 train:
-  root: "???"
+  root: "???" # path to the root of the training data
   n_try: 10
   seed: null
   record_path: null
@@ -73,7 +73,7 @@ train:
   test_timeout: null
   resume: false
   parallel: 1
-  noise: 0.6 # 0 ~ 1
+  noise: 0.7 # 0 ~ 1
   allow_zero_length_rate: 0.1 # 0 ~ 1
   allow_zero_rate: 0.1 # 0 ~ 1
   num_of_try: 10 ## num_of_try * noise will be the number of trials for each input generation
@@ -81,8 +81,8 @@ train:
   tolerance: 3
   top_k: 10
   max_num_of_seeds: 50
-  simple_eval_asset: 10 # recommend to be parallel of executor
-  eval_asset: 2
+  simple_eval_asset: 1 # parallel num of executor
+  eval_asset: 300
   n_infer_per_round: 10
   str_sim_threshold: 0.8
   precision_threshold: 100 # 0 ~ 100

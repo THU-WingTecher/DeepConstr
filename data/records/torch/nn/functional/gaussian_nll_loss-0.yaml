@@ -1,0 +1,32 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - bool
+  - float
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - target
+  - var
+  - full
+  - eps
+  - reduction
+  required:
+  - true
+  - true
+  - true
+  - false
+  - false
+  - false
+name: torch.nn.functional.gaussian_nll_loss
+package: torch
+pass_rate: 0

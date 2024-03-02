@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[List[str]]
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - names
+  required:
+  - true
+  - false
+name: torch.Tensor.rename
+package: torch
+pass_rate: 0

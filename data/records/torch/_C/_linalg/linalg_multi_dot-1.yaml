@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - List[Tensor]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - tensors
+  - out
+  required:
+  - true
+  - true
+name: torch._C._linalg.linalg_multi_dot
+package: torch
+pass_rate: 0

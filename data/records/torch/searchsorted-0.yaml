@@ -1,0 +1,33 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - bool
+  - bool
+  - Optional[str]
+  - Optional[Tensor]
+  is_pos:
+  - false
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - sorted_sequence
+  - self
+  - out_int32
+  - right
+  - side
+  - sorter
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+error: <class 'TypeError'>
+name: torch.searchsorted
+package: torch
+pass_rate: 0

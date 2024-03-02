@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - int
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - k
+  - dim
+  - keepdim
+  required:
+  - true
+  - true
+  - false
+  - false
+name: torch.Tensor.kthvalue
+package: torch
+pass_rate: 0

@@ -1,0 +1,40 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - List[int]
+  - Optional[Tensor]
+  - List[int]
+  - List[int]
+  - List[int]
+  - List[int]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - weight
+  - kernel_size
+  - bias
+  - stride
+  - padding
+  - output_padding
+  - dilation
+  required:
+  - true
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+name: torch._C._nn.slow_conv_transpose3d
+package: torch
+pass_rate: 0

@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[str]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - other
+  - rounding_mode
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+name: torch.div
+package: torch
+pass_rate: 0

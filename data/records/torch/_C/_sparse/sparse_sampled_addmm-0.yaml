@@ -1,0 +1,33 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - number
+  - number
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - mat1
+  - mat2
+  - beta
+  - alpha
+  - out
+  required:
+  - true
+  - true
+  - true
+  - false
+  - false
+  - true
+error: <class 'NotImplementedError'>
+name: torch._C._sparse.sparse_sampled_addmm
+package: torch
+pass_rate: 0

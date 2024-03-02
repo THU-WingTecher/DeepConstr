@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - float
+  - float
+  - bool
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - lower
+  - upper
+  - training
+  - inplace
+  required:
+  - true
+  - false
+  - false
+  - false
+  - false
+name: torch.nn.functional.rrelu
+package: torch
+pass_rate: 0

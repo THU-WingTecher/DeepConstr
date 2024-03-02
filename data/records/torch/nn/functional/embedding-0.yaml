@@ -1,0 +1,36 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[int]
+  - Optional[float]
+  - float
+  - bool
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - weight
+  - padding_idx
+  - max_norm
+  - norm_type
+  - scale_grad_by_freq
+  - sparse
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+name: torch.nn.functional.embedding
+package: torch
+pass_rate: 0

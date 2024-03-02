@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - int
+  - bool
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - weight
+  - indices
+  - padding_idx
+  - scale_grad_by_freq
+  - sparse
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+name: torch.embedding
+package: torch
+pass_rate: 0

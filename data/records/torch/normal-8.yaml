@@ -1,0 +1,29 @@
+args:
+  dtype:
+  - Tensor
+  - float
+  - float
+  - Optional[Generator]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - mean
+  - std
+  - generator
+  - out
+  required:
+  - true
+  - false
+  - false
+  - false
+  - true
+error: <class 'TypeError'>
+name: torch.normal
+package: torch
+pass_rate: 0

@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - List[Tensor]
+  - str
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - tensors
+  - dim
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.concat
+package: torch
+pass_rate: 0

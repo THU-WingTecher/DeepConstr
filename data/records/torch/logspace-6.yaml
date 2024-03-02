@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  - int
+  - float
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - start
+  - end
+  - steps
+  - base
+  - out
+  required:
+  - true
+  - true
+  - true
+  - false
+  - true
+name: torch.logspace
+package: torch
+pass_rate: 0

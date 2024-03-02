@@ -1,0 +1,12 @@
+args:
+  dtype:
+  - Tensor
+  is_pos:
+  - true
+  name:
+  - self
+  required:
+  - true
+name: torch.sinh_
+package: torch
+pass_rate: 0

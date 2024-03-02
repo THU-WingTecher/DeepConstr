@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - str
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - index
+  required:
+  - true
+  - true
+  - true
+name: torch.index_select
+package: torch
+pass_rate: 0

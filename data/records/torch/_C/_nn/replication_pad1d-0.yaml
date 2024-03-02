@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - padding
+  required:
+  - true
+  - true
+name: torch._C._nn.replication_pad1d
+package: torch
+pass_rate: 0

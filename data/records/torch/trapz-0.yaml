@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - int
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - y
+  - x
+  - dim
+  required:
+  - true
+  - true
+  - false
+name: torch.trapz
+package: torch
+pass_rate: 0

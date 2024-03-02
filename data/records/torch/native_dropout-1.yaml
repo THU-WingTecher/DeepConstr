@@ -1,0 +1,29 @@
+args:
+  dtype:
+  - Tensor
+  - float
+  - Optional[bool]
+  - Tensor
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - p
+  - train
+  - out0
+  - out1
+  required:
+  - true
+  - true
+  - false
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.native_dropout
+package: torch
+pass_rate: 0

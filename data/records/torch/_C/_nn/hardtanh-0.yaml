@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  - number
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - min_val
+  - max_val
+  required:
+  - true
+  - false
+  - false
+name: torch._C._nn.hardtanh
+package: torch
+pass_rate: 0

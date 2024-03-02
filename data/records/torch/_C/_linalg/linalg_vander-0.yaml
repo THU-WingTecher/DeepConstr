@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[int]
+  is_pos:
+  - false
+  - false
+  name:
+  - x
+  - N
+  required:
+  - true
+  - false
+name: torch._C._linalg.linalg_vander
+package: torch
+pass_rate: 0

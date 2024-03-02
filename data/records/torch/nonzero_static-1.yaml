@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - int
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - size
+  - fill_value
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+name: torch.nonzero_static
+package: torch
+pass_rate: 0

@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - n
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.matrix_power
+package: torch
+pass_rate: 0

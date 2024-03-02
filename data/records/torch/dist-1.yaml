@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - number
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - other
+  - p
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+error: <class 'TypeError'>
+name: torch.dist
+package: torch
+pass_rate: 0

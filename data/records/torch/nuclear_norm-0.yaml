@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - bool
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - keepdim
+  required:
+  - true
+  - false
+name: torch.nuclear_norm
+package: torch
+pass_rate: 0

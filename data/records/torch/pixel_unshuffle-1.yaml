@@ -1,0 +1,21 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - downscale_factor
+  - out
+  required:
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.pixel_unshuffle
+package: torch
+pass_rate: 0

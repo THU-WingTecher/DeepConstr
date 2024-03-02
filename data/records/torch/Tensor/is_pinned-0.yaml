@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[Device]
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - device
+  required:
+  - true
+  - false
+name: torch.Tensor.is_pinned
+package: torch
+pass_rate: 0

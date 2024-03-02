@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - int
+  - int
+  - int
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - row
+  - col
+  - offset
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+error: <class 'TypeError'>
+name: torch.triu_indices
+package: torch
+pass_rate: 0

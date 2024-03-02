@@ -1,0 +1,36 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - List[int]
+  - List[int]
+  - List[int]
+  - List[int]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - output_size
+  - kernel_size
+  - dilation
+  - padding
+  - stride
+  - out
+  required:
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+name: torch._C._nn.col2im
+package: torch
+pass_rate: 0

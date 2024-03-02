@@ -1,0 +1,21 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - grid
+  - out
+  required:
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.cudnn_grid_sampler
+package: torch
+pass_rate: 0

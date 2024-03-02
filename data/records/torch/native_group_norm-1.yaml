@@ -1,0 +1,53 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - int
+  - int
+  - int
+  - int
+  - float
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - weight
+  - bias
+  - N
+  - C
+  - HxW
+  - group
+  - eps
+  - out0
+  - out1
+  - out2
+  required:
+  - true
+  - false
+  - false
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.native_group_norm
+package: torch
+pass_rate: 0

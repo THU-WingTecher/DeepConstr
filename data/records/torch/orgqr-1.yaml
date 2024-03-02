@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - input2
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.orgqr
+package: torch
+pass_rate: 0

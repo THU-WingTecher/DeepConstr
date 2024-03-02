@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[Tensor]
+  - int
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - target
+  - weight
+  - reduction
+  - ignore_index
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+name: torch._C._nn.nll_loss2d
+package: torch
+pass_rate: 0

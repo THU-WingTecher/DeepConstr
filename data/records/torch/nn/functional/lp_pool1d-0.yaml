@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - Union[float, int]
+  - int
+  - Optional[List[int]]
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - norm_type
+  - kernel_size
+  - stride
+  - ceil_mode
+  required:
+  - true
+  - true
+  - true
+  - false
+  - false
+name: torch.nn.functional.lp_pool1d
+package: torch
+pass_rate: 0

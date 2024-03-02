@@ -1,0 +1,13 @@
+args:
+  dtype:
+  - List[Tensor]
+  is_pos:
+  - false
+  name:
+  - matrices
+  required:
+  - true
+error: <class 'TypeError'>
+name: torch.functional.chain_matmul
+package: torch
+pass_rate: 0

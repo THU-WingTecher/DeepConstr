@@ -1,0 +1,17 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - dtype
+  required:
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.view_copy
+package: torch
+pass_rate: 0

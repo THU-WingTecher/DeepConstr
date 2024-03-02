@@ -1,0 +1,29 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - int
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - scale
+  - zero_point
+  - dtype
+  - out
+  required:
+  - true
+  - true
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.quantize_per_tensor
+package: torch
+pass_rate: 0

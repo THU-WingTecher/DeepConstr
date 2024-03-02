@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[List[int]]
+  - Optional[List[float]]
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - input
+  - output_size
+  - scale_factors
+  required:
+  - true
+  - false
+  - false
+name: torch._C._nn.upsample_nearest3d
+package: torch
+pass_rate: 0

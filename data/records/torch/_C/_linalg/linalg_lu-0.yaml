@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - bool
+  is_pos:
+  - false
+  - false
+  name:
+  - A
+  - pivot
+  required:
+  - true
+  - false
+name: torch._C._linalg.linalg_lu
+package: torch
+pass_rate: 0

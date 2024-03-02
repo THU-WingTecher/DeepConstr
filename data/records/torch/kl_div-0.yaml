@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - int
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - target
+  - reduction
+  - log_target
+  required:
+  - true
+  - true
+  - false
+  - false
+name: torch.kl_div
+package: torch
+pass_rate: 0

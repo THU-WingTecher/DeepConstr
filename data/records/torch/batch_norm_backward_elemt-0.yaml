@@ -1,0 +1,45 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - Tensor
+  - Optional[Tensor]
+  - Tensor
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - grad_out
+  - input
+  - mean
+  - invstd
+  - weight
+  - sum_dy
+  - sum_dy_xmu
+  - count
+  - out
+  required:
+  - true
+  - true
+  - true
+  - true
+  - false
+  - true
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.batch_norm_backward_elemt
+package: torch
+pass_rate: 0

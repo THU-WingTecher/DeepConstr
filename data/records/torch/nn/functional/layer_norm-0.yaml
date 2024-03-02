@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - float
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - normalized_shape
+  - weight
+  - bias
+  - eps
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+name: torch.nn.functional.layer_norm
+package: torch
+pass_rate: 0

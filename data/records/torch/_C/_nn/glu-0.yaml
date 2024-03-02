@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - dim
+  required:
+  - true
+  - false
+name: torch._C._nn.glu
+package: torch
+pass_rate: 0

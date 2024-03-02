@@ -54,10 +54,10 @@ def transform_record_for_saving(record: dict) -> dict:
 def deal_special_case(record) :
     special_records = {
         "torch.align_tensors" : {
-            "error" : NotImplementedError
+            "error" : str(NotImplementedError)
     },
         "torch.functional.align_tensors" : {
-            "error" : NotImplementedError
+            "error" : str(NotImplementedError)
     },
         "torch.block_diag" : {
             "is_pos" : ["tensors"]
@@ -78,13 +78,13 @@ def deal_special_case(record) :
             "is_pos" : ["tensors"]
     },
         "torch.meshgrid" : {
-            "error" : NotImplementedError
+            "error" : str(NotImplementedError)
     },
         "torch.functional.meshgrid" : {
-            "error" : NotImplementedError
+            "error" : str(NotImplementedError)
     },
         "torch._C._nn.unflatten_dense_tensors" : {
-            "error" : UnsolverableError
+            "error" : str(UnsolverableError)
     },
     }
     if special_records.get(record["name"], None) is not None :
@@ -98,7 +98,8 @@ def deal_special_case(record) :
 
 def torch_prepare(save_dir, executor):
     import torch.jit.supported_ops
-
+    legal = 0
+    illegal = 0
     ops_doc_lines = torch.jit.supported_ops.__doc__.splitlines()
     """
     1. tensor_methods: `Tensor.method_name(...`
@@ -122,21 +123,24 @@ def torch_prepare(save_dir, executor):
     torch_funcs = {}
     tot_doc_lines = len(ops_doc_lines)
     i_line = 0
+    n_ = 0
     prev_op_name = None
     while i_line < tot_doc_lines:
         line = ops_doc_lines[i_line].strip()
         if not line:
             i_line += 1
             continue
+        is_tensor_method = line.startswith("Tensor.")
+        is_torch_func = line.startswith("torch.")
+        # i_line += 1
         # read wanted lines
         if any(
             [line.startswith(skip_kw) for skip_kw in skip_startwith_kws]
         ) or any([skip_kw in line for skip_kw in skip_in_kws]):
             i_line += 1
             continue
-        is_tensor_method = line.startswith("Tensor.")
-        is_torch_func = line.startswith("torch.")
         if is_tensor_method or is_torch_func:
+            n_+=1
             # get specification of a whole op/func
             op_spec = []
             while i_line < tot_doc_lines:
@@ -149,21 +153,18 @@ def torch_prepare(save_dir, executor):
             # parse op spec
             op_name = op_spec.split("(")[0]
             if op_name in tensor_methods or op_name in torch_funcs:
-                i_line += 1
-                continue
-            if is_tensor_method:
-                op_name = f"torch.{op_name}"
-            if prev_op_name == op_name :
                 cnt+=1 
             else :
                 cnt = 0
+            if is_tensor_method:
+                op_name = f"torch.{op_name}"
             obj = eval(op_name)
             if callable(obj):
                 op_args = op_spec.split("(")[1].split(")")[0]
                 op_rets = op_spec.split("-> ")[1]
                 if not (
                     ("Tensor" in op_args or is_tensor_method)
-                    and "Tensor" in op_rets
+                    # and "Tensor" in op_rets
                     # and "out : Tensor" not in op_args
                 ):
                     # both inputs and outputs have tensors
@@ -174,7 +175,6 @@ def torch_prepare(save_dir, executor):
                 else:
                     tensor_methods[op_name] = obj
                 save_path = os.path.join(save_dir, f"{op_name.replace('.', '/')}-{cnt}.yaml")
-                prev_op_name = op_name
                 if os.path.exists(save_path):
                     i_line += 1
                     continue
@@ -198,14 +198,16 @@ def torch_prepare(save_dir, executor):
                         continue 
                     if res[0] == False : 
                         if res[1].error_type in [TypeError, NotImplementedError] :
-                            TRAIN_LOG.info(f"  (Ignored: {obj = } from {op_name = } is illegal({res[1]})")
+                            # TRAIN_LOG.info(f"  (Ignored: {obj = } from {op_name = } is illegal({res[1]})")
                             record["error"] = str(res[1].error_type)
                             illegal_cnt+=1
                 if res is None :
                     res = (False, None)
                 if illegal_cnt > ntimes * 0.8 :
+                    illegal+=1
                     TRAIN_LOG.warning(f"  (Ignored: {obj = } from {op_name = } is illegal({res[1]}) N_ILLEGAL : {illegal_cnt}")
                 else :
+                    legal+=1
                     TRAIN_LOG.info(f"SELECTED  {op_name = } from {op_args = } is legal({res[1]})")
                 save_record(transform_record_for_saving(record), save_path)
             else:
@@ -213,7 +215,7 @@ def torch_prepare(save_dir, executor):
         # end if
         i_line += 1
     # end while
-    TRAIN_LOG.info(f"end of torch_prepare, {len(tensor_methods)} tensor methods, {len(torch_funcs)} torch funcs, cur_line {i_line}")
+    TRAIN_LOG.info(f"end of torch_prepare, {legal} legal methods, {illegal} illegal funcs, cur_line {i_line}, all {n_} operators")
     return tensor_methods, torch_funcs
 
 def save_record(record, path) :
@@ -328,25 +330,24 @@ def main(cfg: DictConfig):
     else :
         raise NotImplementedError
 
-
-# if int(os.getenv("INSTR", "0")):
 if __name__ == "__main__":
     main()
     # import sys 
     # dir = sys.argv[1] 
+    # legal = 0
+    # illegal = 0
+    # operators = []
     # for root, dirs, files in os.walk(dir):
     #     for file in files:
     #         if file.endswith(".yaml"):
+    #             name = file.split(".")[0].split("-")[0]
+    #             if name in operators :
+    #                 continue
     #             with open(os.path.join(root, file), 'r') as f:
     #                 record = yaml.safe_load(f)
-    #             if "tensors" in record["args"]["name"] :
-    #                 print(record)
-
-    # for name, func in tensor_methods.items():
-    #     instrument(name, func)
-    # for name, func in torch_funcs.items():
-    #     instrument(name, func)
-
-    # from hanging_threads import start_monitoring
-
-    # start_monitoring(seconds_frozen=10, test_interval=100)
+    #             if record.get("error") is not None :
+    #                 illegal+=1
+    #             else :
+    #                 operators.append(name)
+    #                 legal+=1
+    # print(f"legal {legal} illegal {illegal}, unique operator : {len(operators)}") 

@@ -1,0 +1,57 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - Tensor
+  - Optional[Tensor]
+  - bool
+  - bool
+  - bool
+  - Tensor
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - grad_out
+  - input
+  - mean
+  - invstd
+  - weight
+  - input_g
+  - weight_g
+  - bias_g
+  - out0
+  - out1
+  - out2
+  - out3
+  required:
+  - true
+  - true
+  - true
+  - true
+  - false
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.batch_norm_backward_reduce
+package: torch
+pass_rate: 0

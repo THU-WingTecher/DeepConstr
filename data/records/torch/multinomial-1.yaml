@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - bool
+  - Optional[Generator]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - num_samples
+  - replacement
+  - generator
+  - out
+  required:
+  - true
+  - true
+  - false
+  - false
+  - true
+name: torch.multinomial
+package: torch
+pass_rate: 0

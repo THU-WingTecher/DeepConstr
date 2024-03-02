@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - bool
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dtype
+  - reduce_range
+  - out
+  required:
+  - true
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.quantize_per_tensor_dynamic
+package: torch
+pass_rate: 0

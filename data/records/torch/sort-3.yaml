@@ -1,0 +1,29 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - bool
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - descending
+  - values
+  - indices
+  required:
+  - true
+  - false
+  - false
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.sort
+package: torch
+pass_rate: 0

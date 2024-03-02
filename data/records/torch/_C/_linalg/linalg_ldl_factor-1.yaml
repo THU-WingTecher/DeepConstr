@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - Tensor
+  - bool
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - hermitian
+  - LD
+  - pivots
+  required:
+  - true
+  - false
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch._C._linalg.linalg_ldl_factor
+package: torch
+pass_rate: 0

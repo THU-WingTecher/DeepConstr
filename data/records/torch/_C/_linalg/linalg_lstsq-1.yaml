@@ -1,0 +1,41 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[float]
+  - Optional[str]
+  - Tensor
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - b
+  - rcond
+  - driver
+  - solution
+  - residuals
+  - rank
+  - singular_values
+  required:
+  - true
+  - true
+  - false
+  - false
+  - true
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch._C._linalg.linalg_lstsq
+package: torch
+pass_rate: 0

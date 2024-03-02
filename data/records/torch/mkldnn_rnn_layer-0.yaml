@@ -1,0 +1,72 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - Tensor
+  - Tensor
+  - Tensor
+  - Tensor
+  - bool
+  - List[int]
+  - int
+  - int
+  - int
+  - bool
+  - bool
+  - bool
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - weight0
+  - weight1
+  - weight2
+  - weight3
+  - hx_
+  - cx_
+  - reverse
+  - batch_sizes
+  - mode
+  - hidden_size
+  - num_layers
+  - has_biases
+  - bidirectional
+  - batch_first
+  - train
+  required:
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+name: torch.mkldnn_rnn_layer
+package: torch
+pass_rate: 0

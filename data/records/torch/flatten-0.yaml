@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - start_dim
+  - end_dim
+  required:
+  - true
+  - false
+  - false
+name: torch.flatten
+package: torch
+pass_rate: 0

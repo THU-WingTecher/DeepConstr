@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - index
+  - source
+  - accumulate
+  required:
+  - true
+  - true
+  - true
+  - false
+name: torch.put
+package: torch
+pass_rate: 0

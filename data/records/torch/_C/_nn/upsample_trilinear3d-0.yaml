@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[List[int]]
+  - bool
+  - Optional[List[float]]
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - output_size
+  - align_corners
+  - scale_factors
+  required:
+  - true
+  - false
+  - true
+  - false
+name: torch._C._nn.upsample_trilinear3d
+package: torch
+pass_rate: 0

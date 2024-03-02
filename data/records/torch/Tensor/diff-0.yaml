@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - int
+  - Optional[Tensor]
+  - Optional[Tensor]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - n
+  - dim
+  - prepend
+  - append
+  required:
+  - true
+  - false
+  - false
+  - false
+  - false
+name: torch.Tensor.diff
+package: torch
+pass_rate: 0

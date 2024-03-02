@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - theta
+  - size
+  - align_corners
+  required:
+  - true
+  - true
+  - true
+name: torch.affine_grid_generator
+package: torch
+pass_rate: 0

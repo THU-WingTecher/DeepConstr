@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - str
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - UPLO
+  required:
+  - true
+  - false
+name: torch._C._linalg.linalg_eigh
+package: torch
+pass_rate: 0

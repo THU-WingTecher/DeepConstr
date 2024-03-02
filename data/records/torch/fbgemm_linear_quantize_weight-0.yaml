@@ -1,0 +1,12 @@
+args:
+  dtype:
+  - Tensor
+  is_pos:
+  - false
+  name:
+  - input
+  required:
+  - true
+name: torch.fbgemm_linear_quantize_weight
+package: torch
+pass_rate: 0

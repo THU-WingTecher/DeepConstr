@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - float
+  - float
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - threshold
+  - value
+  - inplace
+  required:
+  - true
+  - true
+  - true
+  - false
+name: torch.nn.functional.threshold
+package: torch
+pass_rate: 0

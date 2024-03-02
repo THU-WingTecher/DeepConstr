@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[List[int]]
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - dims
+  required:
+  - true
+  - true
+  - false
+name: torch._C._linalg.linalg_tensorsolve
+package: torch
+pass_rate: 0

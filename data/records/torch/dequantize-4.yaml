@@ -1,0 +1,13 @@
+args:
+  dtype:
+  - Tensor
+  is_pos:
+  - false
+  name:
+  - qtensor
+  required:
+  - true
+error: <class 'TypeError'>
+name: torch.dequantize
+package: torch
+pass_rate: 0

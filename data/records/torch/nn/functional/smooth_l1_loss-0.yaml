@@ -1,0 +1,32 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[bool]
+  - Optional[bool]
+  - str
+  - float
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - target
+  - size_average
+  - reduce
+  - reduction
+  - beta
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+name: torch.nn.functional.smooth_l1_loss
+package: torch
+pass_rate: 0

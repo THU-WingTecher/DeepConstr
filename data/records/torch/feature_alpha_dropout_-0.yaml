@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - float
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - p
+  - train
+  required:
+  - true
+  - true
+  - true
+name: torch.feature_alpha_dropout_
+package: torch
+pass_rate: 0

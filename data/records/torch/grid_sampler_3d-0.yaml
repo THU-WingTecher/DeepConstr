@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - int
+  - int
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - grid
+  - interpolation_mode
+  - padding_mode
+  - align_corners
+  required:
+  - true
+  - true
+  - true
+  - true
+  - true
+name: torch.grid_sampler_3d
+package: torch
+pass_rate: 0

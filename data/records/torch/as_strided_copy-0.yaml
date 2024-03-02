@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - List[int]
+  - Optional[int]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - size
+  - stride
+  - storage_offset
+  - out
+  required:
+  - true
+  - true
+  - true
+  - false
+  - true
+name: torch.as_strided_copy
+package: torch
+pass_rate: 0

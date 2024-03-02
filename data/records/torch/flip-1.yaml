@@ -1,0 +1,21 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - dims
+  - out
+  required:
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.flip
+package: torch
+pass_rate: 0

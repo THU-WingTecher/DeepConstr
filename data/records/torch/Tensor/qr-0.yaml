@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - bool
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - some
+  required:
+  - true
+  - false
+name: torch.Tensor.qr
+package: torch
+pass_rate: 0

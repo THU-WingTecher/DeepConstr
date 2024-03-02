@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - number
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - tensor1
+  - tensor2
+  - value
+  required:
+  - true
+  - true
+  - true
+  - false
+name: torch.Tensor.addcdiv
+package: torch
+pass_rate: 0

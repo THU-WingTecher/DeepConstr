@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - sections
+  required:
+  - true
+  - true
+name: torch.dsplit
+package: torch
+pass_rate: 0

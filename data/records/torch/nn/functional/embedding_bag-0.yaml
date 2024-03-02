@@ -1,0 +1,52 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[Tensor]
+  - Optional[float]
+  - float
+  - bool
+  - str
+  - bool
+  - Optional[Tensor]
+  - bool
+  - Optional[int]
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - weight
+  - offsets
+  - max_norm
+  - norm_type
+  - scale_grad_by_freq
+  - mode
+  - sparse
+  - per_sample_weights
+  - include_last_offset
+  - padding_idx
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+name: torch.nn.functional.embedding_bag
+package: torch
+pass_rate: 0

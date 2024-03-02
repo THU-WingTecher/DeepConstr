@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  - int
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - y
+  - dx
+  - dim
+  required:
+  - true
+  - false
+  - false
+name: torch.cumulative_trapezoid
+package: torch
+pass_rate: 0

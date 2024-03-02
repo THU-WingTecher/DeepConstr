@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - diagonal
+  required:
+  - true
+  - false
+name: torch.Tensor.diag
+package: torch
+pass_rate: 0

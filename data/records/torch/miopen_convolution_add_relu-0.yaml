@@ -1,0 +1,45 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - Optional[number]
+  - Optional[Tensor]
+  - List[int]
+  - List[int]
+  - List[int]
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - weight
+  - z
+  - alpha
+  - bias
+  - stride
+  - padding
+  - dilation
+  - groups
+  required:
+  - true
+  - true
+  - true
+  - false
+  - false
+  - true
+  - true
+  - true
+  - true
+error: <class 'NotImplementedError'>
+name: torch.miopen_convolution_add_relu
+package: torch
+pass_rate: 0

@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - output_size
+  required:
+  - true
+  - true
+name: torch._C._nn.adaptive_max_pool2d
+package: torch
+pass_rate: 0

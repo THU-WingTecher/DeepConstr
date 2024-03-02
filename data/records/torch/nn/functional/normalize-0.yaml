@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - float
+  - int
+  - float
+  - Optional[Tensor]
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - p
+  - dim
+  - eps
+  - out
+  required:
+  - true
+  - false
+  - false
+  - false
+  - false
+name: torch.nn.functional.normalize
+package: torch
+pass_rate: 0

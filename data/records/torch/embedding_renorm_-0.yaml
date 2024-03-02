@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - float
+  - float
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - indices
+  - max_norm
+  - norm_type
+  required:
+  - true
+  - true
+  - true
+  - true
+name: torch.embedding_renorm_
+package: torch
+pass_rate: 0

@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - p
+  required:
+  - true
+  - true
+name: torch._C._special.special_multigammaln
+package: torch
+pass_rate: 0

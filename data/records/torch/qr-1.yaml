@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - Tensor
+  - bool
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - some
+  - Q
+  - R
+  required:
+  - true
+  - false
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.qr
+package: torch
+pass_rate: 0

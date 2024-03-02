@@ -1,0 +1,49 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - List[int]
+  - List[int]
+  - List[int]
+  - List[int]
+  - int
+  - bool
+  - bool
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - weight
+  - padding
+  - output_padding
+  - stride
+  - dilation
+  - groups
+  - benchmark
+  - deterministic
+  - allow_tf32
+  required:
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+error: <class 'NotImplementedError'>
+name: torch.cudnn_convolution_transpose
+package: torch
+pass_rate: 0

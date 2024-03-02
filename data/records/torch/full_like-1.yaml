@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  - Optional[int]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - fill_value
+  - memory_format
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+error: <class 'TypeError'>
+name: torch.full_like
+package: torch
+pass_rate: 0

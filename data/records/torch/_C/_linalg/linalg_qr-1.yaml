@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - Tensor
+  - str
+  - Tensor
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - A
+  - mode
+  - Q
+  - R
+  required:
+  - true
+  - false
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch._C._linalg.linalg_qr
+package: torch
+pass_rate: 0

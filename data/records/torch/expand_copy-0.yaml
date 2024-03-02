@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - size
+  - implicit
+  required:
+  - true
+  - true
+  - false
+name: torch.expand_copy
+package: torch
+pass_rate: 0

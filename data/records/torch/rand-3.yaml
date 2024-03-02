@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - List[int]
+  - Optional[Generator]
+  - Optional[List[str]]
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - size
+  - generator
+  - names
+  - out
+  required:
+  - true
+  - false
+  - false
+  - true
+error: <class 'TypeError'>
+name: torch.rand
+package: torch
+pass_rate: 0

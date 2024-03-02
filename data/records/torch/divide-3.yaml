@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  - Optional[str]
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - rounding_mode
+  required:
+  - true
+  - true
+  - false
+name: torch.divide
+package: torch
+pass_rate: 0

@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - index
+  - source
+  required:
+  - true
+  - true
+  - true
+  - true
+name: torch.index_copy
+package: torch
+pass_rate: 0

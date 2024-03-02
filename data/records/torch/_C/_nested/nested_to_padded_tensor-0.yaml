@@ -1,0 +1,21 @@
+args:
+  dtype:
+  - Tensor
+  - float
+  - Optional[List[int]]
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - padding
+  - output_size
+  required:
+  - true
+  - true
+  - false
+error: <class 'NotImplementedError'>
+name: torch._C._nested.nested_to_padded_tensor
+package: torch
+pass_rate: 0

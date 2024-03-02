@@ -1,0 +1,41 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - Optional[int]
+  - Optional[int]
+  - Optional[Tensor]
+  - bool
+  - Optional[bool]
+  - Optional[bool]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - n_fft
+  - hop_length
+  - win_length
+  - window
+  - normalized
+  - onesided
+  - return_complex
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+error: <class 'NotImplementedError'>
+name: torch.Tensor.stft
+package: torch
+pass_rate: 0

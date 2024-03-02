@@ -1,0 +1,12 @@
+args:
+  dtype:
+  - List[Tensor]
+  is_pos:
+  - tensors
+  name:
+  - tensors
+  required:
+  - true
+name: torch.functional.cartesian_prod
+package: torch
+pass_rate: 0

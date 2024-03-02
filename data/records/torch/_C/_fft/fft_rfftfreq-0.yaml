@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - int
+  - float
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - n
+  - d
+  - out
+  required:
+  - true
+  - false
+  - true
+name: torch._C._fft.fft_rfftfreq
+package: torch
+pass_rate: 0

@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - padding
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch._C._nn.reflection_pad3d
+package: torch
+pass_rate: 0

@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - groups
+  required:
+  - true
+  - true
+name: torch.native_channel_shuffle
+package: torch
+pass_rate: 0

@@ -1,0 +1,17 @@
+args:
+  dtype:
+  - List[Tensor]
+  - str
+  is_pos:
+  - true
+  - false
+  name:
+  - tensors
+  - indexing
+  required:
+  - true
+  - true
+error: <class 'NotImplementedError'>
+name: torch.meshgrid
+package: torch
+pass_rate: 0

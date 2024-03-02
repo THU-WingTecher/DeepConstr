@@ -1,0 +1,29 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - int
+  - int
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - src
+  - dim
+  - index
+  - out
+  required:
+  - true
+  - true
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.select_scatter
+package: torch
+pass_rate: 0

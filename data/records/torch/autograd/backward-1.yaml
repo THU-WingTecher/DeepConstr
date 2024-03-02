@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - List[Tensor]
+  - Optional[List[Optional[Tensor]]]
+  - Optional[bool]
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - tensors
+  - grad_tensors
+  - retain_graph
+  - create_graph
+  required:
+  - true
+  - false
+  - false
+  - false
+name: torch.autograd.backward
+package: torch
+pass_rate: 0

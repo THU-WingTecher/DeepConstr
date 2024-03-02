@@ -1,0 +1,33 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[List[int]]
+  - Optional[number]
+  - bool
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - correction
+  - keepdim
+  - out0
+  - out1
+  required:
+  - true
+  - false
+  - false
+  - false
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.std_mean
+package: torch
+pass_rate: 0

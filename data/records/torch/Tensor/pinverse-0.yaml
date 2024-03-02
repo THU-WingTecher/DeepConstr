@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - float
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - rcond
+  required:
+  - true
+  - false
+name: torch.Tensor.pinverse
+package: torch
+pass_rate: 0

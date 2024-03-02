@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - bool
+  - bool
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - boundaries
+  - out_int32
+  - right
+  - out
+  required:
+  - true
+  - true
+  - false
+  - false
+  - true
+name: torch.bucketize
+package: torch
+pass_rate: 0

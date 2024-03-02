@@ -1,0 +1,21 @@
+args:
+  dtype:
+  - int
+  - Tensor
+  - Tensor
+  is_pos:
+  - false
+  - true
+  - false
+  name:
+  - n
+  - self
+  - out
+  required:
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.polygamma
+package: torch
+pass_rate: 0

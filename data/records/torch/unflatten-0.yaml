@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - List[int]
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - sizes
+  required:
+  - true
+  - true
+  - true
+name: torch.unflatten
+package: torch
+pass_rate: 0

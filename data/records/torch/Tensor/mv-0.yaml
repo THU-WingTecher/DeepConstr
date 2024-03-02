@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - vec
+  required:
+  - true
+  - true
+name: torch.Tensor.mv
+package: torch
+pass_rate: 0

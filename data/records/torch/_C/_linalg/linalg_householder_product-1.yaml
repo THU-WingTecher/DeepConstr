@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - input
+  - tau
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch._C._linalg.linalg_householder_product
+package: torch
+pass_rate: 0

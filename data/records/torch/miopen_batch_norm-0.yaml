@@ -1,0 +1,41 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - bool
+  - float
+  - float
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - weight
+  - bias
+  - running_mean
+  - running_var
+  - training
+  - exponential_average_factor
+  - epsilon
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - true
+  - true
+  - true
+error: <class 'NotImplementedError'>
+name: torch.miopen_batch_norm
+package: torch
+pass_rate: 0

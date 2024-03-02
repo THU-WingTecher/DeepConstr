@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - str
+  - str
+  - Optional[bool]
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - grid
+  - mode
+  - padding_mode
+  - align_corners
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+name: torch.nn.functional.grid_sample
+package: torch
+pass_rate: 0

@@ -1,0 +1,40 @@
+args:
+  dtype:
+  - Tensor
+  - str
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - int
+  - bool
+  - Optional[number]
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - data
+  - reduce
+  - lengths
+  - indices
+  - offsets
+  - axis
+  - unsafe
+  - initial
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+name: torch.segment_reduce
+package: torch
+pass_rate: 0

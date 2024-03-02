@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - dims
+  required:
+  - true
+  - true
+name: torch.permute_copy
+package: torch
+pass_rate: 0

@@ -1,0 +1,32 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - List[int]
+  - List[int]
+  - List[int]
+  - List[int]
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - output_size
+  - kernel_size
+  - dilation
+  - padding
+  - stride
+  required:
+  - true
+  - true
+  - true
+  - false
+  - false
+  - false
+name: torch.nn.functional.fold
+package: torch
+pass_rate: 0

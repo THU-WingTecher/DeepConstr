@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - bool
+  - bool
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - A
+  - upper
+  - transpose
+  - unitriangular
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+name: torch.Tensor.triangular_solve
+package: torch
+pass_rate: 0

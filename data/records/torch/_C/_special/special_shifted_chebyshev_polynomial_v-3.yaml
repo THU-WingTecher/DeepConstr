@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - number
+  - Tensor
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - x
+  - n
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch._C._special.special_shifted_chebyshev_polynomial_v
+package: torch
+pass_rate: 0

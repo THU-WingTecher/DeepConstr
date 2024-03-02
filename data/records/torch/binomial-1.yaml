@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[Generator]
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - count
+  - prob
+  - generator
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+error: <class 'TypeError'>
+name: torch.binomial
+package: torch
+pass_rate: 0

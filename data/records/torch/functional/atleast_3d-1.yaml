@@ -1,0 +1,12 @@
+args:
+  dtype:
+  - List[Tensor]
+  is_pos:
+  - true
+  name:
+  - tensors
+  required:
+  - true
+name: torch.functional.atleast_3d
+package: torch
+pass_rate: 0

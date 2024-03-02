@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  - int
+  - number
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - p
+  - dim
+  - maxnorm
+  required:
+  - true
+  - true
+  - true
+  - true
+name: torch.renorm
+package: torch
+pass_rate: 0

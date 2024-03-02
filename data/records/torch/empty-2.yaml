@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - List[int]
+  - Optional[List[str]]
+  - Optional[int]
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - size
+  - names
+  - memory_format
+  - out
+  required:
+  - true
+  - false
+  - false
+  - true
+error: <class 'TypeError'>
+name: torch.empty
+package: torch
+pass_rate: 0

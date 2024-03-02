@@ -1,0 +1,33 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - List[int]
+  - List[int]
+  - int
+  - Optional[List[int]]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - padding
+  - stride
+  - dilation
+  - groups
+  - input_size
+  required:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+error: <class 'NotImplementedError'>
+name: torch._C._nn.mkldnn_reorder_conv2d_weight
+package: torch
+pass_rate: 0

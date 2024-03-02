@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  - number
+  - number
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - alpha
+  - scale
+  - input_scale
+  - out
+  required:
+  - true
+  - false
+  - false
+  - false
+  - true
+name: torch._C._nn.elu
+package: torch
+pass_rate: 0

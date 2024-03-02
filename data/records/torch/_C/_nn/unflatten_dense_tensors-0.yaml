@@ -1,0 +1,17 @@
+args:
+  dtype:
+  - Tensor
+  - List[Tensor]
+  is_pos:
+  - false
+  - true
+  name:
+  - flat
+  - tensors
+  required:
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch._C._nn.unflatten_dense_tensors
+package: torch
+pass_rate: 0

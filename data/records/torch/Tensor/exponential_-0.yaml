@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - float
+  - Optional[Generator]
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - lambd
+  - generator
+  required:
+  - true
+  - false
+  - false
+name: torch.Tensor.exponential_
+package: torch
+pass_rate: 0

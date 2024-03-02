@@ -1,0 +1,17 @@
+args:
+  dtype:
+  - List[Tensor]
+  - List[Tensor]
+  is_pos:
+  - false
+  - false
+  name:
+  - a
+  - b
+  required:
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.eq
+package: torch
+pass_rate: 0

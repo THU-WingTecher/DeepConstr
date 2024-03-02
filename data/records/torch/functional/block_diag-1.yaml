@@ -1,0 +1,15 @@
+args:
+  dtype:
+  - List[Tensor]
+  - Tensor
+  is_pos:
+  - tensors
+  name:
+  - tensors
+  - out
+  required:
+  - true
+  - true
+name: torch.functional.block_diag
+package: torch
+pass_rate: 0

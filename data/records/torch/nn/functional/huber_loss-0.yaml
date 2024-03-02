@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - str
+  - float
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - target
+  - reduction
+  - delta
+  required:
+  - true
+  - true
+  - false
+  - false
+name: torch.nn.functional.huber_loss
+package: torch
+pass_rate: 0

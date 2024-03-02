@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - number
+  - number
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - vec1
+  - vec2
+  - beta
+  - alpha
+  required:
+  - true
+  - true
+  - true
+  - false
+  - false
+name: torch.Tensor.addr_
+package: torch
+pass_rate: 0

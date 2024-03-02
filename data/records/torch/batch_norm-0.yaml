@@ -1,0 +1,44 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - bool
+  - float
+  - float
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - weight
+  - bias
+  - running_mean
+  - running_var
+  - training
+  - momentum
+  - eps
+  - cudnn_enabled
+  required:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - true
+  - true
+  - true
+  - true
+name: torch.batch_norm
+package: torch
+pass_rate: 0

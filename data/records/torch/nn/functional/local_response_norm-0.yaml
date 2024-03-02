@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - float
+  - float
+  - float
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - size
+  - alpha
+  - beta
+  - k
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+name: torch.nn.functional.local_response_norm
+package: torch
+pass_rate: 0

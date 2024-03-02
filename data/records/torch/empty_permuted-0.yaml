@@ -1,0 +1,21 @@
+args:
+  dtype:
+  - List[int]
+  - List[int]
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - size
+  - physical_layout
+  - out
+  required:
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.empty_permuted
+package: torch
+pass_rate: 0

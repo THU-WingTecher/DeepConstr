@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - bool
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - input2
+  - input3
+  - left
+  - transpose
+  required:
+  - true
+  - true
+  - true
+  - false
+  - false
+name: torch.Tensor.ormqr
+package: torch
+pass_rate: 0

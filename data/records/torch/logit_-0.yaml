@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[float]
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - eps
+  required:
+  - true
+  - false
+name: torch.logit_
+package: torch
+pass_rate: 0

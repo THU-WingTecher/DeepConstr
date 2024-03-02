@@ -1,0 +1,37 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - bool
+  - bool
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - LU_data
+  - LU_pivots
+  - unpack_data
+  - unpack_pivots
+  - P
+  - L
+  - U
+  required:
+  - true
+  - true
+  - false
+  - false
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.lu_unpack
+package: torch
+pass_rate: 0

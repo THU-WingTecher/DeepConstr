@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - bool
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - requires_grad
+  required:
+  - true
+  - false
+name: torch.Tensor.requires_grad_
+package: torch
+pass_rate: 0

@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - Optional[Tensor]
+  - Optional[Tensor]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - correction
+  - fweights
+  - aweights
+  required:
+  - true
+  - false
+  - false
+  - false
+name: torch.cov
+package: torch
+pass_rate: 0

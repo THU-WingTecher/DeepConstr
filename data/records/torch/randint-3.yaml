@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - int
+  - int
+  - List[int]
+  - Optional[Generator]
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - low
+  - high
+  - size
+  - generator
+  - out
+  required:
+  - true
+  - true
+  - true
+  - false
+  - true
+name: torch.randint
+package: torch
+pass_rate: 0

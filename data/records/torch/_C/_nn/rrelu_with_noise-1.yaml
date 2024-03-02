@@ -1,0 +1,36 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - number
+  - number
+  - bool
+  - Optional[Generator]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - noise
+  - lower
+  - upper
+  - training
+  - generator
+  - out
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - true
+name: torch._C._nn.rrelu_with_noise
+package: torch
+pass_rate: 0

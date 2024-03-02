@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - bool
+  is_pos:
+  - false
+  - false
+  name:
+  - A
+  - check_errors
+  required:
+  - true
+  - false
+name: torch._C._linalg.linalg_inv_ex
+package: torch
+pass_rate: 0

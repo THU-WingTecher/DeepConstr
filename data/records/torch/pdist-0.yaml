@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - float
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - p
+  required:
+  - true
+  - false
+name: torch.pdist
+package: torch
+pass_rate: 0

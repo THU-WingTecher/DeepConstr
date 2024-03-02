@@ -1,0 +1,32 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - number
+  - number
+  - Optional[Tensor]
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - target
+  - p
+  - margin
+  - weight
+  - reduction
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+name: torch._C._nn.multi_margin_loss
+package: torch
+pass_rate: 0

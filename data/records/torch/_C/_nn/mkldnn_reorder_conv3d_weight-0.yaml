@@ -1,0 +1,33 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - List[int]
+  - List[int]
+  - int
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - padding
+  - stride
+  - dilation
+  - groups
+  - out
+  required:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - true
+error: <class 'TypeError'>
+name: torch._C._nn.mkldnn_reorder_conv3d_weight
+package: torch
+pass_rate: 0

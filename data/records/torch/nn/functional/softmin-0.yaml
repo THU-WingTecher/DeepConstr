@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[int]
+  - int
+  - Optional[int]
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - dim
+  - _stacklevel
+  - dtype
+  required:
+  - true
+  - false
+  - false
+  - false
+name: torch.nn.functional.softmin
+package: torch
+pass_rate: 0

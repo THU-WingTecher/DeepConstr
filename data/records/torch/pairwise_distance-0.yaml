@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - float
+  - float
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - x1
+  - x2
+  - p
+  - eps
+  - keepdim
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+name: torch.pairwise_distance
+package: torch
+pass_rate: 0

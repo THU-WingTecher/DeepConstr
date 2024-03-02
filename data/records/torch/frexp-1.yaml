@@ -1,0 +1,21 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - mantissa
+  - exponent
+  required:
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.frexp
+package: torch
+pass_rate: 0

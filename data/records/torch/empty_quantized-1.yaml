@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - List[int]
+  - Tensor
+  - Optional[int]
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - size
+  - qtensor
+  - memory_format
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+error: <class 'TypeError'>
+name: torch.empty_quantized
+package: torch
+pass_rate: 0

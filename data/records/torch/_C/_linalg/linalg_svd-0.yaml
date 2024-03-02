@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - bool
+  - Optional[str]
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - A
+  - full_matrices
+  - driver
+  required:
+  - true
+  - false
+  - false
+name: torch._C._linalg.linalg_svd
+package: torch
+pass_rate: 0

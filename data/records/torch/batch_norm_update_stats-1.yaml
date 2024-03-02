@@ -1,0 +1,33 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - float
+  - Tensor
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - running_mean
+  - running_var
+  - momentum
+  - out0
+  - out1
+  required:
+  - true
+  - false
+  - false
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.batch_norm_update_stats
+package: torch
+pass_rate: 0

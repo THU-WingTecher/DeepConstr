@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - real
+  - imag
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.complex
+package: torch
+pass_rate: 0

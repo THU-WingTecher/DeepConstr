@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[Tensor]
+  - Optional[bool]
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - gradient
+  - retain_graph
+  - create_graph
+  required:
+  - true
+  - false
+  - false
+  - false
+error: <class 'TypeError'>
+name: torch.autograd.backward
+package: torch
+pass_rate: 0

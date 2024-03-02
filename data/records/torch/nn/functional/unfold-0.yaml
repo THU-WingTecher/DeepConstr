@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - List[int]
+  - List[int]
+  - List[int]
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - kernel_size
+  - dilation
+  - padding
+  - stride
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+name: torch.nn.functional.unfold
+package: torch
+pass_rate: 0

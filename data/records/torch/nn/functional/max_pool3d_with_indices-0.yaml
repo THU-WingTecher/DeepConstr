@@ -1,0 +1,36 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - Optional[List[int]]
+  - List[int]
+  - List[int]
+  - bool
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - kernel_size
+  - stride
+  - padding
+  - dilation
+  - ceil_mode
+  - return_indices
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+name: torch.nn.functional.max_pool3d_with_indices
+package: torch
+pass_rate: 0

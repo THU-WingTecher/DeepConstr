@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - float
+  - bool
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - p
+  - training
+  - inplace
+  required:
+  - true
+  - false
+  - false
+  - false
+name: torch.nn.functional.alpha_dropout
+package: torch
+pass_rate: 0

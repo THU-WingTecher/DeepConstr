@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - int
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dim0
+  - dim1
+  - out
+  required:
+  - true
+  - true
+  - true
+  - true
+name: torch.transpose_copy
+package: torch
+pass_rate: 0

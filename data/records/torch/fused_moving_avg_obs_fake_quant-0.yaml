@@ -1,0 +1,60 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - Tensor
+  - Tensor
+  - Tensor
+  - Tensor
+  - float
+  - int
+  - int
+  - int
+  - bool
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - observer_on
+  - fake_quant_on
+  - running_min
+  - running_max
+  - scale
+  - zero_point
+  - averaging_const
+  - quant_min
+  - quant_max
+  - ch_axis
+  - per_row_fake_quant
+  - symmetric_quant
+  required:
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+  - false
+  - false
+name: torch.fused_moving_avg_obs_fake_quant
+package: torch
+pass_rate: 0

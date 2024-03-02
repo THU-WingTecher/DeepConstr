@@ -7,7 +7,6 @@
 *.tar.gz
 bugs/
 data/debug/
-data/records/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

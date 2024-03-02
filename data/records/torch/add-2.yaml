@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - number
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - other
+  - alpha
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+name: torch.add
+package: torch
+pass_rate: 0

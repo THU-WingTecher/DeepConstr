@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[int]
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - x
+  - N
+  - increasing
+  required:
+  - true
+  - false
+  - false
+name: torch.vander
+package: torch
+pass_rate: 0

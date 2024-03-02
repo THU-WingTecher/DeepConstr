@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - number
+  - Tensor
+  is_pos:
+  - false
+  - false
+  name:
+  - scalar
+  - tensor
+  required:
+  - true
+  - true
+name: torch.result_type
+package: torch
+pass_rate: 0

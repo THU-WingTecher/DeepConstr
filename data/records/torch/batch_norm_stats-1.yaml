@@ -1,0 +1,17 @@
+args:
+  dtype:
+  - Tensor
+  - float
+  is_pos:
+  - false
+  - false
+  name:
+  - input
+  - eps
+  required:
+  - true
+  - true
+error: <class 'NotImplementedError'>
+name: torch.batch_norm_stats
+package: torch
+pass_rate: 0

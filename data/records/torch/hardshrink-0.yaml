@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - lambd
+  required:
+  - true
+  - false
+name: torch.hardshrink
+package: torch
+pass_rate: 0

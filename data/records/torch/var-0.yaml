@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - bool
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - unbiased
+  required:
+  - true
+  - false
+name: torch.var
+package: torch
+pass_rate: 0

@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - List[int]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - k
+  - dims
+  - out
+  required:
+  - true
+  - false
+  - false
+  - true
+error: <class 'TypeError'>
+name: torch.rot90
+package: torch
+pass_rate: 0

@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - float
+  - bool
+  - float
+  - int
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - logits
+  - tau
+  - hard
+  - eps
+  - dim
+  required:
+  - true
+  - false
+  - false
+  - false
+  - false
+name: torch.nn.functional.gumbel_softmax
+package: torch
+pass_rate: 0

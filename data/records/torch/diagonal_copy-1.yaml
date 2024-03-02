@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - int
+  - int
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - offset
+  - dim1
+  - dim2
+  - out
+  required:
+  - true
+  - false
+  - false
+  - false
+  - true
+name: torch.diagonal_copy
+package: torch
+pass_rate: 0

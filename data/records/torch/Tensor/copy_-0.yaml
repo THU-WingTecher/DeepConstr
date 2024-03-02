@@ -1,0 +1,21 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - src
+  - non_blocking
+  required:
+  - true
+  - true
+  - false
+error: <class 'TypeError'>
+name: torch.Tensor.copy_
+package: torch
+pass_rate: 0

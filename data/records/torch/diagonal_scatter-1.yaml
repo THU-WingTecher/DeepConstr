@@ -1,0 +1,33 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - int
+  - int
+  - int
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - src
+  - offset
+  - dim1
+  - dim2
+  - out
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - true
+error: <class 'TypeError'>
+name: torch.diagonal_scatter
+package: torch
+pass_rate: 0

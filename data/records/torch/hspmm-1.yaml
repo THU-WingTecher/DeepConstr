@@ -1,0 +1,17 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - false
+  - false
+  name:
+  - mat1
+  - mat2
+  required:
+  - true
+  - true
+error: <class 'NotImplementedError'>
+name: torch.hspmm
+package: torch
+pass_rate: 0

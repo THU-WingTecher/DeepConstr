@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - List[int]
+  - List[int]
+  - List[int]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - indices
+  - output_size
+  - stride
+  - padding
+  required:
+  - true
+  - true
+  - true
+  - true
+  - true
+name: torch._C._nn.max_unpool3d
+package: torch
+pass_rate: 0

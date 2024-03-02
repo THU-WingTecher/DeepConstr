@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[int]
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - dim
+  required:
+  - true
+  - false
+name: torch.count_nonzero
+package: torch
+pass_rate: 0

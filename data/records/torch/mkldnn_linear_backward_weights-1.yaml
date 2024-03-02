@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - grad_output
+  - input
+  - weight
+  - bias_defined
+  required:
+  - true
+  - true
+  - true
+  - true
+error: <class 'NotImplementedError'>
+name: torch.mkldnn_linear_backward_weights
+package: torch
+pass_rate: 0

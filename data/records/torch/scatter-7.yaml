@@ -1,0 +1,32 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - Tensor
+  - number
+  - str
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - index
+  - value
+  - reduce
+  - out
+  required:
+  - true
+  - true
+  - true
+  - true
+  - true
+  - true
+name: torch.scatter
+package: torch
+pass_rate: 0

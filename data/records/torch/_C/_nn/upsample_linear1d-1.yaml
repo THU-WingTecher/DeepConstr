@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - bool
+  - Optional[float]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - output_size
+  - align_corners
+  - scales
+  required:
+  - true
+  - true
+  - true
+  - false
+name: torch._C._nn.upsample_linear1d
+package: torch
+pass_rate: 0

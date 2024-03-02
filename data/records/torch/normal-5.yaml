@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[Generator]
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - mean
+  - std
+  - generator
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+name: torch.normal
+package: torch
+pass_rate: 0
