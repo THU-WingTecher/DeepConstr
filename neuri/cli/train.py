@@ -23,7 +23,7 @@ from neuri.error import WrongInferenceError
 from neuri.gir import GraphIR
 from neuri.logger import TRAIN_LOG, AUTOINF_LOG, TRAIN_LOG
 from neuri.macro import NNSMITH_BUG_PATTERN_TOKEN
-from neuri.materialize import BugReport, Model, TestCase
+from neuri.materialize import Model
 from neuri.util import mkdir, parse_timestr, set_seed
 
 # Status.csv
@@ -77,13 +77,8 @@ def save_record(record: dict, path: str) -> None:
         os.makedirs(directory, exist_ok=True)
         # raise FileNotFoundError(f"The directory {directory} does not exist.")
     
-    try:
-        with open(path, 'w') as file:
-            yaml.dump(record, file)
-    except FileNotFoundError as e:
-        raise FileNotFoundError(f"The directory {directory} does not exist.") from e
-    except Exception as e:
-        raise Exception(f"An error occurred while saving the record to {path}.") from e
+    with open(path, 'w') as file:
+        yaml.dump(record, file)
 
     print(f"Record saved successfully to {path}.")
 
@@ -219,7 +214,7 @@ class TrainingLoop:
         )
         # set_seed(self.cfg["train"]["seed"])
         # self.ModelType.add_seed_setter()
-        self.executor : Executor = Executor(self.ModelType, cfg["train"]["parallel"])
+        self.executor : Executor = Executor(self.ModelType, parallel = cfg["train"]["simple_eval_asset"])
         self.train_list = self.get_train_list()
         TRAIN_LOG.info(
             f"{len(self.train_list)} opsets wait for inferring"
@@ -400,11 +395,7 @@ class TrainingLoop:
     def get_only_acc_save_path(self, record_path) :
         ## change constraints -> only_acc
         new_path = record_path.replace("constraints", "only_acc")
-        if os.path.exists(new_path) :
-            return new_path
-        else :
-            os.makedirs(new_path, exist_ok=True)
-            return new_path
+        return new_path
     
     def get_retrain_list(self, record, constr_target_map) -> List[Tuple[ErrorMessage, Constraint]] :
         # pass_rate, sorted_err_instances = self.get_pass_rate_and_err_msgs(op_record)
@@ -432,11 +423,17 @@ class TrainingLoop:
                 continue
             self.run(op_record, record_path)
 
+    def load_constr_target_map_from_record(self, record) :
+        """load constr target map from record"""
+        constr_target_map = {}
+        # for constr in self.get_constrs_from_rules(record) :
+        #     constr_target_map.update({constr["target"] : (constr["scores"], Constraint(constr["txt"], constr["cot"], constr["target"], record["args"]["name"], record["args"]["dtype"]))})
+        return constr_target_map
     def run(self, op_record, record_path):
         n_try = 0
         pass_rate = 0
-        record_path =record_path.replace("constraints", "debug") # for debugging
-        op_record['rules'] = [] # for debugging
+        # record_path =record_path.replace("constraints", "debug") # for debugging
+        # op_record['rules'] = [] # for debugging
         constr_target_map : Dict[ErrorMessage, Tuple[Dict[str, float],Constraint]] = {}
         while pass_rate < 100 and n_try < self.cfg["train"]["n_try"] :
             pass_rate, sorted_err_instances = self.get_pass_rate_and_err_msgs(op_record, self.cfg["train"]["eval_asset"])
@@ -502,9 +499,9 @@ class TrainingLoop:
                                     num_of_ex=random.randint(2, 3),
                                     prev_answer=prev_answer)
             
-            # raw_infered = self.inferencer.inference(prompts, context) # for debugging
-            raw_infered = """Error is triggered because the input tensor A must have at least 2 dimensions, but the provided value is a 1-dimensional tensor. To prevent this error from occurring again, we can generate constraints that ensure the input tensor has at least 2 dimensions. We can define the constraint as follows:
-```len(input.shape) >= 2```"""
+            raw_infered = self.inferencer.inference(prompts, context) 
+#             raw_infered = """Error is triggered because the input tensor A must have at least 2 dimensions, but the provided value is a 1-dimensional tensor. To prevent this error from occurring again, we can generate constraints that ensure the input tensor has at least 2 dimensions. We can define the constraint as follows:
+# ```len(input.shape) >= 2```""" # for debugging
             infer_times += 1
             
             # Parse LLM response and generate rules
@@ -536,10 +533,8 @@ class TrainingLoop:
         constr_target_map.update({constr.target : (scores, constr)})
         self.update_record_constr(constr, record, scores)
 
-    def is_special_err_msg(self, errmsg) :
-        lowered = errmsg.lower()
-        if "typeerror" in lowered :
-            return True
+    def is_special_err_msg(self, errmsg : ErrorMessage) -> bool:
+        return errmsg.error_type in [TypeError]
 
 
 @hydra.main(version_base=None, config_path="../config", config_name="main")

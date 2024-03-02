@@ -10,6 +10,7 @@ import yaml
 from neuri.autoinf.instrument.collect import parse_torch_sigs
 from neuri.constrinf import _process_record
 from neuri.constrinf.executor import Executor
+from neuri.error import UnsolverableError
 from neuri.logger import TRAIN_LOG
 from neuri.materialize import Model
 from neuri.abstract.dtype import materalize_dtypes
@@ -49,6 +50,51 @@ def transform_record_for_saving(record: dict) -> dict:
         else:
             transformed[key] = value
     return transformed
+
+def deal_special_case(record) :
+    special_records = {
+        "torch.align_tensors" : {
+            "error" : NotImplementedError
+    },
+        "torch.functional.align_tensors" : {
+            "error" : NotImplementedError
+    },
+        "torch.block_diag" : {
+            "is_pos" : ["tensors"]
+    },
+        "torch.functional.block_diag" : {
+            "is_pos" : ["tensors"]
+    },
+        "torch.broadcast_tensors" : {
+            "is_pos" : ["tensors"]
+    },
+        "torch.functional.broadcast_tensors" : {
+            "is_pos" : ["tensors"]
+    },
+        "torch.cartesian_prod" : {
+            "is_pos" : ["tensors"]
+    },
+        "torch.functional.cartesian_prod" : {
+            "is_pos" : ["tensors"]
+    },
+        "torch.meshgrid" : {
+            "error" : NotImplementedError
+    },
+        "torch.functional.meshgrid" : {
+            "error" : NotImplementedError
+    },
+        "torch._C._nn.unflatten_dense_tensors" : {
+            "error" : UnsolverableError
+    },
+    }
+    if special_records.get(record["name"], None) is not None :
+        new_data = special_records[record["name"]]
+        for key, value in new_data.items() :
+            if key == "error" :
+                record[key] = value
+            elif key == "is_pos" :
+                record["args"]["is_pos"] = value
+
 
 def torch_prepare(save_dir, executor):
     import torch.jit.supported_ops
@@ -129,21 +175,21 @@ def torch_prepare(save_dir, executor):
                     tensor_methods[op_name] = obj
                 save_path = os.path.join(save_dir, f"{op_name.replace('.', '/')}-{cnt}.yaml")
                 prev_op_name = op_name
-                if op_name == 'torch.block_diag' :
-                    pass
-                else : 
+                if os.path.exists(save_path):
                     i_line += 1
-                    continue 
-                # elif os.path.exists(save_path):
-                #     i_line += 1
-                #     continue
+                    continue
                 TRAIN_LOG.info(f"deal with {save_path}")
                 record = gen_record_for_operator(op_name, op_args, is_tensor_method)
-                # save_record(generated_record, save_path)
+                # if "torch.split" in record["name"] :
+                #     pass
+                # else :
+                #     i_line += 1
+                #     continue
                 record['args']['dtype_obj'] = [materalize_dtypes(dtype) for dtype in record['args']['dtype']]
                 record['outputs'] = {'value': []} # Placeholder for the output values
+                deal_special_case(record)
                 constr = []
-                ntimes = 20
+                ntimes = executor.parallel
                 results = executor.execute(ntimes, constr, record=record) 
                 illegal_cnt = 0
                 for res in results : 

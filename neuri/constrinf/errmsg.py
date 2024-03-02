@@ -1,11 +1,11 @@
 import re
 import traceback
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Literal
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 class ErrorMessage:
-    def __init__(self, msg: str, traceback_msg : str, values, choosen_dtype):
+    def __init__(self, msg: str, traceback_msg : str, values, choosen_dtype, package : Literal["torch", "tf"] = "torch"):
         """
         Initialize an instance with error details.
 
@@ -18,12 +18,15 @@ class ErrorMessage:
         if isinstance(msg, Exception) :
             self.error_type = type(msg)
             self.msg = str(msg)
+        else :
+            self.error_type = self.msg
         self.traceback = traceback_msg
         self.values : Dict[str, Any] = values
         self.chooen_dtype : Dict[str, Any] = choosen_dtype
-    
+        self.package = package
+        
     def __repr__(self):
-        return f"ErrMeg({self.get_core_msg()}, {self.values})"
+        return f"{self.error_type}({self.get_core_msg()}, {self.values})"
     
     def get_values_map(self) -> Dict[str, Any]:
         """

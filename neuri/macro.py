@@ -17,13 +17,16 @@ python experiments/evaluate_apis.py  mgen.record_path=$(pwd)/data/constraints/to
 """
 
 """ FUZZING 
-python neuri/cli/fuzz.py fuzz.time=24h mgen.record_path=data/constraints/torch fuzz.root=bugs/torchcomp-fuzz-0221 filter.type=\[\'nan\',\'dup\',\'inf\'\] backend.type=torchcomp model.type=torch fuzz.save_test=bugs/torchcomp-fuzz-0221_record debug.viz=true hydra.verbose=fuzz fuzz.resume=false mgen.method=constrinf mgen.max_nodes=3 mgen.pass_rate=0.6
+python neuri/cli/fuzz.py fuzz.time=24h mgen.record_path=data/constraints/torch fuzz.root=bugs/torchcomp-constrinf-fuzz-0221 filter.type=\[\'nan\',\'dup\',\'inf\'\] backend.type=torchcomp model.type=torch fuzz.save_test=bugs/torchcomp-constrinf-fuzz-0221_record debug.viz=true hydra.verbose=fuzz fuzz.resume=false mgen.method=constrinf mgen.max_nodes=3 mgen.pass_rate=0.6
 
 ./fuzz.sh 5 constrinf          torch torchcomp 4h
 """
+"""FUZZING NEURI
+python neuri/cli/fuzz.py fuzz.time=24h mgen.record_path=data/torch_records fuzz.root=bugs/torchcomp-neuri-fuzz-0221 filter.type=\[\'nan\',\'dup\',\'inf\'\] backend.type=torchcomp model.type=torch fuzz.save_test=bugs/torchcomp-neuri-fuzz-0221_record debug.viz=true hydra.verbose=fuzz fuzz.resume=false mgen.method=neuri mgen.max_nodes=3 mgen.pass_rate=0.6
 
+"""
 """ to_reproduce_code 
-python neuri/materialize/torch/program.py /artifact/bugs/torchcomp-fuzz-0220_final_record torchcomp
+python neuri/materialize/torch/program.py /artifact/bugs/torchcomp-neuri-fuzz-0221_record torchcomp
 """
 
 """train

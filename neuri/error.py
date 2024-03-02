@@ -2,6 +2,12 @@ import logging
 from abc import ABC, abstractmethod
 
 
+class UnsolverableError(Exception):
+    """
+    tensor element constraint
+    """
+
+    pass
 class WrongInferenceError(Exception):
     """The error is raised when the inference is not correct."""
 
