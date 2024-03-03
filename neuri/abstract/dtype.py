@@ -725,6 +725,19 @@ STR_TO_ABS = {
     'sequence': AbsDType.int.to_iter(),
     'sequences': AbsDType.int.to_iter(),
     'optional[number]': [AbsDType.int, AbsDType.none],
+    'optional[int]': [AbsDType.int, AbsDType.none],
+    'optional[float]': [AbsDType.float, AbsDType.none],
+    'optional[bool]': [AbsDType.bool, AbsDType.none],
+    'optional[str]': [AbsDType.str, AbsDType.none],
+    'optional[str]': [AbsDType.complex, AbsDType.none],
+    'optional[tensor]': [AbsTensor(), AbsDType.none],
+    'optional[list[float]]': [AbsDType.float.to_iter(), AbsDType.none],
+    'optional[list[int]]': [AbsDType.int.to_iter(), AbsDType.none],
+    'optional[list[str]]': [AbsDType.str.to_iter(), AbsDType.none],
+    'optional[list[bool]]': [AbsDType.bool.to_iter(), AbsDType.none],
+    'optional[list[complex]]': [AbsDType.complex.to_iter(), AbsDType.none],
+    'optional[list[optional[tensor]]]': [AbsTensor().to_iter(), AbsDType.none],
+    'list[optional[tensor]]': [AbsTensor().to_iter(), AbsDType.none],
     # DType
     #qint
 
