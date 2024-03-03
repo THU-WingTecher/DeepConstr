@@ -3,11 +3,11 @@ args:
   - Tensor
   - int
   - int
-  - Optional[int]
-  - Optional[int]
+  - None
+  - None
   - Optional[Device]
   - Optional[bool]
-  - Optional[int]
+  - None
   is_pos:
   - true
   - false

@@ -2,7 +2,7 @@ args:
   dtype:
   - Tensor
   - number
-  - Optional[int]
+  - None
   - Tensor
   is_pos:
   - true

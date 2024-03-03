@@ -180,11 +180,6 @@ def torch_prepare(save_dir, executor):
                     continue
                 TRAIN_LOG.info(f"deal with {save_path}")
                 record = gen_record_for_operator(op_name, op_args, is_tensor_method)
-                # if "torch.split" in record["name"] :
-                #     pass
-                # else :
-                #     i_line += 1
-                #     continue
                 record['args']['dtype_obj'] = [materalize_dtypes(dtype) for dtype in record['args']['dtype']]
                 record['outputs'] = {'value': []} # Placeholder for the output values
                 deal_special_case(record)
@@ -258,12 +253,9 @@ def custom_split(input_string):
     
     return parts
 
-
 def gen_record_for_operator(op_name, args_str, is_tensor_method, package="torch") :
     """
-    save records of an API to a folder
-    API_name/hash_value.pkl
-
+    Used for the generate records by cli/prepare.py
     {
         'name': 'torch.add',
         'args': {
@@ -279,6 +271,11 @@ def gen_record_for_operator(op_name, args_str, is_tensor_method, package="torch"
 
     }
     """
+    special_kws = [ # kwarg name -> we don't support this object
+        "dtype",
+        "memory_format",
+        "layout"
+    ]
     is_pos_kwargs = [ "self", "tensors"]
     # args_str --> name : dtype=1, Optional
     records = {
@@ -307,6 +304,8 @@ def gen_record_for_operator(op_name, args_str, is_tensor_method, package="torch"
         if arg_str :
             arg_name = arg_str.split(':')[0].strip()
             arg_dtype = arg_str.split(':')[1].split('=')[0].strip()
+            if arg_name in special_kws : # dtype arg name related data type is all wrong
+                arg_dtype = "None"
             if 'Optional' in arg_str or "=" in arg_str :
                 required = False
             else :

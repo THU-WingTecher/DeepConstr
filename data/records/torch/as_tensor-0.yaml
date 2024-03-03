@@ -1,7 +1,7 @@
 args:
   dtype:
   - Tensor
-  - Optional[int]
+  - None
   - Optional[Device]
   is_pos:
   - false

@@ -4,8 +4,8 @@ args:
   - Tensor
   - int
   - float
-  - Optional[int]
-  - Optional[int]
+  - None
+  - None
   - Optional[Device]
   - Optional[bool]
   is_pos:

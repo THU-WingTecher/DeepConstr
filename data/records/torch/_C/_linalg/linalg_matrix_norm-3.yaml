@@ -4,7 +4,7 @@ args:
   - str
   - List[int]
   - bool
-  - Optional[int]
+  - None
   - Tensor
   is_pos:
   - true

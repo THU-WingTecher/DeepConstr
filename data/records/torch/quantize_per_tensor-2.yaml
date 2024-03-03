@@ -3,7 +3,7 @@ args:
   - List[Tensor]
   - Tensor
   - Tensor
-  - int
+  - None
   is_pos:
   - true
   - false

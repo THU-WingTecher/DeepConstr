@@ -1,7 +1,7 @@
 args:
   dtype:
   - List[int]
-  - Optional[int]
+  - None
   - Tensor
   is_pos:
   - false

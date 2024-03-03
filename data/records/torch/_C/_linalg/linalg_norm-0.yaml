@@ -4,7 +4,7 @@ args:
   - Optional[number]
   - Optional[List[int]]
   - bool
-  - Optional[int]
+  - None
   is_pos:
   - true
   - false

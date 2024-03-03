@@ -2,8 +2,8 @@ args:
   dtype:
   - Tensor
   - Tensor
-  - Optional[int]
-  - Optional[int]
+  - None
+  - None
   - Optional[Device]
   - Optional[bool]
   - Optional[bool]

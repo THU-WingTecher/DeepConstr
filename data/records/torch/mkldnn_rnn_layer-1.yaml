@@ -83,7 +83,6 @@ args:
   - true
   - true
   - true
-error: <class 'TypeError'>
 name: torch.mkldnn_rnn_layer
 package: torch
 pass_rate: 0

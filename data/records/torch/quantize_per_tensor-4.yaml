@@ -3,7 +3,7 @@ args:
   - Tensor
   - Tensor
   - Tensor
-  - int
+  - None
   - Tensor
   is_pos:
   - true

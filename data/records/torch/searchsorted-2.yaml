@@ -5,7 +5,7 @@ args:
   - bool
   - bool
   - Optional[str]
-  - Tensor
+  - Optional[Tensor]
   is_pos:
   - false
   - true
