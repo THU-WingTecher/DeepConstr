@@ -82,9 +82,9 @@ train:
   top_k: 10
   max_num_of_seeds: 50
   simple_eval_asset: 1 # parallel num of executor
-  eval_asset: 300
+  eval_asset: 50
   n_infer_per_round: 10
-  str_sim_threshold: 0.8
+  str_sim_threshold: 0.5
   precision_threshold: 100 # 0 ~ 100
 
 llm:
