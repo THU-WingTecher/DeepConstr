@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Literal, Tuple, Type
 import yaml
 from neuri.constrinf import _process_record
 from neuri.constrinf.constr import Constraint, convert_constr_to_executable, convert_dtypes_to_z3s
-from neuri.constrinf.errmsg import ErrorMessage
+from neuri.constrinf.errmsg import ErrorMessage, is_similar, map_error_messages_to_clusters_dynamic
 from neuri.constrinf.executor import Executor
 from neuri.constrinf.inferencer import Inferencer
 import hydra
@@ -19,6 +19,7 @@ from neuri.backends.factory import BackendFactory
 from neuri.constrinf.parser import segment_constr, parse_from_raw_txt
 from neuri.constrinf.prompter import Prompter
 from neuri.constrinf.synthesizer import Synthesizer
+from neuri.constrinf.util import formatted_dict
 from neuri.error import WrongInferenceError
 from neuri.gir import GraphIR
 from neuri.logger import TRAIN_LOG, AUTOINF_LOG, TRAIN_LOG
@@ -254,6 +255,7 @@ class TrainingLoop:
         # Assuming `run` is replaced with `self.execute` as per the revised requirement
         success_count = 0
         error_messages = {}
+        raw_err_msgs = []
         copied_record = copy.deepcopy(record)
         executable_constr = convert_constr_to_executable(copied_record) # unactivated
         # wrapped = wrap(executable_constr)
@@ -271,27 +273,21 @@ class TrainingLoop:
             if success:
                 success_count += 1
             else:
-                errmsg = error_instance.get_core_msg()
-                if errmsg not in error_messages:
-                    error_messages[errmsg] = {'instance': error_instance, 'count': 0}
-                error_messages[errmsg]['count'] += 1
+                msg_key = error_instance.get_core_msg()
+                error_messages[msg_key] = error_instance
+                raw_err_msgs.append(msg_key)
+        
+        dynamic_cluster_mapping = map_error_messages_to_clusters_dynamic(raw_err_msgs)
+        sorted_cluster_mapping = dict(sorted(dynamic_cluster_mapping.items(), key=lambda item: len(item[1]), reverse=True))
 
-        # Calculate success rate
         success_rate = success_count / ntimes if ntimes else 0
-
-        # Process error messages and their frequencies
-        errmsg_counts = {errmsg: details['count'] for errmsg, details in error_messages.items()}
-
-        # Sort error messages by frequency
-        sorted_errmsgs = sorted(errmsg_counts.items(), key=lambda item: item[1], reverse=True)
-
-        sorted_error_instances = [error_messages[errmsg]['instance'] for errmsg, _ in sorted_errmsgs]
-
-        # Log the most frequent error message
-        if sorted_errmsgs:
-            most_frequent_errmsg, count = sorted_errmsgs[0]
-            TRAIN_LOG.info(f"Most frequent error message: {most_frequent_errmsg} with {count}")
-            if self.is_special_err_msg(most_frequent_errmsg):
+        sorted_error_instances = [error_messages[list(li)[0]] for li in sorted_cluster_mapping.values()]
+        
+        if sorted_error_instances:
+            most_frequent_err = sorted_error_instances[0]
+            distributions = {messages[0] : len(messages) for _, messages in sorted_cluster_mapping.items()}
+            TRAIN_LOG.debug(f"Current error distribution :\n {formatted_dict(distributions)}")
+            if self.is_special_err_msg(most_frequent_err):
                 raise Exception("Special error message encountered. Cannot proceed.")
         else:
             TRAIN_LOG.info("No error messages encountered.")
@@ -413,15 +409,19 @@ class TrainingLoop:
                 return True
         raise ValueError(f"no such constraint in record : {txt}")
 
+    def is_trainable(self, record : Dict[str, Any]) :
+        return (
+            record is not None and \
+            record.get("error", None) is None
+        )
     def runs(self) :
         while True :
             record_path = self.select_train_op()
             if record_path is None :
                 break
             op_record = _process_record(record_path)
-            if op_record is None :
-                continue
-            self.run(op_record, record_path)
+            if self.is_trainable(op_record) :
+                self.run(op_record, record_path)
 
     def load_constr_target_map_from_record(self, record) :
         """load constr target map from record"""
@@ -429,6 +429,7 @@ class TrainingLoop:
         for constr in self.get_constrs_from_rules(record) :
             constr_target_map.update({constr["target"] : (constr["scores"], Constraint(constr["txt"], constr["cot"], constr["target"], record["args"]["name"], record["args"]["dtype"]))})
         return constr_target_map
+    
     def run(self, op_record, record_path):
         n_try = 0
         pass_rate = 0

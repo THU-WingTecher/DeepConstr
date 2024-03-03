@@ -1,6 +1,7 @@
 import re
 import traceback
 from typing import Any, Dict, List, Literal
+from sklearn.cluster import KMeans
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -67,6 +68,13 @@ class ErrorMessage:
         res = msg[:end]
         return res
 
+    def get_str_err_type(self) -> str :
+        return str(self.error_type)\
+                .replace("class","")\
+                .replace("<","")\
+                .replace(">","")\
+                .replace("'","")\
+                .strip()
     def get_core_msg(self) -> str :
         if self.msg == "no error" :
             return self.msg
@@ -75,9 +83,9 @@ class ErrorMessage:
             error = self.msg[first_pos:].strip()
             if self.package == 'tf' :
                 error = self.clean_errmsg(error) #tf special
-            return error 
+            return self.get_str_err_type() + ": " + error 
         else :
-            return self.msg 
+            return self.get_str_err_type() + ": " + self.msg 
 
 
 def delete_btw(msg, start_chr, end_chr, include=False):
@@ -138,3 +146,64 @@ def sort_sentences_by_similarity(target_sentence, sentence_list):
     sorted_by_similarity = sorted(paired_with_similarity, key=lambda x: x[1], reverse=True)
 
     return sorted_by_similarity
+
+from sklearn.metrics import silhouette_score
+
+def find_optimal_clusters(data, max_clusters=10):
+    """
+    Finds the optimal number of clusters for KMeans clustering based on the silhouette score.
+
+    Parameters:
+    - data: The TF-IDF matrix of the data.
+    - max_clusters (int): The maximum number of clusters to consider.
+
+    Returns:
+    - int: The optimal number of clusters.
+    """
+    silhouette_scores = []
+    for n_clusters in range(2, min(max_clusters, data.shape[0]) + 1):
+        clusterer = KMeans(n_clusters=n_clusters, random_state=42)
+        cluster_labels = clusterer.fit_predict(data)
+        silhouette_avg = silhouette_score(data, cluster_labels)
+        silhouette_scores.append((n_clusters, silhouette_avg))
+    
+    # Finding the number of clusters with the highest silhouette score
+    optimal_clusters = sorted(silhouette_scores, key=lambda x: x[1], reverse=True)[0][0]
+    return optimal_clusters
+
+from sklearn.metrics import silhouette_score
+
+
+
+def map_error_messages_to_clusters_dynamic(raw_error_messages):
+    """
+    Maps each error message to a cluster based on structural characteristics using TF-IDF and dynamically
+    determined KMeans clustering based on silhouette scores.
+
+    Parameters:
+    - raw_error_messages (list of str): A list containing the raw error messages.
+
+    Returns:
+    - dict: A dictionary where keys are cluster labels and values are lists of error messages belonging to each cluster.
+    """
+    if len(raw_error_messages) < 2:
+        return {"Insufficient data for clustering": raw_error_messages}
+
+    tfidf_vectorizer = TfidfVectorizer(stop_words='english')
+    tfidf_matrix = tfidf_vectorizer.fit_transform(raw_error_messages)
+
+    # Dynamically determining the optimal number of clusters
+    optimal_clusters = find_optimal_clusters(tfidf_matrix, max_clusters=10)
+    km = KMeans(n_clusters=optimal_clusters, random_state=42)
+    km.fit(tfidf_matrix)
+
+    clusters = km.labels_.tolist()
+    cluster_mapping = {}
+    for cluster_label, error_message in zip(clusters, raw_error_messages):
+        if cluster_label not in cluster_mapping:
+            cluster_mapping[cluster_label] = [error_message]
+        else:
+            cluster_mapping[cluster_label].append(error_message)
+
+    return cluster_mapping
+

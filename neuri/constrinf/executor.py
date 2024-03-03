@@ -7,6 +7,7 @@ import traceback
 from typing import Any, Dict, List, Optional, Tuple
 from neuri.autoinf.instrument.op import OpInstance
 from neuri.constrinf import record_args_info
+from neuri.error import InternalError
 from neuri.logger import TRAIN_LOG
 from neuri.specloader.smt import gen_val
 from neuri.constrinf.errmsg import ErrorMessage
@@ -133,7 +134,7 @@ class Executor:
             return results
         except Exception as e:
             TRAIN_LOG.error(f"Error in execute: {e}, maybe child process core dumped")
-            err_instance = ErrorMessage(MemoryError(), traceback.format_exc(), {}, {})
-            return [[False, err_instance] for _ in range(ntimes)]
+            err_instance = ErrorMessage(InternalError(), traceback.format_exc(), {}, {})
+            return [[False, err_instance]]
 
 Exception
