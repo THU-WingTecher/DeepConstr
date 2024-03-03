@@ -35,7 +35,6 @@ args:
   - true
   - true
   - true
-error: <class 'TypeError'>
 name: torch._C._linalg.linalg_lstsq
 package: torch
 pass_rate: 0

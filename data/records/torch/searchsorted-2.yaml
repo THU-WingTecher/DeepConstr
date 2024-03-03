@@ -5,7 +5,7 @@ args:
   - bool
   - bool
   - Optional[str]
-  - Optional[Tensor]
+  - Tensor
   is_pos:
   - false
   - true
@@ -27,7 +27,6 @@ args:
   - false
   - false
   - false
-error: <class 'TypeError'>
 name: torch.searchsorted
 package: torch
 pass_rate: 0
