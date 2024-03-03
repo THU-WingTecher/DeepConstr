@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Literal, Tuple, Type
 
 import yaml
-from neuri.constrinf import process_record
+from neuri.constrinf import _process_record
 from neuri.constrinf.constr import Constraint, convert_constr_to_executable, convert_dtypes_to_z3s
 from neuri.constrinf.errmsg import ErrorMessage
 from neuri.constrinf.executor import Executor
@@ -418,7 +418,7 @@ class TrainingLoop:
             record_path = self.select_train_op()
             if record_path is None :
                 break
-            op_record = process_record(record_path)
+            op_record = _process_record(record_path)
             if op_record is None :
                 continue
             self.run(op_record, record_path)
@@ -426,8 +426,8 @@ class TrainingLoop:
     def load_constr_target_map_from_record(self, record) :
         """load constr target map from record"""
         constr_target_map = {}
-        # for constr in self.get_constrs_from_rules(record) :
-        #     constr_target_map.update({constr["target"] : (constr["scores"], Constraint(constr["txt"], constr["cot"], constr["target"], record["args"]["name"], record["args"]["dtype"]))})
+        for constr in self.get_constrs_from_rules(record) :
+            constr_target_map.update({constr["target"] : (constr["scores"], Constraint(constr["txt"], constr["cot"], constr["target"], record["args"]["name"], record["args"]["dtype"]))})
         return constr_target_map
     def run(self, op_record, record_path):
         n_try = 0

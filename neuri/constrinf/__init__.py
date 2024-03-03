@@ -34,6 +34,7 @@ def _process_record(file_path: str, test_pool: list = []) -> dict:
     if test_pool and record["name"] not in test_pool:
         return None
     record['args']['dtype_obj'] = [materalize_dtypes(dtype) for dtype in record['args']['dtype']]
+    record['args']['value'] = [None] * len(record['args']["name"]) # Placeholder for the input values
     record['outputs'] = {'value': []} # Placeholder for the output values
     return record
     
@@ -89,7 +90,7 @@ def gen_inst_with_records(data_dir: str, test_pool: list = []):
     for root, _, files in os.walk(data_dir):
         for file in files:
             path = os.path.join(root, file)
-            record = process_record(path, test_pool)
+            record = _process_record(path, test_pool)
             if record:
                 yield record
 
