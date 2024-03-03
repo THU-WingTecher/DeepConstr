@@ -729,7 +729,7 @@ STR_TO_ABS = {
     'optional[float]': [AbsDType.float, AbsDType.none],
     'optional[bool]': [AbsDType.bool, AbsDType.none],
     'optional[str]': [AbsDType.str, AbsDType.none],
-    'optional[str]': [AbsDType.complex, AbsDType.none],
+    'optional[complex]': [AbsDType.complex, AbsDType.none],
     'optional[tensor]': [AbsTensor(), AbsDType.none],
     'optional[list[float]]': [AbsDType.float.to_iter(), AbsDType.none],
     'optional[list[int]]': [AbsDType.int.to_iter(), AbsDType.none],
