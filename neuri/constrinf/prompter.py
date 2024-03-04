@@ -4,6 +4,7 @@ import random
 
 from neuri.constrinf.constr import Constraint
 from neuri.constrinf.errmsg import sort_sentences_by_similarity
+from neuri.constrinf.util import formatted_dict
 
 PROMPT_EXAMPLE_PATH = "data/prompts/cot.json"
 
@@ -58,7 +59,7 @@ Q : try to make constraints {correct_discription} so that it can make the whole 
     def dynamic_template(self, err_msg, cot, answers) : 
        return f"""Q : {err_msg}\nAnswers : {cot}\n```{answers}```"""
     def task_introduce(self) :
-        return """You are a logical relationship constraints extractor. Thinking step by step how to prevent the error from occur again."""
+        return """You are tasked with extracting logical relationship constraints to prevent a given error from recurring. This involves a step-by-step analysis to identify and correct the issue."""
     def Constraint_grammar(self) : 
         return f"""<symbol> ::= {self.keys_print} | type(<symbol>) | len(<symbol>) | <symbol>[<int>] | <symbol>.dim | <symbol>.shape
 <ops> ::= + | - | * | / | == | != | > | >= | < | <= | in | not in"""
@@ -69,8 +70,8 @@ Q : try to make constraints {correct_discription} so that it can make the whole 
         examples = '\n'.join([self.dynamic_template(errmsg, self.err_db[errmsg]['cot'], self.err_db[errmsg]['answers']) for errmsg in sorted_li])
         return examples
     def question(self, target, args_values) :
-        
-        return f"""Q : relate this values({args_values}) to generate constraints that do not trigger -> {target} \nAnswers :"""  
+
+        return f"""Q : Based on the given runtime information({formatted_dict(args_values)}), formulate constraints that prevent this error -> {target} \nAnswers :"""  
     
     def gen_infer_history(self, ans_history : str) : 
         if ans_history is None or len(ans_history) == 0 :

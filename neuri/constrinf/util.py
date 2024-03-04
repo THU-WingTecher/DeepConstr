@@ -6,4 +6,4 @@ def load_yaml(path) :
         return yaml.safe_load(f)
 
 def formatted_dict(dict : Dict[Any, Any]) -> str:
-    return "\n".join([f"{str(k)} : {str(v)}" for k, v in dict.items()])
+    return "\n".join([f"{str(k)} : {str(v)}" for k, v in dict.items() if v is not None])

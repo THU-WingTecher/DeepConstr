@@ -311,7 +311,7 @@ class TrainingLoop:
         infered, cot = parse_from_raw_txt(raw_infered)
         dtypes = target.get_dtypes()
         for rule_txt in infered.split(';'):
-            generated.append(rule_txt)
+            generated.append(rule_txt.strip())
             generated.extend(segment_constr(rule_txt))
         
         for rule_txt in generated:
