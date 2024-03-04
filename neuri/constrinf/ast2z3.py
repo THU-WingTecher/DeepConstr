@@ -131,6 +131,7 @@ class Ast2z3(SMTFuncs) :
             # Assuming comp is a dictionary with keys "target", "iter", "ifs"
             target = self.gen_z3_obj(comp["target"], arg_map, no_const=True)
             iter = self.gen_z3_obj(comp["iter"], arg_map, ret_wrapper=True)
+            self.set_flag(self.get_name(iter), must_iter=True)
             ifs = [self.gen_z3_obj(if_clause, arg_map) for if_clause in comp["ifs"]]
             # Check if iteration is over a list/array or a range
             if isinstance(iter, (ArrWrapper, TensorWrapper, z3.ArrayRef)) :
@@ -319,13 +320,13 @@ class Ast2z3(SMTFuncs) :
                                   container=self.other_flags,
                                   is_tensor_dtype=True)
 
-    def gen_basic_constr(self, op, *args) : 
+    def gen_basic_constr(self, op, *args, **kwargs) : 
         if len(args) > 1 : 
             # if not all(
             #     self.is_sym(arg) or is_wrapper(arg) for arg in args
             # ) : 
             args = list(args)
-            args[0] = self.gen_z3_obj(args[0], self.arg_map, no_const=True, ret_wrapper = False)  
+            args[0] = self.gen_z3_obj(args[0], self.arg_map, ret_wrapper = False, **kwargs)  
             
             left_name = self.get_name(args[0]) if self.is_sym(args[0]) or is_wrapper(args[0]) else args[0]
             right_name = self.get_name(args[1]) if self.is_sym(args[1]) or is_wrapper(args[1]) else args[1]
@@ -430,6 +431,7 @@ class Ast2z3(SMTFuncs) :
             #     raise ValueError(f"Unexpected error : {traceback.format_exc()}")
         AUTOINF_LOG.info(f"{self.txt} ==> {result}")
         return result
+    
     def gen_z3_obj_from_all_defined_field(self, val, arg_map, ret_wrapper=True, no_const=False) :
         if not self.is_in_argnames(val) and is_dtype_constant(val) : # TODO : very inefficient(every conversion need to check)
             return get_dtype_z3_obj(val)
@@ -440,51 +442,52 @@ class Ast2z3(SMTFuncs) :
                             ret_wrapper=ret_wrapper,
                             no_const=no_const
                             )
-    def _convert(self, node, arg_map):
+        
+    def _convert(self, node, arg_map, *args, **kwargs):
         if isinstance(node, ast.BoolOp):
             op = type(node.op).__name__
-            values = [self._convert(value, arg_map) for value in node.values]
+            values = [self._convert(value, arg_map, *args, **kwargs) for value in node.values]
             return self.gen_bool_constr(op, *values)
         elif isinstance(node, ast.UnaryOp):
             op = type(node.op).__name__
-            operand = self._convert(node.operand, arg_map)
+            operand = self._convert(node.operand, arg_map, *args, **kwargs)
             if is_same_ast_name(op, ast.Not) :
                 return self.gen_bool_constr(op, operand)
             else : 
-                return self.gen_basic_constr(op, operand)
+                return self.gen_basic_constr(op, operand, **kwargs)
         elif isinstance(node, ast.Compare):
             results = []
-            left = self._convert(node.left, arg_map)
+            left = self._convert(node.left, arg_map, *args, **kwargs)
             for op, right_node in zip(node.ops, node.comparators):
-                right = self._convert(right_node, arg_map)
+                right = self._convert(right_node, arg_map, *args, **kwargs)
                 op_type = type(op).__name__
                 op_type, right = self.make_compatiable(left, op_type, right)
-                results.append(self.gen_basic_constr(op_type, left, right))
+                results.append(self.gen_basic_constr(op_type, left, right, **kwargs))
             return merge_constr(results)
         elif isinstance(node, ast.Call):
-            args = [self._convert(arg, arg_map) for arg in node.args]
+            func_args = [self._convert(arg, arg_map) for arg in node.args]
             if isinstance(node.func, ast.Attribute):
-                attribute_value = self._convert(node.func.value, arg_map)
-                return self.gen_func_obj(node.func.attr, attribute_value, *args)
+                attribute_value = self._convert(node.func.value, arg_map, *args, **kwargs)
+                return self.gen_func_obj(node.func.attr, attribute_value, *func_args)
             else:
                 func_name = node.func.id
                 assert func_name in SMTFuncs.function_names, f"Unsupported function {func_name}"
-                return self.gen_func_obj(func_name, *args)
+                return self.gen_func_obj(func_name, *func_args)
             
         elif isinstance(node, ast.Attribute):
-            value = self._convert(node.value, arg_map)
+            value = self._convert(node.value, arg_map, *args, **kwargs)
             return self.gen_func_obj(node.attr, value)
         elif isinstance(node, ast.BinOp):
             op_type = type(node.op).__name__
-            left = self._convert(node.left, arg_map)
-            right =self._convert(node.right, arg_map)
-            return self.gen_basic_constr(op_type, left, right)
+            left = self._convert(node.left, arg_map, *args, **kwargs)
+            right =self._convert(node.right, arg_map, *args, **kwargs)
+            return self.gen_basic_constr(op_type, left, right, **kwargs)
         elif isinstance(node, ast.Subscript):
             # Handle negative indices and slicing
             if isinstance(node.slice, ast.Index):
-                slice_value = self._convert(node.slice.value, arg_map)
+                slice_value = self._convert(node.slice.value, arg_map, *args, **kwargs)
                 slice_value = self.gen_z3_obj(slice_value, arg_map, no_const=True)
-                obj = self._convert(node.value, arg_map)
+                obj = self._convert(node.value, arg_map, *args, **kwargs)
                 obj_name = self.get_name(obj)
                 self.set_min_len(obj_name, slice_value)
                 self.set_flag(obj_name, must_iter=True)
@@ -493,32 +496,33 @@ class Ast2z3(SMTFuncs) :
                 return val[slice_value]
             elif isinstance(node.slice, ast.Slice):
                 # Slicing, e.g., a[1:] or a[:-1]
-                start = self._convert(node.slice.lower, arg_map) if node.slice.lower else None
-                end = self._convert(node.slice.upper, arg_map) if node.slice.upper else None
-                array = self._convert(node.value, arg_map)
+                start = self._convert(node.slice.lower, arg_map, *args, **kwargs) if node.slice.lower else None
+                end = self._convert(node.slice.upper, arg_map, *args, **kwargs) if node.slice.upper else None
+                array = self._convert(node.value, arg_map, *args, **kwargs)
                 return self.gen_sliced_obj(array, arg_map, start, end)
 
         elif isinstance(node, (ast.GeneratorExp, ast.ListComp)):
             # Handle generator expressions
-            elt = self._convert(node.elt, arg_map)
-            generators = [self._convert(gen, arg_map) for gen in node.generators]
+            
+            elt = self._convert(node.elt, arg_map, no_const = True, *args, **kwargs)
+            generators = [self._convert(gen, arg_map, *args, **kwargs) for gen in node.generators]
             generator_exp = {"type": "GeneratorExp", "element": elt, "generators": generators}
             return self.gen_exp_constr(generator_exp, arg_map)
         elif isinstance(node, ast.comprehension):
             # Handle comprehension part of generator expression
-            target = self._convert(node.target, arg_map)
-            iter = self._convert(node.iter, arg_map)
-            ifs = [self._convert(if_clause, arg_map) for if_clause in node.ifs]
+            target = self._convert(node.target, arg_map, *args, **kwargs)
+            iter = self._convert(node.iter, arg_map, *args, **kwargs)
+            ifs = [self._convert(if_clause, arg_map, *args, **kwargs) for if_clause in node.ifs]
             comprehension = {"type": "comprehension", "target": target, "iter": iter, "ifs": ifs}
             return comprehension
         elif isinstance(node, ast.IfExp):
             # Handle IfExp (Ternary Conditional Expression)
-            test = self._convert(node.test, arg_map)
-            body = self._convert(node.body, arg_map)
-            orelse = self._convert(node.orelse, arg_map)
+            test = self._convert(node.test, arg_map, *args, **kwargs)
+            body = self._convert(node.body, arg_map, *args, **kwargs)
+            orelse = self._convert(node.orelse, arg_map, *args, **kwargs)
             return f"({body} if {test} else {orelse})"
         elif isinstance(node, (ast.List, ast.Tuple)):
-            return [self._convert(elem, arg_map) for elem in node.elts]
+            return [self._convert(elem, arg_map, *args, **kwargs) for elem in node.elts]
         elif isinstance(node, ast.Name):
             return self.gen_z3_obj_from_all_defined_field(node.id, arg_map, ret_wrapper=True)
         elif isinstance(node, ast.Constant):

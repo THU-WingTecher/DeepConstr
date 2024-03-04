@@ -25,6 +25,7 @@ def test_with_given_constraints(constrs, arg_names, dtypes) :
             print(constr, func_name)
         print(f"Constraint: {constr}\nMimic Z3: {result}\n")
     return all_results
+
 def test_whole_constraints(dir_path = None ) :
 
     if dir_path is None :
@@ -82,9 +83,11 @@ def main(cfg: DictConfig):
         [AbsTensor.to_iter()],
         ]
     test_constraints = [
-        "all((a[i]>1 and a[i]<4) for i in a[2:])",
-        "c[0].shape[0] == b[0]",
-        'a[-1] > b[-2]'
+        "all(i > len(c) and i < len(c) for i in a)",
+        "alld > len(c)",
+        # "all((a[i]>1 and a[i]<4) for i in a[2:])",
+        # "c[0].shape[0] == b[0]",
+        # 'a[-1] > b[-2]'
     ]
     constrs = test_with_given_constraints(test_constraints, arg_names, dtypes)
     test_smt(arg_names, [d[0] for d in dtypes], constrs, noise_prob=0.3)
