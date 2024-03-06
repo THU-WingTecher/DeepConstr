@@ -3,7 +3,7 @@ import logging
 import random
 import string
 import z3
-from neuri.abstract.dtype import DTYPE_GEN_ALL, DTYPE_NOT_SUPPORTED, AbsDType, AbsIter, AbsLiteral, DType
+from neuri.abstract.dtype import DTYPE_GEN_ALL, DTYPE_NOT_SUPPORTED, AbsDType, AbsIter, DType
 from neuri.autoinf.instrument.op import AbsValue
 from neuri.constrinf.smt_funcs import SMTFuncs, TensorArrWrapper
 from neuri.logger import SMT_LOG
@@ -39,7 +39,7 @@ def tensor_default_constr(
     return pos_constraints(tensor_shape, length, include_zero)
 
 def gen_default_constr(
-        args_types : Dict[str, Union[AbsDType, AbsTensor, AbsLiteral]],
+        args_types : Dict[str, Union[AbsDType, AbsTensor]],
         args_lengths : Dict[str, Optional[int]],
         allow_zero_rate : float = 0.5,
                         ) -> List[z3.ExprRef] :
@@ -61,11 +61,8 @@ def gen_default_constr(
             arr_wrapper = args_types[arg_name].z3()(arg_name)
             for idx in range(len(args_lengths[arg_name])) :
                 rules.append(pos_constraints(arr_wrapper.get_arg_attr(idx, "shape"), args_lengths[arg_name][idx], include_zero))
-
-        elif isinstance(args_types[arg_name], AbsLiteral) :
-            rules.append(SMTFuncs.in_(args_types[arg_name].z3()(arg_name), args_types[arg_name].choices))
         else :
-            continue 
+            pass
     return rules
 
 def add_noises(args_types, args_lengths, noise_prob):
@@ -106,11 +103,8 @@ def gen_noise(arg_name, arg_type, args_length, noise_prob):
     noises = []
     if arg_type is AbsDType.none :
         return noises
-    if isinstance(arg_type, AbsLiteral) and should_generate_noise(noise_prob):
-        literal_noise = gen_radnom_list_choice_constr(arg_type.z3()(arg_name), arg_type.choices)
-        noises.append(literal_noise)
-
-    elif isinstance(arg_type, AbsTensor):
+    
+    if isinstance(arg_type, AbsTensor):
         if isinstance(arg_name, z3.ExprRef): # TensorARR
             shape_var = TensorZ3.shape(arg_name)
             dtype_var = TensorZ3.dtype(arg_name)
@@ -273,7 +267,7 @@ def sym_to_conc(model, z3_arg, args_types, args_values, args_lengths, ret_len) :
         else :
             raise NotImplementedError(f"Unsupported type {z3_arg.range()}")
 def process_len(
-        args_types : Dict[str, Union[AbsDType, AbsTensor, AbsLiteral]],
+        args_types : Dict[str, Union[AbsDType, AbsTensor]],
         args_lengths : Dict[str, Optional[int]],
         solver : z3.Solver,
         noise : float = 0.0,
@@ -358,7 +352,7 @@ def gen_val(num_of_try, *args, **kwargs) -> Optional[Dict[str, Any]] :
     return values
 
 def _gen_val(
-          args_types : Dict[str, Union[AbsDType, AbsTensor, AbsLiteral]],
+          args_types : Dict[str, Union[AbsDType, AbsTensor]],
           constrs : List[Callable] = [], 
           noise_prob : float = 0.0,
           allow_zero_length_rate : float = 0.5,
@@ -429,8 +423,6 @@ def _random_gen(datatype):
         value = random.uniform(0, 1)
     elif datatype == AbsDType.str:
         value = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
-    elif isinstance(datatype, AbsLiteral):
-        value = random.choices(datatype.choices)[0]
     else:
         raise NotImplementedError(f"Unsupported datatype {datatype}")
     return value
@@ -452,7 +444,7 @@ def random_gen(abs, length=None):
             length = random_gen_arr_len()
         arg_type = abs.get_arg_dtype()
         return [random_gen(arg_type) for _ in range(length)]
-    elif isinstance(abs, (AbsDType, AbsLiteral)):
+    elif isinstance(abs, AbsDType):
         return _random_gen(abs)
     else:
         raise NotImplementedError(f"Unsupported type {abs}")
@@ -467,52 +459,6 @@ def clip_unbound_val(value, max = None, min = None) :
     else :
         return value 
 
-# def assign_otheres(args_values : Dict[str, Any], 
-#                    args_types : Dict[str, Union[AbsDType, AbsTensor, AbsLiteral]], 
-#                    args_lengths : Dict[str, Optional[int]]) -> Dict[str, Any]:
-    
-#     for arg_name in args_types.keys() :
-#         if args_values.get(arg_name) is None :
-#             if isinstance(args_types[arg_name], AbsTensor) :
-#                 args_values[arg_name] = RandomGenerator.materalrize_abs(args_types[arg_name])
-#             if arg_name in args_lengths.keys() and args_lengths[arg_name] is not None :
-#                 args_values[arg_name] = [RandomGenerator.materalrize_abs(args_types[arg_name].get_arg_dtype()) for _ in range(args_lengths[arg_name])]
-#             else :
-#                 args_values[arg_name] = RandomGenerator.materalrize_abs(args_types[arg_name])
-
-#     return args_values
-
-
-# def gen_sufficient_condition(equations, suff_conds_needed : Dict[str, bool]) -> List[z3.ExprRef] :
-#     """
-#     Generate sufficient condition for the given equation
-#     a[r1] == b[r2] -> r1 >= 0 and r1 < len(a) and r2 >= 0 and r2 < len(b)
-#     """     
-#     res = []   
-#     if any(z3.is_app_of(equations, op) for op in COMPARISON_KINDS) : 
-#         res.extend(_gen_sufficient_condition(equations, suff_conds_needed))
-#     elif any(z3.is_app_of(equations, op) for op in BOOL_KINDS) : 
-#         for equation in equations.children() : 
-#             res.extend(gen_sufficient_condition(equation, suff_conds_needed))
-#     return res
-
-# def _gen_sufficient_condition(equation, suff_conds_needed : Dict[str, bool]) -> List[z3.ExprRef] :
-#     """
-#     Generate sufficient condition for the given equation
-#     a[r1] == b[r2] -> r1 >= 0 and r1 < len(a) and r2 >= 0 and r2 < len(b)
-#     """        
-
-#     res = []
-#     if any(z3.is_app_of(equation, op) for op in COMPARISON_KINDS) : 
-#         for subscript in equation.children() : # left, right
-#             if z3.is_app_of(subscript, z3.Z3_OP_SELECT) :
-#                 subscript_tensor, subscript_idx = subscript.children()
-#                 subscript_len = gen_len_obj(subscript_tensor, suff_conds_needed)
-#                 if subscript_len is None : continue
-#                 subscript_sufficient = z3.And(subscript_idx >= 0, subscript_idx < subscript_len)
-#                 res.append(subscript_sufficient)
-#     return res
-
 def to_conc_py_val(model, z3_obj: z3.ExprRef) -> Any:
     if isinstance(z3_obj, z3.IntNumRef):
         return handle_int_sort(model, z3_obj)
@@ -524,7 +470,3 @@ def to_conc_py_val(model, z3_obj: z3.ExprRef) -> Any:
         return handle_string_sort(model, z3_obj)
     else :
         raise NotImplementedError
-
-# def process_tensor_rank(z3_arg: z3.FuncDecl, model: z3.Model) -> int:
-#     rank = model.evaluate(TensorZ3.rank(model[z3_arg]))
-#     return rank.as_long()

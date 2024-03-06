@@ -303,7 +303,7 @@ class AbsDType(Enum):
     complex = "complex"
     none = "None"
     def __repr__(self) -> str:
-        return "AbsDType:" + str(self.name)
+        return str(self.name)
     def init(self) -> None :
         pass 
     def is_iter(self) -> bool :
@@ -317,15 +317,8 @@ class AbsDType(Enum):
             AbsDType.complex: 'complex',
             AbsDType.none: 'None',
         }[self]
-    def _z3(self) -> "z3.Dtype" :
-        return {
-            AbsDType.bool: BoolSort(),
-            AbsDType.int: IntSort(),
-            AbsDType.float: RealSort(),
-            AbsDType.complex: RealSort(),
-            AbsDType.str: StringSort(),
-            AbsDType.none: None,
-        }[self]
+    def dump(self) -> Any :
+        return self.to_str()
     def z3(self) -> "z3.Dtype" :
         from neuri.constrinf.ast2z3 import load_z3_const
         z3_load_func = partial(load_z3_const, var_type=self.to_str(), is_array=False)
@@ -356,23 +349,17 @@ class AbsIter():
         self.values = values
         self.length = len(values)
         self.arg_type = values[0]() if isinstance(values[0], Callable) else values[0]
-        self._values = values
-        self._length = len(values)
-        self._arg_type = values[0]
-    def init(self) : 
-        self.values = self._values
-        self.length = self._length
-        self.arg_type =self._arg_type
-
     def set_length(self, length : int) :
         self.length = length
         self.values = [self.arg_type for i in range(self.length)]
+    def dump(self) -> Any :
+        return f"list[{self.arg_type.to_str()}]"
     def is_iter(self) -> bool :
         return True
     def get_arg_dtype(self) : 
         return self.arg_type
     def __repr__(self) -> str:
-        return f"AbsIter:{self.arg_type}:{self.length}"
+        return f"List:{self.arg_type}:{self.length}"
     def to_str(self) -> str:
         return f"list[{self.arg_type.to_str()}]"
     def z3(self) -> "z3.Dtype" :
@@ -390,29 +377,6 @@ class AbsIter():
                                var_type=self.arg_type.to_str(), 
                                is_array=True)
         return z3_load_func
-    
-class AbsLiteral() :
-    def __init__ (self, choices : List[str]):
-        self.choices = choices 
-    def init(self) : pass 
-    def is_iter(self) -> bool :
-        return False 
-    def __repr__(self) -> str:
-        return f"Literal:{self.choices}"
-    def to_str(self) -> str:
-        return f"Literal{list(self.choices)}"
-    def get_arg_dtype(self) :
-        return self.choices
-    def z3(self) -> "z3.Dtype" :
-
-        # def literal(arg_name) :
-        #     DType = Datatype('literal')
-        #     for choice in self.choices :
-        #         DType.declare(choice)
-        #     DType = DType.create()
-        #     return [Const(arg_name, DType), DType]
-        # return literal
-        return AbsDType.str.z3()
 
 # "DTYPE_GEN*" means data types used for symbolic generation.
 # "DTYPE_GEN_ALL" is surely a subset of all types but it is
@@ -521,6 +485,8 @@ class AbsTensor:
     @staticmethod
     def from_numpy(x: "np.ndarray") -> "AbsTensor":
         return AbsTensor(list(x.shape), str(x.dtype))
+    def dump(self) -> Any :
+        return AbsTensor.to_str()
     @staticmethod
     def to_str() -> Any :
         return 'tensor'
@@ -566,9 +532,9 @@ class AbsTensor:
     def __repr__(self) -> str:
 
         if self.dtype is None :
-            return f"AbsTensor<null[{str(len(self.possible_dtypes))}]>{str(self.shape)}"
+            return f"Tensor<null[{str(len(self.possible_dtypes))}]>{str(self.shape)}"
         else :
-            return f"AbsTensor<{self.dtype.short()}>{str(self.shape)}"
+            return f"Tensor<{self.dtype.short()}>{str(self.shape)}"
 
     def pretty(self) -> str:
         return f"{self.dtype.short()}{self.shape}"
@@ -909,10 +875,6 @@ def typing_to_abs(dtype : Any) -> Any :
     elif origin in [List, collections.abc.Sequence, list] :
         list_type = get_args(dtype)[0]
         return AbsIter(values = [typing_to_abs(list_type)])
-
-    elif origin is Literal :
-        args = get_args(dtype)
-        return AbsLiteral(args)
     elif origin is None :
         if dtype in TYPE_TO_ABS.keys() :
             return TYPE_TO_ABS[dtype]
@@ -997,8 +959,6 @@ def materalize_dtypes(dtypes : str, merge_tensor : bool = True) -> List[Any] :
                 pass
             else :
                 final.append(abs)
-        elif isinstance(abs, (AbsIter, AbsLiteral)) :
-            final.append(abs)
         else :
             pass
     if len(to_merge) > 0 :
