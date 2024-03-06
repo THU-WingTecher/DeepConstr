@@ -76,15 +76,18 @@ def main(cfg: DictConfig):
     test_with_given_constraints(test_constraints, arg_names, dtypes)
     test_smt(arg_names, [d[0] for d in dtypes], constrs, noise_prob=0.3)
     """
-    arg_names = ['a', 'b','c']
+    arg_names = ['a', 'b','c','d']
     dtypes = [
         [AbsDType.int.to_iter()],
         [AbsDType.int.to_iter()],
         [AbsTensor.to_iter()],
+        [AbsDType.str],
         ]
     test_constraints = [
-        "all(i > len(c) and i < len(c) for i in a)",
-        "alld > len(c)",
+        "d in ['batch', 'layer', 'instance']",
+        # "d < len(self.shape) for d in c"
+        # "all(i > len(c) and i < len(c) for i in a)",
+        # "alld > len(c)",
         # "all((a[i]>1 and a[i]<4) for i in a[2:])",
         # "c[0].shape[0] == b[0]",
         # 'a[-1] > b[-2]'

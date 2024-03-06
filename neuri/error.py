@@ -24,20 +24,12 @@ class ConstraintError(Exception):
 
     pass
 
-class IncompatiableConstrError(Exception):
-    """The error is raised when the constraint is not compatiable with the current dtype.
-    For example, the constraint is X[0] a float but the dtype is int.    
-    """
-
-    pass
-
 class IncorrectConstrError(Exception):
     """
     The error is raised when the constraint is not structurally correct.
     """
 
     pass
-
 class BaseChecker(ABC):
     @classmethod
     @abstractmethod

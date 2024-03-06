@@ -47,9 +47,11 @@ def transform_record_for_saving(record: dict) -> dict:
     """
     transformed = {}
     for key, value in record.items():
-        if key == 'name':
-            transformed['title'] = value
-        elif key == 'args':
+        if key == 'args':
+            transformed["args"] = {k : v for k, v in record['key'].items() if k != "value"}
+        elif key == "rules" :
+            transformed["rules"] = [constr.dump() for constr in record["rules"]]
+        elif key == "outputs" :
             pass
         else:
             transformed[key] = value
@@ -426,8 +428,8 @@ class TrainingLoop:
     def load_constr_target_map_from_record(self, record) :
         """load constr target map from record"""
         constr_target_map = {}
-        for constr in self.get_constrs_from_rules(record) :
-            constr_target_map.update({constr["target"] : (constr["scores"], Constraint(constr["txt"], constr["cot"], constr["target"], record["args"]["name"], record["args"]["dtype"]))})
+        # for constr in self.get_constrs_from_rules(record) :
+        #     constr_target_map.update({constr["target"] : (constr["scores"], Constraint(constr["txt"], constr["cot"], constr["target"], record["args"]["name"], record["args"]["dtype"]))})
         return constr_target_map
     
     def run(self, op_record, record_path):
@@ -512,8 +514,8 @@ class TrainingLoop:
                                                       )
             # Evaluate and optimize generated rules
             result = synthesizer.run(new_rules)
-            # Update tolerance, history, and select the best rule based on results
-            solved, tolerance, highest_prev, prev_answer = self.update_tolerance_and_history(result, tolerance, highest_prev, prev_answer)
+            if result is not None :
+                solved, tolerance, highest_prev, prev_answer = self.update_tolerance_and_history(result, tolerance, highest_prev, prev_answer)
         
         # Finalize training session and handle rule selection
         return self.finalize_training_session(highest_prev, orig_record, constr_target_map, synthesizer, prev_answer)

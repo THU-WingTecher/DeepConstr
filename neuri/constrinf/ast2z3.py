@@ -8,7 +8,7 @@ import z3
 from typing import *
 from neuri.constrinf.ast_tool import *
 from neuri.constrinf.smt_funcs import *
-from neuri.error import IncompatiableConstrError, WrongInferenceError
+from neuri.error import IncorrectConstrError, WrongInferenceError
 from neuri.logger import AUTOINF_LOG
 
 def get_bool_operator(astop : str): 
@@ -144,7 +144,7 @@ class Ast2z3(SMTFuncs) :
                     ifs = change_val_from_expr(ifs, target, iter[target])
                 generator["element"] = change_val_from_expr(generator["element"], target, iter[target])
             elif isinstance(iter, z3.ArithRef) : 
-                raise IncompatiableConstrError(f"{iter} should be Array, but got Int")
+                raise IncorrectConstrError(f"{iter} should be Array, but got Int")
             else:
                 # Case: Iteration over a range
                 lower_bound, upper_bound, step = iter
@@ -246,6 +246,8 @@ class Ast2z3(SMTFuncs) :
             ast_tree = self.parse(cleaned_txt)
             related_args = identify_related_args(ast_tree, arg_names)
             self.update_related_args(related_args)
+        except TypeError as e:
+            AUTOINF_LOG.warning(f"Unsupported format {cleaned_txt})")
         except IncorrectConstrError as e :
             AUTOINF_LOG.warning(f"{e}")
         except WrongInferenceError as e :
@@ -344,7 +346,7 @@ class Ast2z3(SMTFuncs) :
             args = self.get_syms_from_wrappers(*args)
             res = get_operator(op)(*args)
         except :
-            raise IncompatiableConstrError(f"INCOMPATIABLE : {op}, {args}\n{traceback.format_exc()}")
+            raise IncorrectConstrError(f"INCOMPATIABLE : {op}, {args}\n{traceback.format_exc()}")
         return res
     
     def gen_sliced_obj(self, obj, arg_map, start = None, end = None) :
@@ -424,7 +426,7 @@ class Ast2z3(SMTFuncs) :
                 if result is not None and not no_suff:
                     result = self.conn_suff_conds(result, z3_type_objs)        
                 break
-            except IncompatiableConstrError as e :
+            except IncorrectConstrError as e :
                 AUTOINF_LOG.warning(f"{e}")
                 continue
             # except :

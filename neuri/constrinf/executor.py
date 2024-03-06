@@ -1,4 +1,3 @@
-
 from concurrent.futures import ProcessPoolExecutor
 import functools
 from multiprocessing import Manager, Pool
@@ -8,7 +7,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from neuri.autoinf.instrument.op import OpInstance
 from neuri.constrinf import record_args_info
 from neuri.error import InternalError
-from neuri.logger import TRAIN_LOG
+from neuri.logger import MGEN_LOG
 from neuri.specloader.smt import gen_val
 from neuri.constrinf.errmsg import ErrorMessage
 
@@ -49,7 +48,7 @@ def worker(model, record, noise=0.8, allow_zero_length_rate=0.1, allow_zero_rate
     for i_arg, arg_name in enumerate(record['args']['name']):
         if record['args']['dtype_obj'][i_arg] is None :
             chosen_dtype[arg_name] = None
-            TRAIN_LOG.warning(f"Unidentiable dtype for {arg_name} : {record['args']['dtype'][i_arg]}")
+            MGEN_LOG.warning(f"Unidentiable dtype for {arg_name} : {record['args']['dtype'][i_arg]}")
         elif len(record['args']['dtype_obj'][i_arg]) > 0:
             chosen_dtype[arg_name] = random.choice(record['args']['dtype_obj'][i_arg])
         else:
@@ -73,7 +72,7 @@ def worker(model, record, noise=0.8, allow_zero_length_rate=0.1, allow_zero_rate
             concretized_values[key] = [v.concretize(inst.input_symb_2_value, only_shape=True) if hasattr(v, 'concretize') else v for v in values[key]]
         else :
             concretized_values[key] = values[key].concretize(inst.input_symb_2_value, only_shape=True) if hasattr(values[key], 'concretize') else values[key]
-    TRAIN_LOG.debug(f"Concretized values of {record['name']}: {concretized_values}")
+    MGEN_LOG.debug(f"Concretized values of {record['name']}: {concretized_values}")
     try:
         # Assuming record_args_info is a function to log or record argument info
         # self.record_args_info(record, values)  # Placeholder for actual logging or recording
@@ -91,6 +90,14 @@ class Executor:
     def __init__(self, model, parallel=8) :
         self.model = model
         self.parallel = parallel
+
+    def execute(self, ntimes, constraints, *args, **kwargs) -> Optional[List[Tuple[bool, ErrorMessage]]]:
+        MGEN_LOG.info(f"Executing {ntimes} times")
+        set_global_constraints(constraints) # to be used in worker(parallel execution)
+        res = self.parallel_execute(ntimes, *args, **kwargs) \
+            if self.parallel != 1 else self._execute(ntimes, *args, **kwargs)
+        clear_global_constraints()
+        return res
     def _execute(self, ntimes, *args, **kwargs) -> Optional[List[Tuple[bool, ErrorMessage]]]:
         results = []
         unable_to_gen_tor = 4
@@ -105,7 +112,7 @@ class Executor:
                 unable_to_gen_tor = 4
                 results.append(res)
         return results
-    def execute(self, ntimes, constraints, *args, **kwargs) -> Optional[List[Tuple[bool, ErrorMessage]]]:
+    def parallel_execute(self, ntimes, *args, **kwargs) -> Optional[List[Tuple[bool, ErrorMessage]]]:
         """
         ctypes pickling problem.
         To support parallel execution, 
@@ -123,18 +130,13 @@ class Executor:
         and error_messages is a dictionary mapping error messages to their corresponding argument values.
         """
         try :
-            TRAIN_LOG.info(f"Executing {ntimes} times")
-            set_global_constraints(constraints) # to be used in worker(parallel execution)
             with ProcessPoolExecutor(max_workers=self.parallel) as executor:
                 # Generate a list of future tasks
                 worker_fn = functools.partial(worker, self.model, *args, **kwargs)
                 futures = [executor.submit(worker_fn) for _ in range(ntimes)]
                 results = [future.result() for future in futures]
-            clear_global_constraints()
             return results
         except Exception as e:
-            TRAIN_LOG.error(f"Error in execute: {e}, maybe child process core dumped")
+            MGEN_LOG.error(f"Error in execute: {e}, maybe child process core dumped")
             err_instance = ErrorMessage(InternalError(), traceback.format_exc(), {}, {})
             return [[False, err_instance]]
-
-Exception

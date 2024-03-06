@@ -19,6 +19,26 @@ class Constraint:
         else :
             self.z3expr = None
 
+    @staticmethod
+    def load(data) :
+        errmsg = ErrorMessage.load(data["target"])
+        dtypes = errmsg.get_dtypes()
+        return Constraint(
+            data["txt"],
+            data["cot"],
+            ErrorMessage.load(data["target"]),
+            data["arg_names"],
+            dtypes
+        )
+    
+    def dump(self) :
+        return {
+            "txt" : self.txt,
+            "cot" : self.cot,
+            "target" : self.target.dump(),
+            "arg_names" : self.arg_names,
+        }
+    
     def __repr__(self) -> str:
         return f"Constr({self.txt})"
     
@@ -92,14 +112,13 @@ def convert_constr_to_executable(record, rule_cnt = None) -> List[Callable] :
     rules = record.get('rules', [])
     for rule in rules :
         CONSTR_LOG.debug(f"rule : {rule['txt']}")
-        converter = Ast2z3(record['args']['name'], record['args']['dtype'], rule['txt'], record['name'])
-        rule = converter.convert()
+        constr = Constraint.load(rule)
+        rule = constr.z3()
         if rule is None : 
             CONSTR_LOG.warning(f"rule generation Failed : {rule}")
             # raise ValueError(f"rule generation Failed : {rule}")
             continue
         
-        CONSTR_LOG.debug(f"{converter.pretty_flags()}")
         exec_rules.append(rule)
     if rule_cnt is not None :
         rule_cnt["cnt"] += len(exec_rules)

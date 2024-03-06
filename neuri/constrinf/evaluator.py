@@ -1,14 +1,16 @@
 import functools
+import logging
 from typing import Callable, Union, List, Tuple, Dict, Any, Literal
 from logger import TRAIN_LOG
 import copy
 from neuri.constrinf.constr import Constraint, convert_dtypes_to_z3s
-from neuri.constrinf.errmsg import is_similar
+from neuri.constrinf.errmsg import ErrorMessage, is_similar, map_error_messages_to_clusters_dynamic
 from neuri.constrinf.executor import Executor
+from neuri.constrinf.util import formatted_dict
 
 class Evaluator() :
     def __init__(self, 
-                 target : str,
+                 target : ErrorMessage,
                  constr : Constraint,
                  record : Dict[str, Any],
                  executor : Executor,
@@ -18,7 +20,7 @@ class Evaluator() :
         self.target = target 
         self.constr = constr
         self.record = copy.deepcopy(record)
-        self.record["args"]["dtype"] = [[dtype] for dtype in self.record["args"]["dtype"]]
+        self.record["args"]["dtype_obj"] = [[dtype] for dtype in self.target.get_dtypes()]
         self.cfg = cfg
         self.execute = functools.partial(executor.execute, 
                                         noise = self.cfg["noise"],
@@ -101,32 +103,37 @@ class Evaluator() :
         solved = 0
         unsolved = 0
         ungen = 0
+        target_cluster = None
+        raw_err_msgs = [self.target.get_core_msg()]
+        error_messages = {self.target.get_core_msg() : self.target}
         temp_constrs = copy.deepcopy(self.record["rules"])
         temp_constrs.append(constr.get_executable())
         results = self.execute(record=self.record, constraints=temp_constrs, ntimes=num_of_check)
-        if results is None :
-            TRAIN_LOG.info(f"This Rule interfere generation : {constr.txt}")
-            return False 
-
-        for res in results :
-            if res is None :
-                ungen+=1
-            else :
-                success, errmsg = res
-                if success :
-                    ##FN_case
-                    TRAIN_LOG.debug(f'###Changed : No error occured with {errmsg.get_values_map()}')
-                    solved+=1
-                elif self.is_same(errmsg.get_core_msg(), self.target.get_core_msg()) == False : 
-                    TRAIN_LOG.debug(f'###Changed : Diff error with {errmsg.get_values_map()}')
-                    TRAIN_LOG.info(f'Changed {self.target.get_core_msg()} -> {errmsg.get_core_msg()}')
-                    solved+=1
-                else :
-                    ##FP_case
-                    self.latest_errmsg = errmsg
-                    TRAIN_LOG.debug(f'!!!!UNChanged : Same error with {errmsg.get_values_map()}')
-                    TRAIN_LOG.info(f'UNChanged {self.target} -> {errmsg.get_core_msg()}')
-                    unsolved+=1
+        assert num_of_check == len(results)
         
-        TRAIN_LOG.info(f"Solved : {solved}, Unsolved : {unsolved}, Unable to generate : {ungen}")
+        for result in results :
+            if result is None :
+                ungen+=1
+            else:
+                success, error_instance = result
+                msg_key = error_instance.get_core_msg()
+                error_messages[msg_key] = error_instance
+                raw_err_msgs.append(msg_key)
+        dynamic_cluster_mapping = map_error_messages_to_clusters_dynamic(raw_err_msgs)
+
+        for key, values in dynamic_cluster_mapping.items() :
+            for value in values :
+                if value == self.target.get_core_msg() :
+                    target_cluster = key 
+                    break
+            if target_cluster is not None : break
+
+        unsolved = sum([1 for msg in raw_err_msgs if msg not in dynamic_cluster_mapping[target_cluster]])
+        solved = sum([1 for msg in raw_err_msgs if msg in dynamic_cluster_mapping[target_cluster]])
+        if TRAIN_LOG.getEffectiveLevel()  <= logging.DEBUG:
+            sorted_cluster_mapping = dict(sorted(dynamic_cluster_mapping.items(), key=lambda item: len(item[1]), reverse=True))
+            distributions = {messages[0] : len(messages) for _, messages in sorted_cluster_mapping.items()}
+            TRAIN_LOG.debug(f"Current error distribution :\n {formatted_dict(distributions)}")
+
+        TRAIN_LOG.info(f"Solved: {solved}, Unsolved: {unsolved}, Unable to generate: {ungen}")
         return solved, unsolved

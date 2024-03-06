@@ -147,7 +147,8 @@ class Synthesizer:
 
         results = self.find_optimal_constrs(queue)
         self.update_seeds(results)
-        return self.load_high_quality_constrs(top_k=1, return_score=True)[0]
+        res = self.load_high_quality_constrs(top_k=1, return_score=True) 
+        return res[0] if res else None
     
     def find_optimal_constrs(self,
             queue : List[Constraint], 

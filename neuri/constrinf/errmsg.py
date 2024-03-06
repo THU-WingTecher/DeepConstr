@@ -5,6 +5,9 @@ from sklearn.cluster import KMeans
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
+from neuri.abstract.dtype import materalize_dtypes
+from neuri.constrinf.util import formatted_dict
+
 class ErrorMessage:
     def __init__(self, msg: str, traceback_msg : str, values, choosen_dtype, package : Literal["torch", "tf"] = "torch"):
         """
@@ -15,6 +18,7 @@ class ErrorMessage:
         :param kwargs: The keyword arguments associated with the error.
         """
         self.error_type = None 
+        self.values = None
         self.msg = msg
         if isinstance(msg, Exception) :
             self.error_type = type(msg)
@@ -22,12 +26,27 @@ class ErrorMessage:
         else :
             self.error_type = self.msg
         self.traceback = traceback_msg
-        self.values : Dict[str, Any] = values
+        if values is not None :
+            self.values : Dict[str, Any] = values
         self.chooen_dtype : Dict[str, Any] = choosen_dtype
         self.package = package
-        
+    
+    def dump(self) :
+        return {
+            "msg" : self.msg,
+            "traceback" : self.traceback,
+            "choosen_dtype" : {name : dtype.dump() for name, dtype in self.chooen_dtype.items()},
+            "package" : self.package
+        }
+    @staticmethod
+    def load(data) :
+        return ErrorMessage(data["msg"], 
+                            data["traceback"],
+                            data["values"], 
+                            {name : materalize_dtypes(dtype) for name, dtype in data["choosen_dtype"].items()}, 
+                            data["package"])
     def __repr__(self):
-        return f"{self.error_type}({self.get_core_msg()}, {self.values})"
+        return f"{self.error_type}({self.get_core_msg()})[{formatted_dict(self.get_values_map())}]"
     
     def get_values_map(self) -> Dict[str, Any]:
         """
@@ -36,6 +55,9 @@ class ErrorMessage:
         :return: A tuple containing the error message, args, and kwargs.
         """
         return self.values
+    
+    def get_summarized(self) -> str :
+        return f"{self.get_core_msg()}[{formatted_dict(self.get_values_map())}]"
     
     def get_dtypes(self) -> List[Any] :
         return list(self.chooen_dtype.values())

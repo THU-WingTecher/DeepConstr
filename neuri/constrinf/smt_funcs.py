@@ -1,6 +1,6 @@
 import z3
 from typing import *
-from neuri.error import IncompatiableConstrError, IncorrectConstrError
+from neuri.error import IncorrectConstrError
 import operator as op
 ###### TENSOR DTYPE DEINITION ######
 
@@ -351,6 +351,8 @@ def load_z3_const(name, var_type, is_array=False):
                                     TensorZ3.shape)
         else :
             return TensorWrapper(z3.Const(name, TensorZ3), TensorZ3, TensorZ3.shape, TensorZ3.rank)
+    elif var_type == "None":
+        return None
     else:
         raise ValueError("Unsupported variable type")
 
@@ -412,6 +414,7 @@ class SMTFuncs:
             return False
     @classmethod 
     def is_iterable(cls, v) :
+        if not hasattr(v, "sort") : return False
         return cls._find_sort_by_id(
             v.sort().get_id(), pool = [
                                         IntArr,
@@ -430,19 +433,21 @@ class SMTFuncs:
     
     @classmethod 
     def is_int(cls, v) :
+        if not hasattr(v, "sort") : return False
         return cls._find_sort_by_id(v.sort().get_id(), pool = [z3.IntSort(), z3.RealSort()]) is not None 
     
     @classmethod 
     def is_str(cls, v) :
+        if not hasattr(v, "sort") : return False
         return cls._find_sort_by_id(v.sort().get_id(), pool = [z3.StringSort()]) is not None 
     
     @classmethod
     def type(cls, v) : 
-        raise IncompatiableConstrError(f"type function not supported for now.")
+        raise IncorrectConstrError(f"type function not supported for now.")
     
     @classmethod
     def isinstance(cls, v, *args) : 
-        raise IncompatiableConstrError(f"isinstance function not supported for now.")
+        raise IncorrectConstrError(f"isinstance function not supported for now.")
     
     @staticmethod
     def sort(v) : 
@@ -554,7 +559,7 @@ class SMTFuncs:
             datatype = cls._find_datatype_by_decl_id(v.decl().range().get_id())
 
         if datatype is None :
-            raise IncompatiableConstrError(f"Unsupported datatype : {v.sort()} - {v.decl().name()}")
+            raise IncorrectConstrError(f"Unsupported datatype : {v.sort()} - {v.decl().name()}")
         else : 
             obj, name = datatype
             v = v.arg(0) if is_attr else v
@@ -571,7 +576,7 @@ class SMTFuncs:
    
     @classmethod 
     def T(cls, v) : 
-        raise IncompatiableConstrError(f"T function not supported for now.")
+        raise IncorrectConstrError(f"T function not supported for now.")
         assert isinstance(v, z3.ArrayRef) 
         len_var = cls.len(v) 
 
