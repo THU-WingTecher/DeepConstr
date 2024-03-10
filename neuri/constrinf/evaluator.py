@@ -44,7 +44,6 @@ class Evaluator() :
         return is_similar(msg1, msg2, threshold=self.cfg['str_sim_threshold'])
 
     def assess_TP(self, num_of_check=20) :
-        TRAIN_LOG.info(f"###Checking TP")
         # self.prompter.collect_control(FP=True, FN=False)
         res = self.evaluate(self.constr, num_of_check=num_of_check)
         if res is False : 
@@ -56,11 +55,10 @@ class Evaluator() :
         TP_ratio = solved/num_of_check
         return TP_ratio
     def handle_unable_to_gen(self) :
-        TRAIN_LOG.info(f"###Unable to generate")
+        TRAIN_LOG.info(f"Unable to generate")
         self.gen_interfered = True
         return 0
     def assess_FN(self,num_of_check=20) :
-        TRAIN_LOG.info(f"###Checking FN")
         FN_ratio = 0
         opposed = self.constr.gen_opposed()
         # self.prompter.collect_control(FN=True, FP=False)
@@ -96,8 +94,7 @@ class Evaluator() :
             self.f1_score = 0
         else :
             self.f1_score = 2 * self.precision*self.recall/(self.precision+self.recall)
-        TRAIN_LOG.info(f"Score of Rule : {self.constr.txt}")
-        TRAIN_LOG.info(f"### precision : {round(self.precision,2)}%, recall : {round(self.recall,2)}%, F1 : {round(self.f1_score,2)}%")
+
         return self.f1_score
     def evaluate(self, constr : Constraint, num_of_check : int =10) : 
         solved = 0

@@ -431,7 +431,7 @@ class Ast2z3(SMTFuncs) :
                 continue
             # except :
             #     raise ValueError(f"Unexpected error : {traceback.format_exc()}")
-        AUTOINF_LOG.info(f"{self.txt} ==> {result}")
+        # AUTOINF_LOG.info(f"{self.txt} ==> {result}")
         return result
     
     def gen_z3_obj_from_all_defined_field(self, val, arg_map, ret_wrapper=True, no_const=False) :

@@ -72,7 +72,7 @@ class Inferencer() :
         
         # if update :
         #     self.update_setting(random.choice(self.settings))
-        LLM_LOG.info(f'### Inferencing with {self.model}\{self.args} \nSystem : \n {contexts} \nPrompts : \n {prompts} \n')
+        LLM_LOG.info(f'Inferencing with {self.model}\{self.args} \nSystem : \n {contexts} \nPrompts : \n {prompts} \n')
         client = openai.OpenAI(
             api_key=os.getenv('OPENAI_API_KEY1'),
             timeout=self.setting['timeout']

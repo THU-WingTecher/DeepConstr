@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Literal
 from sklearn.cluster import KMeans
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-
+import warnings
 from neuri.abstract.dtype import materalize_dtypes
 from neuri.constrinf.util import formatted_dict
 
@@ -183,14 +183,17 @@ def find_optimal_clusters(data, max_clusters=10):
     - int: The optimal number of clusters.
     """
     silhouette_scores = []
-    for n_clusters in range(2, min(max_clusters, data.shape[0]) + 1):
-        clusterer = KMeans(n_clusters=n_clusters, random_state=42)
-        cluster_labels = clusterer.fit_predict(data)
-        silhouette_avg = silhouette_score(data, cluster_labels)
-        silhouette_scores.append((n_clusters, silhouette_avg))
-    
-    # Finding the number of clusters with the highest silhouette score
-    optimal_clusters = sorted(silhouette_scores, key=lambda x: x[1], reverse=True)[0][0]
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        for n_clusters in range(2, min(max_clusters, data.shape[0]) + 1):
+            clusterer = KMeans(n_clusters=n_clusters, random_state=42, n_init="auto")
+            cluster_labels = clusterer.fit_predict(data)
+            if len(set(cluster_labels)) == 1:
+                return 1  # Indicates clustering is not meaningful
+            silhouette_avg = silhouette_score(data, cluster_labels)
+            silhouette_scores.append((n_clusters, silhouette_avg))
+        # Finding the number of clusters with the highest silhouette score
+        optimal_clusters = sorted(silhouette_scores, key=lambda x: x[1], reverse=True)[0][0]
     return optimal_clusters
 
 from sklearn.metrics import silhouette_score
@@ -216,7 +219,7 @@ def map_error_messages_to_clusters_dynamic(raw_error_messages):
 
     # Dynamically determining the optimal number of clusters
     optimal_clusters = find_optimal_clusters(tfidf_matrix, max_clusters=10)
-    km = KMeans(n_clusters=optimal_clusters, random_state=42)
+    km = KMeans(n_clusters=optimal_clusters, random_state=42, n_init="auto")
     km.fit(tfidf_matrix)
 
     clusters = km.labels_.tolist()
