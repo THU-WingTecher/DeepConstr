@@ -3,6 +3,7 @@ from typing import Callable, Any, List, Tuple, Dict, Optional, Union, Literal
 from neuri.constrinf.constr import Constraint, conn_rule_txt
 from neuri.constrinf.evaluator import Evaluator
 from neuri.constrinf.smt_funcs import is_same_constr, is_implies, has_same_rule
+from neuri.constrinf.util import SPLITER
 
 
 OR = " or "
@@ -49,14 +50,17 @@ class Synthesizer:
         # Placeholder: Calculate F1, precision, and recall for the given constraint
         scores = {}
         evaluator = Evaluator(self.target, constraint, self.record, self.executor, self.cfg)
-        if self.goal_is_acc() :
-            evaluator.get_precision(num_of_check=self.cfg['simple_eval_asset'] if skim else self.cfg['eval_asset'])
-            scores["precision"] = evaluator.precision
-        else :
-            evaluator.get_f1(num_of_check=self.cfg['simple_eval_asset'] if skim else self.cfg['eval_asset'])
-            scores["precision"] = evaluator.precision
-            scores["recall"] = evaluator.recall
-            scores["f1_score"] = evaluator.f1_score
+        TRAIN_LOG.info(f"Evaluating [[{constraint.txt}]] ::: Z3 [[{constraint.z3expr}]]")
+        # if self.goal_is_acc() :
+        #     evaluator.get_precision(num_of_check=self.cfg['simple_eval_asset'] if skim else self.cfg['eval_asset'])
+        #     scores["precision"] = evaluator.precision
+        # else :
+        evaluator.get_f1(num_of_check=self.cfg['simple_eval_asset'] if skim else self.cfg['eval_asset'])
+        scores["precision"] = evaluator.precision
+        scores["recall"] = evaluator.recall
+        scores["f1_score"] = evaluator.f1_score
+        TRAIN_LOG.info(f"Score of Rule : {self.constr.txt}")
+        TRAIN_LOG.info(f"prec : {round(scores['precision'], 2)}%, recall : {round(scores['recall'], 2)}%, F1 : {round(scores['f1_score'], 2)}%")
         return scores
     
     def synthesize_with_semi_complete(self, constraints : List[Constraint]) -> Constraint:
@@ -157,7 +161,7 @@ class Synthesizer:
         
         res = []
         found_complete = False
-        TRAIN_LOG.debug(f'to_test(skim={skim}) : {", ".join([c.txt for c in queue])}')
+        TRAIN_LOG.debug(f'finding optimal constr(skim={skim}){SPLITER}{"\n".join([c.txt for c in queue])}')
         while queue :
             constraint = queue.pop()
             self.update_tried(constraint)

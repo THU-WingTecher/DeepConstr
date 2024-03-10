@@ -244,9 +244,6 @@ class TrainingLoop:
         """
         li = []
         root_path = self.cfg["train"]["record_path"] 
-        if module is not None :
-            raise NotImplementedError("module is not implemented")
-        
         for root, _, files in os.walk(root_path):
             for file in files:
                 if file.endswith(".yaml"):
@@ -419,12 +416,14 @@ class TrainingLoop:
     def runs(self) :
         while True :
             record_path = self.select_train_op()
+            record_path = "data/records/torch/adaptive_avg_pool1d-0.yaml"
             if record_path is None :
                 break
             op_record = _process_record(record_path)
             if self.is_trainable(op_record) :
                 self.run(op_record, record_path)
 
+            self.finalize_infering()
     def load_constr_target_map_from_record(self, record) :
         """load constr target map from record"""
         constr_target_map = {}

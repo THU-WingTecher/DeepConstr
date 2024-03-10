@@ -106,6 +106,7 @@ class Executor:
             res = worker_fn()
             if res is None :
                 unable_to_gen_tor -= 1
+                results.append(res)
                 if unable_to_gen_tor == 0 :
                     return None
             else :
