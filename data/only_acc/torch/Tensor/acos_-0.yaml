@@ -22,7 +22,7 @@ rules:
       msg: result type Float can't be cast to the desired output type Int
       package: torch
     txt: self.dtype == torch.float32
-  - f1_score: 98.03921568627452
-    overall_score: 54.01960784313726
+  - f1_score: 98.52216748768473
+    overall_score: 100
     precision: 100.0
-    recall: 96.15384615384615
+    recall: 97.0873786407767

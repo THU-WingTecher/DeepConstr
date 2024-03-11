@@ -13,4 +13,24 @@ args:
   - true
 name: torch.Tensor.__and__
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: The error message states that the "bitwise_and_cpu" operation is not implemented
+      for 'Float' data type. In this case, the inputs 'self' and 'other' are both
+      of type 'Float' (Tensor<f32>). To prevent this error, the data types of 'self'
+      and 'other' should be restricted to one of the allowed data types for the "bitwise_and_cpu"
+      operation, which are ['Bool', 'UInt8', 'Int8', 'UInt16', 'Int16', 'Int32', 'Int64'].
+    target:
+      choosen_dtype:
+        other: int
+        self: tensor
+      msg: '"bitwise_and_cpu" not implemented for ''Float'''
+      package: torch
+    txt: '
+
+      (dtype(self) in [''Bool'', ''UInt8'', ''Int8'', ''UInt16'', ''Int16'', ''Int32'',
+      ''Int64''])'
+  - f1_score: 98.19967266775778
+    overall_score: 54.09983633387889
+    precision: 100.0
+    recall: 96.46302250803859

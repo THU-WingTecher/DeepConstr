@@ -30,7 +30,7 @@ rules:
     txt: dtype(self) in ["half", "int16", "int32", "int64", "uint8", "uint16", "uint32",
       "uint64"] and dtype(other) in ["half", "int16", "int32", "int64", "uint8", "uint16",
       "uint32", "uint64"]
-  - f1_score: 93.03201506591336
-    overall_score: 51.51600753295668
+  - f1_score: 93.16081330868762
+    overall_score: 100
     precision: 100.0
-    recall: 86.9718309859155
+    recall: 87.19723183391004

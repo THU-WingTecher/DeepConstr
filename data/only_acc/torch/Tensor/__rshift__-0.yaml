@@ -26,7 +26,7 @@ rules:
       msg: '"rshift_cpu" not implemented for ''Float'''
       package: torch
     txt: (dtype(self) != 'Float') and (dtype(other) != 'Float')
-  - f1_score: 68.90982503364738
-    overall_score: 39.45491251682369
+  - f1_score: 68.57962697274031
+    overall_score: 100
     precision: 100.0
-    recall: 52.56673511293635
+    recall: 52.183406113537124

@@ -1,0 +1,17 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.Tensor.__or__
+package: torch
+pass_rate: 0.0
+rules: []
