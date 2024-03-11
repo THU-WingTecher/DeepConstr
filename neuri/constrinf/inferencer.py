@@ -5,6 +5,7 @@ from typing import Dict, Any, List, Tuple
 import os 
 import openai
 from logger import LLM_LOG
+from neuri.constrinf.util import formatted_dict
 
 load_dotenv(override=True)
 
@@ -77,7 +78,7 @@ class Inferencer() :
 
         start = time.time()
         
-        LLM_LOG.info(f'Inferencing with {self.model}\{self.args} \nSystem : \n {contexts} \nPrompts : \n {prompts} \n')
+        LLM_LOG.info(f'Inferencing with {self.model}\{formatted_dict(self.args, split=", ")} \nSystem :\n{contexts}\nPrompts :\n{prompts}\n')
         client = openai.OpenAI(
             api_key=os.getenv('OPENAI_API_KEY1'),
             timeout=self.setting['timeout']

@@ -5,7 +5,8 @@ from typing import Callable, Dict, Any, List, Literal, Optional, Tuple, Union
 from neuri.constrinf.errmsg import ErrorMessage
 
 from neuri.logger import CONSTR_LOG
-
+from z3 import Solver
+_checker = Solver()
 class Constraint:
     def __init__(self, txt, cot, target, arg_names, dtypes) :
         self.txt = txt
@@ -63,8 +64,11 @@ class Constraint:
         result = converter.convert(no_suff=True)
         if result is None or result == True :
             return False 
-        else :
-            return True
+        try :
+            _checker.add(result)
+            return True 
+        except :
+            return False
     
     def z3(self, arg_names=None, dtypes : List[AbsDType]=None) :
         if arg_names is None :

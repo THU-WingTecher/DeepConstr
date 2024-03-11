@@ -236,6 +236,10 @@ class TrainingLoop:
         """
         get operator yaml file path
         """
+        def sort_key(file_name):
+            base_name, index_with_extension = file_name.split('-')[0], file_name.split('-')[1]
+            index = index_with_extension.replace('.yaml', '')
+            return base_name, index
         with open(path, "r") as f:
             data = json.load(f)
 
@@ -247,14 +251,14 @@ class TrainingLoop:
                     name = file.split(".")[0].split("-")[0]
                     if name in data :
                         li.append(os.path.join(root, file))
-        return li
-        li = []
-        root_path = self.cfg["train"]["record_path"] 
-        for root, _, files in os.walk(root_path):
-            for file in files:
-                if file.endswith(".yaml"):
-                    li.append(os.path.join(root, file))
-        return li
+        return sorted(li, key=sort_key)
+        # li = []
+        # root_path = self.cfg["train"]["record_path"] 
+        # for root, _, files in os.walk(root_path):
+        #     for file in files:
+        #         if file.endswith(".yaml"):
+        #             li.append(os.path.join(root, file))
+        # return li
     
     def get_pass_rate_and_err_msgs(self, record, ntimes) -> Tuple[float, ErrorMessage]:
         success_count = 0
@@ -293,7 +297,7 @@ class TrainingLoop:
         if sorted_error_instances:
             most_frequent_err = sorted_error_instances[0]
             distributions = {messages[0] : len(messages) for _, messages in sorted_cluster_mapping.items()}
-            TRAIN_LOG.debug(f"Current error distribution :\n {formatted_dict(distributions)}")
+            TRAIN_LOG.debug(f"Current error distribution :\n{formatted_dict(distributions)}")
             if self.is_special_err_msg(most_frequent_err):
                 raise Exception("Special error message encountered. Cannot proceed.")
         else:
@@ -304,7 +308,7 @@ class TrainingLoop:
     
     def select_train_op(self) :
         if self.train_list :
-            return self.train_list.pop()
+            return self.train_list.pop(0)
         else :
             return None 
 
@@ -393,8 +397,9 @@ class TrainingLoop:
                 best_rule = synthesizer.seeds[0][1]
             
             TRAIN_LOG.info(f"Applying best found rule: {best_rule.txt}")
-            self.handle_solved_rule(best_rule, highest_prev) ## save rule to record
+            self.handle_solved_rule(best_rule, highest_prev, record, constr_list) ## save rule to record
             return True   
+        
     def get_only_acc_save_path(self, record_path) :
         ## change constraints -> only_acc
         new_path = record_path.replace("records", "only_acc")
@@ -429,7 +434,7 @@ class TrainingLoop:
             record.get("error", None) is None
         )
     def runs(self) :
-        n_debug = 10
+        n_debug = 50
         n_func = 0
         # while True :
         while n_func < n_debug :
@@ -438,11 +443,15 @@ class TrainingLoop:
             if record_path is None :
                 break
             op_record = _process_record(record_path)
+            TRAIN_LOG.info(f"Start infering {op_record['name']}")
             if self.is_trainable(op_record) :
-                self.run(op_record, record_path)
-
-            self.finalize_infering(op_record)
-    
+                try :
+                    self.run(op_record, record_path)
+                    self.finalize_infering(op_record)
+                except :
+                    TRAIN_LOG.error(f"{traceback.format_exc()}")
+            else :
+                TRAIN_LOG.warning(f"Record is not trainable : {op_record}")
     def finalize_infering(self, record) :
         pass_rate, unsolved = self.get_pass_rate_and_err_msgs(record, self.cfg["train"]["eval_asset"])
         self.update_pass_rate(record, pass_rate)
@@ -526,7 +535,7 @@ unsolved_err_msgs : {[e.dump() for e in unsolved]}
               mode : Literal["acc", "f1"], 
               seeds = []):
         # Initialize training session
-
+        self.inferencer.change_to_gpt3()
         solved = False
         infer_times = 0
         prev_answer = None
@@ -545,7 +554,8 @@ unsolved_err_msgs : {[e.dump() for e in unsolved]}
                 return True
             synthesizer.save_state(seeds)
         while self.cfg["train"]['infer_asset_per_epoch'] >= infer_times and not solved:
-            if tolerance >= self.cfg["train"]['tolerance']:
+            if tolerance >= self.cfg["train"]['tolerance']//2:
+                self.inferencer.change_to_gpt4()
                 break
             
             context, prompts = prompter.gen([target.get_core_msg()], 

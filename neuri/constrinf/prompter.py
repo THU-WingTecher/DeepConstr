@@ -71,7 +71,7 @@ Q : try to make constraints {correct_discription} so that it can make the whole 
         return examples
     def question(self, target, args_values, func_name) :
 
-        return f"""Q : Based on the given runtime information({func_name},{formatted_dict(args_values)}), formulate constraints that prevent this error -> {target}. Wrap the final formula with ```.\nAnswers :"""  
+        return f"""Q : Based on the given runtime information({func_name}({formatted_dict(args_values, sep="=", split=", ")}), formulate constraints that prevent this error -> {target}. Wrap the final formula with ```.\nAnswers :"""  
     
     def gen_infer_history(self, ans_history : str) : 
         if ans_history is None or len(ans_history) == 0 :

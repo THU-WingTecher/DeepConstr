@@ -132,13 +132,14 @@ def gen_noise(arg_name, arg_type, args_length, noise_prob):
                 elif isinstance(arg_type.get_arg_dtype(), AbsTensor) :
                     noise = z3.And(gen_noise(arr_wrapper[idx], arg_type.get_arg_dtype(), args_length[idx], noise_prob))
                 elif arg_type.get_arg_dtype() in [AbsDType.str] :
-                    pass # noise = gen_random_string_constr(arr_wrapper[idx])
+                    noise = None # gen_random_string_constr(arr_wrapper[idx])
                 elif arg_type.get_arg_dtype() in [AbsDType.bool] :
                     noise = gen_radnom_list_choice_constr(arr_wrapper[idx], [True, False])
                 else :
                     # Generate noise for each dimension
                     noise = gen_random_int_constr(arr_wrapper[idx], MIN_VALUE, MAX_VALUE)
-                noises.append(noise)
+                if noise is not None :
+                    noises.append(noise)
 
     elif isinstance(arg_type, AbsDType) : 
         if should_generate_noise(noise_prob) : 
@@ -147,9 +148,9 @@ def gen_noise(arg_name, arg_type, args_length, noise_prob):
             elif arg_type in [AbsDType.int, AbsDType.float, AbsDType.complex] :
                 noise = gen_random_int_constr(arg_type.z3()(arg_name), MIN_VALUE, MAX_VALUE)
             else : # AbsDType.str 
-                noise = gen_random_string_constr(arg_type.z3()(arg_name))
-                pass # dont generate noise for str 
-            noises.append(noise)
+                noise = None #gen_random_string_constr(arg_type.z3()(arg_name))
+            if noise is not None :
+                noises.append(noise)
     else : 
         pass 
     return noises
@@ -422,7 +423,7 @@ def _random_gen(datatype):
     elif datatype == AbsDType.float:
         value = random.uniform(0, 1)
     elif datatype == AbsDType.str:
-        value = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+        value = ''.join(random.choices(string.ascii_letters, k=4))
     else:
         raise NotImplementedError(f"Unsupported datatype {datatype}")
     return value
