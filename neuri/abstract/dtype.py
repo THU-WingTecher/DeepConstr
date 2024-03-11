@@ -653,6 +653,8 @@ class AbsTensor:
         return (self.dtype, self.ndims)
 STR_TO_ABS = {
     # AbsDType
+    'none': AbsDType.none,
+    type(None): AbsDType.none,
     'float': AbsDType.float,
     'real': AbsDType.float,
     'complex': AbsDType.complex,

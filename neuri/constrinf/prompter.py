@@ -58,8 +58,8 @@ Q : try to make constraints {correct_discription} so that it can make the whole 
 
     def dynamic_template(self, err_msg, cot, answers) : 
        return f"""Q : {err_msg}\nAnswers : {cot}\n```{answers}```"""
-    def task_introduce(self) :
-        return """You are tasked with extracting logical relationship constraints to prevent a given error from recurring. This involves a step-by-step analysis to identify and correct the issue."""
+    def task_introduce(self, func_name) :
+        return f"""You developed the function {func_name}, and know everything about it. Now, infer the root cause of given error messages with its runtime information, and then formulate the condition that make the error disappear. Think step-by-step as below examples."""
     def Constraint_grammar(self) : 
         return f"""<symbol> ::= {self.keys_print} | type(<symbol>) | len(<symbol>) | <symbol>[<int>] | <symbol>.dim | <symbol>.shape
 <ops> ::= + | - | * | / | == | != | > | >= | < | <= | in | not in"""
@@ -69,9 +69,9 @@ Q : try to make constraints {correct_discription} so that it can make the whole 
         sorted_li = sorted_li[::-1]
         examples = '\n'.join([self.dynamic_template(errmsg, self.err_db[errmsg]['cot'], self.err_db[errmsg]['answers']) for errmsg in sorted_li])
         return examples
-    def question(self, target, args_values) :
+    def question(self, target, args_values, func_name) :
 
-        return f"""Q : Based on the given runtime information({formatted_dict(args_values)}), formulate constraints that prevent this error -> {target}. Wrap the final formula with ```.\nAnswers :"""  
+        return f"""Q : Based on the given runtime information({func_name},{formatted_dict(args_values)}), formulate constraints that prevent this error -> {target}. Wrap the final formula with ```.\nAnswers :"""  
     
     def gen_infer_history(self, ans_history : str) : 
         if ans_history is None or len(ans_history) == 0 :
@@ -80,10 +80,10 @@ Q : try to make constraints {correct_discription} so that it can make the whole 
         return introduce + '```' + ans_history + '```'
     def gen_contexts(self) :
         return ""
-    def gen(self, err_msgs, args_values, num_of_ex=[0,3], prev_answer : Optional[Constraint]=None, ans_history : Optional[str]=None) :
+    def gen(self, err_msgs, args_values, func_name, num_of_ex=[0,3], prev_answer : Optional[Constraint]=None, ans_history : Optional[str]=None) :
         prompts = ""
         history = ""
-        task_introduce= self.task_introduce()
+        task_introduce= self.task_introduce(func_name)
         grammar = self.Constraint_grammar() if random.choice([0,1]) else ""
         examples = self.get_closet_examples(err_msgs, num_of_ex = num_of_ex)
         contexts = self.gen_contexts()
@@ -91,14 +91,14 @@ Q : try to make constraints {correct_discription} so that it can make the whole 
         # infer_history = self.gen_infer_history(ans_history)
         if len(history) == 0 : 
             contexts = '\n'.join([task_introduce, 
-                                grammar, 
+                                # grammar, 
                                 examples])
-            prompts = self.question(err_msgs[0], args_values)
+            prompts = self.question(err_msgs[0], args_values, func_name)
         else : 
             contexts = '\n'.join([task_introduce, 
-                                grammar, 
+                                # grammar, 
                                 examples])
-            prompts = self.question(history, args_values)
+            prompts = self.question(history, args_values, func_name)
         return contexts, prompts
     def _CoT_template(self) -> None :
         """

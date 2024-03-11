@@ -132,7 +132,7 @@ def gen_noise(arg_name, arg_type, args_length, noise_prob):
                 elif isinstance(arg_type.get_arg_dtype(), AbsTensor) :
                     noise = z3.And(gen_noise(arr_wrapper[idx], arg_type.get_arg_dtype(), args_length[idx], noise_prob))
                 elif arg_type.get_arg_dtype() in [AbsDType.str] :
-                    noise = gen_random_string_constr(arr_wrapper[idx])
+                    pass # noise = gen_random_string_constr(arr_wrapper[idx])
                 elif arg_type.get_arg_dtype() in [AbsDType.bool] :
                     noise = gen_radnom_list_choice_constr(arr_wrapper[idx], [True, False])
                 else :

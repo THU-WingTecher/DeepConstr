@@ -203,7 +203,7 @@ class TrainingLoop:
             model_cfg["type"], backend_target=cfg["backend"]["target"]
         )
 
-        self.executor : Executor = Executor(self.ModelType, parallel = cfg["train"]["simple_eval_asset"])
+        self.executor : Executor = Executor(self.ModelType, parallel = cfg["train"]["parallel"])
         self.train_list = self.get_train_list()
         TRAIN_LOG.info(
             f"{len(self.train_list)} opsets wait for inferring"
@@ -550,6 +550,7 @@ unsolved_err_msgs : {[e.dump() for e in unsolved]}
             
             context, prompts = prompter.gen([target.get_core_msg()], 
                                     args_values=target.get_values_map(),
+                                    func_name=record["name"],
                                     num_of_ex=random.randint(2, 3),
                                     prev_answer=prev_answer)
             
@@ -586,7 +587,10 @@ unsolved_err_msgs : {[e.dump() for e in unsolved]}
 
 @hydra.main(version_base=None, config_path="../config", config_name="main")
 def main(cfg: DictConfig):
-    TrainingLoop(cfg).runs()
+    try :
+        TrainingLoop(cfg).runs()
+    except :
+        TRAIN_LOG.error(f"{traceback.format_exc()}")
 
 
 if __name__ == "__main__":
