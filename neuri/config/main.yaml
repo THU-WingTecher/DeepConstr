@@ -66,7 +66,7 @@ fuzz:
 
 train:
   root: "???" # path to the root of the training data
-  n_try: 10
+  n_try: 20
   seed: null
   record_path: null
   crash_safe: false
@@ -76,7 +76,7 @@ train:
   noise: 0.7 # 0 ~ 1
   allow_zero_length_rate: 0.1 # 0 ~ 1
   allow_zero_rate: 0.1 # 0 ~ 1
-  num_of_try: 10 ## num_of_try * noise will be the number of trials for each input generation
+  num_of_try: 30 ## num_of_try * noise will be the number of trials for each input generation
   infer_asset_per_epoch: 10
   tolerance: 3
   top_k: 10
@@ -85,7 +85,7 @@ train:
   eval_asset: 50 #eval asset of constraints, pass_rate assess asset of the operator
   n_infer_per_round: 10
   str_sim_threshold: 0.5
-  precision_threshold: 100 # 0 ~ 100
+  precision_threshold: 98 # 0 ~ 100
 
 llm:
   settings:

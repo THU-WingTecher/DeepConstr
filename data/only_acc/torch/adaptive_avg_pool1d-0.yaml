@@ -15,6 +15,21 @@ name: torch.adaptive_avg_pool1d
 package: torch
 pass_rate: 100
 rules:
+- - cot: 'The constraints to prevent the error "RuntimeError: Expected 2 to 3 dimensions,
+      but got 1-dimensional tensor for argument #1 ''self'' (while checking arguments
+      for adaptive_avg_pool1d)" based on the given information are as follows:'
+    target:
+      choosen_dtype:
+        output_size: list[int]
+        self: tensor
+      msg: 'Expected 2 to 3 dimensions, but got 1-dimensional tensor for argument
+        #1 ''self'' (while checking arguments for adaptive_avg_pool1d)'
+      package: torch
+    txt: self.ndims() == 3
+  - f1_score: 97.08737864077668
+    overall_score: 100
+    precision: 100.0
+    recall: 94.33962264150942
 - - cot: ''
     target:
       choosen_dtype:
@@ -39,19 +54,6 @@ rules:
         to 0 but received {1, -1}'
       package: torch
     txt: all(o >= 0 for o in output_size)
-  - f1_score: 100.0
-    overall_score: 100
-    precision: 100.0
-    recall: 100.0
-- - cot: ''
-    target:
-      choosen_dtype:
-        output_size: list[int]
-        self: tensor
-      msg: 'Expected 2 to 3 dimensions, but got 1-dimensional tensor for argument
-        #1 ''self'' (while checking arguments for adaptive_avg_pool1d)'
-      package: torch
-    txt: self.dim() == 3
   - f1_score: 100.0
     overall_score: 100
     precision: 100.0
