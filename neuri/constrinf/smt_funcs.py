@@ -367,7 +367,7 @@ class SMTFuncs:
     Class to hold custom Z3 functions.
     """
     # Class variable to hold names of all functions
-    function_names = ["all", "any", "len", "type", "sorted", "abs", "min", "max", "in_", "not_in", "rank", "range", "isinstance", "T"]
+    function_names = ["all", "any", "len", "type", "sorted", "abs", "min", "max", "in_", "not_in", "rank", "range", "isinstance", "T", "dtype", "shape", "size", "dim", "ndim", "ndims"]
     _z3_dataarr = [(IntArr, (IntArr, IntArr.value, IntArr.len)),
                    (FloatArr, (FloatArr, FloatArr.value, FloatArr.len)),
                    (StrArr, (StrArr, StrArr.value, StrArr.len)),
