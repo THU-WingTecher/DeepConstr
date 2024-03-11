@@ -3,6 +3,7 @@
 .vscode
 
 # experiment data
+build/Cov_Trace_Analyzer
 *.profraw 
 *.tar.gz
 bugs/
