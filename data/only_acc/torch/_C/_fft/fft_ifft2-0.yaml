@@ -23,6 +23,21 @@ name: torch._C._fft.fft_ifft2
 package: torch
 pass_rate: 99.63099630996311
 rules:
+- - cot: synthesized
+    target:
+      choosen_dtype:
+        dim: list[int]
+        norm: None
+        s: None
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got 3)
+      package: torch
+    txt: (all(d >= -len(self.shape) and d < len(self.shape) for d in dim)) and (-len(self.shape)
+      <= 3 < len(self.shape))
+  - f1_score: 92.7357032457496
+    overall_score: 100
+    precision: 100.0
+    recall: 86.45533141210375
 - - cot: 'The error is due to an invalid normalization mode. The value provided for
       ''norm'' is "Gyck" which is not a valid normalization mode. The valid normalization
       modes for this function are "forward" and "backward". Therefore, the condition
@@ -37,21 +52,6 @@ rules:
       package: torch
     txt: norm in ["forward", "backward"]
   - f1_score: 66.66666666666667
-    overall_score: 38.333333333333336
+    overall_score: 100
     precision: 100.0
     recall: 50.0
-- - cot: synthesized
-    target:
-      choosen_dtype:
-        dim: list[int]
-        norm: None
-        s: None
-        self: tensor
-      msg: Dimension out of range (expected to be in range of [-1, 0], but got 3)
-      package: torch
-    txt: (all(d >= -len(self.shape) and d < len(self.shape) for d in dim)) and (-len(self.shape)
-      <= 3 < len(self.shape))
-  - f1_score: 93.58316759133255
-    overall_score: 49.29158379566628
-    precision: 99.66555183946488
-    recall: 88.20047355958958

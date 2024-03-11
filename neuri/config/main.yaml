@@ -72,20 +72,20 @@ train:
   crash_safe: false
   test_timeout: null
   resume: false
-  parallel: 1
+  parallel: 1 # parallel num of executor
   noise: 0.7 # 0 ~ 1
   allow_zero_length_rate: 0.1 # 0 ~ 1
   allow_zero_rate: 0.1 # 0 ~ 1
   num_of_try: 30 ## num_of_try * noise will be the number of trials for each input generation
-  infer_asset_per_epoch: 10
-  tolerance: 3
+  infer_asset_per_epoch: 5
+  tolerance: 4
   top_k: 10
   max_num_of_seeds: 50
-  simple_eval_asset: 1 # parallel num of executor
+  simple_eval_asset: 30
   eval_asset: 50 #eval asset of constraints, pass_rate assess asset of the operator
   n_infer_per_round: 10
   str_sim_threshold: 0.5
-  precision_threshold: 98 # 0 ~ 100
+  precision_threshold: 100 # 0 ~ 100
 
 llm:
   settings:
