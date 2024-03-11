@@ -20,7 +20,7 @@ from neuri.backends.factory import BackendFactory
 from neuri.constrinf.parser import segment_constr, parse_from_raw_txt
 from neuri.constrinf.prompter import Prompter
 from neuri.constrinf.synthesizer import Synthesizer
-from neuri.constrinf.util import formatted_dict
+from neuri.constrinf.util import formatted_dict, load_yaml
 from neuri.error import WrongInferenceError
 from neuri.gir import GraphIR
 from neuri.logger import TRAIN_LOG, AUTOINF_LOG, TRAIN_LOG
@@ -428,10 +428,13 @@ class TrainingLoop:
                 return (Constraint.load(popped[0]), popped[1])
         raise ValueError(f"no such constraint in record : {txt}")
 
-    def is_trainable(self, record : Dict[str, Any]) :
+    def is_trained(self, record : Record) :
+        return record.get("pass_rate", 0) >= self.cfg["train"]["precision_threshold"]
+    def is_trainable(self, record : Record) :
         return (
             record is not None and \
-            record.get("error", None) is None
+            record.get("error", None) is None and \
+            self.is_trained(record) is False
         )
     def runs(self) :
         n_debug = 50
@@ -451,7 +454,7 @@ class TrainingLoop:
                 except :
                     TRAIN_LOG.error(f"{traceback.format_exc()}")
             else :
-                TRAIN_LOG.warning(f"Record is not trainable : {op_record}")
+                TRAIN_LOG.warning(f"""Record don't need train trainable : {formatted_dict(op_record, sep=":", split=", ")}""")
     def finalize_infering(self, record) :
         pass_rate, unsolved = self.get_pass_rate_and_err_msgs(record, self.cfg["train"]["eval_asset"])
         self.update_pass_rate(record, pass_rate)
@@ -480,7 +483,9 @@ unsolved_err_msgs : {[e.dump() for e in unsolved]}
     def save_only_acc(self, record, record_path) :
         save_path = self.get_only_acc_save_path(record_path)
         if os.path.exists(save_path) :
-            return 
+            data = load_yaml(save_path)
+            if data["pass_rate"] > self.cfg["train"]["precision_threshold"] :
+                return 
         save_record(record, save_path)
         
     def run(self, op_record, record_path):
@@ -565,8 +570,6 @@ unsolved_err_msgs : {[e.dump() for e in unsolved]}
                                     prev_answer=prev_answer)
             
             raw_infered = self.inferencer.inference(prompts, context) 
-#             raw_infered = """Error is triggered because the input tensor A must have at least 2 dimensions, but the provided value is a 1-dimensional tensor. To prevent this error from occurring again, we can generate constraints that ensure the input tensor has at least 2 dimensions. We can define the constraint as follows:
-# ```len(input.shape) >= 2```""" # for debugging
             infer_times += 1
             
             new_rules = self.parse_and_generate_rules(raw_infered, 

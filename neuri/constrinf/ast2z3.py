@@ -129,10 +129,10 @@ class Ast2z3(SMTFuncs) :
             # Assuming comp is a dictionary with keys "target", "iter", "ifs"
             target = self.gen_z3_obj(comp["target"], arg_map, no_const=True)
             iter = self.gen_z3_obj(comp["iter"], arg_map, ret_wrapper=True)
-            self.set_flag(self.get_name(iter), must_iter=True)
             ifs = [self.gen_z3_obj(if_clause, arg_map) for if_clause in comp["ifs"]]
             # Check if iteration is over a list/array or a range
             if isinstance(iter, (ArrWrapper, TensorWrapper, z3.ArrayRef)) :
+                self.set_flag(self.get_name(iter), must_iter=True)
                 is_z3_array = isinstance(iter, z3.ArrayRef)
                 range = iter.range()
                 lower_bound = range[0] if not is_z3_array else 0

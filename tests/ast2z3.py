@@ -78,13 +78,14 @@ def main(cfg: DictConfig):
     """
     arg_names = ['a', 'b','c','d']
     dtypes = [
-        [AbsDType.int.to_iter()],
-        [AbsDType.int.to_iter()],
+        [AbsTensor()],
+        [AbsTensor()],
         [AbsTensor.to_iter()],
         [AbsDType.str],
         ]
     test_constraints = [
-        "d in ['batch', 'layer', 'instance']",
+        "all(a.shape[i] == b.shape[i] or a.shape[i] == 1 or b.shape[i] == 1 for i in range(-1, -min(len(a.shape), len(b.shape))-1, -1))"
+        # "d in ['batch', 'layer', 'instance']",
         # "d < len(self.shape) for d in c"
         # "all(i > len(c) and i < len(c) for i in a)",
         # "alld > len(c)",
