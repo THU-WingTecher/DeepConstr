@@ -59,7 +59,7 @@ class Synthesizer:
         scores["precision"] = evaluator.precision
         scores["recall"] = evaluator.recall
         scores["f1_score"] = evaluator.f1_score
-        TRAIN_LOG.info(f"Score of Rule : {self.constr.txt}")
+        TRAIN_LOG.info(f"Score of Rule : {constraint.txt}")
         TRAIN_LOG.info(f"prec : {round(scores['precision'], 2)}%, recall : {round(scores['recall'], 2)}%, F1 : {round(scores['f1_score'], 2)}%")
         return scores
     
@@ -161,7 +161,7 @@ class Synthesizer:
         
         res = []
         found_complete = False
-        TRAIN_LOG.debug(f'finding optimal constr(skim={skim}){SPLITER}{"\n".join([c.txt for c in queue])}')
+        TRAIN_LOG.debug(f'finding optimal constr(skim={skim}){SPLITER}{SPLITER.join([c.txt for c in queue])}')
         while queue :
             constraint = queue.pop()
             self.update_tried(constraint)

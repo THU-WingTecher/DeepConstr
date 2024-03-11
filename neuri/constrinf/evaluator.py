@@ -5,7 +5,7 @@ from logger import TRAIN_LOG
 import copy
 from neuri.constrinf.constr import Constraint, convert_dtypes_to_z3s
 from neuri.constrinf.errmsg import ErrorMessage, is_similar, map_error_messages_to_clusters_dynamic
-from neuri.constrinf.executor import Executor
+from neuri.constrinf.executor import NOERR_MSG, Executor
 from neuri.constrinf.util import formatted_dict
 
 class Evaluator() :
@@ -20,7 +20,7 @@ class Evaluator() :
         self.target = target 
         self.constr = constr
         self.record = copy.deepcopy(record)
-        self.record["args"]["dtype_obj"] = [[dtype] for dtype in self.target.get_dtypes()]
+        self.record["args"]["dtype_obj"] = [[d] for d in self.target.get_dtypes(self.record["args"]["name"])]
         self.cfg = cfg
         self.execute = functools.partial(executor.execute, 
                                         noise = self.cfg["noise"],
@@ -52,7 +52,7 @@ class Evaluator() :
             solved, unsolved = res
         if self.gen_interfered : 
             return 0
-        TP_ratio = solved/num_of_check
+        TP_ratio = solved/(solved + unsolved)
         return TP_ratio
     def handle_unable_to_gen(self) :
         TRAIN_LOG.info(f"Unable to generate")
@@ -66,7 +66,7 @@ class Evaluator() :
         if res is False : 
             return self.handle_unable_to_gen()
         solved, unsolved = res
-        FN_ratio = solved/num_of_check
+        FN_ratio = solved/(solved + unsolved)
         return FN_ratio
     def cal_recall(self, FN, TP) :
         if TP == 0 : return 0 
@@ -106,7 +106,6 @@ class Evaluator() :
         temp_constrs = copy.deepcopy(self.record["rules"])
         temp_constrs.append(constr.get_executable())
         results = self.execute(record=self.record, constraints=temp_constrs, ntimes=num_of_check)
-        assert num_of_check == len(results)
         
         for result in results :
             if result is None :
@@ -116,8 +115,9 @@ class Evaluator() :
                 msg_key = error_instance.get_core_msg()
                 error_messages[msg_key] = error_instance
                 raw_err_msgs.append(msg_key)
+        if len(raw_err_msgs) == 1 : # not added any result(= all result is None)
+            return False
         dynamic_cluster_mapping = map_error_messages_to_clusters_dynamic(raw_err_msgs)
-
         for key, values in dynamic_cluster_mapping.items() :
             for value in values :
                 if value == self.target.get_core_msg() :
@@ -125,12 +125,12 @@ class Evaluator() :
                     break
             if target_cluster is not None : break
 
-        unsolved = sum([1 for msg in raw_err_msgs if msg not in dynamic_cluster_mapping[target_cluster]])
-        solved = sum([1 for msg in raw_err_msgs if msg in dynamic_cluster_mapping[target_cluster]])
+        unsolved = sum([1 for msg in raw_err_msgs if (msg in dynamic_cluster_mapping[target_cluster]) and (msg != NOERR_MSG)]) - 1 # we add a target message to the cluster when init.
+        solved += sum([1 for msg in raw_err_msgs if (msg not in dynamic_cluster_mapping[target_cluster]) or (msg == NOERR_MSG)])
         if TRAIN_LOG.getEffectiveLevel()  <= logging.DEBUG:
             sorted_cluster_mapping = dict(sorted(dynamic_cluster_mapping.items(), key=lambda item: len(item[1]), reverse=True))
             distributions = {messages[0] : len(messages) for _, messages in sorted_cluster_mapping.items()}
-            TRAIN_LOG.debug(f"Current error distribution :\n {formatted_dict(distributions)}")
+            TRAIN_LOG.debug(f"[{constr.z3expr}] Current error distribution :\n {formatted_dict(distributions)}")
 
-        TRAIN_LOG.info(f"Solved: {solved}, Unsolved: {unsolved}, Unable to generate: {ungen}")
+        TRAIN_LOG.info(f"[{constr.z3expr}] Solved: {solved}, Unsolved: {unsolved}, Unable to generate: {ungen}")
         return solved, unsolved

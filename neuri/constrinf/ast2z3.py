@@ -35,9 +35,6 @@ def get_dtype_z3_obj(arg, is_tensor_dtype=False) :
     from neuri.abstract.dtype import STR_TO_ABS
     dtypeobj = STR_TO_ABS[arg.lower().strip()] 
     # if is_tensor_dtype and hasattr(dtypeobj, "z3_const") :
-    #     # Tensor dtype arg_name would not be changed dtype to int, or list[int], or bool.
-    #     # dtype would be retrieved with args_type_dict that has been given when generating the rule.
-    #     # Therefore, the type_actvated new dtype would not be shown here.
     #     if dtypeobj.z3_const() is not None :
     #         return [dtype.z3_const() for dtype in dtypeobj.z3_const()]
     return dtypeobj.z3_const()
@@ -97,6 +94,7 @@ class Ast2z3(SMTFuncs) :
         self.arg_map = {
             name : dtype for name, dtype in zip(arg_names, dtypes)
         }
+        assert isinstance(list(self.arg_map.values())[0], list)
         self.constr_flags : Dict[str, Dict[str, bool]] = {}
         self.other_flags : Dict[str, Dict[str, bool]] = {}
         self.min_len : Dict[str, int] = {}
@@ -429,8 +427,10 @@ class Ast2z3(SMTFuncs) :
             except IncorrectConstrError as e :
                 AUTOINF_LOG.warning(f"{e}")
                 continue
-            # except :
-            #     raise ValueError(f"Unexpected error : {traceback.format_exc()}")
+            except  :
+                AUTOINF_LOG.warning(f"{traceback.format_exc()}")
+                pass
+                # raise ValueError(f"Unexpected error : {traceback.format_exc()}")
         # AUTOINF_LOG.info(f"{self.txt} ==> {result}")
         return result
     

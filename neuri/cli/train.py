@@ -1,4 +1,5 @@
 import copy
+import json
 import random
 import os
 import time
@@ -35,7 +36,9 @@ from neuri.util import mkdir, parse_timestr, set_seed
 #  - "fail": invalid testcase.
 #  - "bug": bug found.
 SPLITTER = "\n"
-def transform_record_for_saving(record: dict) -> dict:
+class Scores(Dict): pass
+class Record(Dict): pass
+def transform_record_for_saving(record: Record) -> dict:
     """
     Transform the record dictionary to the original format expected for saving.
 
@@ -48,11 +51,11 @@ def transform_record_for_saving(record: dict) -> dict:
     transformed = {}
     for key, value in record.items():
         if key == 'args':
-            transformed["args"] = {k : v for k, v in record['key'].items() if k != "value"}
-        elif key == "rules" :
-            transformed["rules"] = [constr.dump() for constr in record["rules"]]
-        elif key == "outputs" :
+            transformed[key] = {k : v for k, v in record[key].items() if k not in ["value", "dtype_obj"]}
+        elif key in ["outputs"] :
             pass
+        elif key == "rules" :
+            transformed[key] = list(value)
         else:
             transformed[key] = value
     return transformed
@@ -83,7 +86,7 @@ def save_record(record: dict, path: str) -> None:
     with open(path, 'w') as file:
         yaml.dump(record, file)
 
-    print(f"Record saved successfully to {path}.")
+    TRAIN_LOG.debug(f"Record saved successfully to {path}.")
 
 class StatusCollect:
     def __init__(self, root, resume=False, op_usage=False):
@@ -132,19 +135,6 @@ class StatusCollect:
             self.op_used_file = open(self.root / "op_used.txt", "a", buffering=128)
             self.op_rej_file = open(self.root / "op_rej.txt", "a", buffering=128)
 
-    def ok_inst(self, ir: GraphIR):
-        if self.op_usage:
-            insts = ir.leaf_inst()
-            if insts and insts[0].iexpr.op.__class__.__name__ == "AutoInfOpBase":
-                self.op_used_file.write(f"{insts[0].iexpr.op.inst.name_index}\n")
-
-    def rej_inst(self, ir: GraphIR):
-        if self.op_usage:
-            insts = ir.leaf_inst()
-            if insts and insts[0].iexpr.op.__class__.__name__ == "AutoInfOpBase":
-                self.op_rej_file.write(f"{insts[0].iexpr.op.inst.name_index}\n")
-                self.op_rej_file.flush()  # flush every time to avoid losing data.
-
     @property
     def elapsed_s(self) -> float:
         if self.tik is None:
@@ -170,9 +160,6 @@ class StatusCollect:
         TRAIN_LOG.info(
             f"tgen={tgen:.1f}ms, tsmt={tsmt:.1f}ms, trun={trun:.1f}ms, tsave={tsave:.1f}ms"
         )
-
-    def get_next_bug_path(self):
-        return self.root / f"bug-{NNSMITH_BUG_PATTERN_TOKEN}-{self.n_bugs}"
 
 class TrainingLoop:
     def __init__(
@@ -215,14 +202,13 @@ class TrainingLoop:
         self.ModelType = Model.init(
             model_cfg["type"], backend_target=cfg["backend"]["target"]
         )
-        # set_seed(self.cfg["train"]["seed"])
-        # self.ModelType.add_seed_setter()
+
         self.executor : Executor = Executor(self.ModelType, parallel = cfg["train"]["simple_eval_asset"])
         self.train_list = self.get_train_list()
         TRAIN_LOG.info(
             f"{len(self.train_list)} opsets wait for inferring"
         )
-        # self.crash_safe = bool(cfg["train"]["crash_safe"])
+        self.stat = {}
         # self.save_test = cfg["train"]["save_test"]
         # resume = cfg["train"]["resume"]
         # self.status = StatusCollect(
@@ -238,10 +224,30 @@ class TrainingLoop:
         #     TRAIN_LOG.info(f"Saving all intermediate testcases to {self.save_test}")
         #     mkdir(self.save_test)
 
-    def get_train_list(self, module=None) -> List[str]:
+    def init_stat(self) :
+        self.stat = {
+            "exec" : 0,
+            "llm" : 0,
+            "smt" : 0,
+            "save" : 0
+        }
+
+    def get_train_list(self, path = "/artifact/data/torch_overall_apis.json") -> List[str]:
         """
         get operator yaml file path
         """
+        with open(path, "r") as f:
+            data = json.load(f)
+
+        li = []
+        root_path = self.cfg["train"]["record_path"] 
+        for root, _, files in os.walk(root_path):
+            for file in files:
+                if file.endswith(".yaml"):
+                    name = file.split(".")[0].split("-")[0]
+                    if name in data :
+                        li.append(os.path.join(root, file))
+        return li
         li = []
         root_path = self.cfg["train"]["record_path"] 
         for root, _, files in os.walk(root_path):
@@ -251,14 +257,11 @@ class TrainingLoop:
         return li
     
     def get_pass_rate_and_err_msgs(self, record, ntimes) -> Tuple[float, ErrorMessage]:
-        # Assuming `run` is replaced with `self.execute` as per the revised requirement
         success_count = 0
         error_messages = {}
         raw_err_msgs = []
         copied_record = copy.deepcopy(record)
         executable_constr = convert_constr_to_executable(copied_record) # unactivated
-        # wrapped = wrap(executable_constr)
-        # copied_record["args"]["dtype"] = convert_dtypes_to_z3s(copied_record["args"]["dtype"])
         results = self.executor.execute(record = copied_record, 
                                         constraints = executable_constr,
                                         ntimes = ntimes, 
@@ -267,7 +270,10 @@ class TrainingLoop:
                                         allow_zero_rate = self.cfg["train"]["allow_zero_rate"],
                                         num_of_try = self.cfg["train"]["num_of_try"]
                                         )
+        
         for result in results:
+            if result is None :
+                continue
             success, error_instance = result
             if success:
                 success_count += 1
@@ -275,13 +281,15 @@ class TrainingLoop:
                 msg_key = error_instance.get_core_msg()
                 error_messages[msg_key] = error_instance
                 raw_err_msgs.append(msg_key)
-        
-        dynamic_cluster_mapping = map_error_messages_to_clusters_dynamic(raw_err_msgs)
-        sorted_cluster_mapping = dict(sorted(dynamic_cluster_mapping.items(), key=lambda item: len(item[1]), reverse=True))
+        if raw_err_msgs :
+            dynamic_cluster_mapping = map_error_messages_to_clusters_dynamic(raw_err_msgs)
+            sorted_cluster_mapping = dict(sorted(dynamic_cluster_mapping.items(), key=lambda item: len(item[1]), reverse=True))
+            success_rate = success_count / (success_count + len(error_messages))
+            sorted_error_instances = [error_messages[list(li)[0]] for li in sorted_cluster_mapping.values()]
+        else :
+            success_rate = 1
+            sorted_error_instances = []
 
-        success_rate = success_count / ntimes if ntimes else 0
-        sorted_error_instances = [error_messages[list(li)[0]] for li in sorted_cluster_mapping.values()]
-        
         if sorted_error_instances:
             most_frequent_err = sorted_error_instances[0]
             distributions = {messages[0] : len(messages) for _, messages in sorted_cluster_mapping.items()}
@@ -292,7 +300,7 @@ class TrainingLoop:
             TRAIN_LOG.info("No error messages encountered.")
 
         # Return success rate and the sorted list of error message instances
-        return success_rate, sorted_error_instances
+        return success_rate*100, sorted_error_instances
     
     def select_train_op(self) :
         if self.train_list :
@@ -308,7 +316,7 @@ class TrainingLoop:
         generated = []
         rules = []
         infered, cot = parse_from_raw_txt(raw_infered)
-        dtypes = target.get_dtypes()
+        dtypes = target.get_dtypes(arg_names)
         for rule_txt in infered.split(';'):
             generated.append(rule_txt.strip())
             generated.extend(segment_constr(rule_txt))
@@ -320,7 +328,7 @@ class TrainingLoop:
                     rules.append(rule)
         return rules
 
-    def update_tolerance_and_history(self, result : Tuple[Dict[str, float], Constraint], tolerance, highest_prev, prev_answer):
+    def update_tolerance_and_history(self, result : Tuple[Scores, Constraint], tolerance, highest_prev, prev_answer):
         """
         Update the training session's state based on the latest rule evaluation results.
         
@@ -349,7 +357,7 @@ class TrainingLoop:
     def finalize_training_session(self, 
                                   highest_prev : Dict[str, float], 
                                   record : Dict[str, Any], 
-                                  constr_target_map : Dict[ErrorMessage, Tuple[Dict[str, float],Constraint]], 
+                                  constr_list : List[Tuple[Constraint, Scores]],
                                   synthesizer : Synthesizer, 
                                   prev_answer : Constraint = None) -> bool:
         """
@@ -370,7 +378,7 @@ class TrainingLoop:
         elif highest_prev["overall_score"] == 100:
             # A rule with perfect score found
             TRAIN_LOG.info(f"Perfect rule found: {prev_answer.txt}")
-            self.handle_solved_rule(prev_answer, highest_prev, record, constr_target_map)
+            self.handle_solved_rule(prev_answer, highest_prev, record, constr_list)
             return True
         else:
             # Select the best rule based on the training outcome
@@ -389,23 +397,30 @@ class TrainingLoop:
             return True   
     def get_only_acc_save_path(self, record_path) :
         ## change constraints -> only_acc
-        new_path = record_path.replace("constraints", "only_acc")
+        new_path = record_path.replace("records", "only_acc")
         return new_path
     
-    def get_retrain_list(self, record, constr_target_map) -> List[Tuple[ErrorMessage, Constraint]] :
+    def get_retrain_list(self, record, constr_list : List[Tuple[Constraint, Scores]]) -> List[Tuple[Constraint, Scores]] :
         # pass_rate, sorted_err_instances = self.get_pass_rate_and_err_msgs(op_record)
-        return [(target, constr) for target, constr in constr_target_map.items()]
+        data = constr_list[:]
+        for constr, scores in self.get_constrs_from_rules(record) :
+            if constr.txt in [c.txt for c, _ in data] :
+                continue 
+            data.append((constr, scores))
+        TRAIN_LOG.info(f"start retraining with {len(data)} constraints")
+        return data
     
     @staticmethod
-    def get_constrs_from_rules(record) :
-        return record["rules"]
+    def get_constrs_from_rules(record : Record) -> List[Any] :
+        if record.get("rules", None) is None :
+            record["rules"] = []
+        return [(Constraint.load(rule_data), scores) for rule_data, scores in record["rules"]]
     
     def pop_constr_from_record(self, txt : str, record) :
-        constrs = self.get_constrs_from_rules(record)
-        for const_instance in constrs :
-            if const_instance["txt"] == txt :
-                constrs.remove(const_instance)
-                return True
+        for i, (rule_data, _) in enumerate(record["rules"]) :
+            if rule_data["txt"] == txt :
+                popped = record["rules"].pop(i)
+                return (Constraint.load(popped[0]), popped[1])
         raise ValueError(f"no such constraint in record : {txt}")
 
     def is_trainable(self, record : Dict[str, Any]) :
@@ -414,16 +429,32 @@ class TrainingLoop:
             record.get("error", None) is None
         )
     def runs(self) :
-        while True :
+        n_debug = 10
+        n_func = 0
+        # while True :
+        while n_func < n_debug :
+            n_func+=1
             record_path = self.select_train_op()
-            record_path = "data/records/torch/adaptive_avg_pool1d-0.yaml"
             if record_path is None :
                 break
             op_record = _process_record(record_path)
             if self.is_trainable(op_record) :
                 self.run(op_record, record_path)
 
-            self.finalize_infering()
+            self.finalize_infering(op_record)
+    
+    def finalize_infering(self, record) :
+        pass_rate, unsolved = self.get_pass_rate_and_err_msgs(record, self.cfg["train"]["eval_asset"])
+        self.update_pass_rate(record, pass_rate)
+        TRAIN_LOG.info(
+f"""{record['name']} infered finished\n
+constrs : {record['rules']}\n
+final_pass_rate : {record['pass_rate']}\n
+unsolved_err_msgs : {[e.dump() for e in unsolved]}
+            """
+        )  
+        self.inferencer.finalize()
+
     def load_constr_target_map_from_record(self, record) :
         """load constr target map from record"""
         constr_target_map = {}
@@ -431,29 +462,47 @@ class TrainingLoop:
         #     constr_target_map.update({constr["target"] : (constr["scores"], Constraint(constr["txt"], constr["cot"], constr["target"], record["args"]["name"], record["args"]["dtype"]))})
         return constr_target_map
     
+    def update_pass_rate(self, record, pass_rate = None) :
+        if pass_rate is None :
+            pass_rate, unsolved = self.get_pass_rate_and_err_msgs(record, self.cfg["train"]["eval_asset"])
+        TRAIN_LOG.info(f"pass_rate : {pass_rate}")
+        record["pass_rate"] = pass_rate
+
+    def save_only_acc(self, record, record_path) :
+        save_path = self.get_only_acc_save_path(record_path)
+        if os.path.exists(save_path) :
+            return 
+        save_record(record, save_path)
+        
     def run(self, op_record, record_path):
+
         n_try = 0
         pass_rate = 0
-        # record_path =record_path.replace("constraints", "debug") # for debugging
-        # op_record['rules'] = [] # for debugging
-        constr_target_map : Dict[ErrorMessage, Tuple[Dict[str, float],Constraint]] = {}
-        while pass_rate < 100 and n_try < self.cfg["train"]["n_try"] :
+        constr_list : Tuple[List, Dict[str, Any]][Constraint] = []
+        TRAIN_LOG.info(f"Start training {op_record['name']}")
+        while n_try < self.cfg["train"]["n_try"] :
             pass_rate, sorted_err_instances = self.get_pass_rate_and_err_msgs(op_record, self.cfg["train"]["eval_asset"])
+            self.update_pass_rate(op_record, pass_rate)
+            if pass_rate >= self.cfg["train"]["precision_threshold"] :
+                TRAIN_LOG.info(f"pass_rate is over {self.cfg['train']['precision_threshold']}")
+                break
             if sorted_err_instances :
-                succeed = self.train(op_record, sorted_err_instances[0], constr_target_map, mode="acc")
+                succeed = self.train(op_record, sorted_err_instances[0], constr_list, mode="acc")
                 if succeed :
                     save_record(op_record, record_path)
                 else :
+                    TRAIN_LOG.warning(f"Failed to train {sorted_err_instances[0].get_core_msg()}")
                     break
             else :
+                TRAIN_LOG.info(f"No error messages encountered.")
                 break
         
-        save_record(op_record, self.get_only_acc_save_path(record_path))
-        queue = self.get_retrain_list(op_record, constr_target_map)
+        self.save_only_acc(op_record, record_path)
+        queue = self.get_retrain_list(op_record, constr_list)
         while queue :
-            target_err, (scores, constr) = queue.pop()
+            constr, scores = queue.pop()
             self.pop_constr_from_record(constr.txt, op_record)
-            succeed = self.train(op_record, target_err, constr_target_map, mode="f1", seeds = [(scores, constr)])
+            succeed = self.train(op_record, constr.target, [], mode="f1", seeds = [(scores, constr)])
             if succeed :
                 save_record(op_record, record_path)
             else :
@@ -467,13 +516,13 @@ class TrainingLoop:
         """
         copied = copy.deepcopy(record)
         copied["rules"] = convert_constr_to_executable(copied)
-        copied["args"]["dtype"] = target.get_dtypes()
+        copied["args"]["dtype_obj"] = [[d] for d in target.get_dtypes(copied["args"]["name"])]
         return copied
     
     def train(self, 
               orig_record, 
               target : ErrorMessage,
-              constr_target_map : Dict[ErrorMessage, Tuple[Dict[str, float],Constraint]],  
+              constr_list : List[Tuple[Constraint, Dict[str, Any]]],  
               mode : Literal["acc", "f1"], 
               seeds = []):
         # Initialize training session
@@ -490,12 +539,15 @@ class TrainingLoop:
         # Synthesizer responsible for filtering, evaluating, and finding the best rule
         synthesizer.set_mode(mode)
         if seeds : 
+            TRAIN_LOG.info(f"Start training with : {seeds[0][1]}")
+            if seeds[0][0]["f1_score"] == 100 :
+                self.update_record_constr(seeds[0][1], orig_record, seeds[0][0])
+                return True
             synthesizer.save_state(seeds)
         while self.cfg["train"]['infer_asset_per_epoch'] >= infer_times and not solved:
             if tolerance >= self.cfg["train"]['tolerance']:
                 break
             
-            # Generate prompts for inference
             context, prompts = prompter.gen([target.get_core_msg()], 
                                     args_values=target.get_values_map(),
                                     num_of_ex=random.randint(2, 3),
@@ -506,33 +558,26 @@ class TrainingLoop:
 # ```len(input.shape) >= 2```""" # for debugging
             infer_times += 1
             
-            # Parse LLM response and generate rules
             new_rules = self.parse_and_generate_rules(raw_infered, 
                                                       target, 
                                                       record["args"]["name"]
                                                       )
-            # Evaluate and optimize generated rules
             result = synthesizer.run(new_rules)
             if result is not None :
                 solved, tolerance, highest_prev, prev_answer = self.update_tolerance_and_history(result, tolerance, highest_prev, prev_answer)
-        
-        # Finalize training session and handle rule selection
-        return self.finalize_training_session(highest_prev, orig_record, constr_target_map, synthesizer, prev_answer)
+        return self.finalize_training_session(highest_prev, orig_record, constr_list, synthesizer, prev_answer)
     
-    def update_record_constr(self, constr, record, scores) :
-        self.get_constrs_from_rules(record).append({
-            "txt" : constr.txt,
-            "cot" : constr.cot,
-            "target" : constr.target.get_core_msg(),
-            "scores" : scores
-        })
+    def update_record_constr(self, constr : Constraint, record, scores) :
+        record["rules"].append(
+            [constr.dump(), scores]
+        )
     def handle_solved_rule(self, 
                            constr : Constraint, 
                            scores : Dict[str, Any], 
                            record : Dict[str, Any],
-                           constr_target_map : Dict[ErrorMessage, Tuple[Dict[str, float],Constraint]]
+                           constr_list : List[Tuple[Constraint, Dict[str, Any]]],
                            ) : 
-        constr_target_map.update({constr.target : (scores, constr)})
+        constr_list.append((constr, scores))
         self.update_record_constr(constr, record, scores)
 
     def is_special_err_msg(self, errmsg : ErrorMessage) -> bool:

@@ -7,6 +7,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import warnings
 from neuri.abstract.dtype import materalize_dtypes
 from neuri.constrinf.util import formatted_dict
+from neuri.logger import TRAIN_LOG
 
 class ErrorMessage:
     def __init__(self, msg: str, traceback_msg : str, values, choosen_dtype, package : Literal["torch", "tf"] = "torch"):
@@ -24,7 +25,7 @@ class ErrorMessage:
             self.error_type = type(msg)
             self.msg = str(msg)
         else :
-            self.error_type = self.msg
+            self.error_type = None
         self.traceback = traceback_msg
         if values is not None :
             self.values : Dict[str, Any] = values
@@ -34,16 +35,15 @@ class ErrorMessage:
     def dump(self) :
         return {
             "msg" : self.msg,
-            "traceback" : self.traceback,
             "choosen_dtype" : {name : dtype.dump() for name, dtype in self.chooen_dtype.items()},
             "package" : self.package
         }
     @staticmethod
     def load(data) :
         return ErrorMessage(data["msg"], 
-                            data["traceback"],
-                            data["values"], 
-                            {name : materalize_dtypes(dtype) for name, dtype in data["choosen_dtype"].items()}, 
+                            "loaded",
+                            None, 
+                            {name : materalize_dtypes(dtype)[0] for name, dtype in data["choosen_dtype"].items()}, 
                             data["package"])
     def __repr__(self):
         return f"{self.error_type}({self.get_core_msg()})[{formatted_dict(self.get_values_map())}]"
@@ -54,13 +54,19 @@ class ErrorMessage:
 
         :return: A tuple containing the error message, args, and kwargs.
         """
+        if self.values is None :
+            TRAIN_LOG.warning(f"Loaded ErrorMessage has no values")
+            return {}
         return self.values
     
     def get_summarized(self) -> str :
         return f"{self.get_core_msg()}[{formatted_dict(self.get_values_map())}]"
     
-    def get_dtypes(self) -> List[Any] :
-        return list(self.chooen_dtype.values())
+    def get_dtypes(self, names) -> List[Any] :
+        dtypes = [None]*len(names)
+        for i, name in enumerate(names) :
+            dtypes[i] = self.chooen_dtype[name]
+        return dtypes
 
     def get_dtypes_map(self, *args, **kwargs) -> Dict[str, Any]:
         """
@@ -90,13 +96,6 @@ class ErrorMessage:
         res = msg[:end]
         return res
 
-    def get_str_err_type(self) -> str :
-        return str(self.error_type)\
-                .replace("class","")\
-                .replace("<","")\
-                .replace(">","")\
-                .replace("'","")\
-                .strip()
     def get_core_msg(self) -> str :
         if self.msg == "no error" :
             return self.msg
@@ -105,10 +104,9 @@ class ErrorMessage:
             error = self.msg[first_pos:].strip()
             if self.package == 'tf' :
                 error = self.clean_errmsg(error) #tf special
-            return self.get_str_err_type() + ": " + error 
+            return error 
         else :
-            return self.get_str_err_type() + ": " + self.msg 
-
+            return self.msg 
 
 def delete_btw(msg, start_chr, end_chr, include=False):
     stack = []

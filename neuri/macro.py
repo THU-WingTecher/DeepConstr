@@ -30,5 +30,5 @@ python neuri/materialize/torch/program.py /artifact/bugs/torchcomp-neuri-fuzz-02
 """
 
 """train
-python neuri/cli/train.py train.record_path=data/constraints/torch train.root=infer/torch backend.type=torchcomp model.type=torch hydra.verbose=train train.resume=false
+python neuri/cli/train.py train.record_path=data/constraints/torch backend.type=torchcomp model.type=torch hydra.verbose=train train.resume=false
 """

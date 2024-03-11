@@ -27,8 +27,7 @@ def _process_record(file_path: str, test_pool: list = []) -> dict:
     """
     Process a single file and return the configuration as a record dictionary.
     """
-    from neuri.abstract.dtype import materalize_dtypes  # Assumed to be a necessary import
-    # Assuming load_yaml is defined elsewhere or is a known function for loading YAML files
+    from neuri.abstract.dtype import materalize_dtypes  
     record = {}
     record = load_yaml(file_path)
     if test_pool and record["name"] not in test_pool:
@@ -36,6 +35,8 @@ def _process_record(file_path: str, test_pool: list = []) -> dict:
     record['args']['dtype_obj'] = [materalize_dtypes(dtype) for dtype in record['args']['dtype']]
     record['args']['value'] = [None] * len(record['args']["name"]) # Placeholder for the input values
     record['outputs'] = {'value': []} # Placeholder for the output values
+    if record.get('rules', None) is None :
+        record['rules'] = []
     return record
     
 def process_record(file_path: str, test_pool: list = []) -> dict:

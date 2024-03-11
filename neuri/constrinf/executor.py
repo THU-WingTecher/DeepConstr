@@ -11,6 +11,8 @@ from neuri.logger import MGEN_LOG
 from neuri.specloader.smt import gen_val
 from neuri.constrinf.errmsg import ErrorMessage
 
+NOERR_MSG = "no error"
+
 def contains_ctypes(obj, visited=None):
     import ctypes
     if visited is None:
@@ -81,7 +83,7 @@ def worker(model, record, noise=0.8, allow_zero_length_rate=0.1, allow_zero_rate
             err_instance = ErrorMessage("NotImplemented", "", concretized_values, chosen_dtype)
             err_instance.error_type = NotImplementedError
             return False, err_instance
-        return True, ErrorMessage("no error", "", concretized_values, chosen_dtype)  # Assuming execution success
+        return True, ErrorMessage(NOERR_MSG, "", concretized_values, chosen_dtype)  # Assuming execution success
     except Exception as e:
         error_instance = ErrorMessage(e, traceback.format_exc(), concretized_values, chosen_dtype)
         assert isinstance(error_instance, ErrorMessage)
@@ -100,17 +102,12 @@ class Executor:
         return res
     def _execute(self, ntimes, *args, **kwargs) -> Optional[List[Tuple[bool, ErrorMessage]]]:
         results = []
-        unable_to_gen_tor = 4
         worker_fn = functools.partial(worker, self.model, *args, **kwargs)
         for _ in range(ntimes):
             res = worker_fn()
             if res is None :
-                unable_to_gen_tor -= 1
                 results.append(res)
-                if unable_to_gen_tor == 0 :
-                    return None
             else :
-                unable_to_gen_tor = 4
                 results.append(res)
         return results
     def parallel_execute(self, ntimes, *args, **kwargs) -> Optional[List[Tuple[bool, ErrorMessage]]]:

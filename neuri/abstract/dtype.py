@@ -332,7 +332,7 @@ class AbsDType(Enum):
             AbsDType.bool: [dtype.z3_const() for dtype in [DType.bool]],
             AbsDType.int: [dtype.z3_const() for dtype in [DType.int32, DType.int64, DType.int8, DType.int16]],
             AbsDType.float: [dtype.z3_const() for dtype in [DType.float16,DType.float32,DType.float64]],
-            AbsDType.complex: [dtype.z3_const() for dtype in [DType.complex64, DType.complex128]],
+            AbsDType.complex: [dtype.z3_const() for dtype in [DType.complex32, DType.complex64, DType.complex128]],
             AbsDType.none: [None],
         }[self]
     def get_tensor_dtypes(self) -> List[DType]:
@@ -912,6 +912,8 @@ def materalize_dtype(target_str : str) -> Any :
 def materalize_dtypes(dtypes : str, merge_tensor : bool = True) -> List[Any] :
     targets : List[str] = []
     res : List[Any] = []
+    if dtypes in STR_TO_ABS.keys() :
+        return [STR_TO_ABS[dtypes]]
     typing_obj = materalize_typing_obj(dtypes)
     if typing_obj is not None :
         return typing_obj if isinstance(typing_obj, list) else [typing_obj]

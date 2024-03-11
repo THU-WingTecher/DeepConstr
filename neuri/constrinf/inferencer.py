@@ -15,7 +15,8 @@ class Inferencer() :
         self.model = None
         self.args = None
         self.update_setting(self.setting)
-        
+        self.prompt_token = 0
+        self.complete_token = 0
         self.key1 = os.getenv('OPENAI_API_KEY1')
         self.key2 = os.getenv('OPENAI_API_KEY2')
         self.using_key = 1
@@ -26,7 +27,8 @@ class Inferencer() :
     #     else :
     #         openai.api_key = self.key1
     #         self.using_key = 1
-
+    def init(self) -> None :
+        self.n_token = 0
     def up_temp(self, temp : float) -> None :
         while self.args['temperature']+temp > 2 :
             self.args['temperature'] -= 1
@@ -59,6 +61,11 @@ class Inferencer() :
         """
         self.prompts = prompts
     
+    def finalize(self) :
+        LLM_LOG.info(
+            f"====================\nUsed Prompt : {self.prompt_token} Complete : {self.complete_token} tokens\n====================\n"
+        )
+        
     def inference(self, 
                   prompts : str, 
                   contexts : str = '', 
@@ -70,15 +77,13 @@ class Inferencer() :
 
         start = time.time()
         
-        # if update :
-        #     self.update_setting(random.choice(self.settings))
         LLM_LOG.info(f'Inferencing with {self.model}\{self.args} \nSystem : \n {contexts} \nPrompts : \n {prompts} \n')
         client = openai.OpenAI(
             api_key=os.getenv('OPENAI_API_KEY1'),
             timeout=self.setting['timeout']
         )
         try:
-            stream = client.chat.completions.create(
+            completion = client.chat.completions.create(
                     model=self.model,
                     messages=[
                         {'role' : "system", 'content' : contexts},
@@ -96,8 +101,10 @@ class Inferencer() :
             LLM_LOG.error(e.status_code)
             LLM_LOG.error(e.response)   
 
-        response = stream.choices[0].message.content
+        response = completion.choices[0].message.content
         time_cost = time.time() - start
-        LLM_LOG.info(f'Output(Ptk{stream.usage.prompt_tokens}-OtkPtk{stream.usage.completion_tokens}) : \n {response} \n Time cost : {time_cost} seconds \n')
+        LLM_LOG.info(f'Output(Ptk{completion.usage.prompt_tokens}-OtkPtk{completion.usage.completion_tokens}) : \n {response} \n Time cost : {time_cost} seconds \n')
+        self.prompt_token += completion.usage.prompt_tokens
+        self.complete_token += completion.usage.completion_tokens
         return response
     
