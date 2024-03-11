@@ -1,6 +1,0 @@
-package: torch
-pass_rate: 0.0
-rules: {}
-skipped: true 
-skipped_reason: unsupport constraints(tuple tensor)
-title: torch._C._linalg.linalg_multi_dot

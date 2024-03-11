@@ -1,6 +1,0 @@
-package: torch
-pass_rate: 0.0
-rules: {}
-title: torch.symeig
-skipped: True
-skipped_reason: no document 

@@ -1,6 +1,0 @@
-pass_rate: 0.0
-rules: {}
-title: torch.clamp_min
-skipped: True
-skipped_reason: dup
-dupe_with: torch.clamp

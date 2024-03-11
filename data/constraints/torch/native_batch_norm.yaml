@@ -1,6 +1,0 @@
-package: torch
-pass_rate: 0.0
-rules: {}
-title: torch.native_batch_norm
-skipped: true 
-skipped_reason: no doc 

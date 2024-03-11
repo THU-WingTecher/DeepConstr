@@ -1,7 +1,0 @@
-package: torch
-pass_rate: 0.0
-rules: {}
-title: torch.margin_ranking_loss
-skipped: true 
-skipped_reason: dupe
-dupe_with: torch.nn.functional.margin_ranking_loss

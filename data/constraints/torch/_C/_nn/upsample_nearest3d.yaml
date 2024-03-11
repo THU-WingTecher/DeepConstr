@@ -1,4 +1,0 @@
-package: torch
-pass_rate: 0.0
-rules: {}
-title: torch._C._nn.upsample_nearest3d

@@ -1,6 +1,0 @@
-package: torch
-pass_rate: 0.0
-rules: {}
-title: torch.int64
-skipped_reason: no function
-skipped: true

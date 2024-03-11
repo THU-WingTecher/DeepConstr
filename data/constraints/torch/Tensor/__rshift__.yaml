@@ -1,6 +1,0 @@
-package: torch
-pass_rate: 0.0
-rules: {}
-title: torch.Tensor.__rshift__
-skipped_reason: no documentation found
-skipped: true

@@ -1,7 +1,0 @@
-package: torch
-pass_rate: 0.0
-rules: {}
-title: torch.clamp_max
-dupe_with: torch.clamp
-skipped: true 
-skipped_reason: dupe

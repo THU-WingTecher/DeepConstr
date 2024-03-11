@@ -1,6 +1,0 @@
-package: torch
-pass_rate: 0.0
-rules: {}
-title: torch.Tensor.__or__
-skipped: True
-skipped_reason: dup

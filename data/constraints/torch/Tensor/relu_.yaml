@@ -1,7 +1,0 @@
-package: torch
-pass_rate: 0.0
-rules: {}
-skipped: true
-skipped_reason: dupe
-title: torch.Tensor.relu_
-dupe_with: torch.relu

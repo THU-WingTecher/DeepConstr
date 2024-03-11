@@ -1,7 +1,0 @@
-package: torch
-pass_rate: 0.0
-rules: {}
-title: torch._C._nn.adaptive_max_pool3d
-skipped: true 
-skipped_reason: dupe 
-dupe_with: torch.nn.functional.adaptive_max_pool3d_with_indices

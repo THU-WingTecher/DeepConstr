@@ -1,5 +1,0 @@
-package: tf
-pass_rate: 0.0
-rules: {}
-skipped: uncompatiable type
-title: tf.raw_ops.Cast
