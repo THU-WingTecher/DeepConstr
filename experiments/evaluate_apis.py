@@ -144,13 +144,14 @@ def run(api_name, baseline, config, max_retries=100):
     print("Running fuzzing for API", api_name, "with baseline", baseline)
     test_pool = [FIXED_FUNC, api_name]
     test_pool_modified = '-'.join(test_pool)
-    save_path = f"{os.getcwd()}/gen/{config['model']['type']}-{baseline}-n{config['mgen']['max_nodes']}-{test_pool_modified}.models"
+    save_path = f"{os.getcwd()}/{config['exp']['save_dir']}/{config['model']['type']}-{baseline}-n{config['mgen']['max_nodes']}-{test_pool_modified}.models"
     def execute_command(command):
         """
         Executes a given command and prints its output in real-time.
         """
+        print("Running\n", command)
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-        
+        import time; time.sleep(10)
         # Print output as it's generated
         while True:
             output = process.stdout.readline()
@@ -160,19 +161,19 @@ def run(api_name, baseline, config, max_retries=100):
                 print(output.strip())
     if config['model']['type'] == "tensorflow":
         if baseline == "constrinf":
-            RECORD = os.path.join(os.getcwd(), "data", "constraints", "tf")
+            RECORD = os.path.join(os.getcwd(), "data", "records", "tf")
         else:
             RECORD = os.path.join(os.getcwd(), "data", "tf_records")
     elif config['model']['type'] == "torch":
         if baseline == "constrinf":
-            RECORD = os.path.join(os.getcwd(), "data", "constraints", "torch")
+            RECORD = os.path.join(os.getcwd(), "data", "records", "torch")
         else:
             RECORD = os.path.join(os.getcwd(), "data", "torch_records")
     # Construct the command to run fuzz.py
     fuzz_command = f"PYTHONPATH=$(pwd):$(pwd)/neuri python neuri/cli/fuzz.py " \
                    f"fuzz.time={config['fuzz']['time']} " \
                    f"mgen.record_path={RECORD} " \
-                   f"fuzz.root=$(pwd)/gen/{config['model']['type']}-{baseline}-n{config['mgen']['max_nodes']}-{test_pool_modified} " \
+                   f"fuzz.root=$(pwd)/{config['exp']['save_dir']}/{config['model']['type']}-{baseline}-n{config['mgen']['max_nodes']}-{test_pool_modified} " \
                    f"fuzz.save_test={save_path} " \
                    f"model.type={config['model']['type']} backend.type={config['backend']['type']} filter.type=\"[nan,dup,inf]\" " \
                    f"debug.viz=true hydra.verbose=fuzz fuzz.resume=true " \

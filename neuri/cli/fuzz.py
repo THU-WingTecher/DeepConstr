@@ -238,6 +238,7 @@ class FuzzingLoop:
                 pass_rate=cfg["mgen"]["pass_rate"],
                 test_pool=cfg["mgen"]["test_pool"],
             )
+            assert len(self.record_finder) > 0, "No record found."
         else :
             from neuri.autoinf import make_record_finder
             self.opset = auto_opset(

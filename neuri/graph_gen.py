@@ -1215,10 +1215,10 @@ class ConstrInf(NeuriR):
         default_dtype_constr = True
         record = self.pick_next_record()
         for i_arg, arg_name, in enumerate(record['args']['name']) :
-            if len(record['args']['dtype'][i_arg]) > 0 :
-                chosen_dtype[arg_name] = random.choice(record['args']['dtype'][i_arg])
+            if len(record['args']['dtype_obj'][i_arg]) > 0 :
+                chosen_dtype[arg_name] = random.choice(record['args']['dtype_obj'][i_arg])
             else :
-                chosen_dtype[arg_name] = record['args']['dtype'][i_arg]
+                chosen_dtype[arg_name] = record['args']['dtype_obj'][i_arg]
 
             if isinstance(chosen_dtype[arg_name], AbsTensor) :
                 input_tensor_candidates.append(arg_name)
@@ -1229,36 +1229,33 @@ class ConstrInf(NeuriR):
         var_indicates = list(var_indicates)
         default_dtype_generator : Callable = DEFAULT_DTYPE_CONSTR.get(self.model.package)
         assert default_dtype_generator is not None, "default dtype constraint not defined"
-        for _ in range(self.num_of_try) :
-            if len(input_tensor_candidates) > 0 : 
-                connected_key_name = random.choice(input_tensor_candidates)
+        # for _ in range(self.num_of_try) :
+        if len(input_tensor_candidates) > 0 : 
+            connected_key_name = random.choice(input_tensor_candidates)
 
-                if var_indicates : # constrained generation by ir var : k
-                    ir_var_k = random.choice(var_indicates)
-                    v = self.ir.vars[ir_var_k]
-                    
-                    consistent_constrs = v.consistent_constr(
-                        other = connected_key_name
-                    )
-                else : 
-                    ir_var_k = None 
-                    consistent_constrs = []
-                    
-                default_dtype_constr = default_dtype_generator(connected_key_name)
-
-            values = gen_val(
-                self.num_of_try,
-                chosen_dtype, 
-                record['constraints'],
-                noise_prob=self.noise,
-                allow_zero_length_rate=self.allow_zero_length_rate,
-                allow_zero_rate=self.allow_zero_rate,
-                constraints=consistent_constrs + [default_dtype_constr],
-                api_name=record['name'],
+            if var_indicates : # constrained generation by ir var : k
+                ir_var_k = random.choice(var_indicates)
+                v = self.ir.vars[ir_var_k]
+                
+                consistent_constrs = v.consistent_constr(
+                    other = connected_key_name
                 )
+            else : 
+                ir_var_k = None 
+                consistent_constrs = []
+                
+            default_dtype_constr = default_dtype_generator(connected_key_name)
 
-            if values is not None : 
-                break 
+        values = gen_val(
+            self.num_of_try,
+            chosen_dtype, 
+            record['constraints'],
+            noise_prob=self.noise,
+            allow_zero_length_rate=self.allow_zero_length_rate,
+            allow_zero_rate=self.allow_zero_rate,
+            constraints=consistent_constrs + [default_dtype_constr],
+            api_name=record['name'],
+            )
 
         if values is None : 
             return False # failed to find a solution

@@ -30,7 +30,7 @@ def _process_record(file_path: str, test_pool: list = []) -> dict:
     from neuri.abstract.dtype import materalize_dtypes  
     record = {}
     record = load_yaml(file_path)
-    if test_pool and record["name"] not in test_pool:
+    if test_pool and record["name"].split("-")[0] not in test_pool:
         return None
     record['args']['dtype_obj'] = [materalize_dtypes(dtype) for dtype in record['args']['dtype']]
     record['args']['value'] = [None] * len(record['args']["name"]) # Placeholder for the input values

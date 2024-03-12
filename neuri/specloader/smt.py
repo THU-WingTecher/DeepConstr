@@ -65,12 +65,12 @@ def gen_default_constr(
             pass
     return rules
 
-def add_noises(args_types, args_lengths, noise_prob):
+def add_noises(args_types, args_lengths, noise_prob, not_gen_names = []):
     noises = []
     noise_dist = {arg_name: noise_prob if isinstance(noise_prob, float) else noise_prob.get(arg_name, 0) for arg_name in args_types}
 
     for arg_name, arg_noise in noise_dist.items():
-        if not arg_noise:
+        if not arg_noise or arg_name in not_gen_names:
             continue
         noises.extend(
             gen_noise(arg_name, args_types[arg_name], args_lengths.get(arg_name), noise_dist[arg_name])
@@ -315,9 +315,9 @@ def process_len(
                 assert isinstance(val, int) and val <= MAX_ARR_LEN, f"Invalid length {val}"
             len_val = len(len_val)
         constrs.append(args_types[arg_name].z3()(arg_name).rank == len_val)
-        if isinstance(args_types[arg_name], AbsTensor) :
-            assert isinstance(len_val, int) and len_val <= MAX_ARR_LEN, f"Invalid length {len_val}"
-            constrs.append(check_numel_constr(args_types[arg_name].z3()(arg_name).shape, len_val))
+        # if isinstance(args_types[arg_name], AbsTensor) :
+        #     assert isinstance(len_val, int) and len_val <= MAX_ARR_LEN, f"Invalid length {len_val}"
+            # constrs.append(check_numel_constr(args_types[arg_name].z3()(arg_name).shape, len_val))
     
     return constrs
 
@@ -352,6 +352,17 @@ def gen_val(num_of_try, *args, **kwargs) -> Optional[Dict[str, Any]] :
         tries += 1
     return values
 
+def extract_names_from_constrs(constrs : List[z3.ExprRef]) -> List[str] :
+    names = set()
+    for constr in constrs :
+        try :
+            name = SMTFuncs.get_name(constr)
+        except :
+            name = None
+        if name is not None :
+            names.add(name)
+    return names
+
 def _gen_val(
           args_types : Dict[str, Union[AbsDType, AbsTensor]],
           constrs : List[Callable] = [], 
@@ -370,6 +381,7 @@ def _gen_val(
                         name : abs.z3()(name)
                         for name, abs in args_types.items()
                     }) for constr in constrs]
+    names = extract_names_from_constrs(constraints)
     solver = init_solver()
     solver.add(constrs)
     len_rules = process_len(args_types, args_lengths, solver, noise=noise_prob, allow_zero_length_rate=allow_zero_length_rate)
@@ -378,7 +390,7 @@ def _gen_val(
         return None 
     # solve all rank and len varaibles_first 
     help_rules = gen_default_constr(args_types, args_lengths, allow_zero_rate=allow_zero_rate)
-    noises = add_noises(args_types, args_lengths, noise_prob)
+    noises = add_noises(args_types, args_lengths, noise_prob, names)
     all_rules = len_rules + help_rules + noises + constraints
     if all_rules : 
         solver.add(all_rules)
@@ -400,7 +412,11 @@ def init_solver() -> z3.Solver :
     return solver
 
 def is_solver_solvable(solver: z3.Solver) -> bool:
-    return solver.check() in [z3.sat] ## FIXME : How to deal with z3.unknown
+    res = False
+    if solver.check() == z3.unknown :
+        solver.set("timeout", 100000)
+    res = solver.check() == z3.sat
+    return res 
 
 def solve(solver : z3.Solver, 
           args_types : Dict[str, Any]) -> \

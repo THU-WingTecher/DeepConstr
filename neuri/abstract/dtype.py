@@ -600,6 +600,36 @@ class AbsTensor:
         import torch
 
         return torch.Size(self.shape)
+
+    def broadcast_constr(self, other : str) -> List[z3.BoolRef] :
+        """ 
+        generate constraints that ensure the shape, rank, and dtype as consistent with
+        the name of $other tensor
+        """
+        ## gen z3 var 
+        other_obj = self.z3()(other)
+        constrs = [] # [self.ndims <= other_obj.rank]
+        for i in range(-self.ndims, -1):
+            constrs.append(
+                z3.Or(
+                    self.shape[i] == other_obj.shape[i+other_obj.rank],
+                    self.shape[i] == 1,
+                    other_obj.shape[i+other_obj.rank] == 1,
+                )
+            )
+        return constrs
+    
+    def same_dtype_constr(self, other : str) -> z3.BoolRef :
+        """ 
+        generate constraints that ensure the dtype as consistent with
+        the name of $other tensor
+        """
+        other_obj = self.z3()(other)
+        return other_obj.dtype == self.dtype.z3_const()
+    
+    def tensor_conn_constr(self, other : str) -> List[z3.BoolRef] :
+        return [self.same_dtype_constr(other)] + self.broadcast_constr(other)
+    
     def consistent_constr(self, other : str) -> List[z3.BoolRef] :
         """ 
         generate constraints that ensure the shape, rank, and dtype as consistent with

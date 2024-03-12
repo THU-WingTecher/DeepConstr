@@ -38,7 +38,7 @@ for dtype in SUPPORTED_DTYPES :
     Z3DTYPE.declare(dtype)
 Z3DTYPE = Z3DTYPE.create()
 
-iter_specific_funcs = ["len", "rank", "sorted", "min", "max", "dim", "ndim", "ndims"]
+iter_specific_funcs = ["len", "rank", "sorted", "min", "max", "dim", "ndim", "ndims", "shape", "size", "dtype"]
 tensor_dtype_check_funcs = ["dtype"]
 
 Complex = z3.Datatype("complex")
