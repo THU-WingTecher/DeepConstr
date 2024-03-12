@@ -252,6 +252,7 @@ class TrainingLoop:
                     if name in data :
                         li.append(os.path.join(root, file))
         return sorted(li, key=sort_key)
+        ### all records of torch apis ###
         # li = []
         # root_path = self.cfg["train"]["record_path"] 
         # for root, _, files in os.walk(root_path):
@@ -487,31 +488,48 @@ unsolved_err_msgs : {[e.dump() for e in unsolved]}
             if data["pass_rate"] > self.cfg["train"]["precision_threshold"] :
                 return 
         save_record(record, save_path)
-        
+    
+    def is_triaged_err_msg(self, errmsg : ErrorMessage, constr_list) -> bool:
+        for constr in constr_list :
+            if is_similar(errmsg.get_core_msg(), constr.target.get_core_msg(), self.cfg["train"]["str_sim_threshold"]) :
+                return True
+        return False
+
+    def is_retrainable(self, record : Record) :
+        return record is not None and record.get("pass_rate", 0) > 0
     def run(self, op_record, record_path):
 
         n_try = 0
         pass_rate = 0
-        constr_list : Tuple[List, Dict[str, Any]][Constraint] = []
+        constr_list : List[Constraint] = []
         TRAIN_LOG.info(f"Start training {op_record['name']}")
+        constr_list.extend([c for c, _ in self.get_constrs_from_rules(op_record)])
         while n_try < self.cfg["train"]["n_try"] :
             pass_rate, sorted_err_instances = self.get_pass_rate_and_err_msgs(op_record, self.cfg["train"]["eval_asset"])
             self.update_pass_rate(op_record, pass_rate)
-            if pass_rate >= self.cfg["train"]["precision_threshold"] :
+            if pass_rate >= self.cfg["train"]["pass_rate"] :
                 TRAIN_LOG.info(f"pass_rate is over {self.cfg['train']['precision_threshold']}")
                 break
-            if sorted_err_instances :
-                succeed = self.train(op_record, sorted_err_instances[0], constr_list, mode="acc")
+            while sorted_err_instances :
+                most_frequent = sorted_err_instances.pop(0)
+                if self.is_triaged_err_msg(most_frequent, constr_list) :
+                    TRAIN_LOG.warning(f"Error message {most_frequent.get_core_msg()} is already triaged.")
+                    continue
+                succeed = self.train(op_record, most_frequent, constr_list, mode="acc")
                 if succeed :
                     save_record(op_record, record_path)
                 else :
-                    TRAIN_LOG.warning(f"Failed to train {sorted_err_instances[0].get_core_msg()}")
+                    TRAIN_LOG.warning(f"Failed to train {most_frequent.get_core_msg()}")
                     break
-            else :
-                TRAIN_LOG.info(f"No error messages encountered.")
-                break
+            TRAIN_LOG.info(f"No error messages encountered.")
+            break
         
         self.save_only_acc(op_record, record_path)
+        if not self.is_retrainable(op_record) :
+            TRAIN_LOG.warning(f"Record is not retrainable : {formatted_dict(op_record, sep=':', split=', ')}")
+            save_record(op_record, record_path)
+        if pass_rate < self.cfg["train"]["precision_threshold"] :
+            self.retrain(op_record, record_path, constr_list)
         queue = self.get_retrain_list(op_record, constr_list)
         while queue :
             constr, scores = queue.pop()
@@ -559,9 +577,12 @@ unsolved_err_msgs : {[e.dump() for e in unsolved]}
                 return True
             synthesizer.save_state(seeds)
         while self.cfg["train"]['infer_asset_per_epoch'] >= infer_times and not solved:
-            if tolerance >= self.cfg["train"]['tolerance']//2:
-                self.inferencer.change_to_gpt4()
-                break
+            TRAIN_LOG.info(f"Start infering[round={tolerance}] {target.get_core_msg()}")
+            if tolerance >= self.cfg["train"]['tolerance']:
+                if self.inferencer.is_gpt4() :
+                    break
+                else : 
+                    self.inferencer.change_to_gpt4()
             
             context, prompts = prompter.gen([target.get_core_msg()], 
                                     args_values=target.get_values_map(),

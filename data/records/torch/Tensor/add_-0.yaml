@@ -17,4 +17,21 @@ args:
   - false
 name: torch.Tensor.add_
 package: torch
-pass_rate: 0
+pass_rate: 64.70588235294117
+rules:
+- - cot: 'Error is triggered because the size of tensor a (9) doesn''t match the size
+      of tensor b (8) at non-singleton dimension 0. The constraint to prevent this
+      error is:'
+    target:
+      choosen_dtype:
+        alpha: int
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (8) at non-singleton
+        dimension 0
+      package: torch
+    txt: self.shape[0] == other.shape[0]
+  - f1_score: 69.74984046579043
+    overall_score: 39.874920232895214
+    precision: 95.1417004048583
+    recall: 55.05618854987466

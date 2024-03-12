@@ -13,4 +13,24 @@ args:
   - true
 name: torch.Tensor.__ixor__
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: "Error is triggered because the size of tensor a (3) does not match the size\
+      \ of tensor b (5) at non-singleton dimension 0. To prevent this error, we need\
+      \ to ensure that the dimensions of the tensors being operated on are either\
+      \ equal or one of them has size 1. \n\nTherefore, the constraints can be formulated\
+      \ as:"
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (3) must match the size of tensor b (5) at non-singleton
+        dimension 0
+      package: torch
+    txt: 'other.shape[0] == 1
+
+      '
+  - f1_score: 81.30748549596716
+    overall_score: 45.65374274798358
+    precision: 94.84978540772532
+    recall: 71.14908370480435

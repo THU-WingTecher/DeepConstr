@@ -13,5 +13,37 @@ args:
   - true
 name: torch.Tensor.__or__
 package: torch
-pass_rate: 0.0
-rules: []
+pass_rate: 87.66519823788546
+rules:
+- - cot: 'The error occurs because the bitwise OR operation (`bitwise_or_cpu`) is
+      not implemented for tensors with the data type `Float`. To prevent this error,
+      the data type of both tensors (`self` and `other`) should be changed to a compatible
+      type that supports bitwise OR operation. The compatible data types are `half`,
+      `int8`, `int16`, `int32`, `int64`, `uint8`, `uint16`, `uint32`, and `uint64`.
+      So, the final formula to prevent the error is:'
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"bitwise_or_cpu" not implemented for ''Float'''
+      package: torch
+    txt: (dtype(self) in ["half", "int8", "int16", "int32", "int64", "uint8", "uint16",
+      "uint32", "uint64"]) and (dtype(other) in ["half", "int8", "int16", "int32",
+      "int64", "uint8", "uint16", "uint32", "uint64"])
+  - f1_score: 92.72727272727273
+    overall_score: 100
+    precision: 100.0
+    recall: 86.4406779661017
+- - cot: synthesized
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"bitwise_or_cpu" not implemented for ''Half'''
+      package: torch
+    txt: (dtype(self) in ["int8", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+      "uint64"]) and (dtype(other) != 'Half')
+  - f1_score: 87.08609271523179
+    overall_score: 100
+    precision: 100.0
+    recall: 77.12609970674487

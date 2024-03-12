@@ -241,6 +241,7 @@ class DType(Enum):
             DType.int16: tf.int16,
             DType.int32: tf.int32,
             DType.int64: tf.int64,
+            DType.complex32: tf.complex64,
             DType.complex64: tf.complex64,
             DType.complex128: tf.complex128,
             DType.bool: tf.bool,
@@ -290,6 +291,7 @@ class DType(Enum):
             DType.int16: 2,
             DType.int32: 4,
             DType.int64: 8,
+            DType.complex32: 4,
             DType.complex64: 8,
             DType.complex128: 16,
             DType.bool: 1,  # Follow C/C++ convention.
@@ -340,7 +342,7 @@ class AbsDType(Enum):
             AbsDType.bool: [DType.bool],
             AbsDType.int: [DType.int32, DType.int64, DType.int8, DType.int16],
             AbsDType.float: [DType.float16,DType.float32,DType.float64],
-            AbsDType.complex: [DType.complex64, DType.complex128],
+            AbsDType.complex: [DType.complex32, DType.complex64, DType.complex128],
             AbsDType.none: [None],
         }[self]
     

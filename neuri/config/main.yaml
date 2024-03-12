@@ -84,8 +84,9 @@ train:
   simple_eval_asset: 30
   eval_asset: 50 #eval asset of constraints, pass_rate assess asset of the operator
   n_infer_per_round: 10
-  str_sim_threshold: 0.5
-  precision_threshold: 94 # 0 ~ 100
+  str_sim_threshold: 0.65
+  pass_rate: 95
+  precision_threshold: 80 # 0 ~ 100
 
 llm:
   settings:

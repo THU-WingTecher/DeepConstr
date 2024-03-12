@@ -13,5 +13,52 @@ args:
   - true
 name: torch.Tensor.__lshift__
 package: torch
-pass_rate: 2.380952380952381
-rules: []
+pass_rate: 95.47169811320755
+rules:
+- - cot: 'Error is triggered because the size of tensors at non-singleton dimension
+      0 doesn''t match. The size of tensor a is 4 and the size of tensor b is 9. To
+      prevent this error, the sizes of tensors at non-singleton dimension 0 should
+      match. Therefore, the condition is:'
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (4) must match the size of tensor b (9) at non-singleton
+        dimension 0
+      package: torch
+    txt: self.shape[0] == other.shape[0]
+  - f1_score: 70.53527480562178
+    overall_score: 50.49034749034749
+    precision: 94.98069498069498
+    recall: 56.097357039154126
+- - cot: 'The error is due to the lack of implementation of the "lshift_cpu" operation
+      for the ''Float'' data type. To prevent this error, we need to ensure that the
+      data type of both the input tensors is not ''Float''. Therefore, the constraint
+      would be:'
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"lshift_cpu" not implemented for ''Float'''
+      package: torch
+    txt: (dtype(self) != 'Float') and (dtype(other) != 'Float')
+  - f1_score: 79.54173486088379
+    overall_score: 100
+    precision: 100.0
+    recall: 66.03260869565217
+- - cot: 'The error is triggered because the size of tensors at non-singleton dimension
+      2 doesn''t match. To prevent this error, we need to ensure that the size of
+      tensor a (self) matches the size of tensor b (other) at non-singleton dimension
+      2. We can formulate the constraint as follows:'
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (3) at non-singleton
+        dimension 2
+      package: torch
+    txt: self.shape[2] == other.shape[2]
+  - f1_score: 69.49659330424977
+    overall_score: 52.03846153846153
+    precision: 98.07692307692307
+    recall: 53.814620815304025

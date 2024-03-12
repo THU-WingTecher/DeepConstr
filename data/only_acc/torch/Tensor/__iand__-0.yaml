@@ -14,4 +14,21 @@ args:
 name: torch.Tensor.__iand__
 package: torch
 pass_rate: 0.0
-rules: []
+rules:
+- - cot: "Based on the given runtime information, the error is triggered because the\
+      \ size of tensor a (self) and tensor b (other) do not match at non-singleton\
+      \ dimension 0. \n\nTo prevent this error, we can add a constraint that ensures\
+      \ the size of tensor a (self) matches the size of tensor b (other) at non-singleton\
+      \ dimension 0. \n\nThe constraint can be formulated as follows:"
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (3) must match the size of tensor b (9) at non-singleton
+        dimension 0
+      package: torch
+    txt: self.shape[0] == other.shape[0]
+  - f1_score: 69.36615008312472
+    overall_score: 50.081712062256805
+    precision: 94.16342412451361
+    recall: 54.906824782187805

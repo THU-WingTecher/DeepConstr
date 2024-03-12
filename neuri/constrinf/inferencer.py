@@ -44,6 +44,8 @@ class Inferencer() :
         self.model = model
     def default(self) -> None :
         self.update_setting(self.settings[0])
+    def is_gpt4(self) -> bool :
+        return self.model == 'gpt-4'
     def change_to_gpt4(self) -> None :
         self.set_model('gpt-4')
         self.set_temp(0.7)

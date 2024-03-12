@@ -13,4 +13,54 @@ args:
   - true
 name: torch.Tensor.__lshift__
 package: torch
-pass_rate: 0
+pass_rate: 95.47169811320755
+rules:
+- - cot: synthesized
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (3) at non-singleton
+        dimension 2
+      package: torch
+    txt: ((self.shape[2] == other.shape[2]) or (self.shape[2] == other.shape[1]))
+      or (self.shape[2] == other.shape[2] or self.shape[2] == 1 or other.shape[2]
+      == 1)
+  - f1_score: 80.30702084430733
+    overall_score: 41.82017708882033
+    precision: 96.2655601659751
+    recall: 68.8871675703589
+- - cot: The error message indicates that the "lshift_cpu" operation is not implemented
+      for the 'Float' data type. Therefore, to prevent this error, the data type of
+      the input tensors should be changed to a type for which the "lshift_cpu" operation
+      is implemented. In this case, the valid data types would be 'half', 'int16',
+      'int32', 'int64', 'uint8', 'uint16', 'uint32', or 'uint64'.
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"lshift_cpu" not implemented for ''Float'''
+      package: torch
+    txt: dtype(self) in ["half", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+      "uint64"] and dtype(other) in ["half", "int16", "int32", "int64", "uint8", "uint16",
+      "uint32", "uint64"]
+  - f1_score: 97.34151329243353
+    overall_score: 53.670756646216766
+    precision: 100.0
+    recall: 94.8207171314741
+- - cot: 'Error is triggered because the size of tensors at non-singleton dimension
+      0 doesn''t match. The size of tensor a is 4 and the size of tensor b is 9. To
+      prevent this error, the sizes of tensors at non-singleton dimension 0 should
+      match. Therefore, the condition is:'
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (4) must match the size of tensor b (9) at non-singleton
+        dimension 0
+      package: torch
+    txt: self.shape[0] == other.shape[0]
+  - f1_score: 73.57598544695384
+    overall_score: 41.78799272347692
+    precision: 96.41434262948208
+    recall: 59.4852802608831

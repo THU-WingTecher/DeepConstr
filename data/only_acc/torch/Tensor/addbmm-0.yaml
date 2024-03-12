@@ -2,20 +2,28 @@ args:
   dtype:
   - Tensor
   - Tensor
+  - Tensor
+  - number
   - number
   is_pos:
   - true
   - false
   - false
+  - false
+  - false
   name:
   - self
-  - other
+  - batch1
+  - batch2
+  - beta
   - alpha
   required:
   - true
   - true
+  - true
   - false
-name: torch.Tensor.add
+  - false
+name: torch.Tensor.addbmm
 package: torch
-pass_rate: 80.10752688172043
+pass_rate: 0.0
 rules: []
