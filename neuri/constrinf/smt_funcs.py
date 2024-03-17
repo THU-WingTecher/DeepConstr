@@ -86,12 +86,16 @@ def length_default_constraints(length) :
     return z3.And(length >= 0, length <= MAX_ARR_LEN)
 def length_not_zero_constraints(length) : 
     return z3.And(length > 0, length <= MAX_ARR_LEN)
-def pos_constraints(z3obj, len_var, include_zero) : 
+def pos_max_constraints(z3obj, len_var, include_zero) : 
     i = z3.Int('i')
     if include_zero :
-        return z3.ForAll([i], z3.Implies(z3.And(i>=0, i<=len_var), z3obj[i] >= 0))
+        return z3.ForAll([i], z3.Implies(z3.And(i>=0, i<=len_var), z3.And(z3obj[i]<=MAX_VALUE, z3obj[i] >= 0)))
     else :
-        return z3.ForAll([i], z3.Implies(z3.And(i>=0, i<=len_var), z3obj[i] > 0))
+        return z3.ForAll([i], z3.Implies(z3.And(i>=0, i<=len_var), z3.And(z3obj[i]<=MAX_VALUE, z3obj[i] > 0)))
+    
+def min_max_constraints(z3obj, len_var) : 
+    i = z3.Int('i')
+    return z3.ForAll([i], z3.Implies(z3.And(i>=0, i<=len_var), z3.And(z3obj[i]<=MAX_VALUE, z3obj[i] >= MIN_VALUE)))
     
 def check_numel_constr(shape, len_var=None) :
     # Create a Z3 array of integers
@@ -367,7 +371,7 @@ class SMTFuncs:
     Class to hold custom Z3 functions.
     """
     # Class variable to hold names of all functions
-    function_names = ["all", "any", "len", "type", "sorted", "abs", "min", "max", "in_", "not_in", "rank", "range", "isinstance", "T", "dtype", "shape", "size", "dim", "ndim", "ndims"]
+    function_names = ["all", "any", "len", "type", "sorted", "abs", "min", "max", "in_", "not_in", "rank", "range", "isinstance", "T", "dtype", "shape", "size", "dim", "ndim", "ndims", "set"]
     _z3_dataarr = [(IntArr, (IntArr, IntArr.value, IntArr.len)),
                    (FloatArr, (FloatArr, FloatArr.value, FloatArr.len)),
                    (StrArr, (StrArr, StrArr.value, StrArr.len)),
@@ -665,6 +669,19 @@ class SMTFuncs:
             return z3.And([a != v for v in b])
         else :
             return z3.And([a != b[i] for i in range(MAX_ARR_LEN)])
+ 
+    def set(self, a) : 
+        has_const_len = False
+        if hasattr(a, "__len__") and isinstance(len(a), int) :
+            has_const_len = True
+        else :
+            has_const_len = False
+        length = len(a) if has_const_len else MAX_ARR_LEN
+        for i in range(length):
+            for j in range(i + 1, length):
+                # Ensure each pair of elements are unique
+                self.constrs.append(a[i] != a[j])
+        return a
     @classmethod
     def get_corrected_idx(cls, idx, v) :
         rank = cls.len(v)

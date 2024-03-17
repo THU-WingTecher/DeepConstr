@@ -5,13 +5,13 @@ import string
 import z3
 from neuri.abstract.dtype import DTYPE_GEN_ALL, DTYPE_NOT_SUPPORTED, AbsDType, AbsIter, DType
 from neuri.autoinf.instrument.op import AbsValue
-from neuri.constrinf.smt_funcs import SMTFuncs, TensorArrWrapper
+from neuri.constrinf.smt_funcs import SMTFuncs, TensorArrWrapper, min_max_constraints
 from neuri.logger import SMT_LOG
 # from specloader.materalize import RandomGenerator
 from neuri.abstract.dtype import AbsTensor 
 from typing import Callable, Dict, Any, List, Literal, Optional, Tuple, Union
 from neuri.constrinf.smt_funcs import TensorZ3, Z3DTYPE, BOOL_POOLS, MAX_ARR_LEN, MAX_VALUE, MIN_VALUE, OP_POOLS, check_numel_constr, \
-    length_default_constraints, length_not_zero_constraints, pos_constraints
+    length_default_constraints, length_not_zero_constraints, pos_max_constraints
 import operator
 
 
@@ -36,7 +36,7 @@ def tensor_default_constr(
         length,
         include_zero
     ) :
-    return pos_constraints(tensor_shape, length, include_zero)
+    return pos_max_constraints(tensor_shape, length, include_zero)
 
 def gen_default_constr(
         args_types : Dict[str, Union[AbsDType, AbsTensor]],
@@ -53,14 +53,21 @@ def gen_default_constr(
             shape_var = args_types[arg_name].z3()(arg_name)
             length_var = args_lengths[arg_name]
             rules.append(
-                pos_constraints(shape_var,
+                pos_max_constraints(shape_var,
                                 length_var,
                                 include_zero)
                 )
-        elif isinstance(args_types[arg_name], AbsIter) and isinstance(args_types[arg_name].get_arg_dtype(), AbsTensor) :
-            arr_wrapper = args_types[arg_name].z3()(arg_name)
-            for idx in range(len(args_lengths[arg_name])) :
-                rules.append(pos_constraints(arr_wrapper.get_arg_attr(idx, "shape"), args_lengths[arg_name][idx], include_zero))
+        elif isinstance(args_types[arg_name], AbsIter) :
+            if isinstance(args_types[arg_name].get_arg_dtype(), AbsTensor) :
+                arr_wrapper = args_types[arg_name].z3()(arg_name)
+                for idx in range(len(args_lengths[arg_name])) :
+                    rules.append(pos_max_constraints(arr_wrapper.get_arg_attr(idx, "shape"), args_lengths[arg_name][idx], include_zero))
+            elif args_types[arg_name].get_arg_dtype() in [AbsDType.int, AbsDType.float] :
+                arr_wrapper = args_types[arg_name].z3()(arg_name)
+                for idx in range(len(args_lengths[arg_name])) :
+                    rules.append(min_max_constraints(arr_wrapper.get_arg_attr(idx, "value"), args_lengths[arg_name][idx]))
+            else :
+                raise NotImplementedError(f"Unsupported type {args_types[arg_name].get_arg_dtype()}")
         else :
             pass
     return rules
