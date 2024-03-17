@@ -194,29 +194,27 @@ if __name__ == "__main__":
     dirpath = sys.argv[1]
     backend_type = sys.argv[2]
     input = None
-    for subdir in os.listdir(dirpath) :
-        pkl_dir_path = os.path.join(dirpath, subdir) 
-        if not os.path.isdir(pkl_dir_path) :
-            continue
-        print(f"deal with {pkl_dir_path}")
-        if not os.path.exists(os.path.join(pkl_dir_path, "prog.pkl")) :
-            try :
-                with open(os.path.join(pkl_dir_path, "gir.pkl"), "rb") as f:
-                    ir = pickle.load(f)
-            except FileNotFoundError:
-                pass
-            try :
-                with open(os.path.join(pkl_dir_path, "oracle.pkl"), "rb") as f:
-                    oracle = pickle.load(f)
-                input = oracle['input']
-            except FileNotFoundError:
-                pass
-        try :
-            prog = Program(ir, input, backend_type)
-            prog.dump(pkl_dir_path)
-        except KeyError :
-            ## complex 32 error :: https://github.com/pytorch/pytorch/issues/120290
-            pass
-        except Exception as e :
-            # print(e)
-            raise e
+    for root, dirs, files in os.walk(dirpath) :
+        for file in files :
+            if os.path.exists(os.path.join(root, "gir.pkl")) :
+                if not os.path.exists(os.path.join(root, "prog.pkl")) :
+                    try :
+                        with open(os.path.join(root, "gir.pkl"), "rb") as f:
+                            ir = pickle.load(f)
+                    except :
+                        pass
+                    try :
+                        with open(os.path.join(root, "oracle.pkl"), "rb") as f:
+                            oracle = pickle.load(f)
+                        input = oracle['input']
+                    except :
+                        pass
+                try :
+                    prog = Program(ir, input, backend_type)
+                    prog.dump(root)
+                except KeyError :
+                    ## complex 32 error :: https://github.com/pytorch/pytorch/issues/120290
+                    pass
+                except Exception as e :
+                    print(e)
+                    # raise e

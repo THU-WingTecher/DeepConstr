@@ -19,7 +19,7 @@ args:
   - true
   - true
   - false
-name: torch.Tensor.addcdiv
+name: torch.Tensor.addcdiv_
 package: torch
-pass_rate: 62.328767123287676
+pass_rate: 27.480916030534353
 rules: []

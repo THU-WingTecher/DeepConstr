@@ -1245,7 +1245,7 @@ class ConstrInf(NeuriR):
                 consistent_constrs = []
                 
             default_dtype_constr = default_dtype_generator(connected_key_name)
-
+        start = time.time()
         values = gen_val(
             self.num_of_try,
             chosen_dtype, 
@@ -1256,7 +1256,7 @@ class ConstrInf(NeuriR):
             constraints=consistent_constrs + [default_dtype_constr],
             api_name=record['name'],
             )
-
+        self.acc_smt_time_ms = int((time.time() - start) * 1000)
         if values is None : 
             return False # failed to find a solution
     

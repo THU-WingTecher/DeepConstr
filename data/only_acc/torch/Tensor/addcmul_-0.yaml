@@ -19,7 +19,7 @@ args:
   - true
   - true
   - false
-name: torch.Tensor.addcdiv
+name: torch.Tensor.addcmul_
 package: torch
-pass_rate: 62.328767123287676
+pass_rate: 23.846153846153847
 rules: []

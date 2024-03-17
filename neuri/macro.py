@@ -14,7 +14,7 @@ def onnx2external_data_dir(onnx_file):
 # save directory : torchcomp-fuzz-0221
 """ API TEST
 python experiments/evaluate_apis.py \
-exp.save_dir=exp mgen.record_path=$(pwd)/data/records/torch/ mgen.pass_rate=0.05 mgen.max_nodes=5 model.type=torch backend.type=torchjit fuzz.time=10m exp.parallel=1 mgen.noise=0.4
+exp.save_dir=exp mgen.record_path=$(pwd)/data/records/torch/ mgen.pass_rate=0.05 model.type=torch backend.type=torchjit fuzz.time=10m exp.parallel=1 mgen.noise=0.4
 """
 
 """ FUZZING 
@@ -27,7 +27,7 @@ python neuri/cli/fuzz.py fuzz.time=24h mgen.record_path=data/torch_records fuzz.
 
 """
 """ to_reproduce_code 
-python neuri/materialize/torch/program.py /artifact/bugs/torchcomp-neuri-fuzz-0221_record torchcomp
+python neuri/materialize/torch/program.py /artifact/exp/torch-constrinf-n5-Slice-torch.Tensor.__and__.models torchcomp
 """
 
 """train

@@ -55,4 +55,4 @@ rules:
   - f1_score: 100.0
     overall_score: 100
     precision: 100.0
-    recall: 100.0
+    recall: 50.0

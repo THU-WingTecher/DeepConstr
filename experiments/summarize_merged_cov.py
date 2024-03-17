@@ -161,7 +161,7 @@ def summarize_final_bf(aggregated_df):
 
 if __name__ == "__main__":
 
-    root_dir = '/artifact/gen/'
+    root_dir = '/artifact/exp/'
     api_coverage_data = traverse_and_classify(root_dir)
     processed_data = process_pickle_files(api_coverage_data)
     aggregated_df = aggregate_summarized_data(processed_data)

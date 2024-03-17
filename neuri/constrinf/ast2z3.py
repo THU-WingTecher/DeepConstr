@@ -465,6 +465,7 @@ class Ast2z3(SMTFuncs) :
                 op_type = type(op).__name__
                 op_type, right = self.make_compatiable(left, op_type, right)
                 results.append(self.gen_basic_constr(op_type, left, right, **kwargs))
+                left = right
             return merge_constr(results)
         elif isinstance(node, ast.Call):
             func_args = [self._convert(arg, arg_map) for arg in node.args]

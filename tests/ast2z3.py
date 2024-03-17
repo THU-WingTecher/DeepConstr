@@ -78,22 +78,30 @@ def main(cfg: DictConfig):
     test_with_given_constraints(test_constraints, arg_names, dtypes)
     test_smt(arg_names, [d[0] for d in dtypes], constrs, noise_prob=0.3)
     """
-    model = Model.init(
-        "torch", backend_target="torchcomp"
-    )
-    executor = Executor(model, parallel = cfg["train"]["parallel"])
-    record = _process_record("/artifact/data/records/torch/Tensor/abs_-0.yaml")
-    arg_names = record['args']['name']
-    # arg_names = ['a', 'b','c','d']
-    # dtypes = [
-    #     [AbsTensor()],
-    #     [AbsTensor()],
-    #     [AbsTensor.to_iter()],
-    #     [AbsDType.str],
-    #     ]
+    # model = Model.init(
+    #     "torch", backend_target="torchcomp"
+    # )
+    # executor = Executor(model, parallel = cfg["train"]["parallel"])
+    # record = _process_record("/artifact/data/records/torch/Tensor/abs_-0.yaml")
+    # arg_names = record['args']['name']
+    # test_constraints = [
+    #     "dtype(self) == complex",
+    # ]
+    # constrs = test_with_given_constraints(test_constraints, arg_names, record["args"]["dtype_obj"])
+    # executor.execute(
+    #     1, constrs, record=record
+    # )
+    arg_names = ['a', 'b','c','d']
+    dtypes = [
+        [AbsTensor()],
+        [AbsTensor()],
+        [AbsTensor.to_iter()],
+        [AbsDType.str],
+        ]
     test_constraints = [
         # "all(a.shape[i] == b.shape[i] or a.shape[i] == 1 or b.shape[i] == 1 for i in range(-1, -min(len(a.shape), len(b.shape))-1, -1))",
-        "dtype(self) == complex",
+        "-len(a.shape) <= 3 < len(a.shape)",
+        # "a.shape == b.shape",
         # "d in ['batch', 'layer', 'instance']",
         # "d < len(self.shape) for d in c"
         # "all(i > len(c) and i < len(c) for i in a)",
@@ -102,11 +110,9 @@ def main(cfg: DictConfig):
         # "c[0].shape[0] == b[0]",
         # 'a[-1] > b[-2]'
     ]
-    constrs = test_with_given_constraints(test_constraints, arg_names, record["args"]["dtype_obj"])
-    executor.execute(
-        1, constrs, record=record
-    )
-    # test_smt(arg_names, [d[0] for d in dtypes], constrs, noise_prob=0.3)
+    for i in range(10) :
+        constrs = test_with_given_constraints(test_constraints, arg_names, dtypes)
+        test_smt(arg_names, [d[0] for d in dtypes], constrs, noise_prob=0.3)
 
 
 if __name__ == "__main__" :

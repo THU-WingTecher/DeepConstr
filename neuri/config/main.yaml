@@ -40,7 +40,7 @@ mgen: # model gen.
   noise: 0.15 # 0 ~ 1
   allow_zero_length_rate: 0.1 # 0 ~ 1
   allow_zero_rate: 0.1 # 0 ~ 1
-  num_of_try: 10 ## num_of_try * noise will be the number of trials for each input
+  num_of_try: 20 ## num_of_try * noise will be the number of trials for each input
 # backend config
 backend:
   type: null
@@ -87,6 +87,8 @@ train:
   str_sim_threshold: 0.65
   pass_rate: 95
   precision_threshold: 80 # 0 ~ 100
+  list: "/artifact/data/torch_overall_apis.json" # list of train-target apis
+  api_name: null # api name to train(in this case, we only train one api)
 
 llm:
   settings:
@@ -105,6 +107,7 @@ filter:
 exp: #for experiments, only using by
   api_list: null
   parallel: 1
+  save_dir: "exp"
 
 cmp:
   equal_nan: true # skip regarding it as a bug if with fp exception values.

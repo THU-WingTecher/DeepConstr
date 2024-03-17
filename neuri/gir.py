@@ -11,7 +11,7 @@ from neuri.abstract.op import (
     Placeholder,
     concretize_op,
 )
-from neuri.logger import CORE_LOG
+from neuri.logger import CORE_LOG, MGEN_LOG
 
 
 @dataclass
@@ -408,15 +408,15 @@ class GraphIR:
                 self.vars[vname] = tensor
 
     def debug(self):
-        print("=== IR VARIABLES ===")
-        print(self.vars)
-        print("=== IR INSTS ===")
+        MGEN_LOG.debug("=== IR VARIABLES ===")
+        MGEN_LOG.debug(self.vars)
+        MGEN_LOG.debug("=== IR INSTS ===")
         has_inferred = False
         for inst in self.insts:
             if inst.iexpr.op.__class__.__name__ == "AutoInfOpBase":
                 ainst = inst.iexpr.op.inst
                 # has_inferred |= not ainst.infer_failed()
-                print(
+                MGEN_LOG.debug(
                     inst.retvals(),
                     "<-",
                     ainst.invoke_str(inst.iexpr.op.attrs),
@@ -424,25 +424,25 @@ class GraphIR:
                     inst.iexpr.args,
                 )
             else:
-                print(inst.retvals(), "<-", inst.iexpr.op, "<-", inst.iexpr.args)
+                MGEN_LOG.debug(inst.retvals(), "<-", inst.iexpr.op, "<-", inst.iexpr.args)
         if has_inferred:  # displayed only if there are rules being inferred.
-            print("=== IR INSTS by MASKING ATTR w/ `@` ===")
+            MGEN_LOG.debug("=== IR INSTS by MASKING ATTR w/ `@` ===")
             for inst in self.insts:
                 if inst.iexpr.op.__class__.__name__ == "AutoInfOpBase":
                     ainst = inst.iexpr.op.inst
                     if not ainst.infer_failed():
-                        print(
+                        MGEN_LOG.debug(
                             inst.retvals(),
                             "<-",
                             ainst.invoke_str({k: f"@{k}" for k in ainst.A}),
                             "<-",
                             inst.iexpr.args,
                         )
-                        print(
+                        MGEN_LOG.debug(
                             "SHAPE PROP:",
                             [t for t in ainst.type_transfer_dbg_info.split("\n") if t],
                         )
-                        print(
+                        MGEN_LOG.debug(
                             "REQUIRES:",
                             [t for t in ainst.requires_dbg_info.split("\n") if t]
                             if len(ainst.nnsmith_rules()) == 0

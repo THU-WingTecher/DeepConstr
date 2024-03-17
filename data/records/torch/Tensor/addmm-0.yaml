@@ -25,4 +25,20 @@ args:
   - false
 name: torch.Tensor.addmm
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: ''
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat1: tensor
+        mat2: tensor
+        self: tensor
+      msg: mat1 must be a matrix, got 1-D tensor
+      package: torch
+    txt: mat1.ndim == 2
+  - f1_score: 94.96644295302013
+    overall_score: 100
+    precision: 100.0
+    recall: 90.41533546325878

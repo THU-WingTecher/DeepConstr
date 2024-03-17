@@ -3,7 +3,7 @@ from typing import Dict, Any, Optional, List
 import random
 
 from neuri.constrinf.constr import Constraint
-from neuri.constrinf.errmsg import sort_sentences_by_similarity
+from neuri.constrinf.errmsg import ErrorMessage, sort_sentences_by_similarity
 from neuri.constrinf.util import formatted_dict
 
 PROMPT_EXAMPLE_PATH = "data/prompts/cot.json"
@@ -65,40 +65,48 @@ Q : try to make constraints {correct_discription} so that it can make the whole 
 <ops> ::= + | - | * | / | == | != | > | >= | < | <= | in | not in"""
 # <comparator> ::= dtype | integer | tensor.dtype | List[int]"""
     def get_closet_examples(self, err_msgs, num_of_ex=[0,3]) : 
-        sorted_li =[ele[0] for ele in sort_sentences_by_similarity(err_msgs[0], list(self.err_db.keys()))[:num_of_ex]]
+        sorted_li =[ele[0] for ele in sort_sentences_by_similarity(err_msgs[0].get_core_msg(), list(self.err_db.keys()))[:num_of_ex]]
         sorted_li = sorted_li[::-1]
         examples = '\n'.join([self.dynamic_template(errmsg, self.err_db[errmsg]['cot'], self.err_db[errmsg]['answers']) for errmsg in sorted_li])
         return examples
-    def question(self, target, args_values, func_name) :
-
-        return f"""Q : Based on the given runtime information({func_name}({formatted_dict(args_values, sep="=", split=", ")}), formulate constraints that prevent this error -> {target}. Wrap the final formula with ```.\nAnswers :"""  
+    
+    def question(self, targets : List[ErrorMessage], func_name) :
+        target_str = "Q : Based on the given runtime information, formulate constraint that prevent the error." 
+        num_of_ex = min(self.set_num_of_ex(), len(targets))
+        new = random.choices(targets, k=num_of_ex)
+        for i in range(num_of_ex) :
+            target_str+=f"""\n({func_name}({formatted_dict(new[i].get_values_map(), sep="=", split=", ")}) -> {new[i].get_core_msg()}"""
+        target_str+= "\nWrap the final formula with ```.\nAnswers :"
+        return target_str
     
     def gen_infer_history(self, ans_history : str) : 
         if ans_history is None or len(ans_history) == 0 :
             return ""
         introduce = "avoid same answer with your prev answer : "
         return introduce + '```' + ans_history + '```'
-    def gen_contexts(self) :
-        return ""
-    def gen(self, err_msgs, args_values, func_name, num_of_ex=[0,3], prev_answer : Optional[Constraint]=None, ans_history : Optional[str]=None) :
+
+    def set_num_of_ex(self) : 
+        return random.randint(1,3)
+    
+    def gen(self, err_msgs : List[ErrorMessage], func_name, prev_answer : Optional[Constraint]=None, ans_history : Optional[str]=None) :
         prompts = ""
         history = ""
+        contexts = ""
         task_introduce= self.task_introduce(func_name)
-        grammar = self.Constraint_grammar() if random.choice([0,1]) else ""
-        examples = self.get_closet_examples(err_msgs, num_of_ex = num_of_ex)
-        contexts = self.gen_contexts()
+        # grammar = self.Constraint_grammar() if random.choice([0,1]) else ""
+        examples = self.get_closet_examples(err_msgs, num_of_ex = self.set_num_of_ex())
         # history = self.gen_history(prev_answer) if prev_answer is not None else ""
         # infer_history = self.gen_infer_history(ans_history)
         if len(history) == 0 : 
             contexts = '\n'.join([task_introduce, 
                                 # grammar, 
                                 examples])
-            prompts = self.question(err_msgs[0], args_values, func_name)
+            prompts = self.question(err_msgs, func_name)
         else : 
             contexts = '\n'.join([task_introduce, 
                                 # grammar, 
                                 examples])
-            prompts = self.question(history, args_values, func_name)
+            prompts = self.question(history, func_name)
         return contexts, prompts
     def _CoT_template(self) -> None :
         """

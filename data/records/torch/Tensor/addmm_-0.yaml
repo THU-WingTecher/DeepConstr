@@ -25,4 +25,22 @@ args:
   - false
 name: torch.Tensor.addmm_
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'Error is triggered because mat1 is expected to be a matrix, but it is a
+      4-D tensor. To prevent this error, we need to ensure that mat1 is a 2-D tensor.
+      Therefore, the constraint can be formulated as:'
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat1: tensor
+        mat2: tensor
+        self: tensor
+      msg: mat1 must be a matrix, got 4-D tensor
+      package: torch
+    txt: mat1.ndim == 2
+  - f1_score: 95.43147208121827
+    overall_score: 100
+    precision: 100.0
+    recall: 91.2621359223301

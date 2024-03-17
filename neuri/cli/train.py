@@ -204,7 +204,8 @@ class TrainingLoop:
         )
 
         self.executor : Executor = Executor(self.ModelType, parallel = cfg["train"]["parallel"])
-        self.train_list = self.get_train_list()
+        self.train_list = self.get_train_list(path = cfg["train"]["list"], 
+                                              api_name = cfg["train"]["api_name"])
         TRAIN_LOG.info(
             f"{len(self.train_list)} opsets wait for inferring"
         )
@@ -232,7 +233,7 @@ class TrainingLoop:
             "save" : 0
         }
 
-    def get_train_list(self, path = "/artifact/data/torch_overall_apis.json") -> List[str]:
+    def get_train_list(self, path, api_name = None) -> List[str]:
         """
         get operator yaml file path
         """
@@ -244,12 +245,16 @@ class TrainingLoop:
             data = json.load(f)
 
         li = []
+
         root_path = self.cfg["train"]["record_path"] 
         for root, _, files in os.walk(root_path):
             for file in files:
                 if file.endswith(".yaml"):
                     name = file.split(".")[0].split("-")[0]
-                    if name in data :
+                    if api_name is not None :
+                        if name == api_name.split(".")[-1] :
+                            li.append(os.path.join(root, file))
+                    elif name in data :
                         li.append(os.path.join(root, file))
         return sorted(li, key=sort_key)
         ### all records of torch apis ###
@@ -261,7 +266,7 @@ class TrainingLoop:
         #             li.append(os.path.join(root, file))
         # return li
     
-    def get_pass_rate_and_err_msgs(self, record, ntimes) -> Tuple[float, ErrorMessage]:
+    def get_pass_rate_and_err_msgs(self, record, ntimes) -> Tuple[float, List[ErrorMessage]]:
         success_count = 0
         error_messages = {}
         raw_err_msgs = []
@@ -275,7 +280,7 @@ class TrainingLoop:
                                         allow_zero_rate = self.cfg["train"]["allow_zero_rate"],
                                         num_of_try = self.cfg["train"]["num_of_try"]
                                         )
-        
+        error_messages = {}
         for result in results:
             if result is None :
                 continue
@@ -284,22 +289,28 @@ class TrainingLoop:
                 success_count += 1
             else:
                 msg_key = error_instance.get_core_msg()
-                error_messages[msg_key] = error_instance
+                if error_messages.get(msg_key, False) :
+                    error_messages[msg_key].append(error_instance)
+                else :
+                    error_messages[msg_key] = [error_instance]
                 raw_err_msgs.append(msg_key)
         if raw_err_msgs :
             dynamic_cluster_mapping = map_error_messages_to_clusters_dynamic(raw_err_msgs)
-            sorted_cluster_mapping = dict(sorted(dynamic_cluster_mapping.items(), key=lambda item: len(item[1]), reverse=True))
-            success_rate = success_count / (success_count + len(error_messages))
-            sorted_error_instances = [error_messages[list(li)[0]] for li in sorted_cluster_mapping.values()]
+            for key, value in dynamic_cluster_mapping.items():
+                if value[0] in error_messages.keys() :
+                    error_messages[key] = error_messages[value[0]]
+            sorted_cluster_mapping = list(sorted(error_messages.values(), key=lambda item: len(item), reverse=True))
+            success_rate = success_count / (success_count + len(raw_err_msgs))
+            sorted_error_instances = sorted_cluster_mapping
         else :
-            success_rate = 1
+            success_rate = 1 
             sorted_error_instances = []
 
         if sorted_error_instances:
-            most_frequent_err = sorted_error_instances[0]
-            distributions = {messages[0] : len(messages) for _, messages in sorted_cluster_mapping.items()}
+            most_frequent_errs = sorted_error_instances[0]
+            distributions = {messages[0] : len(messages) for messages in sorted_cluster_mapping}
             TRAIN_LOG.debug(f"Current error distribution :\n{formatted_dict(distributions)}")
-            if self.is_special_err_msg(most_frequent_err):
+            if self.is_special_err_msg(most_frequent_errs[0]):
                 raise Exception("Special error message encountered. Cannot proceed.")
         else:
             TRAIN_LOG.info("No error messages encountered.")
@@ -374,7 +385,7 @@ class TrainingLoop:
         :return: Boolean indicating whether a satisfactory rule was found.
         """
         # Log the tried rules and their outcomes
-        TRAIN_LOG.info(f"Tried rules:\n{SPLITTER.join(map(str, synthesizer.tried))}")
+        TRAIN_LOG.debug(f"Tried rules:\n{SPLITTER.join(map(str, synthesizer.tried))}")
         
         if highest_prev["overall_score"] == 0:
             # No improvement found
@@ -393,7 +404,7 @@ class TrainingLoop:
             else:
                 # Fallback to the best seed rule if the precision threshold is met
                 if synthesizer.seeds[0][0]["precision"] < self.cfg["train"]['precision_threshold']:
-                    TRAIN_LOG.info("Best rule does not meet the precision threshold.")
+                    TRAIN_LOG.info(f"Best rule({synthesizer.seeds[0][0]['precision']}) does not meet the precision threshold({self.cfg['train']['precision_threshold']}).")
                     return False
                 best_rule = synthesizer.seeds[0][1]
             
@@ -451,19 +462,21 @@ class TrainingLoop:
             if self.is_trainable(op_record) :
                 try :
                     self.run(op_record, record_path)
-                    self.finalize_infering(op_record)
+                    self.finalize_infering(op_record, record_path)
                 except :
                     TRAIN_LOG.error(f"{traceback.format_exc()}")
             else :
-                TRAIN_LOG.warning(f"""Record don't need train trainable : {formatted_dict(op_record, sep=":", split=", ")}""")
-    def finalize_infering(self, record) :
+                TRAIN_LOG.warning(f"""Record don't need-train/trainable : {formatted_dict(op_record, sep=":", split=", ")}""")
+    def finalize_infering(self, record, record_path) :
         pass_rate, unsolved = self.get_pass_rate_and_err_msgs(record, self.cfg["train"]["eval_asset"])
+        unsolved_msgs = [e[0].dump() for e in unsolved if e] if unsolved else []
         self.update_pass_rate(record, pass_rate)
+        save_record(record, record_path)
         TRAIN_LOG.info(
 f"""{record['name']} infered finished\n
 constrs : {record['rules']}\n
 final_pass_rate : {record['pass_rate']}\n
-unsolved_err_msgs : {[e.dump() for e in unsolved]}
+unsolved_err_msgs : {unsolved_msgs}
             """
         )  
         self.inferencer.finalize()
@@ -490,7 +503,7 @@ unsolved_err_msgs : {[e.dump() for e in unsolved]}
         save_record(record, save_path)
     
     def is_triaged_err_msg(self, errmsg : ErrorMessage, constr_list) -> bool:
-        for constr in constr_list :
+        for constr, _ in constr_list :
             if is_similar(errmsg.get_core_msg(), constr.target.get_core_msg(), self.cfg["train"]["str_sim_threshold"]) :
                 return True
         return False
@@ -503,7 +516,8 @@ unsolved_err_msgs : {[e.dump() for e in unsolved]}
         pass_rate = 0
         constr_list : List[Constraint] = []
         TRAIN_LOG.info(f"Start training {op_record['name']}")
-        constr_list.extend([c for c, _ in self.get_constrs_from_rules(op_record)])
+        constr_list.extend(self.get_constrs_from_rules(op_record))
+        self.inferencer.init()
         while n_try < self.cfg["train"]["n_try"] :
             pass_rate, sorted_err_instances = self.get_pass_rate_and_err_msgs(op_record, self.cfg["train"]["eval_asset"])
             self.update_pass_rate(op_record, pass_rate)
@@ -511,15 +525,15 @@ unsolved_err_msgs : {[e.dump() for e in unsolved]}
                 TRAIN_LOG.info(f"pass_rate is over {self.cfg['train']['precision_threshold']}")
                 break
             while sorted_err_instances :
-                most_frequent = sorted_err_instances.pop(0)
-                if self.is_triaged_err_msg(most_frequent, constr_list) :
-                    TRAIN_LOG.warning(f"Error message {most_frequent.get_core_msg()} is already triaged.")
+                most_frequents = sorted_err_instances.pop(0)
+                if self.is_triaged_err_msg(most_frequents[0], constr_list) :
+                    TRAIN_LOG.warning(f"Error message {most_frequents[0].get_core_msg()} is already triaged.")
                     continue
-                succeed = self.train(op_record, most_frequent, constr_list, mode="acc")
+                succeed = self.train(op_record, most_frequents, constr_list, mode="acc")
                 if succeed :
                     save_record(op_record, record_path)
                 else :
-                    TRAIN_LOG.warning(f"Failed to train {most_frequent.get_core_msg()}")
+                    TRAIN_LOG.warning(f"Failed to train {most_frequents[0].get_core_msg()}")
                     break
             TRAIN_LOG.info(f"No error messages encountered.")
             break
@@ -527,9 +541,7 @@ unsolved_err_msgs : {[e.dump() for e in unsolved]}
         self.save_only_acc(op_record, record_path)
         if not self.is_retrainable(op_record) :
             TRAIN_LOG.warning(f"Record is not retrainable : {formatted_dict(op_record, sep=':', split=', ')}")
-            save_record(op_record, record_path)
-        if pass_rate < self.cfg["train"]["precision_threshold"] :
-            self.retrain(op_record, record_path, constr_list)
+            return
         queue = self.get_retrain_list(op_record, constr_list)
         while queue :
             constr, scores = queue.pop()
@@ -551,23 +563,41 @@ unsolved_err_msgs : {[e.dump() for e in unsolved]}
         copied["args"]["dtype_obj"] = [[d] for d in target.get_dtypes(copied["args"]["name"])]
         return copied
     
+    def get_same_dtype_errmsg(self, msgs : List[ErrorMessage]) :
+        clusters = []
+        for errmsg in msgs :
+            if clusters :
+                found = False
+                for cluster in clusters :
+                    if errmsg.get_dtypes_map() == cluster[0].get_dtypes_map() :
+                        cluster.append(errmsg)
+                        found = True
+                        break
+                if not found :
+                    clusters.append([errmsg])
+            else :
+                clusters.append([errmsg])
+        
+        return sorted(clusters, key=lambda x : len(x), reverse=True)
+    
     def train(self, 
               orig_record, 
-              target : ErrorMessage,
+              targets : List[ErrorMessage],
               constr_list : List[Tuple[Constraint, Dict[str, Any]]],  
               mode : Literal["acc", "f1"], 
               seeds = []):
         # Initialize training session
         self.inferencer.change_to_gpt3()
+        targets = self.get_same_dtype_errmsg(targets)[0]
         solved = False
         infer_times = 0
         prev_answer = None
         highest_prev : Dict[str, float] = {"overall_score" : 0, "precision" : 0, "recall" : 0, "f1_score" : 0}
         tolerance = 0
         new_rules : List[Constraint] = []
-        record = self.fix_record_attrs(orig_record, target) # deep copy and fix dtypes and rules
+        record = self.fix_record_attrs(orig_record, targets[0]) # deep copy and fix dtypes and rules
         prompter = Prompter(record)
-        synthesizer = Synthesizer(target, self.executor, record, self.cfg["train"])
+        synthesizer = Synthesizer(targets[0], self.executor, record, self.cfg["train"])
         # Synthesizer responsible for filtering, evaluating, and finding the best rule
         synthesizer.set_mode(mode)
         if seeds : 
@@ -577,24 +607,20 @@ unsolved_err_msgs : {[e.dump() for e in unsolved]}
                 return True
             synthesizer.save_state(seeds)
         while self.cfg["train"]['infer_asset_per_epoch'] >= infer_times and not solved:
-            TRAIN_LOG.info(f"Start infering[round={tolerance}] {target.get_core_msg()}")
+            TRAIN_LOG.info(f"Start infering[round={tolerance}] {targets[0].get_core_msg()}")
             if tolerance >= self.cfg["train"]['tolerance']:
                 if self.inferencer.is_gpt4() :
                     break
                 else : 
                     self.inferencer.change_to_gpt4()
             
-            context, prompts = prompter.gen([target.get_core_msg()], 
-                                    args_values=target.get_values_map(),
-                                    func_name=record["name"],
-                                    num_of_ex=random.randint(2, 3),
-                                    prev_answer=prev_answer)
+            context, prompts = prompter.gen(targets, func_name=record["name"], prev_answer=prev_answer)
             
             raw_infered = self.inferencer.inference(prompts, context) 
             infer_times += 1
-            
+
             new_rules = self.parse_and_generate_rules(raw_infered, 
-                                                      target, 
+                                                      targets[0], 
                                                       record["args"]["name"]
                                                       )
             result = synthesizer.run(new_rules)

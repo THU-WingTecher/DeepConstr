@@ -271,6 +271,7 @@ def process_len(
         args_types : Dict[str, Union[AbsDType, AbsTensor]],
         args_lengths : Dict[str, Optional[int]],
         solver : z3.Solver,
+        names : List[str],
         noise : float = 0.0,
         allow_zero_length_rate : float = 0.5,
         ) -> List[z3.ExprRef] :
@@ -286,7 +287,7 @@ def process_len(
                             else length_not_zero_constraints(len_sym)
             constrs.append(len_constr)
             ## gen noise 
-            if should_generate_noise(noise) :
+            if arg_name not in names and should_generate_noise(noise) :
                 len_noise = gen_random_int_constr(len_sym, 0, MAX_ARR_LEN)
                 constrs.append(len_noise)
     
@@ -384,7 +385,7 @@ def _gen_val(
     names = extract_names_from_constrs(constraints)
     solver = init_solver()
     solver.add(constrs)
-    len_rules = process_len(args_types, args_lengths, solver, noise=noise_prob, allow_zero_length_rate=allow_zero_length_rate)
+    len_rules = process_len(args_types, args_lengths, solver, names, noise=noise_prob, allow_zero_length_rate=allow_zero_length_rate)
     if len_rules is None :
         SMT_LOG.debug(f"rank related rules cannot be satisfied")
         return None 

@@ -144,7 +144,11 @@ def run(api_name, baseline, config, max_retries=100):
     print("Running fuzzing for API", api_name, "with baseline", baseline)
     test_pool = [FIXED_FUNC, api_name]
     test_pool_modified = '-'.join(test_pool)
-    save_path = f"{os.getcwd()}/{config['exp']['save_dir']}/{config['model']['type']}-{baseline}-n{config['mgen']['max_nodes']}-{test_pool_modified}.models"
+    if config['mgen']['max_nodes'] is not None :
+        max_nodes = config['mgen']['max_nodes']
+    else :
+        max_nodes = 3 if baseline == "constrinf" else 5
+    save_path = f"{os.getcwd()}/{config['exp']['save_dir']}/{config['model']['type']}-{baseline}-n{max_nodes}-{test_pool_modified}.models"
     def execute_command(command):
         """
         Executes a given command and prints its output in real-time.
@@ -173,11 +177,11 @@ def run(api_name, baseline, config, max_retries=100):
     fuzz_command = f"PYTHONPATH=$(pwd):$(pwd)/neuri python neuri/cli/fuzz.py " \
                    f"fuzz.time={config['fuzz']['time']} " \
                    f"mgen.record_path={RECORD} " \
-                   f"fuzz.root=$(pwd)/{config['exp']['save_dir']}/{config['model']['type']}-{baseline}-n{config['mgen']['max_nodes']}-{test_pool_modified} " \
+                   f"fuzz.root=$(pwd)/{config['exp']['save_dir']}/{config['model']['type']}-{baseline}-n{max_nodes}-{test_pool_modified} " \
                    f"fuzz.save_test={save_path} " \
                    f"model.type={config['model']['type']} backend.type={config['backend']['type']} filter.type=\"[nan,dup,inf]\" " \
                    f"debug.viz=true hydra.verbose=fuzz fuzz.resume=true " \
-                   f"mgen.method={baseline} mgen.max_nodes={config['mgen']['max_nodes']} mgen.test_pool=\"{test_pool}\""
+                   f"mgen.method={baseline} mgen.max_nodes={max_nodes} mgen.test_pool=\"{test_pool}\""
 
     retries = 0
     while retries < max_retries:
@@ -199,7 +203,7 @@ def run(api_name, baseline, config, max_retries=100):
 def run_draw_script(api_name : str, cfg, BASELINES):
 
     print(f"drawing with {api_name}")
-    folder_names = [f"$(pwd)/gen/{cfg['model']['type']}-{method}-n{cfg['mgen']['max_nodes']}-{'-'.join([FIXED_FUNC, api_name])}.models/coverage " for method in BASELINES]
+    folder_names = [f"$(pwd)/{cfg['exp']['save_dir']}/{cfg['model']['type']}-{method}-n{cfg['mgen']['max_nodes']}-{'-'.join([FIXED_FUNC, api_name])}.models/coverage " for method in BASELINES]
     command = (
         f"""python experiments/viz_merged_cov.py """
         f"""--folders {' '.join([f"{fnm}" for fnm in folder_names])} """

@@ -11,3 +11,4 @@ tqdm
 matplotlib
 python-dotenv
 openai
+scikit-learn

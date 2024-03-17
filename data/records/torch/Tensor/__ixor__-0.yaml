@@ -34,3 +34,22 @@ rules:
     overall_score: 45.65374274798358
     precision: 94.84978540772532
     recall: 71.14908370480435
+- - cot: Based on the given runtime information, the error occurs because the bitwise_xor_cpu
+      operation is not implemented for the 'Float' data type. To prevent this error,
+      the data type of both the self tensor and the other tensor should be changed
+      to one of the valid data types for bitwise xor operation, such as int8, int16,
+      int32, int64, uint8, uint16, uint32, or uint64.
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"bitwise_xor_cpu" not implemented for ''Float'''
+      package: torch
+    txt: '
+
+      (dtype(self) in ["int8", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+      "uint64"])'
+  - f1_score: 88.2217090069284
+    overall_score: 100
+    precision: 100.0
+    recall: 78.92561983471074

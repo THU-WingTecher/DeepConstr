@@ -7,6 +7,9 @@ build/Cov_Trace_Analyzer
 *.profraw 
 *.tar.gz
 bugs/
+debug/
+_gen/
+exp/
 data/debug/
 # Byte-compiled / optimized / DLL files
 __pycache__/

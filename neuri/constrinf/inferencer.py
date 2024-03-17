@@ -29,7 +29,8 @@ class Inferencer() :
     #         openai.api_key = self.key1
     #         self.using_key = 1
     def init(self) -> None :
-        self.n_token = 0
+        self.prompt_token = 0
+        self.complete_token = 0
     def up_temp(self, temp : float) -> None :
         while self.args['temperature']+temp > 2 :
             self.args['temperature'] -= 1

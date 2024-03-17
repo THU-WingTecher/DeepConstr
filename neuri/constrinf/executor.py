@@ -1,4 +1,4 @@
-from concurrent.futures import ProcessPoolExecutor
+import concurrent.futures
 import functools
 from multiprocessing import Manager, Pool
 import random
@@ -127,14 +127,22 @@ class Executor:
         A tuple (success_rate: float, error_messages: dict) where success_rate is the ratio of successful executions
         and error_messages is a dictionary mapping error messages to their corresponding argument values.
         """
-        try :
-            with ProcessPoolExecutor(max_workers=self.parallel) as executor:
-                # Generate a list of future tasks
-                worker_fn = functools.partial(worker, self.model, *args, **kwargs)
-                futures = [executor.submit(worker_fn) for _ in range(ntimes)]
-                results = [future.result() for future in futures]
-            return results
-        except Exception as e:
-            MGEN_LOG.error(f"Error in execute: {e}, maybe child process core dumped")
-            err_instance = ErrorMessage(InternalError(), traceback.format_exc(), {}, {})
-            return [[False, err_instance]]
+        results = []
+        num_of_task_per_process = ntimes // self.parallel
+        with concurrent.futures.ProcessPoolExecutor(max_workers=self.parallel) as executor:
+            # Generate a list of future tasks
+            worker_fn = functools.partial(worker, self.model, *args, **kwargs)
+            futures = [executor.submit(worker_fn) for _ in range(ntimes)]
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                result = future.result(timeout=num_of_task_per_process*2)
+                results.append(result)
+            except TimeoutError:
+                err_instance = ErrorMessage(TimeoutError(), traceback.format_exc(), {}, {})
+                MGEN_LOG.error(f"TIMEOUT error in execute: {e}")
+                results.append([False, err_instance])
+            except Exception as e:
+                err_instance = ErrorMessage(InternalError(), traceback.format_exc(), {}, {})
+                MGEN_LOG.error(f"Error in execute: {e}, maybe child process core dumped")
+                results.append([False, err_instance])
+        return results
