@@ -74,8 +74,10 @@ Q : try to make constraints {correct_discription} so that it can make the whole 
         target_str = "Q : Based on the given runtime information, formulate constraint that prevent the error." 
         num_of_ex = min(self.set_num_of_ex(), len(targets))
         new = random.choices(targets, k=num_of_ex)
+        questions = set()
         for i in range(num_of_ex) :
-            target_str+=f"""\n({func_name}({formatted_dict(new[i].get_values_map(), sep="=", split=", ")}) -> {new[i].get_core_msg()}"""
+            questions.add(f"""\n({func_name}({formatted_dict(new[i].get_values_map(), sep="=", split=", ")}) -> {new[i].get_core_msg()}""")
+        target_str+= '\n'.join(questions)
         target_str+= "\nWrap the final formula with ```.\nAnswers :"
         return target_str
     

@@ -52,6 +52,9 @@ class TorchModel(Model):
                 absdtype = DType.from_str(dtype)
                 if "bfloat" in dtype : 
                     ret = torch.rand(shape, dtype=absdtype.torch())  
+                elif "qint" in dtype :
+                    rng = 2**(8*absdtype.sizeof()-1)
+                    ret = torch.randint(-rng, rng - 1, size=shape, dtype=absdtype.torch())
                 elif "uint" in dtype :
                     rng = 2**(8*absdtype.sizeof()-1)
                     ret = torch.randint(0, rng - 1, size=shape, dtype=absdtype.torch())

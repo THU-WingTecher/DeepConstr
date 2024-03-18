@@ -101,7 +101,9 @@ def main(cfg: DictConfig):
     test_constraints = [
         # "all(a.shape[i] == b.shape[i] or a.shape[i] == 1 or b.shape[i] == 1 for i in range(-1, -min(len(a.shape), len(b.shape))-1, -1))",
         # "len(set(a.shape)) == len(a.shape)",
-        "max(set(a.shape)) == 5",
+        " dtype(a) != float",
+        "dtype(a) == uint32"
+        # "max(set(a.shape)) == 5",
         # "1 not in a.shape",
         # "1 in a.shape",
         # "-len(a.shape) <= 3 < len(a.shape)",

@@ -268,7 +268,7 @@ class TrainingLoop:
     
     def get_pass_rate_and_err_msgs(self, record, ntimes) -> Tuple[float, List[ErrorMessage]]:
         success_count = 0
-        error_messages = {}
+        clusters = []
         raw_err_msgs = []
         copied_record = copy.deepcopy(record)
         executable_constr = convert_constr_to_executable(copied_record) # unactivated
@@ -280,7 +280,7 @@ class TrainingLoop:
                                         allow_zero_rate = self.cfg["train"]["allow_zero_rate"],
                                         num_of_try = self.cfg["train"]["num_of_try"]
                                         )
-        error_messages = {}
+        instance_mapping = {}
         for result in results:
             if result is None :
                 continue
@@ -289,26 +289,28 @@ class TrainingLoop:
                 success_count += 1
             else:
                 msg_key = error_instance.get_core_msg()
-                if error_messages.get(msg_key, False) :
-                    error_messages[msg_key].append(error_instance)
+                if instance_mapping.get(msg_key, False) :
+                    pass
                 else :
-                    error_messages[msg_key] = [error_instance]
+                    instance_mapping[msg_key] = error_instance
                 raw_err_msgs.append(msg_key)
+
         if raw_err_msgs :
             dynamic_cluster_mapping = map_error_messages_to_clusters_dynamic(raw_err_msgs)
-            for key, value in dynamic_cluster_mapping.items():
-                if value[0] in error_messages.keys() :
-                    error_messages[key] = error_messages[value[0]]
-            sorted_cluster_mapping = list(sorted(error_messages.values(), key=lambda item: len(item), reverse=True))
+            for _, value in dynamic_cluster_mapping.items():
+                instances = []
+                for v in value :
+                    if instance_mapping.get(v, None) is not None :
+                        instances.append(instance_mapping[v])
+                clusters.append(instances)
+            clusters = list(sorted(clusters, key=lambda item: len(item), reverse=True))
             success_rate = success_count / (success_count + len(raw_err_msgs))
-            sorted_error_instances = sorted_cluster_mapping
         else :
             success_rate = 1 
-            sorted_error_instances = []
 
-        if sorted_error_instances:
-            most_frequent_errs = sorted_error_instances[0]
-            distributions = {messages[0] : len(messages) for messages in sorted_cluster_mapping}
+        if clusters:
+            most_frequent_errs = clusters[0]
+            distributions = {messages[0] : len(messages) for messages in clusters}
             TRAIN_LOG.debug(f"Current error distribution :\n{formatted_dict(distributions)}")
             if self.is_special_err_msg(most_frequent_errs[0]):
                 raise Exception("Special error message encountered. Cannot proceed.")
@@ -316,7 +318,7 @@ class TrainingLoop:
             TRAIN_LOG.info("No error messages encountered.")
 
         # Return success rate and the sorted list of error message instances
-        return success_rate*100, sorted_error_instances
+        return success_rate*100, clusters
     
     def select_train_op(self) :
         if self.train_list :
@@ -342,6 +344,7 @@ class TrainingLoop:
                 rule = Constraint(rule_txt, cot, target, arg_names, dtypes)
                 if not rule.is_error() and rule.check() :
                     rules.append(rule)
+        TRAIN_LOG.debug(f"Generated rules : {[c.z3expr for c in rules]}")
         return rules
 
     def update_tolerance_and_history(self, result : Tuple[Scores, Constraint], tolerance, highest_prev, prev_answer):
@@ -527,7 +530,7 @@ unsolved_err_msgs : {unsolved_msgs}
             while sorted_err_instances :
                 most_frequents = sorted_err_instances.pop(0)
                 if self.is_triaged_err_msg(most_frequents[0], constr_list) :
-                    TRAIN_LOG.warning(f"Error message {most_frequents[0].get_core_msg()} is already triaged.")
+                    TRAIN_LOG.warning(f"err message {most_frequents[0].get_core_msg()} is already triaged.")
                     continue
                 succeed = self.train(op_record, most_frequents, constr_list, mode="acc")
                 if succeed :
@@ -535,7 +538,7 @@ unsolved_err_msgs : {unsolved_msgs}
                 else :
                     TRAIN_LOG.warning(f"Failed to train {most_frequents[0].get_core_msg()}")
                     break
-            TRAIN_LOG.info(f"No error messages encountered.")
+            TRAIN_LOG.info(f"No err messages encountered.")
             break
         
         self.save_only_acc(op_record, record_path)
@@ -546,12 +549,25 @@ unsolved_err_msgs : {unsolved_msgs}
         while queue :
             constr, scores = queue.pop()
             self.pop_constr_from_record(constr.txt, op_record)
-            succeed = self.train(op_record, constr.target, [], mode="f1", seeds = [(scores, constr)])
-            if succeed :
-                save_record(op_record, record_path)
+            targets = self.reproduce_errs(op_record, constr.target)
+            if targets :
+                succeed = self.train(op_record, targets, [], mode="f1", seeds = [(scores, constr)])
+                if succeed :
+                    save_record(op_record, record_path)
+                else :
+                    break
             else :
-                break
+                TRAIN_LOG.warning(f"Failed to reproduce {constr.target.get_core_msg()} with {constr.txt}")
+                pass # unreproducable means the popped constraint are not solving the error message
     
+    def reproduce_errs(self, record, target : ErrorMessage) :
+        targets = []
+        targets = self.get_sim_errors(target, record, num_of_check = self.cfg["train"]["eval_asset"])
+        if len(targets) < 2 : # no similar error messages
+            return False
+        else :
+            return targets
+        
     def fix_record_attrs(self, record, target : ErrorMessage) :
         """
         fix dtypes and rules
@@ -579,6 +595,37 @@ unsolved_err_msgs : {unsolved_msgs}
                 clusters.append([errmsg])
         
         return sorted(clusters, key=lambda x : len(x), reverse=True)
+    
+    def get_sim_errors(self, target, record, num_of_check : int =10) : 
+
+        instance_mapping = {}
+        target_cluster = None
+        raw_err_msgs = [target.get_core_msg()]
+        instance_mapping = {target.get_core_msg() : target}
+        executable_constr = convert_constr_to_executable(record) # unactivated
+        results = self.executor.execute(record=record, constraints=executable_constr, ntimes=num_of_check)
+        for result in results :
+            if result is None :
+                pass
+            else:
+                _, error_instance = result
+                msg_key = error_instance.get_core_msg()
+                if instance_mapping.get(msg_key, False) :
+                    pass
+                else :
+                    instance_mapping[msg_key] = error_instance
+                raw_err_msgs.append(msg_key)
+        if len(raw_err_msgs) == 1 : # not added any result(= all result is None)
+            return False
+        dynamic_cluster_mapping = map_error_messages_to_clusters_dynamic(raw_err_msgs)
+        for key, values in dynamic_cluster_mapping.items() :
+            for value in values :
+                if value == target.get_core_msg() :
+                    target_cluster = key 
+                    break
+            if target_cluster is not None : break
+        
+        return [instance_mapping[msg] for msg in dynamic_cluster_mapping[target_cluster] if instance_mapping.get(msg, None) is not None]
     
     def train(self, 
               orig_record, 

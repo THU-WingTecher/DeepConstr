@@ -96,6 +96,8 @@ class Evaluator() :
             self.f1_score = 2 * self.precision*self.recall/(self.precision+self.recall)
 
         return self.f1_score
+
+
     def evaluate(self, constr : Constraint, num_of_check : int =10) : 
         solved = 0
         unsolved = 0
