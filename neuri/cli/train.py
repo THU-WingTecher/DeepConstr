@@ -332,19 +332,25 @@ class TrainingLoop:
         Filter ill-formed rules and return the valid ones.
         """
         generated = []
+        segmented = []
         rules = []
+        if raw_infered is None :
+            return rules
         infered, cot = parse_from_raw_txt(raw_infered)
         dtypes = target.get_dtypes(arg_names)
         for rule_txt in infered.split(';'):
             generated.append(rule_txt.strip())
-            generated.extend(segment_constr(rule_txt))
+            segmented.extend(segment_constr(rule_txt.strip()))
         
-        for rule_txt in generated:
-            if rule_txt :
-                rule = Constraint(rule_txt, cot, target, arg_names, dtypes)
-                if not rule.is_error() and rule.check() :
-                    rules.append(rule)
-        TRAIN_LOG.debug(f"Generated rules : {[c.z3expr for c in rules]}")
+        for i, rules in enumerate([generated, segmented]):
+            for rule_txt in rules:
+                if rule_txt :
+                    if i == 1 : # segmented
+                        cot = "divided"
+                    rule = Constraint(rule_txt, cot, target, arg_names, dtypes)
+                    if not rule.is_error() and rule.check() :
+                        rules.append(rule)
+        TRAIN_LOG.debug(f"Generated rules : {[c.txt for c in rules]}")
         return rules
 
     def update_tolerance_and_history(self, result : Tuple[Scores, Constraint], tolerance, highest_prev, prev_answer):
@@ -660,6 +666,7 @@ unsolved_err_msgs : {unsolved_msgs}
                     break
                 else : 
                     self.inferencer.change_to_gpt4()
+                    tolerance = 0
             
             context, prompts = prompter.gen(targets, func_name=record["name"], prev_answer=prev_answer)
             
@@ -670,9 +677,10 @@ unsolved_err_msgs : {unsolved_msgs}
                                                       targets[0], 
                                                       record["args"]["name"]
                                                       )
-            result = synthesizer.run(new_rules)
-            if result is not None :
-                solved, tolerance, highest_prev, prev_answer = self.update_tolerance_and_history(result, tolerance, highest_prev, prev_answer)
+            if new_rules :
+                result = synthesizer.run(new_rules)
+                if result is not None :
+                    solved, tolerance, highest_prev, prev_answer = self.update_tolerance_and_history(result, tolerance, highest_prev, prev_answer)
         return self.finalize_training_session(highest_prev, orig_record, constr_list, synthesizer, prev_answer)
     
     def update_record_constr(self, constr : Constraint, record, scores) :

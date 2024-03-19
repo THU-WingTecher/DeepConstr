@@ -64,8 +64,8 @@ def gen_default_constr(
                     rules.append(pos_max_constraints(arr_wrapper.get_arg_attr(idx, "shape"), args_lengths[arg_name][idx], include_zero))
             elif args_types[arg_name].get_arg_dtype() in [AbsDType.int, AbsDType.float] :
                 arr_wrapper = args_types[arg_name].z3()(arg_name)
-                for idx in range(len(args_lengths[arg_name])) :
-                    rules.append(min_max_constraints(arr_wrapper.get_arg_attr(idx, "value"), args_lengths[arg_name][idx]))
+                for idx in range(args_lengths[arg_name]) :
+                    rules.append(min_max_constraints(arr_wrapper.value, args_lengths[arg_name]))
             else :
                 raise NotImplementedError(f"Unsupported type {args_types[arg_name].get_arg_dtype()}")
         else :
@@ -329,7 +329,17 @@ def process_len(
     
     return constrs
 
-def process_model(solver, args_types : Dict[str, Any]) : 
+def push_and_pop_noise(noises : List[z3.ExprRef], solver : z3.Solver) -> None :
+    
+    for noise in noises :
+        solver.push() 
+        solver.add(noise)
+    
+    while not is_solver_solvable(solver) :
+        solver.pop()
+    return solver
+
+def process_model(solver, noises, args_types : Dict[str, Any]) : 
 
     args_lengths = {}
     args_values = {}
@@ -338,7 +348,7 @@ def process_model(solver, args_types : Dict[str, Any]) :
         if SMT_LOG.getEffectiveLevel() <= logging.DEBUG:
             SMT_LOG.debug(f"Solver is not solvable with {solver.assertions()}")
         return None
-    
+    solver = push_and_pop_noise(noises, solver)
     model = solver.model()
     if SMT_LOG.getEffectiveLevel() <= logging.DEBUG:
         SMT_LOG.debug(f"MODEL ---> {model}")
@@ -399,12 +409,12 @@ def _gen_val(
     # solve all rank and len varaibles_first 
     help_rules = gen_default_constr(args_types, args_lengths, allow_zero_rate=allow_zero_rate)
     noises = add_noises(args_types, args_lengths, noise_prob, names)
-    all_rules = len_rules + help_rules + noises + constraints
+    all_rules = len_rules + help_rules + constraints
     if all_rules : 
         solver.add(all_rules)
     if SMT_LOG.getEffectiveLevel() <= logging.DEBUG:
         SMT_LOG.debug(f"---> Trying to solve: {api_name} ~ {solver.assertions()}")
-    results = process_model(solver, args_types)
+    results = process_model(solver, noises, args_types)
     if results is not None :
         args_values, args_lengths = results
         for arg_name in args_types.keys() : 
@@ -422,7 +432,7 @@ def init_solver() -> z3.Solver :
 def is_solver_solvable(solver: z3.Solver) -> bool:
     res = False
     if solver.check() == z3.unknown :
-        solver.set("timeout", 100000)
+        solver.set("timeout", 50000)
     res = solver.check() == z3.sat
     return res 
 

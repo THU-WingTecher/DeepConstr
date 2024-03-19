@@ -290,6 +290,14 @@ class ArrWrapper(BaseWrapper):
     def __init__(self, const, datatype, value_func, len_func):
         super().__init__(const, datatype, value_func, len_func)
     
+    def get_arg_attr(self, idx, attr):
+        if attr in ["value", "shape"] : 
+            return self.value_func(self.const)[idx]
+        elif attr in ["rank", "len"] :
+            return self.len_func(self.const)
+        else : 
+            raise IncorrectConstrError(f"Arr object does not support {attr} attribute")
+        
     def __str__(self):
         return f"Arr:{self.const.decl()}"
 class ComplexWrapper(BaseWrapper):

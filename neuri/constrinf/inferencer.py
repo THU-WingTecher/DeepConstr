@@ -96,7 +96,6 @@ class Inferencer() :
                     **self.args
             )
         except openai.APIConnectionError as e:
-            LLM_LOG.error("The server could not be reached")
             LLM_LOG.error(e.__cause__)  # an underlying Exception, likely raised within httpx.
         except openai.RateLimitError as e:
             LLM_LOG.error("A 429 status code was received; we should back off a bit.")
@@ -107,6 +106,8 @@ class Inferencer() :
 
         response = completion.choices[0].message.content
         time_cost = time.time() - start
+        if response is None : 
+            return 
         LLM_LOG.info(f'Output(Ptk{completion.usage.prompt_tokens}-OtkPtk{completion.usage.completion_tokens}) : \n {response} \n Time cost : {time_cost} seconds \n')
         self.prompt_token += completion.usage.prompt_tokens
         self.complete_token += completion.usage.completion_tokens

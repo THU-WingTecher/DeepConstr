@@ -413,7 +413,7 @@ class Ast2z3(SMTFuncs) :
             #     print(dtype_map
             # )
             z3_type_objs = {
-                    name : dtype.z3()(name) for name, dtype in dtype_map.items()
+                    name : dtype.z3()(name) for name, dtype in dtype_map.items() if dtype is not None
                 }
             try : 
                 constr_body = self._convert(ast, z3_type_objs)

@@ -51,7 +51,7 @@ def worker(model, record, noise=0.8, allow_zero_length_rate=0.1, allow_zero_rate
     for i_arg, arg_name in enumerate(record['args']['name']):
         if record['args']['dtype_obj'][i_arg] is None :
             chosen_dtype[arg_name] = None
-            MGEN_LOG.warning(f"Unidentiable dtype for {arg_name} : {record['args']['dtype'][i_arg]}")
+            MGEN_LOG.debug(f"Unidentiable dtype for {arg_name} : {record['args']['dtype'][i_arg]}")
         elif len(record['args']['dtype_obj'][i_arg]) > 0:
             chosen_dtype[arg_name] = random.choice(record['args']['dtype_obj'][i_arg])
         else:
@@ -95,7 +95,7 @@ def worker_wrapper(worker_fn, return_dict, index, *args, **kwargs):
         result = worker_fn(*args, **kwargs)
     except Exception as e:
         err_instance = ErrorMessage(InternalError(), traceback.format_exc(), {}, {})
-        MGEN_LOG.error(f"Error in execute: {e}, maybe child process core dumped")
+        MGEN_LOG.error(f"Err execute: {e}, maybe child process core dumped")
         result = [False, err_instance]
     return_dict[index] = result
 

@@ -71,12 +71,12 @@ Q : try to make constraints {correct_discription} so that it can make the whole 
         return examples
     
     def question(self, targets : List[ErrorMessage], func_name) :
-        target_str = "Q : Based on the given runtime information, formulate constraint that prevent the error." 
-        num_of_ex = min(self.set_num_of_ex(), len(targets))
+        target_str = "Q : Based on the given runtime information, formulate constraint that prevent the error.\n" 
+        num_of_ex = min(random.randint(1,3), len(targets))
         new = random.choices(targets, k=num_of_ex)
         questions = set()
         for i in range(num_of_ex) :
-            questions.add(f"""\n({func_name}({formatted_dict(new[i].get_values_map(), sep="=", split=", ")}) -> {new[i].get_core_msg()}""")
+            questions.add(f"""({func_name}({formatted_dict(new[i].get_values_map(), sep="=", split=", ")}) -> {new[i].get_core_msg()}""")
         target_str+= '\n'.join(questions)
         target_str+= "\nWrap the final formula with ```.\nAnswers :"
         return target_str
@@ -86,9 +86,6 @@ Q : try to make constraints {correct_discription} so that it can make the whole 
             return ""
         introduce = "avoid same answer with your prev answer : "
         return introduce + '```' + ans_history + '```'
-
-    def set_num_of_ex(self) : 
-        return random.randint(1,3)
     
     def gen(self, err_msgs : List[ErrorMessage], func_name, prev_answer : Optional[Constraint]=None, ans_history : Optional[str]=None) :
         prompts = ""
@@ -96,7 +93,7 @@ Q : try to make constraints {correct_discription} so that it can make the whole 
         contexts = ""
         task_introduce= self.task_introduce(func_name)
         # grammar = self.Constraint_grammar() if random.choice([0,1]) else ""
-        examples = self.get_closet_examples(err_msgs, num_of_ex = self.set_num_of_ex())
+        examples = self.get_closet_examples(err_msgs, num_of_ex = random.randint(min,max))
         # history = self.gen_history(prev_answer) if prev_answer is not None else ""
         # infer_history = self.gen_infer_history(ans_history)
         if len(history) == 0 : 

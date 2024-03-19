@@ -132,7 +132,7 @@ class Evaluator() :
         if TRAIN_LOG.getEffectiveLevel()  <= logging.DEBUG:
             sorted_cluster_mapping = dict(sorted(dynamic_cluster_mapping.items(), key=lambda item: len(item[1]), reverse=True))
             distributions = {messages[0] : len(messages) for _, messages in sorted_cluster_mapping.items()}
-            TRAIN_LOG.debug(f"[{constr.z3expr}] Current error distribution :\n{formatted_dict(distributions)}")
+            TRAIN_LOG.debug(f"[{constr.txt}] Current error distribution :\n{formatted_dict(distributions)}")
 
-        TRAIN_LOG.info(f"[{constr.z3expr}] Solved: {solved}, Unsolved: {unsolved}, Unable to generate: {ungen}")
+        TRAIN_LOG.info(f"[{constr.txt}] Solved: {solved}, Unsolved: {unsolved}, Unable to generate: {ungen}")
         return solved, unsolved
