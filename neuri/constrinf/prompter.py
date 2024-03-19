@@ -23,7 +23,8 @@ class Prompter() :
         self.collect_switch : Dict[str, bool] = {'FN' : False, 'FP' : False}
         self.asset = 3
         self.errmsgs_of_FP_cases = []
-
+        self.Q_history = []
+        self.msg_pool = set()
     def FP_history(self, prev_answer : Constraint, FP_example, target) -> None :
         """create history prompts with False Positive examples """
         txt = prev_answer.txt
@@ -64,7 +65,7 @@ Q : try to make constraints {correct_discription} so that it can make the whole 
         return f"""<symbol> ::= {self.keys_print} | type(<symbol>) | len(<symbol>) | <symbol>[<int>] | <symbol>.dim | <symbol>.shape
 <ops> ::= + | - | * | / | == | != | > | >= | < | <= | in | not in"""
 # <comparator> ::= dtype | integer | tensor.dtype | List[int]"""
-    def get_closet_examples(self, err_msgs, num_of_ex=[0,3]) : 
+    def get_closet_examples(self, err_msgs, num_of_ex=2) : 
         sorted_li =[ele[0] for ele in sort_sentences_by_similarity(err_msgs[0].get_core_msg(), list(self.err_db.keys()))[:num_of_ex]]
         sorted_li = sorted_li[::-1]
         examples = '\n'.join([self.dynamic_template(errmsg, self.err_db[errmsg]['cot'], self.err_db[errmsg]['answers']) for errmsg in sorted_li])
@@ -72,12 +73,20 @@ Q : try to make constraints {correct_discription} so that it can make the whole 
     
     def question(self, targets : List[ErrorMessage], func_name) :
         target_str = "Q : Based on the given runtime information, formulate constraint that prevent the error.\n" 
-        num_of_ex = min(random.randint(1,3), len(targets))
-        new = random.choices(targets, k=num_of_ex)
-        questions = set()
-        for i in range(num_of_ex) :
-            questions.add(f"""({func_name}({formatted_dict(new[i].get_values_map(), sep="=", split=", ")}) -> {new[i].get_core_msg()}""")
-        target_str+= '\n'.join(questions)
+        new = None
+        while targets and new is None :
+            idx = random.randint(0, len(targets)-1)
+            new = targets.pop(idx)
+            if new.get_core_msg() not in self.msg_pool :
+                self.msg_pool.add(new.get_core_msg())
+                break
+            else :
+                new = None
+
+        if new is None :
+            new = self.Q_history.pop(0)
+        self.Q_history.append(new)
+        target_str+= f"""({func_name}({formatted_dict(new.get_values_map(), sep="=", split=", ")}) -> {new.get_core_msg()}"""
         target_str+= "\nWrap the final formula with ```.\nAnswers :"
         return target_str
     
@@ -93,7 +102,7 @@ Q : try to make constraints {correct_discription} so that it can make the whole 
         contexts = ""
         task_introduce= self.task_introduce(func_name)
         # grammar = self.Constraint_grammar() if random.choice([0,1]) else ""
-        examples = self.get_closet_examples(err_msgs, num_of_ex = random.randint(0,3))
+        examples = self.get_closet_examples(err_msgs, num_of_ex = random.randint(1,3))
         # history = self.gen_history(prev_answer) if prev_answer is not None else ""
         # infer_history = self.gen_infer_history(ans_history)
         if len(history) == 0 : 

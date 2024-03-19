@@ -462,7 +462,7 @@ class TrainingLoop:
             self.is_trained(record) is False \
         )
     def runs(self) :
-        n_debug = 50
+        n_debug = 100
         n_func = 0
         # while True :
         while n_func < n_debug :
@@ -553,9 +553,9 @@ unsolved_err_msgs : {unsolved_msgs}
             break
         
         self.save_only_acc(op_record, record_path)
-        if not self.is_retrainable(op_record) :
-            TRAIN_LOG.warning(f"Record is not retrainable : {formatted_dict(op_record, sep=':', split=', ')}")
-            return
+        # if not self.is_retrainable(op_record) :
+        #     TRAIN_LOG.warning(f"Record is not retrainable : {formatted_dict(op_record, sep=':', split=', ')}")
+        #     return
         queue = self.get_retrain_list(op_record, constr_list)
         while queue :
             constr, scores = queue.pop()
@@ -665,7 +665,6 @@ unsolved_err_msgs : {unsolved_msgs}
                 return True
             synthesizer.save_state(seeds)
         while self.cfg["train"]['infer_asset_per_epoch'] >= infer_times and not solved:
-            TRAIN_LOG.info(f"Start infering[round={tolerance}] {targets[0].get_core_msg()}")
             if tolerance >= self.cfg["train"]['tolerance']:
                 if self.inferencer.is_gpt4() :
                     break
@@ -679,7 +678,7 @@ unsolved_err_msgs : {unsolved_msgs}
             infer_times += 1
 
             new_rules = self.parse_and_generate_rules(raw_infered, 
-                                                      targets[0], 
+                                                      targets[0] if targets else prompter.Q_history[-1], 
                                                       record["args"]["name"]
                                                       )
             if new_rules :

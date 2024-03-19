@@ -197,7 +197,11 @@ def find_optimal_clusters(data, max_clusters=10):
 from sklearn.metrics import silhouette_score
 
 
-
+dummy_data_count = 5  # Number of dummy strings to add
+DUMMY_STR = ["DUMMY_DATA_FOR_CLUSTERING",  # Dummy string for padding
+                    "shape should consistence matrix, but we got nothing but you"
+]
+dummy_strings = DUMMY_STR * dummy_data_count
 def map_error_messages_to_clusters_dynamic(raw_error_messages):
     """
     Maps each error message to a cluster based on structural characteristics using TF-IDF and dynamically
@@ -209,9 +213,7 @@ def map_error_messages_to_clusters_dynamic(raw_error_messages):
     Returns:
     - dict: A dictionary where keys are cluster labels and values are lists of error messages belonging to each cluster.
     """
-    if len(raw_error_messages) < 2:
-        return {"Insufficient data for clustering": raw_error_messages}
-
+    raw_error_messages += dummy_strings
     tfidf_vectorizer = TfidfVectorizer(stop_words='english')
     tfidf_matrix = tfidf_vectorizer.fit_transform(raw_error_messages)
 
@@ -223,6 +225,8 @@ def map_error_messages_to_clusters_dynamic(raw_error_messages):
     clusters = km.labels_.tolist()
     cluster_mapping = {}
     for cluster_label, error_message in zip(clusters, raw_error_messages):
+        if error_message in DUMMY_STR:  # Skip dummy data in final output
+            continue
         if cluster_label not in cluster_mapping:
             cluster_mapping[cluster_label] = [error_message]
         else:
