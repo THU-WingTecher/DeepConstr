@@ -330,13 +330,14 @@ def process_len(
     return constrs
 
 def push_and_pop_noise(noises : List[z3.ExprRef], solver : z3.Solver) -> None :
-    
+    n=0
     for noise in noises :
         solver.push() 
         solver.add(noise)
-    
-    while not is_solver_solvable(solver) :
+        n+=1
+    while n>0 and not is_solver_solvable(solver) :
         solver.pop()
+        n-=1
     return solver
 
 def process_model(solver, noises, args_types : Dict[str, Any]) : 
