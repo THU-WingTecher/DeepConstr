@@ -13,20 +13,8 @@ args:
   - true
 name: torch.Tensor.__iand__
 package: torch
-pass_rate: 0.2
+pass_rate: 0.0
 rules:
-- - cot: ''
-    target:
-      choosen_dtype:
-        other: tensor
-        self: tensor
-      msg: result type Float can't be cast to the desired output type Int
-      package: torch
-    txt: dtype(self) == torch.uint8
-  - f1_score: 70.3886925795053
-    overall_score: 40.19434628975265
-    precision: 100.0
-    recall: 54.30752453653217
 - - cot: synthesized
     target:
       choosen_dtype:
@@ -39,3 +27,29 @@ rules:
     overall_score: 38.1215538485805
     precision: 80.84677419354838
     recall: 56.108086365660604
+- - cot: divided
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (0) at non-singleton
+        dimension 1
+      package: torch
+    txt: self.dim() == other.dim()
+  - f1_score: 84.88964346349746
+    overall_score: 100
+    precision: 100.0
+    recall: 73.74631268436579
+- - cot: divided
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"bitwise_and_cpu" not implemented for ''Float'''
+      package: torch
+    txt: (dtype(self) in ["int8", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+      "uint64"])
+  - f1_score: 98.52216748768473
+    overall_score: 100
+    precision: 100.0
+    recall: 97.0873786407767

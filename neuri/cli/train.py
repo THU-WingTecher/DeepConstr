@@ -205,7 +205,8 @@ class TrainingLoop:
 
         self.executor : Executor = Executor(self.ModelType, parallel = cfg["train"]["parallel"])
         self.train_list = self.get_train_list(path = cfg["train"]["list"], 
-                                              api_name = cfg["train"]["api_name"])
+                                              api_name = cfg["train"]["api_name"],
+                                              start_from=cfg["train"]["start_from"])
         TRAIN_LOG.info(
             f"{len(self.train_list)} opsets wait for inferring"
         )
@@ -233,7 +234,7 @@ class TrainingLoop:
             "save" : 0
         }
 
-    def get_train_list(self, path, api_name = None) -> List[str]:
+    def get_train_list(self, path, api_name = None, start_from = None) -> List[str]:
         """
         get operator yaml file path
         """
@@ -256,6 +257,9 @@ class TrainingLoop:
                             li.append(os.path.join(root, file))
                     elif name in data :
                         li.append(os.path.join(root, file))
+        li = sorted(li, key=sort_key)
+        if start_from is not None :
+            li = li[li.index(start_from):]
         return sorted(li, key=sort_key)
         ### all records of torch apis ###
         # li = []
@@ -342,8 +346,8 @@ class TrainingLoop:
             generated.append(rule_txt.strip())
             segmented.extend(segment_constr(rule_txt.strip()))
         
-        for i, rules in enumerate([generated, segmented]):
-            for rule_txt in rules:
+        for i, rule_txts in enumerate([generated, segmented]):
+            for rule_txt in rule_txts:
                 if rule_txt :
                     if i == 1 : # segmented
                         cot = "divided"
@@ -450,12 +454,12 @@ class TrainingLoop:
         raise ValueError(f"no such constraint in record : {txt}")
 
     def is_trained(self, record : Record) :
-        return record.get("pass_rate", 0) >= self.cfg["train"]["precision_threshold"]
+        return record.get("pass_rate", 0) >= self.cfg["train"]["precision_threshold"] #or record.get("trained", False)
     def is_trainable(self, record : Record) :
         return (
             record is not None and \
             record.get("error", None) is None and \
-            self.is_trained(record) is False
+            self.is_trained(record) is False \
         )
     def runs(self) :
         n_debug = 50
@@ -475,15 +479,16 @@ class TrainingLoop:
                 except :
                     TRAIN_LOG.error(f"{traceback.format_exc()}")
             else :
-                TRAIN_LOG.warning(f"""Record don't need-train/trainable : {formatted_dict(op_record, sep=":", split=", ")}""")
+                TRAIN_LOG.warning(f"""Record don't need-train/trainable : {formatted_dict(op_record, sep=":", split=SPLITTER)}""")
     def finalize_infering(self, record, record_path) :
         pass_rate, unsolved = self.get_pass_rate_and_err_msgs(record, self.cfg["train"]["eval_asset"])
         unsolved_msgs = [e[0].dump() for e in unsolved if e] if unsolved else []
         self.update_pass_rate(record, pass_rate)
         save_record(record, record_path)
+        constr_tar_dict = {r[0]['target']['msg']:(r[0]['txt'],('f1',r[1]['f1_score']),('prec',r[1]['precision'])) for r in record['rules']}
         TRAIN_LOG.info(
 f"""{record['name']} infered finished\n
-constrs : {record['rules']}\n
+constrs : {formatted_dict(constr_tar_dict)}\n
 final_pass_rate : {record['pass_rate']}\n
 unsolved_err_msgs : {unsolved_msgs}
             """
@@ -524,7 +529,7 @@ unsolved_err_msgs : {unsolved_msgs}
         n_try = 0
         pass_rate = 0
         constr_list : List[Constraint] = []
-        TRAIN_LOG.info(f"Start training {op_record['name']}")
+        TRAIN_LOG.info(f"""Start training {op_record['name']}{SPLITTER}{formatted_dict(op_record, sep=":", split=SPLITTER)}""")
         constr_list.extend(self.get_constrs_from_rules(op_record))
         self.inferencer.init()
         while n_try < self.cfg["train"]["n_try"] :
@@ -565,7 +570,7 @@ unsolved_err_msgs : {unsolved_msgs}
             else :
                 TRAIN_LOG.warning(f"Failed to reproduce {constr.target.get_core_msg()} with {constr.txt}")
                 pass # unreproducable means the popped constraint are not solving the error message
-    
+
     def reproduce_errs(self, record, target : ErrorMessage) :
         targets = []
         targets = self.get_sim_errors(target, record, num_of_check = self.cfg["train"]["eval_asset"])

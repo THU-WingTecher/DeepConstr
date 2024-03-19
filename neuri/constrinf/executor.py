@@ -5,38 +5,19 @@ import multiprocessing
 import random
 import traceback
 from typing import Any, Dict, List, Optional, Tuple
+from neuri.abstract.dtype import AbsTensor
 from neuri.autoinf.instrument.op import OpInstance
 from neuri.constrinf import record_args_info
 from neuri.error import InternalError
 from neuri.logger import MGEN_LOG
-from neuri.specloader.smt import gen_val
+from neuri.specloader.smt import DEFAULT_DTYPE_CONSTR, gen_val
 from neuri.constrinf.errmsg import ErrorMessage
 
 NOERR_MSG = "no error"
 
-def contains_ctypes(obj, visited=None):
-    import ctypes
-    if visited is None:
-        visited = set()
-    
-    # Avoid infinite recursion for circular references
-    if id(obj) in visited:
-        return False
-    visited.add(id(obj))
-
-    if isinstance(obj, ctypes._SimpleCData):
-        return True
-
-    if isinstance(obj, dict):
-        return any(contains_ctypes(v, visited) for v in obj.values())
-    elif isinstance(obj, (list, tuple)):
-        return any(contains_ctypes(item, visited) for item in obj)
-    elif hasattr(obj, '__dict__'):
-        return contains_ctypes(vars(obj), visited)
-    
-    return False
-
 _gloabl_constraints = []
+_dtype_constrs_executable = []
+
 def set_global_constraints(constraints) :
     global _gloabl_constraints
     _gloabl_constraints = constraints
@@ -48,6 +29,7 @@ def clear_global_constraints() :
 def worker(model, record, noise=0.8, allow_zero_length_rate=0.1, allow_zero_rate=0.1, num_of_try=30):
     chosen_dtype = {}
     concretized_values = {}
+    dtype_constrs = []
     for i_arg, arg_name in enumerate(record['args']['name']):
         if record['args']['dtype_obj'][i_arg] is None :
             chosen_dtype[arg_name] = None
@@ -56,7 +38,9 @@ def worker(model, record, noise=0.8, allow_zero_length_rate=0.1, allow_zero_rate
             chosen_dtype[arg_name] = random.choice(record['args']['dtype_obj'][i_arg])
         else:
             chosen_dtype[arg_name] = record['args']['dtype_obj'][i_arg]
-    
+        if isinstance(chosen_dtype[arg_name], AbsTensor) :
+            dtype_constrs.append(_dtype_constrs_executable(arg_name))
+
     values = gen_val(
                 num_of_try,
                 chosen_dtype, 
@@ -64,7 +48,8 @@ def worker(model, record, noise=0.8, allow_zero_length_rate=0.1, allow_zero_rate
                 noise_prob=noise,
                 allow_zero_length_rate=allow_zero_length_rate,
                 allow_zero_rate=allow_zero_rate,
-                api_name=record['name']
+                api_name=record['name'],
+                dtype_constrs=dtype_constrs,
             )
     if values is None : 
         return None
@@ -101,8 +86,10 @@ def worker_wrapper(worker_fn, return_dict, index, *args, **kwargs):
 
 class Executor:
     def __init__(self, model, parallel=8) :
+        global _dtype_constrs_executable
         self.model = model
         self.parallel = parallel
+        _dtype_constrs_executable = DEFAULT_DTYPE_CONSTR.get(self.model().package)
 
     def execute(self, ntimes, constraints, *args, **kwargs) -> Optional[List[Tuple[bool, ErrorMessage]]]:
         MGEN_LOG.info(f"Executing {ntimes} times")

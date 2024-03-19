@@ -331,13 +331,15 @@ def process_len(
 
 def push_and_pop_noise(noises : List[z3.ExprRef], solver : z3.Solver) -> None :
     n=0
+    solverable = False
     for noise in noises :
         solver.push() 
         solver.add(noise)
         n+=1
-    while n>0 and not is_solver_solvable(solver) :
+    while n>0 and not solverable :
         solver.pop()
         n-=1
+        solverable = is_solver_solvable(solver)
     return solver
 
 def process_model(solver, noises, args_types : Dict[str, Any]) : 
@@ -389,6 +391,7 @@ def _gen_val(
           allow_zero_length_rate : float = 0.5,
           allow_zero_rate : float = 0.5,
           constraints : List[z3.ExprRef] = [],
+          dtype_constrs : List[z3.ExprRef] = [],
           api_name : str = "",
           ) -> Optional[Dict[str, Any]] : 
     """ 
@@ -402,7 +405,7 @@ def _gen_val(
                     }) for constr in constrs]
     names = extract_names_from_constrs(constraints)
     solver = init_solver()
-    solver.add(constrs)
+    solver.add(constrs + dtype_constrs)
     len_rules = process_len(args_types, args_lengths, solver, names, noise=noise_prob, allow_zero_length_rate=allow_zero_length_rate)
     if len_rules is None :
         SMT_LOG.debug(f"rank related rules cannot be satisfied")

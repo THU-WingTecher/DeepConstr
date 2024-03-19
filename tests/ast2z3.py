@@ -114,7 +114,11 @@ def main(cfg: DictConfig):
         # "alld > len(c)",
         # "all((a[i]>1 and a[i]<4) for i in a[2:])",
         # "c[0].shape[0] == b[0]",
-        # 'a[-1] > b[-2]'
+        # 'a[-1] > b[-2]',
+        # "all(input.shape[i+2] == axis[i] for i in range(len(axis)))",
+        # "input.dtype == 'real'",
+        # "len(axis) >2",
+        # "axis[0] = 1",
     ]
     for i in range(10) :
         constrs = test_with_given_constraints(test_constraints, arg_names, dtypes)
