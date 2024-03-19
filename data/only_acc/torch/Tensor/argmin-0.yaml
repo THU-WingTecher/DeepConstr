@@ -59,7 +59,7 @@ rules:
     txt: 'self.shape[dim] > 0
 
       '
-  - f1_score: 99.7840172786177
-    overall_score: 54.89200863930885
+  - f1_score: 99.77011494252874
+    overall_score: 100
     precision: 100.0
-    recall: 99.56896551724138
+    recall: 99.54128440366972

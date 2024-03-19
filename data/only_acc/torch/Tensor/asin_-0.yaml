@@ -7,7 +7,7 @@ args:
   - self
   required:
   - true
-name: torch.Tensor.acosh
+name: torch.Tensor.asin_
 package: torch
-pass_rate: 100
+pass_rate: 96.39999999999999
 rules: []

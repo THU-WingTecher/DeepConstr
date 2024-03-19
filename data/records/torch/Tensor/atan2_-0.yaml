@@ -13,4 +13,5 @@ args:
   - true
 name: torch.Tensor.atan2_
 package: torch
-pass_rate: 0
+pass_rate: 11.799999999999999
+rules: []

@@ -21,5 +21,5 @@ args:
   - false
 name: torch.Tensor.addcmul_
 package: torch
-pass_rate: 23.846153846153847
+pass_rate: 1.0683760683760684
 rules: []

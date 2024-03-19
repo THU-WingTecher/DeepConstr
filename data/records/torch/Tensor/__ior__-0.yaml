@@ -13,19 +13,35 @@ args:
   - true
 name: torch.Tensor.__ior__
 package: torch
-pass_rate: 1.4492753623188406
+pass_rate: 4.0
 rules:
-- - cot: 'Error is triggered because the size of tensors at non-singleton dimension
-      0 doesn''t match. In this case, the constraint can be formulated as follows:'
+- - cot: "The error is triggered because the shape of the output tensor ([5]) doesn't\
+      \ match the broadcast shape ([]). This implies that there is a mismatch in the\
+      \ dimensions when performing the broadcasting operation. \n\nTo prevent this\
+      \ error, we need to ensure that the trailing dimensions of the tensors involved\
+      \ in the operation are either 1 or the same. Therefore, we can formulate the\
+      \ constraint as follows:"
     target:
       choosen_dtype:
         other: tensor
         self: tensor
-      msg: The size of tensor a (4) must match the size of tensor b (6) at non-singleton
-        dimension 0
+      msg: output with shape [] doesn't match the broadcast shape [5]
       package: torch
-    txt: self.shape[0] == other.shape[0]
-  - f1_score: 70.04099846079257
-    overall_score: 50.87644787644788
-    precision: 95.75289575289575
-    recall: 55.21458733775149
+    txt: self.shape[i] == 1
+  - f1_score: 66.95661530999504
+    overall_score: 38.47830765499752
+    precision: 90.10309278350516
+    recall: 53.271708740742255
+- - cot: ''
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"bitwise_or_cpu" not implemented for ''Float'''
+      package: torch
+    txt: (dtype(self) == dtype(other) and dtype(self) in ["half", "int16", "int32",
+      "int64", "uint8", "uint16", "uint32", "uint64"])
+  - f1_score: 71.11756168359942
+    overall_score: 40.55878084179971
+    precision: 100.0
+    recall: 55.18018018018018

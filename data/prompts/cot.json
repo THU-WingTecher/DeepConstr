@@ -3,13 +3,17 @@
       "answers": "input1.dim == input2.dim;input1.dim==target.dim",
       "cot": "Based on given values, Error is triggered because all input tensors don't have same dimension. It expects to have same dimension among all tensors. Let's see what the args were. It seems dimensions of input1, input2, and target are not same, so input.dim, input2.dim, target.dim should be corrected. Therefore, Left : input.dim. Op : ==, and Right : input2.dim or target.dim"
     },
+    "The size of tensor a (4) must match the size of tensor b (7) at non-singleton dimension 0": {
+      "answers": "a.dim == b.dim and a.shape == b.shape",
+      "cot": "Based on given values, Error is triggered because the two tensors are not inconistent. It expects to have same dimension among all tensors. Let's see what the args were. It seems dimensions and shape of a, and b are which should be corrected. Therefore, Left : a.dim, a.shape Op : ==, and Right : b.dim, b.shape"
+    },
     "Can not squeeze dim, expected a dimension of 1, got 8 name:": {
       "answers": "all(axis[i] < len(input.shape) and input.shape[axis[i]] == 1 for i in range(len(axis)))",
       "cot": "The error is due to an invalid squeeze dimension. What the args were? The function is trying to squeeze on dimension 8 of the input tensor, but the corresponding values are not 1. Squeezing a dimension is only valid if the size of that dimension is 1. Therefore, each axis[i] in axis should be a valid dimension (i.e., < input.rank), Op : <, and Right : input.rank. Also, the size of that dimension in the input tensor should be 1. So, input[axis[i]].dim should be 1, Op : ==, and Right : 1."
     },
     "Dimension out of range (expected to be in range of [-2, 1], but got 7)": {
       "answers": "dim >= -len(input.shape) and dim < len(input.shape); all(d >= -len(input.shape) and d < len(input.shape) for d in dim)",
-      "cot": "The error occurs because the dimension provided is out of the valid range. Let's see what the args were. It appears the given dimension is 7 which is out of this range. To prevent this error in the future and generate constraints that do not trigger it, we need to ensure that the \"dim\" value is always within the valid range for the given tensor. If we denote the shape of the tensor as n, the valid range for the dimension would be [-n, n-1].\n\nThe constraint for the 'dim' parameter can be expressed as:"
+      "cot": "The error occurs because the dimension provided is out of the valid range. Let's see what the args were. It related with arg_name 'dim=7', which is out of this range. To prevent this error in the future and generate constraints that do not trigger it, we need to ensure that the \"dim\" value is always within the valid range for the given tensor. If we denote the shape of the tensor as n, the valid range for the dimension would be [-n, n-1].The constraint for the 'dim' parameter can be expressed as:"
     },
     "Exception encountered when calling layer 'max_pooling1d_28' (type MaxPooling1D).  Stride must be > 0, but got 0": {
       "answers": "all(i>0 for i in strides);strides>0",

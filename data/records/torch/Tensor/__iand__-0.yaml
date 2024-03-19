@@ -13,22 +13,29 @@ args:
   - true
 name: torch.Tensor.__iand__
 package: torch
-pass_rate: 0.0
+pass_rate: 0.2
 rules:
-- - cot: "Error is triggered because the size of tensor a (3) does not match the size\
-      \ of tensor b (9) at non-singleton dimension 0. \n\nTo prevent this error, we\
-      \ need to ensure that the sizes of the tensors at non-singleton dimension 0\
-      \ are either equal or one of them has a size of 1.\n\nThe constraint can be\
-      \ formulated as:"
+- - cot: ''
     target:
       choosen_dtype:
         other: tensor
         self: tensor
-      msg: The size of tensor a (3) must match the size of tensor b (9) at non-singleton
-        dimension 0
+      msg: result type Float can't be cast to the desired output type Int
       package: torch
-    txt: self.shape[0] == 1
-  - f1_score: 81.37448044849498
-    overall_score: 45.68724022424749
-    precision: 96.2655601659751
-    recall: 70.47316248316643
+    txt: dtype(self) == torch.uint8
+  - f1_score: 70.3886925795053
+    overall_score: 40.19434628975265
+    precision: 100.0
+    recall: 54.30752453653217
+- - cot: synthesized
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: output with shape [] doesn't match the broadcast shape [5]
+      package: torch
+    txt: (self.shape == other.shape) and (self.shape[i] == 1)
+  - f1_score: 66.243107697161
+    overall_score: 38.1215538485805
+    precision: 80.84677419354838
+    recall: 56.108086365660604

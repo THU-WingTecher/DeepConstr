@@ -13,12 +13,13 @@ args:
   - true
 name: torch.Tensor.__ixor__
 package: torch
-pass_rate: 0.0
+pass_rate: 41.48296593186373
 rules:
-- - cot: "Based on the given error message and runtime information, the error is triggered\
-      \ because the size of tensor a (3) does not match the size of tensor b (5) at\
-      \ non-singleton dimension 0. \n\nTo prevent this error, we can formulate the\
-      \ following constraint:"
+- - cot: "Error is triggered because the size of tensor a (3) does not match the size\
+      \ of tensor b (5) at non-singleton dimension 0. To prevent this error, we need\
+      \ to ensure that the dimensions of the tensors being operated on are either\
+      \ equal or one of them has size 1. \n\nTherefore, the constraints can be formulated\
+      \ as:"
     target:
       choosen_dtype:
         other: tensor
@@ -26,8 +27,65 @@ rules:
       msg: The size of tensor a (3) must match the size of tensor b (5) at non-singleton
         dimension 0
       package: torch
-    txt: self.shape[0] == other.shape[0]
-  - f1_score: 69.55244930882253
-    overall_score: 50.808764940239044
-    precision: 95.61752988047809
-    recall: 54.65393432418891
+    txt: 'other.shape[0] == 1
+
+      '
+  - f1_score: 81.30748549596716
+    overall_score: 45.65374274798358
+    precision: 94.84978540772532
+    recall: 71.14908370480435
+- - cot: Based on the given runtime information, the error occurs because the bitwise_xor_cpu
+      operation is not implemented for the 'Float' data type. To prevent this error,
+      the data type of both the self tensor and the other tensor should be changed
+      to one of the valid data types for bitwise xor operation, such as int8, int16,
+      int32, int64, uint8, uint16, uint32, or uint64.
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"bitwise_xor_cpu" not implemented for ''Float'''
+      package: torch
+    txt: '
+
+      (dtype(self) in ["int8", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+      "uint64"])'
+  - f1_score: 88.2217090069284
+    overall_score: 100
+    precision: 100.0
+    recall: 78.92561983471074
+- - cot: synthesized
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: uint16
+      package: torch
+    txt: (self.shape == other.shape) and (self.dtype == other.dtype)
+  - f1_score: 69.39929328621908
+    overall_score: 100
+    precision: 100.0
+    recall: 53.13852813852814
+- - cot: ''
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Long
+      package: torch
+    txt: dtype(self) == dtype(other) == torch.int64
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: synthesized
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: output with shape [1] doesn't match the broadcast shape [1, 4, 0]
+      package: torch
+    txt: (self.shape == other.shape) and (len(other.shape) == len(self.shape))
+  - f1_score: 75.85681645087585
+    overall_score: 100
+    precision: 100.0
+    recall: 61.104294478527606

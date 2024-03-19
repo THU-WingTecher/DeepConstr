@@ -17,7 +17,7 @@ args:
   - false
 name: torch.Tensor.aminmax
 package: torch
-pass_rate: 99.8
+pass_rate: 99.6
 rules:
 - - cot: 'The error occurs because the given dimension is 3 which is out of the valid
       range. To prevent this error, we need to ensure that the "dim" value is always
@@ -34,7 +34,25 @@ rules:
       msg: Dimension out of range (expected to be in range of [-1, 0], but got 3)
       package: torch
     txt: dim >= -1 and dim < 1
-  - f1_score: 91.15770282588879
-    overall_score: 50.578851412944395
+  - f1_score: 91.07468123861567
+    overall_score: 100
     precision: 100.0
-    recall: 83.75209380234506
+    recall: 83.61204013377926
+- - cot: "Based on the given runtime information, the error arises because the function\
+      \ is trying to compute the aminmax operation over an empty dimension, which\
+      \ does not have an identity value. To prevent this error, we need to ensure\
+      \ that the dimension over which the aminmax operation is performed is not empty.\
+      \ \n\nTherefore, the constraint that prevents the error is:"
+    target:
+      choosen_dtype:
+        dim: None
+        keepdim: bool
+        self: tensor
+      msg: 'aminmax(): cannot compute aminmax over an empty dimension as the operation
+        has no identity.'
+      package: torch
+    txt: self.dim() > 0
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0

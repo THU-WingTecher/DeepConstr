@@ -1,0 +1,64 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.Tensor.bitwise_and
+package: torch
+pass_rate: 23.88663967611336
+rules:
+- - cot: The error occurs because the function `torch.Tensor.bitwise_and` is not implemented
+      for floats. To prevent this error, the input tensors `self` and `other` should
+      have a data type that is compatible with the function, such as int8, int16,
+      int32, int64, uint8, uint16, uint32, or uint64.
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"bitwise_and_cpu" not implemented for ''Float'''
+      package: torch
+    txt: (dtype(self) in ["int8", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+      "uint64"]) and (dtype(other) in ["int8", "int16", "int32", "int64", "uint8",
+      "uint16", "uint32", "uint64"])
+  - f1_score: 75.58578987150415
+    overall_score: 100
+    precision: 100.0
+    recall: 60.753341433778864
+- - cot: 'Error is triggered because the size of tensor a (5) does not match the size
+      of tensor b (6) at non-singleton dimension 0. To prevent this error, we need
+      to ensure that the size of tensor a is equal to the size of tensor b at non-singleton
+      dimension 0. The constraint can be formulated as:'
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (5) must match the size of tensor b (6) at non-singleton
+        dimension 0
+      package: torch
+    txt: self.shape[0] == other.shape[0]
+  - f1_score: 66.0552977206633
+    overall_score: 50.04684317718941
+    precision: 94.09368635437882
+    recall: 50.89069735676802
+- - cot: synthesized
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: Promotion for uint16, uint32, uint64 types is not supported, attempted
+        to promote Long and UInt16
+      package: torch
+    txt: (dtype(self) in ["uint8", "uint16", "uint32", "uint64"]) and (dtype(self)
+      in ["int16", "uint32", "uint64"] and dtype(other) in ["int16", "uint32", "uint64"])
+  - f1_score: 67.72413793103449
+    overall_score: 100
+    precision: 100.0
+    recall: 51.199165797705945

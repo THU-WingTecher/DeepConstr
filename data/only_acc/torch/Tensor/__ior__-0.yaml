@@ -13,5 +13,61 @@ args:
   - true
 name: torch.Tensor.__ior__
 package: torch
-pass_rate: 0.0
-rules: []
+pass_rate: 17.197452229299362
+rules:
+- - cot: 'Error is triggered because the size of tensors at non-singleton dimension
+      0 doesn''t match. In this case, the constraint can be formulated as follows:'
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (4) must match the size of tensor b (6) at non-singleton
+        dimension 0
+      package: torch
+    txt: self.shape[0] == other.shape[0]
+  - f1_score: 70.04099846079257
+    overall_score: 50.87644787644788
+    precision: 95.75289575289575
+    recall: 55.21458733775149
+- - cot: ''
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"bitwise_or_cpu" not implemented for ''Float'''
+      package: torch
+    txt: (dtype(self) == dtype(other) and dtype(self) in ["half", "int16", "int32",
+      "int64", "uint8", "uint16", "uint32", "uint64"])
+  - f1_score: 72.45949926362297
+    overall_score: 100
+    precision: 100.0
+    recall: 56.812933025404156
+- - cot: "The error is triggered because the shape of the output tensor ([5]) doesn't\
+      \ match the broadcast shape ([]). This implies that there is a mismatch in the\
+      \ dimensions when performing the broadcasting operation. \n\nTo prevent this\
+      \ error, we need to ensure that the trailing dimensions of the tensors involved\
+      \ in the operation are either 1 or the same. Therefore, we can formulate the\
+      \ constraint as follows:"
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: output with shape [] doesn't match the broadcast shape [5]
+      package: torch
+    txt: self.shape[i] == 1
+  - f1_score: 66.29897770283814
+    overall_score: 50.614107883817425
+    precision: 95.22821576763485
+    recall: 50.8510214971105
+- - cot: ''
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self) == int32
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0

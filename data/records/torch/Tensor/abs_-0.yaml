@@ -9,4 +9,5 @@ args:
   - true
 name: torch.Tensor.abs_
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules: []

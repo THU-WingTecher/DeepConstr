@@ -17,7 +17,7 @@ args:
   - false
 name: torch.Tensor.add_
 package: torch
-pass_rate: 58.10055865921788
+pass_rate: 25.352112676056336
 rules:
 - - cot: 'Error is triggered because the size of tensor a (9) doesn''t match the size
       of tensor b (8) at non-singleton dimension 0. The constraint to prevent this

@@ -9,7 +9,7 @@ args:
   - true
 name: torch.Tensor.adjoint
 package: torch
-pass_rate: 100
+pass_rate: 31.8
 rules:
 - - cot: ''
     target:

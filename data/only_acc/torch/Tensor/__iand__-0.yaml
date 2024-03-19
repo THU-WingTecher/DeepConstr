@@ -13,7 +13,7 @@ args:
   - true
 name: torch.Tensor.__iand__
 package: torch
-pass_rate: 0.0
+pass_rate: 23.647294589178355
 rules:
 - - cot: "Error is triggered because the size of tensor a (3) does not match the size\
       \ of tensor b (9) at non-singleton dimension 0. \n\nTo prevent this error, we\
@@ -32,3 +32,52 @@ rules:
     overall_score: 45.68724022424749
     precision: 96.2655601659751
     recall: 70.47316248316643
+- - cot: 'Based on the given runtime information, the error occurs because the "bitwise_and_cpu"
+      operation is not implemented for the ''Float'' dtype. The tensors ''self'' and
+      ''other'' are both provided as float32 dtype, which is not compatible with the
+      "bitwise_and_cpu" operation.
+
+
+      To prevent the error, the dtype of ''self'' and ''other'' should be changed
+      to one of the allowed types for the "bitwise_and_cpu" operation, which are [''half'',
+      ''int16'', ''int32'', ''int64'', ''uint8'', ''uint16'', ''uint32'', ''uint64''].
+
+
+      So, the condition to prevent the error is:'
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"bitwise_and_cpu" not implemented for ''Float'''
+      package: torch
+    txt: dtype(self) in ["half", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+      "uint64"] and dtype(other) in ["half", "int16", "int32", "int64", "uint8", "uint16",
+      "uint32", "uint64"]
+  - f1_score: 67.07152496626182
+    overall_score: 100
+    precision: 100.0
+    recall: 50.45685279187817
+- - cot: synthesized
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: output with shape [] doesn't match the broadcast shape [5]
+      package: torch
+    txt: (self.shape == other.shape) and (self.shape[i] == 1)
+  - f1_score: 67.58454985404711
+    overall_score: 48.4
+    precision: 93.8
+    recall: 52.82178893300925
+- - cot: ''
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self) == dtype(other)
+  - f1_score: 66.93494299128102
+    overall_score: 100
+    precision: 100.0
+    recall: 50.30241935483871

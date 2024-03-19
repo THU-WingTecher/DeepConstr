@@ -43,7 +43,7 @@ rules:
       msg: 'argmax(): Expected reduction dim 0 to have non-zero size.'
       package: torch
     txt: (self.shape[0] != 0) and (self.shape[dim] != 0)
-  - f1_score: 82.5147347740668
-    overall_score: 46.2573673870334
+  - f1_score: 82.97872340425532
+    overall_score: 100
     precision: 100.0
-    recall: 70.23411371237458
+    recall: 70.9090909090909

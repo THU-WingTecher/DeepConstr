@@ -1,13 +1,17 @@
 args:
   dtype:
   - Tensor
+  - Tensor
   is_pos:
   - true
+  - false
   name:
   - self
+  - other
   required:
   - true
-name: torch.Tensor.acosh
+  - true
+name: torch.Tensor.atan2_
 package: torch
-pass_rate: 100
+pass_rate: 11.4
 rules: []
