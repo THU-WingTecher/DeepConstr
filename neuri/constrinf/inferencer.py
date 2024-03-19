@@ -19,15 +19,6 @@ class Inferencer() :
         self.prompt_token = 0
         self.complete_token = 0
         self.key1 = os.getenv('OPENAI_API_KEY1')
-        self.key2 = os.getenv('OPENAI_API_KEY2')
-        self.using_key = 1
-    # def flip_key(self) -> None :
-    #     if self.using_key == 1 : 
-    #         openai.api_key = self.key2
-    #         self.using_key = 2
-    #     else :
-    #         openai.api_key = self.key1
-    #         self.using_key = 1
     def init(self) -> None :
         self.prompt_token = 0
         self.complete_token = 0
