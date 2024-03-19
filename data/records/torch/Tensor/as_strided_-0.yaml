@@ -21,4 +21,19 @@ args:
   - false
 name: torch.Tensor.as_strided_
 package: torch
-pass_rate: 0
+pass_rate: 6.490872210953347
+rules:
+- - cot: ''
+    target:
+      choosen_dtype:
+        self: tensor
+        size: list[int]
+        storage_offset: None
+        stride: list[int]
+      msg: mismatch in length of strides and shape
+      package: torch
+    txt: len(stride) == len(size)
+  - f1_score: 88.73873873873873
+    overall_score: 49.369369369369366
+    precision: 79.75708502024291
+    recall: 100.0

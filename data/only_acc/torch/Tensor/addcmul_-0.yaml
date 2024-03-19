@@ -21,5 +21,34 @@ args:
   - false
 name: torch.Tensor.addcmul_
 package: torch
-pass_rate: 1.0683760683760684
-rules: []
+pass_rate: 0.2070393374741201
+rules:
+- - cot: 'For the first error message, the constraint to prevent the error is:'
+    target:
+      choosen_dtype:
+        self: tensor
+        tensor1: tensor
+        tensor2: tensor
+        value: int
+      msg: The size of tensor a (8) must match the size of tensor b (4) at non-singleton
+        dimension 3
+      package: torch
+    txt: self.dim == tensor1.dim and self.shape == tensor1.shape
+  - f1_score: 18.3107841849468
+    overall_score: 8.161943319838056
+    precision: 10.323886639676113
+    recall: 80.88974854932303
+- - cot: synthesized
+    target:
+      choosen_dtype:
+        self: tensor
+        tensor1: tensor
+        tensor2: tensor
+        value: int
+      msg: output with shape [1] doesn't match the broadcast shape [1, 6, 6, 6]
+      package: torch
+    txt: (self.shape == tensor1.shape) or (tensor2.shape[-1] == self.shape[0])
+  - f1_score: 65.15181583647549
+    overall_score: 48.87373737373737
+    precision: 94.74747474747474
+    recall: 49.644639346741265

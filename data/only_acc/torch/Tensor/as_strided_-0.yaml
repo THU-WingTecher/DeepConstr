@@ -1,7 +1,6 @@
 args:
   dtype:
   - Tensor
-  - Tensor
   - List[int]
   - List[int]
   - Optional[int]
@@ -10,10 +9,8 @@ args:
   - false
   - false
   - false
-  - false
   name:
   - self
-  - src
   - size
   - stride
   - storage_offset
@@ -21,24 +18,22 @@ args:
   - true
   - true
   - true
-  - true
   - false
-name: torch.Tensor.as_strided_scatter
+name: torch.Tensor.as_strided_
 package: torch
-pass_rate: 0.0
+pass_rate: 5.2
 rules:
 - - cot: ''
     target:
       choosen_dtype:
         self: tensor
         size: list[int]
-        src: tensor
         storage_offset: None
         stride: list[int]
       msg: mismatch in length of strides and shape
       package: torch
     txt: len(stride) == len(size)
-  - f1_score: 93.71980676328502
-    overall_score: 47.09090909090909
-    precision: 88.18181818181819
+  - f1_score: 89.83240223463687
+    overall_score: 43.77079107505071
+    precision: 81.54158215010142
     recall: 100.0

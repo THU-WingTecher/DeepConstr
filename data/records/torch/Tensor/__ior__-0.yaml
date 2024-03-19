@@ -13,7 +13,7 @@ args:
   - true
 name: torch.Tensor.__ior__
 package: torch
-pass_rate: 4.0
+pass_rate: 0.0
 rules:
 - - cot: "The error is triggered because the shape of the output tensor ([5]) doesn't\
       \ match the broadcast shape ([]). This implies that there is a mismatch in the\
@@ -32,16 +32,16 @@ rules:
     overall_score: 38.47830765499752
     precision: 90.10309278350516
     recall: 53.271708740742255
-- - cot: ''
+- - cot: 'For the first error message, the constraint to prevent the error would be:'
     target:
       choosen_dtype:
         other: tensor
         self: tensor
-      msg: '"bitwise_or_cpu" not implemented for ''Float'''
+      msg: The size of tensor a (4) must match the size of tensor b (6) at non-singleton
+        dimension 2
       package: torch
-    txt: (dtype(self) == dtype(other) and dtype(self) in ["half", "int16", "int32",
-      "int64", "uint8", "uint16", "uint32", "uint64"])
-  - f1_score: 71.11756168359942
-    overall_score: 40.55878084179971
+    txt: self.shape[0] == other.shape[0]
+  - f1_score: 91.74311926605505
+    overall_score: 50.87155963302752
     precision: 100.0
-    recall: 55.18018018018018
+    recall: 84.74576271186442

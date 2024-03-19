@@ -21,5 +21,5 @@ args:
   - false
 name: torch.Tensor.addcdiv
 package: torch
-pass_rate: 3.821656050955414
+pass_rate: 3.483606557377049
 rules: []

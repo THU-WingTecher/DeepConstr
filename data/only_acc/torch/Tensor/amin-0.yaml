@@ -15,9 +15,9 @@ args:
   - true
   - false
   - false
-name: torch.Tensor.amax
+name: torch.Tensor.amin
 package: torch
-pass_rate: 43.4
+pass_rate: 13.0
 rules:
 - - cot: ''
     target:
@@ -25,7 +25,7 @@ rules:
         dim: list[int]
         keepdim: bool
         self: tensor
-      msg: Dimension out of range (expected to be in range of [-1, 0], but got 5)
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got 6)
       package: torch
     txt: all(d >= -len(self.shape) and d < len(self.shape) for d in dim)
   - f1_score: 100.0

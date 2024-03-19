@@ -17,4 +17,18 @@ args:
   - false
 name: torch.Tensor.amin
 package: torch
-pass_rate: 0
+pass_rate: 52.104208416833664
+rules:
+- - cot: ''
+    target:
+      choosen_dtype:
+        dim: list[int]
+        keepdim: bool
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got 6)
+      package: torch
+    txt: all(d >= -len(self.shape) and d < len(self.shape) for d in dim)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

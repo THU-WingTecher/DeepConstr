@@ -26,4 +26,21 @@ args:
 name: torch.Tensor.baddbmm
 package: torch
 pass_rate: 0.0
-rules: []
+rules:
+- - cot: synthesized
+    target:
+      choosen_dtype:
+        alpha: int
+        batch1: tensor
+        batch2: tensor
+        beta: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got 2)
+      package: torch
+    txt: '(\
+
+      batch2.shape[1] == 8) and (batch1.shape[-1] == self.shape[-2])'
+  - f1_score: 63.937208083162396
+    overall_score: 37.577235772357724
+    precision: 72.15447154471545
+    recall: 57.40022236580158

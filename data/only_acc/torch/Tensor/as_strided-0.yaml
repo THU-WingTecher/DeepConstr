@@ -1,9 +1,9 @@
 args:
   dtype:
   - Tensor
-  - Tensor
-  - Tensor
-  - number
+  - List[int]
+  - List[int]
+  - Optional[int]
   is_pos:
   - true
   - false
@@ -11,15 +11,15 @@ args:
   - false
   name:
   - self
-  - tensor1
-  - tensor2
-  - value
+  - size
+  - stride
+  - storage_offset
   required:
   - true
   - true
   - true
   - false
-name: torch.Tensor.addcdiv_
+name: torch.Tensor.as_strided
 package: torch
-pass_rate: 0.41841004184100417
+pass_rate: 2.0120724346076457
 rules: []

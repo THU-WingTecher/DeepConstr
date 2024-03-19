@@ -26,4 +26,65 @@ args:
 name: torch.Tensor.addbmm
 package: torch
 pass_rate: 0.0
-rules: []
+rules:
+- - cot: ''
+    target:
+      choosen_dtype:
+        alpha: int
+        batch1: tensor
+        batch2: tensor
+        beta: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got 1)
+      package: torch
+    txt: -len(batch1.shape) <= 2 < len(batch1.shape)
+  - f1_score: 73.81051613334775
+    overall_score: 34.52400835073068
+    precision: 63.04801670146137
+    recall: 89.00374132143722
+- - cot: ''
+    target:
+      choosen_dtype:
+        alpha: int
+        batch1: tensor
+        batch2: tensor
+        beta: int
+        self: tensor
+      msg: 'The expanded size of the tensor (4) must match the existing size (5) at
+        non-singleton dimension 1.  Target sizes: [2, 4].  Tensor sizes: [5]'
+      package: torch
+    txt: batch1.shape[1] == batch2.shape[1] == self.shape[0]
+  - f1_score: 69.90838618745595
+    overall_score: 100
+    precision: 100.0
+    recall: 53.737811484290354
+- - cot: synthesized
+    target:
+      choosen_dtype:
+        alpha: int
+        batch1: tensor
+        batch2: tensor
+        beta: int
+        self: tensor
+      msg: Dimension specified as 1 but tensor has no dimensions
+      package: torch
+    txt: (2 < len(batch1.shape)) and (len(batch2.shape) > 0)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    target:
+      choosen_dtype:
+        alpha: int
+        batch1: tensor
+        batch2: tensor
+        beta: int
+        self: tensor
+      msg: batch2 must be a 3D tensor
+      package: torch
+    txt: batch2.dim() == 3
+  - f1_score: 68.42470506592645
+    overall_score: 100
+    precision: 100.0
+    recall: 52.004219409282705

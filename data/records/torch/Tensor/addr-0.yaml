@@ -25,8 +25,24 @@ args:
   - false
 name: torch.Tensor.addr
 package: torch
-pass_rate: 3.480278422273782
+pass_rate: 56.666666666666664
 rules:
+- - cot: synthesized
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        self: tensor
+        vec1: tensor
+        vec2: tensor
+      msg: 'The expanded size of the tensor (7) must match the existing size (4) at
+        non-singleton dimension 1.  Target sizes: [6, 7].  Tensor sizes: [4]'
+      package: torch
+    txt: (vec2.shape[0] == self.shape[0]) and (vec2.dim(1) == self.dim(1))
+  - f1_score: 66.99025974983994
+    overall_score: 38.49512987491997
+    precision: 99.57805907172997
+    recall: 50.47264190372868
 - - cot: "The error occurs because the function torch.Tensor.addr expects a 1-dimensional\
       \ tensor as the argument vec1, but it is given a 2-dimensional tensor instead.\
       \ To prevent this error in the future and generate constraints that do not trigger\
@@ -46,23 +62,3 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 100.0
-- - cot: "Error is triggered because the expanded size of the tensor does not match\
-      \ the existing size at the non-singleton dimension. This indicates a broadcasting\
-      \ mismatch. \n\nTo prevent the error, the expanded size of the tensor should\
-      \ match the existing size at the non-singleton dimension. \n\nBased on the given\
-      \ runtime information, we can formulate the constraint as follows:"
-    target:
-      choosen_dtype:
-        alpha: int
-        beta: int
-        self: tensor
-        vec1: tensor
-        vec2: tensor
-      msg: 'The expanded size of the tensor (7) must match the existing size (4) at
-        non-singleton dimension 1.  Target sizes: [6, 7].  Tensor sizes: [4]'
-      package: torch
-    txt: self.shape[1] == vec2.shape[0]
-  - f1_score: 65.46344838998414
-    overall_score: 37.73172419499207
-    precision: 93.27146171693735
-    recall: 50.428625645690715

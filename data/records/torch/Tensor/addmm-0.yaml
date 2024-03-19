@@ -81,3 +81,18 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 50.0
+- - cot: ''
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat1: tensor
+        mat2: tensor
+        self: tensor
+      msg: mat1 and mat2 must have the same dtype
+      package: torch
+    txt: mat1.dtype == mat2.dtype
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

@@ -13,7 +13,7 @@ args:
   - true
 name: torch.Tensor.__iand__
 package: torch
-pass_rate: 0.0
+pass_rate: 100
 rules:
 - - cot: synthesized
     target:
@@ -53,3 +53,15 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 97.0873786407767
+- - cot: ''
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self) == dtype(other)
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0

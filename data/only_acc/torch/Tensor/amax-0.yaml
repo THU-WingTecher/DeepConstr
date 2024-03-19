@@ -17,7 +17,7 @@ args:
   - false
 name: torch.Tensor.amax
 package: torch
-pass_rate: 43.4
+pass_rate: 14.2
 rules:
 - - cot: ''
     target:
