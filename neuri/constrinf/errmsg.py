@@ -213,24 +213,37 @@ def map_error_messages_to_clusters_dynamic(raw_error_messages):
     Returns:
     - dict: A dictionary where keys are cluster labels and values are lists of error messages belonging to each cluster.
     """
-    raw_error_messages += dummy_strings
-    tfidf_vectorizer = TfidfVectorizer(stop_words='english')
-    tfidf_matrix = tfidf_vectorizer.fit_transform(raw_error_messages)
+    # cosine similarity
+    clusters : List[List[str]] = [] 
+    for err_msg in raw_error_messages :
+        if clusters : 
+            for _cls in clusters : 
+                if is_similar(err_msg, _cls[0]) :
+                    _cls.append(err_msg)
+                    break
+            pass 
+        else :
+            clusters.append([err_msg])
+    return {i: cls for i, cls in enumerate(clusters)}
+    # k-mean clusters
+    # raw_error_messages += dummy_strings
+    # tfidf_vectorizer = TfidfVectorizer(stop_words='english')
+    # tfidf_matrix = tfidf_vectorizer.fit_transform(raw_error_messages)
 
-    # Dynamically determining the optimal number of clusters
-    optimal_clusters = find_optimal_clusters(tfidf_matrix, max_clusters=10)
-    km = KMeans(n_clusters=optimal_clusters, random_state=42, n_init="auto")
-    km.fit(tfidf_matrix)
+    # # Dynamically determining the optimal number of clusters
+    # optimal_clusters = find_optimal_clusters(tfidf_matrix, max_clusters=10)
+    # km = KMeans(n_clusters=optimal_clusters, random_state=42, n_init="auto")
+    # km.fit(tfidf_matrix)
 
-    clusters = km.labels_.tolist()
-    cluster_mapping = {}
-    for cluster_label, error_message in zip(clusters, raw_error_messages):
-        if error_message in DUMMY_STR:  # Skip dummy data in final output
-            continue
-        if cluster_label not in cluster_mapping:
-            cluster_mapping[cluster_label] = [error_message]
-        else:
-            cluster_mapping[cluster_label].append(error_message)
+    # clusters = km.labels_.tolist()
+    # cluster_mapping = {}
+    # for cluster_label, error_message in zip(clusters, raw_error_messages):
+    #     if error_message in DUMMY_STR:  # Skip dummy data in final output
+    #         continue
+    #     if cluster_label not in cluster_mapping:
+    #         cluster_mapping[cluster_label] = [error_message]
+    #     else:
+    #         cluster_mapping[cluster_label].append(error_message)
 
-    return cluster_mapping
+    # return cluster_mapping
 
