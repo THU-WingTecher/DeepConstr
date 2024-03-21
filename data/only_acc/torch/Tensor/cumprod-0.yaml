@@ -17,7 +17,7 @@ args:
   - false
 name: torch.Tensor.cumprod
 package: torch
-pass_rate: 100
+pass_rate: 1.7647058823529411
 rules:
 - - cot: divided
     target:
@@ -29,6 +29,6 @@ rules:
       package: torch
     txt: dim < 0
   - f1_score: 66.66666666666667
-    overall_score: 38.333333333333336
+    overall_score: 100
     precision: 100.0
     recall: 50.0

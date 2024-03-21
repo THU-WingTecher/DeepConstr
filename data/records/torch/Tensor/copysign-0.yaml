@@ -13,4 +13,18 @@ args:
   - true
 name: torch.Tensor.copysign
 package: torch
-pass_rate: 0
+pass_rate: 24.509803921568626
+rules:
+- - cot: ''
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (5) must match the size of tensor b (4) at non-singleton
+        dimension 2
+      package: torch
+    txt: self.shape[2] == other.shape[2]
+  - f1_score: 34.248366013071895
+    overall_score: 22.124183006535947
+    precision: 25.68627450980392
+    recall: 51.37254901960784

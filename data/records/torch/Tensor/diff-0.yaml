@@ -25,4 +25,20 @@ args:
   - false
 name: torch.Tensor.diff
 package: torch
-pass_rate: 0
+pass_rate: 2.75049115913556
+rules:
+- - cot: divided
+    target:
+      choosen_dtype:
+        append: None
+        dim: int
+        n: int
+        prepend: None
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got 89)
+      package: torch
+    txt: dim < len(self.shape)
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0

@@ -21,5 +21,35 @@ args:
   - false
 name: torch.Tensor.addcdiv_
 package: torch
-pass_rate: 0.41841004184100417
-rules: []
+pass_rate: 0.4008016032064128
+rules:
+- - cot: ''
+    target:
+      choosen_dtype:
+        self: tensor
+        tensor1: tensor
+        tensor2: tensor
+        value: int
+      msg: The size of tensor a (8) must match the size of tensor b (5) at non-singleton
+        dimension 2
+      package: torch
+    txt: self.shape[0] == tensor1.shape[0] and self.shape[0] == tensor2.shape[0] and
+      tensor1.shape[0] == tensor2.shape[1]
+  - f1_score: 72.44852482395935
+    overall_score: 32.35010482180294
+    precision: 58.700209643605874
+    recall: 94.60654876321092
+- - cot: divided
+    target:
+      choosen_dtype:
+        self: tensor
+        tensor1: tensor
+        tensor2: tensor
+        value: int
+      msg: output with shape [1] doesn't match the broadcast shape [9, 9, 9]
+      package: torch
+    txt: tensor1.shape() == tensor2.shape()
+  - f1_score: 72.87020007282165
+    overall_score: 49.470588235294116
+    precision: 92.94117647058823
+    recall: 59.92844090232029

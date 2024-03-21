@@ -1,0 +1,33 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.Tensor.copysign
+package: torch
+pass_rate: 19.411764705882355
+rules:
+- - cot: 'The error is triggered because the size of the tensors at non-singleton
+      dimension 4 doesn''t match. To prevent this error, we need to ensure that the
+      size of tensor a is equal to the size of tensor b at non-singleton dimension
+      4. Therefore, the constraint should be:'
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (5) must match the size of tensor b (4) at non-singleton
+        dimension 2
+      package: torch
+    txt: self.shape[4] == other.shape[4]
+  - f1_score: 36.33986928104575
+    overall_score: 16.627450980392155
+    precision: 27.254901960784313
+    recall: 54.509803921568626

@@ -27,7 +27,7 @@ name: torch.Tensor.diagonal_scatter
 package: torch
 pass_rate: 0.0
 rules:
-- - cot: ''
+- - cot: synthesized
     target:
       choosen_dtype:
         dim1: int
@@ -37,9 +37,10 @@ rules:
         src: tensor
       msg: Dimension out of range (expected to be in range of [-1, 0], but got 86)
       package: torch
-    txt: dim1 >= -len(self.shape) and dim1 < len(self.shape) and dim2 >= -len(self.shape)
-      and dim2 < len(self.shape)
-  - f1_score: 97.10424710424708
-    overall_score: 53.55212355212354
-    precision: 98.62745098039215
-    recall: 95.6273764258555
+    txt: (dim2 < len(src.shape)) and (dim1 >= -len(self.shape) and dim1 < len(self.shape)
+      and dim2 >= -len(self.shape) and dim2 < len(self.shape) and offset >= -len(self.shape)
+      and offset < len(self.shape))
+  - f1_score: 99.02912621359224
+    overall_score: 100
+    precision: 100.0
+    recall: 98.07692307692308

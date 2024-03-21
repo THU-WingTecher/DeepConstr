@@ -25,7 +25,7 @@ args:
   - false
 name: torch.Tensor.as_strided_scatter
 package: torch
-pass_rate: 0.0
+pass_rate: 0.6637168141592921
 rules:
 - - cot: ''
     target:
@@ -42,3 +42,19 @@ rules:
     overall_score: 47.09090909090909
     precision: 88.18181818181819
     recall: 100.0
+- - cot: divided
+    target:
+      choosen_dtype:
+        self: tensor
+        size: list[int]
+        src: tensor
+        storage_offset: int
+        stride: list[int]
+      msg: 'as_strided: Negative strides are not supported at the moment, got strides:
+        [-3]'
+      package: torch
+    txt: stride[0] > 0
+  - f1_score: 97.90518191841235
+    overall_score: 100
+    precision: 100.0
+    recall: 95.89632829373652

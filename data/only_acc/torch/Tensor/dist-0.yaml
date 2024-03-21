@@ -17,7 +17,7 @@ args:
   - false
 name: torch.Tensor.dist
 package: torch
-pass_rate: 28.235294117647058
+pass_rate: 21.372549019607842
 rules:
 - - cot: synthesized
     target:
@@ -29,7 +29,7 @@ rules:
         dimension 3
       package: torch
     txt: (self.shape[2] == 1) and (self.shape[1] == other.shape[0])
-  - f1_score: 46.11590628853268
-    overall_score: 25.55795314426634
-    precision: 36.666666666666664
-    recall: 62.12624584717608
+  - f1_score: 46.534653465346544
+    overall_score: 19.93137254901961
+    precision: 36.86274509803922
+    recall: 63.08724832214765

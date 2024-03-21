@@ -21,4 +21,20 @@ args:
   - false
 name: torch.Tensor.diagonal
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: ''
+    target:
+      choosen_dtype:
+        dim1: int
+        dim2: int
+        offset: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got 51)
+      package: torch
+    txt: dim1 >= -len(self.shape) and dim1 < len(self.shape) and dim2 >= -len(self.shape)
+      and dim2 < len(self.shape)
+  - f1_score: 96.3172804532578
+    overall_score: 100
+    precision: 100.0
+    recall: 92.89617486338798

@@ -45,3 +45,27 @@ rules:
     overall_score: 50.87155963302752
     precision: 100.0
     recall: 84.74576271186442
+- - cot: divided
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"bitwise_or_cpu" not implemented for ''Float'''
+      package: torch
+    txt: (dtype(self) not in ["float16", "float32", "float64"])
+  - f1_score: 77.41935483870967
+    overall_score: 100
+    precision: 100.0
+    recall: 63.1578947368421
+- - cot: synthesized
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: (dtype(self) == int32) and (dtype(self) == dtype(other))
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0

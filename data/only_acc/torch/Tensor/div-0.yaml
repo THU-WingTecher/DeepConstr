@@ -13,7 +13,7 @@ args:
   - true
 name: torch.Tensor.div
 package: torch
-pass_rate: 82.54901960784314
+pass_rate: 26.47058823529412
 rules:
 - - cot: divided
     target:
@@ -24,7 +24,7 @@ rules:
         dimension 5
       package: torch
     txt: self.shape()[-1] == other.shape()[-1]
-  - f1_score: 77.42537313432835
-    overall_score: 43.71268656716418
-    precision: 81.37254901960785
-    recall: 73.84341637010675
+  - f1_score: 73.81404174573055
+    overall_score: 41.13725490196078
+    precision: 76.27450980392156
+    recall: 71.50735294117648

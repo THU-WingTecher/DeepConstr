@@ -13,4 +13,18 @@ args:
   - true
 name: torch.Tensor.bitwise_or
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: ''
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (6) must match the size of tensor b (7) at non-singleton
+        dimension 1
+      package: torch
+    txt: self.dim == other.dim and self.shape[3] == other.shape[3]
+  - f1_score: 29.65034965034965
+    overall_score: 13.392156862745098
+    precision: 20.784313725490197
+    recall: 51.707317073170735

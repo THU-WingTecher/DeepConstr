@@ -13,4 +13,18 @@ args:
   - true
 name: torch.Tensor.bitwise_right_shift
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: divided
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (8) at non-singleton
+        dimension 2
+      package: torch
+    txt: self.shape[2] == other.shape[2]
+  - f1_score: 30.28649386084584
+    overall_score: 13.882352941176471
+    precision: 21.764705882352942
+    recall: 49.775784753363226

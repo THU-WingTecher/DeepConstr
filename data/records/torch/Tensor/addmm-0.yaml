@@ -35,52 +35,13 @@ rules:
         mat1: tensor
         mat2: tensor
         self: tensor
-      msg: mat1 must be a matrix, got 1-D tensor
+      msg: mat1 and mat2 must have the same dtype
       package: torch
-    txt: mat1.ndim == 2
-  - f1_score: 94.96644295302013
+    txt: mat1.dtype == mat2.dtype
+  - f1_score: 100.0
     overall_score: 100
     precision: 100.0
-    recall: 90.41533546325878
-- - cot: 'The error is caused because the input tensors ''self'' and ''mat2'' have
-      different data types. Let''s see what the args were. It seems the data type
-      of ''self'' is Int and the data type of ''mat2'' is Float. To prevent the error,
-      the data types of ''self'' and ''mat2'' should be the same. Therefore, the condition
-      should be:'
-    target:
-      choosen_dtype:
-        alpha: int
-        beta: int
-        mat1: tensor
-        mat2: tensor
-        self: tensor
-      msg: self and mat2 must have the same dtype, but got Int and Float
-      package: torch
-    txt: self.dtype == mat2.dtype
-  - f1_score: 92.28666666666666
-    overall_score: 47.50934579439252
-    precision: 89.01869158878505
-    recall: 95.8037279689951
-- - cot: 'The error is triggered because the shapes of mat1 and mat2 are incompatible
-      for matrix multiplication. The given runtime information shows that mat1 has
-      a shape of [7, 2] and mat2 has a shape of [8, 3]. To prevent the error, the
-      shapes of mat1 and mat2 must be compatible for multiplication, which means the
-      number of columns in mat1 must be equal to the number of rows in mat2. Therefore,
-      the constraint can be formulated as:'
-    target:
-      choosen_dtype:
-        alpha: int
-        beta: int
-        mat1: tensor
-        mat2: tensor
-        self: tensor
-      msg: mat1 and mat2 shapes cannot be multiplied (7x2 and 8x3)
-      package: torch
-    txt: mat1.shape[1] == mat2.shape[0]
-  - f1_score: 66.66666666666667
-    overall_score: 100
-    precision: 100.0
-    recall: 50.0
+    recall: 100.0
 - - cot: ''
     target:
       choosen_dtype:
@@ -89,10 +50,10 @@ rules:
         mat1: tensor
         mat2: tensor
         self: tensor
-      msg: mat1 and mat2 must have the same dtype
+      msg: mat1 must be a matrix, got 1-D tensor
       package: torch
-    txt: mat1.dtype == mat2.dtype
-  - f1_score: 100.0
-    overall_score: 100
-    precision: 100.0
-    recall: 100.0
+    txt: mat1.ndim == 2
+  - f1_score: 98.32375822607946
+    overall_score: 54.16187911303973
+    precision: 99.78494623655914
+    recall: 96.9047460560474
