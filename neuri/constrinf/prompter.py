@@ -102,7 +102,10 @@ Q : try to make constraints {correct_discription} so that it can make the whole 
         contexts = ""
         task_introduce= self.task_introduce(func_name)
         # grammar = self.Constraint_grammar() if random.choice([0,1]) else ""
-        examples = self.get_closet_examples(err_msgs, num_of_ex = random.randint(1,3))
+        examples = self.get_closet_examples(
+                                            err_msgs[0] if err_msgs else self.Q_history[-1], 
+                                            num_of_ex = random.randint(1,3)
+                                            )
         # history = self.gen_history(prev_answer) if prev_answer is not None else ""
         # infer_history = self.gen_infer_history(ans_history)
         if len(history) == 0 : 

@@ -27,7 +27,7 @@ python neuri/cli/fuzz.py fuzz.time=24h mgen.record_path=data/torch_records fuzz.
 
 """
 """ to_reproduce_code 
-python neuri/materialize/torch/program.py /artifact/exp/torch-constrinf-n5-Slice-torch.Tensor.__and__.models torchcomp
+python neuri/materialize/torch/program.py /artifact/exp/ torchcomp
 """
 
 """train
