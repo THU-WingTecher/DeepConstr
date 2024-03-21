@@ -95,10 +95,10 @@ class Inferencer() :
             LLM_LOG.error(e.status_code)
             LLM_LOG.error(e.response)   
 
-        response = completion.choices[0].message.content
         time_cost = time.time() - start
-        if response is None : 
+        if completion is None : 
             return 
+        response = completion.choices[0].message.content
         LLM_LOG.info(f'Output(Ptk{completion.usage.prompt_tokens}-OtkPtk{completion.usage.completion_tokens}) : \n {response} \n Time cost : {time_cost} seconds \n')
         self.prompt_token += completion.usage.prompt_tokens
         self.complete_token += completion.usage.completion_tokens

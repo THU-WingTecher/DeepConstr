@@ -65,8 +65,8 @@ Q : try to make constraints {correct_discription} so that it can make the whole 
         return f"""<symbol> ::= {self.keys_print} | type(<symbol>) | len(<symbol>) | <symbol>[<int>] | <symbol>.dim | <symbol>.shape
 <ops> ::= + | - | * | / | == | != | > | >= | < | <= | in | not in"""
 # <comparator> ::= dtype | integer | tensor.dtype | List[int]"""
-    def get_closet_examples(self, err_msgs, num_of_ex=2) : 
-        sorted_li =[ele[0] for ele in sort_sentences_by_similarity(err_msgs[0].get_core_msg(), list(self.err_db.keys()))[:num_of_ex]]
+    def get_closet_examples(self, err_msg, num_of_ex=2) : 
+        sorted_li =[ele[0] for ele in sort_sentences_by_similarity(err_msg.get_core_msg(), list(self.err_db.keys()))[:num_of_ex]]
         sorted_li = sorted_li[::-1]
         examples = '\n'.join([self.dynamic_template(errmsg, self.err_db[errmsg]['cot'], self.err_db[errmsg]['answers']) for errmsg in sorted_li])
         return examples

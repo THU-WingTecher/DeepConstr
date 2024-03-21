@@ -454,7 +454,7 @@ class TrainingLoop:
         raise ValueError(f"no such constraint in record : {txt}")
 
     def is_trained(self, record : Record) :
-        return record.get("pass_rate", 0) >= self.cfg["train"]["precision_threshold"] #or record.get("trained", False)
+        return record.get("pass_rate", 0) >= self.cfg["train"]["pass_rate"] #or record.get("trained", False)
     def is_trainable(self, record : Record) :
         return (
             record is not None and \
