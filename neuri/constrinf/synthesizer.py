@@ -38,7 +38,7 @@ class Synthesizer:
             beta = 3
             score = alpha * scores.get("precision", 0) + beta * (1 / length)
         else :
-            beta = 5
+            beta = 12
             score = alpha * scores.get("f1_score", 0) + beta * (1 / length)
         scores["overall_score"] = score
 
@@ -70,11 +70,11 @@ class Synthesizer:
         changed = False
         for constr in constraints :
             synthesized = constr 
-            if self.non_FP :
+            if self.non_FP and self.need_synthesis(constr, self.non_FP[0][1]):
                 changed = True
                 synthesized = self.synthesize_constrs(constr, self.non_FP[0][1], OR)
                 assert synthesized is not None
-            if self.non_FN :
+            if self.non_FN and self.need_synthesis(constr, self.non_FN[0][1]):
                 changed = True
                 synthesized = self.synthesize_constrs(constr, self.non_FN[0][1], AND)
                 assert synthesized is not None
@@ -139,6 +139,7 @@ class Synthesizer:
         if self.saved_state : 
             saved_rules = self.load_saved_state()
             queue.extend(saved_rules)
+            self.saved_state = False
         filtered_new = self.rm_dupe(new_rules) 
         queue.extend(filtered_new)
         synthesized = self.get_all_synthesized(high_quality, filtered_new)

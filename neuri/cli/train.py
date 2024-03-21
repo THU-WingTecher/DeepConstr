@@ -300,7 +300,7 @@ class TrainingLoop:
                 raw_err_msgs.append(msg_key)
 
         if raw_err_msgs :
-            dynamic_cluster_mapping = map_error_messages_to_clusters_dynamic(raw_err_msgs)
+            dynamic_cluster_mapping = map_error_messages_to_clusters_dynamic(raw_err_msgs, self.cfg["train"]["str_sim_threshold"])
             for _, value in dynamic_cluster_mapping.items():
                 instances = []
                 for v in value :
@@ -367,7 +367,7 @@ class TrainingLoop:
         :param prev_answer: The current best rule based on previous evaluations.
         :return: A tuple containing updated tolerance, highest_prev, and prev_answer.
         """
-        if highest_prev["overall_score"] >= result[0]["overall_score"] :
+        if result is None or highest_prev["overall_score"] >= result[0]["overall_score"] :
             # No new rules to evaluate or no improvement found, increase tolerance
             tolerance += 1
         else:
@@ -450,6 +450,7 @@ class TrainingLoop:
         for i, (rule_data, _) in enumerate(record["rules"]) :
             if rule_data["txt"] == txt :
                 popped = record["rules"].pop(i)
+                TRAIN_LOG.info(f"popped : {popped[0]}")
                 return (Constraint.load(popped[0]), popped[1])
         raise ValueError(f"no such constraint in record : {txt}")
 
@@ -574,10 +575,10 @@ unsolved_err_msgs : {unsolved_msgs}
     def reproduce_errs(self, record, target : ErrorMessage) :
         targets = []
         targets = self.get_sim_errors(target, record, num_of_check = self.cfg["train"]["eval_asset"])
-        if len(targets) < 2 : # no similar error messages
-            return False
-        else :
+        if targets : 
             return targets
+        else :# no similar error messages
+            return False
         
     def fix_record_attrs(self, record, target : ErrorMessage) :
         """
@@ -611,8 +612,8 @@ unsolved_err_msgs : {unsolved_msgs}
 
         instance_mapping = {}
         target_cluster = None
-        raw_err_msgs = [target.get_core_msg()]
-        instance_mapping = {target.get_core_msg() : target}
+        raw_err_msgs = [] # [target.get_core_msg()]
+        instance_mapping = {} # {target.get_core_msg() : target}
         executable_constr = convert_constr_to_executable(record) # unactivated
         results = self.executor.execute(record=record, constraints=executable_constr, ntimes=num_of_check)
         for result in results :
@@ -628,15 +629,15 @@ unsolved_err_msgs : {unsolved_msgs}
                 raw_err_msgs.append(msg_key)
         if len(raw_err_msgs) == 1 : # not added any result(= all result is None)
             return False
-        dynamic_cluster_mapping = map_error_messages_to_clusters_dynamic(raw_err_msgs)
+        dynamic_cluster_mapping = map_error_messages_to_clusters_dynamic(raw_err_msgs, self.cfg["train"]["str_sim_threshold"])
         for key, values in dynamic_cluster_mapping.items() :
             for value in values :
-                if value == target.get_core_msg() :
+                if is_similar(value, target.get_core_msg(), threshold=self.cfg["train"]["str_sim_threshold"]) :
                     target_cluster = key 
                     break
             if target_cluster is not None : break
         
-        return [instance_mapping[msg] for msg in dynamic_cluster_mapping[target_cluster] if instance_mapping.get(msg, None) is not None]
+        return [instance_mapping[msg] for msg in dynamic_cluster_mapping.get(target_cluster, []) if instance_mapping.get(msg, None) is not None]
     
     def train(self, 
               orig_record, 
@@ -664,13 +665,13 @@ unsolved_err_msgs : {unsolved_msgs}
                 self.update_record_constr(seeds[0][1], orig_record, seeds[0][0])
                 return True
             synthesizer.save_state(seeds)
-        while self.cfg["train"]['infer_asset_per_epoch'] >= infer_times and not solved:
+        while not solved:
             if tolerance >= self.cfg["train"]['tolerance']:
                 if self.inferencer.is_gpt4() :
                     break
                 else : 
                     self.inferencer.change_to_gpt4()
-                    tolerance = 0
+                    tolerance = 2 # for 4, give self.cfg["train"]['tolerance']-2 chance
             
             context, prompts = prompter.gen(targets, func_name=record["name"], prev_answer=prev_answer)
             
@@ -681,10 +682,12 @@ unsolved_err_msgs : {unsolved_msgs}
                                                       targets[0] if targets else prompter.Q_history[-1], 
                                                       record["args"]["name"]
                                                       )
-            if new_rules :
+            if new_rules and not all(synthesizer.is_tried(r) for r in new_rules) :
                 result = synthesizer.run(new_rules)
-                if result is not None :
-                    solved, tolerance, highest_prev, prev_answer = self.update_tolerance_and_history(result, tolerance, highest_prev, prev_answer)
+            else :
+                result = None
+                
+            solved, tolerance, highest_prev, prev_answer = self.update_tolerance_and_history(result, tolerance, highest_prev, prev_answer)
         return self.finalize_training_session(highest_prev, orig_record, constr_list, synthesizer, prev_answer)
     
     def update_record_constr(self, constr : Constraint, record, scores) :
@@ -708,6 +711,8 @@ unsolved_err_msgs : {unsolved_msgs}
 def main(cfg: DictConfig):
     try :
         TrainingLoop(cfg).runs()
+    except KeyboardInterrupt :
+        raise ValueError(f"User requested to stop")
     except :
         TRAIN_LOG.error(f"{traceback.format_exc()}")
 

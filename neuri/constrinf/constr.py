@@ -8,10 +8,10 @@ from neuri.logger import CONSTR_LOG
 from z3 import Solver
 _checker = Solver()
 class Constraint:
-    def __init__(self, txt, cot, target, arg_names, dtypes) :
+    def __init__(self, txt, cot, target, arg_names, dtypes, length = 1) :
         self.txt = txt
         self.cot = cot
-        self.length = 1
+        self.length = length
         self.target : ErrorMessage = target
         self.arg_names : List[str] = arg_names
         self.dtypes : List[Any] = dtypes # chosen dtypes, should be able to activated
@@ -33,7 +33,8 @@ class Constraint:
             data["cot"],
             errmsg,
             arg_names,
-            dtypes
+            dtypes,
+            length = data.get("length", 1)
         )
     
     def dump(self) :
@@ -41,6 +42,7 @@ class Constraint:
             "txt" : self.txt,
             "cot" : self.cot,
             "target" : self.target.dump(),
+            "length" : self.length
         }
     
     def __repr__(self) -> str:

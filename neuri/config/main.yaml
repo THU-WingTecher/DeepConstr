@@ -77,8 +77,7 @@ train:
   allow_zero_length_rate: 0.1 # 0 ~ 1
   allow_zero_rate: 0.1 # 0 ~ 1
   num_of_try: 30 ## num_of_try * noise will be the number of trials for each input generation
-  infer_asset_per_epoch: 5
-  tolerance: 4
+  tolerance: 5
   top_k: 10
   max_num_of_seeds: 50
   simple_eval_asset: 30

@@ -37,7 +37,6 @@ class Evaluator() :
         self.recall = 0
         self.f1_score = 0
         self.gen_interfered : bool = False
-        
     def is_same(self, msg1, msg2) :
         # target args is same? 
         # target args's type is same ?
@@ -119,7 +118,7 @@ class Evaluator() :
                 raw_err_msgs.append(msg_key)
         if len(raw_err_msgs) == 1 : # not added any result(= all result is None)
             return False
-        dynamic_cluster_mapping = map_error_messages_to_clusters_dynamic(raw_err_msgs)
+        dynamic_cluster_mapping = map_error_messages_to_clusters_dynamic(raw_err_msgs, self.cfg["str_sim_threshold"])
         for key, values in dynamic_cluster_mapping.items() :
             for value in values :
                 if value == self.target.get_core_msg() :

@@ -197,12 +197,12 @@ def find_optimal_clusters(data, max_clusters=10):
 from sklearn.metrics import silhouette_score
 
 
-dummy_data_count = 5  # Number of dummy strings to add
-DUMMY_STR = ["DUMMY_DATA_FOR_CLUSTERING",  # Dummy string for padding
-                    "shape should consistence matrix, but we got nothing but you"
-]
-dummy_strings = DUMMY_STR * dummy_data_count
-def map_error_messages_to_clusters_dynamic(raw_error_messages):
+# dummy_data_count = 5  # Number of dummy strings to add
+# DUMMY_STR = ["DUMMY_DATA_FOR_CLUSTERING",  # Dummy string for padding
+#                     "shape should consistence matrix, but we got nothing but you"
+# ]
+# dummy_strings = DUMMY_STR * dummy_data_count
+def map_error_messages_to_clusters_dynamic(raw_error_messages, threshold=0.5):
     """
     Maps each error message to a cluster based on structural characteristics using TF-IDF and dynamically
     determined KMeans clustering based on silhouette scores.
@@ -215,13 +215,17 @@ def map_error_messages_to_clusters_dynamic(raw_error_messages):
     """
     # cosine similarity
     clusters : List[List[str]] = [] 
+    found = None
     for err_msg in raw_error_messages :
+        found = False
         if clusters : 
             for _cls in clusters : 
-                if is_similar(err_msg, _cls[0]) :
+                if is_similar(err_msg, _cls[0], threshold) :
                     _cls.append(err_msg)
+                    found = True
                     break
-            pass 
+            if not found :
+                clusters.append([err_msg])
         else :
             clusters.append([err_msg])
     return {i: cls for i, cls in enumerate(clusters)}
