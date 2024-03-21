@@ -87,21 +87,28 @@ def length_default_constraints(length) :
 def length_not_zero_constraints(length) : 
     return z3.And(length > 0, length <= MAX_ARR_LEN)
 def pos_max_constraints(z3obj, len_var, include_zero) : 
-    i = z3.Int('i')
+    if isinstance(len_var, int) :
+        length = len_var
+    else :
+        length = MAX_ARR_LEN
     if include_zero :
         return z3.And([
-            z3.And(z3obj[i]<=MAX_VALUE, z3obj[i] >= 0) for i in range(MAX_ARR_LEN)
+            z3.And(z3obj[i]<=MAX_VALUE, z3obj[i] >= 0) for i in range(length)
         ])
         return z3.ForAll([i], z3.Implies(z3.And(i>=0, i<=len_var), z3.And(z3obj[i]<=MAX_VALUE, z3obj[i] >= 0)))
     else :
         return z3.And([
-            z3.And(z3obj[i]<=MAX_VALUE, z3obj[i] > 0) for i in range(MAX_ARR_LEN)
+            z3.And(z3obj[i]<=MAX_VALUE, z3obj[i] > 0) for i in range(length)
         ])
         return z3.ForAll([i], z3.Implies(z3.And(i>=0, i<=len_var), z3.And(z3obj[i]<=MAX_VALUE, z3obj[i] > 0)))
     
 def min_max_constraints(z3obj, len_var) : 
+    if isinstance(len_var, int) :
+        length = len_var
+    else :
+        length = MAX_ARR_LEN
     return z3.And([
-        z3.And(z3obj[i]<=MAX_VALUE, z3obj[i] >= MIN_VALUE) for i in range(MAX_ARR_LEN)
+        z3.And(z3obj[i]<=MAX_VALUE, z3obj[i] >= MIN_VALUE) for i in range(length)
     ])
     # i = z3.Int('i')
     # return z3.ForAll([i], z3.Implies(z3.And(i>=0, i<=len_var), z3.And(z3obj[i]<=MAX_VALUE, z3obj[i] >= MIN_VALUE)))

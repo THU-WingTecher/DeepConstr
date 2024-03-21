@@ -284,6 +284,7 @@ def process_len(
         ) -> List[z3.ExprRef] :
     
     constrs = []
+    noises = []
     for arg_name, arg_type in args_types.items() : 
         if isinstance(arg_type, (AbsTensor, AbsIter)) :
             args_lengths[arg_name] = None
@@ -296,10 +297,11 @@ def process_len(
             ## gen noise 
             if arg_name not in names and should_generate_noise(noise) :
                 len_noise = gen_random_int_constr(len_sym, 0, MAX_ARR_LEN)
-                constrs.append(len_noise)
+                noises.append(len_noise)
     
-    # Solving 
     solver.add(constrs)
+    solver = push_and_pop_noise(noises, solver)
+    # Solving 
     if not is_solver_solvable(solver) :
         if SMT_LOG.getEffectiveLevel() <= logging.DEBUG:
             SMT_LOG.debug(f"Solver is not solvable with {solver.assertions()}")
@@ -313,21 +315,21 @@ def process_len(
     for arg_name in args_lengths.keys() :
         if args_lengths[arg_name] is None :
             args_lengths[arg_name] = random.randint(0, MAX_ARR_LEN)
-
-    for arg_name, len_val in args_lengths.items() :
-        if isinstance(len_val, list) :
-            for i, val in enumerate(len_val) :
-                constrs.append(
-                    args_types[arg_name].z3()(arg_name).get_arg_attr(i, "rank") == val
-                )
-                assert isinstance(val, int) and val <= MAX_ARR_LEN, f"Invalid length {val}"
-            len_val = len(len_val)
-        constrs.append(args_types[arg_name].z3()(arg_name).rank == len_val)
-        # if isinstance(args_types[arg_name], AbsTensor) :
-        #     assert isinstance(len_val, int) and len_val <= MAX_ARR_LEN, f"Invalid length {len_val}"
-            # constrs.append(check_numel_constr(args_types[arg_name].z3()(arg_name).shape, len_val))
+    return args_lengths
+    # for arg_name, len_val in args_lengths.items() :
+    #     if isinstance(len_val, list) :
+    #         for i, val in enumerate(len_val) :
+    #             constrs.append(
+    #                 args_types[arg_name].z3()(arg_name).get_arg_attr(i, "rank") == val
+    #             )
+    #             assert isinstance(val, int) and val <= MAX_ARR_LEN, f"Invalid length {val}"
+    #         len_val = len(len_val)
+    #     constrs.append(args_types[arg_name].z3()(arg_name).rank == len_val)
+    #     # if isinstance(args_types[arg_name], AbsTensor) :
+    #     #     assert isinstance(len_val, int) and len_val <= MAX_ARR_LEN, f"Invalid length {len_val}"
+    #         # constrs.append(check_numel_constr(args_types[arg_name].z3()(arg_name).shape, len_val))
     
-    return constrs
+    # return constrs
 
 def push_and_pop_noise(noises : List[z3.ExprRef], solver : z3.Solver) -> None :
     n=0
@@ -406,12 +408,14 @@ def _gen_val(
     names = extract_names_from_constrs(constraints)
     solver = z3.Solver()
     solver.add(constrs + constraints)
-    len_rules = process_len(args_types, args_lengths, solver, names, noise=noise_prob, allow_zero_length_rate=allow_zero_length_rate)
-    help_rules = gen_default_constr(args_types, args_lengths, allow_zero_rate=allow_zero_rate)
-    solver.add(help_rules)
-    if len_rules is None :
+    len_res = process_len(args_types, args_lengths, solver, names, noise=noise_prob, allow_zero_length_rate=allow_zero_length_rate)
+    if len_res is None :
         SMT_LOG.debug(f"rank related rules cannot be satisfied")
         return None 
+    solver.reset() 
+    solver.add(constrs + constraints + dtype_constrs)
+    help_rules = gen_default_constr(args_types, args_lengths, allow_zero_rate=allow_zero_rate)
+    solver.add(help_rules)
     # solve all rank and len varaibles_first 
     noises = add_noises(args_types, args_lengths, noise_prob, names)
     if SMT_LOG.getEffectiveLevel() <= logging.DEBUG:

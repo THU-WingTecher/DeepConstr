@@ -208,7 +208,7 @@ class BaseGen:
         self.try_insert_node_type(node_t)
 
     def abstract_gen(self, max_node_size=10, max_gen_millisec=2000):
-        z3.set_param("timeout", max_gen_millisec // 3)
+        # z3.set_param("timeout", max_gen_millisec // 3)
 
         assert max_node_size > 0, "max_node_size must be positive"
 
@@ -1178,16 +1178,16 @@ class ConstrInf(NeuriR):
         return random.choice(self.record_finder)
     
     def try_insert(self):
-        # if not self.is_inited() : 
-        #     return self.try_autoinf_insert_forward() 
-        # else :
-        meta_selector = random.random()  # [0, 1]
-        if meta_selector < 0.5:
-            return self.try_autoinf_insert_forward()
-        else : 
-            if not self.is_inited() : 
-                self.insert_place_holder()
-                return BaseGen.try_insert(self)
+        if not self.is_inited() : 
+            return self.try_autoinf_insert_forward() 
+        else :
+            meta_selector = random.random()  # [0, 1]
+            if meta_selector < 0.5:
+                return self.try_autoinf_insert_forward()
+            else : 
+                if not self.is_inited() : 
+                    self.insert_place_holder()
+                    return BaseGen.try_insert(self)
     
     def is_inited(self) : 
         return len(self.ir.vars) > 0
@@ -1253,7 +1253,8 @@ class ConstrInf(NeuriR):
             noise_prob=self.noise,
             allow_zero_length_rate=self.allow_zero_length_rate,
             allow_zero_rate=self.allow_zero_rate,
-            constraints=consistent_constrs + [default_dtype_constr],
+            constraints=consistent_constrs,
+            dtype_constrs=[default_dtype_constr],
             api_name=record['name'],
             )
         self.acc_smt_time_ms = int((time.time() - start) * 1000)
