@@ -13,7 +13,8 @@ from typing import Callable, Dict, Any, List, Literal, Optional, Tuple, Union
 from neuri.constrinf.smt_funcs import TensorZ3, Z3DTYPE, BOOL_POOLS, MAX_ARR_LEN, MAX_VALUE, MIN_VALUE, OP_POOLS, check_numel_constr, \
     length_default_constraints, length_not_zero_constraints, pos_max_constraints
 import operator
-
+from neuri.abstract.op import __MAX_RANK__
+assert MAX_ARR_LEN > __MAX_RANK__, f"MAX_ARR_LEN should be greater than __MAX_RANK__"
 
 def gen_dtype_constraints(arg_name : str, not_supported_dtypes : List[DType]) -> z3.ExprRef :
     
@@ -64,8 +65,7 @@ def gen_default_constr(
                     rules.append(pos_max_constraints(arr_wrapper.get_arg_attr(idx, "shape"), args_lengths[arg_name][idx], include_zero))
             elif args_types[arg_name].get_arg_dtype() in [AbsDType.int, AbsDType.float] :
                 arr_wrapper = args_types[arg_name].z3()(arg_name)
-                for idx in range(args_lengths[arg_name]) :
-                    rules.append(min_max_constraints(arr_wrapper.value, args_lengths[arg_name]))
+                rules.append(min_max_constraints(arr_wrapper.value, args_lengths[arg_name]))
             else :
                 raise NotImplementedError(f"Unsupported type {args_types[arg_name].get_arg_dtype()}")
         else :
@@ -404,18 +404,16 @@ def _gen_val(
                         for name, abs in args_types.items()
                     }) for constr in constrs]
     names = extract_names_from_constrs(constraints)
-    solver = init_solver()
-    solver.add(constrs + dtype_constrs)
+    solver = z3.Solver()
+    solver.add(constrs + constraints)
     len_rules = process_len(args_types, args_lengths, solver, names, noise=noise_prob, allow_zero_length_rate=allow_zero_length_rate)
+    help_rules = gen_default_constr(args_types, args_lengths, allow_zero_rate=allow_zero_rate)
+    solver.add(help_rules)
     if len_rules is None :
         SMT_LOG.debug(f"rank related rules cannot be satisfied")
         return None 
     # solve all rank and len varaibles_first 
-    help_rules = gen_default_constr(args_types, args_lengths, allow_zero_rate=allow_zero_rate)
     noises = add_noises(args_types, args_lengths, noise_prob, names)
-    all_rules = len_rules + help_rules + constraints
-    if all_rules : 
-        solver.add(all_rules)
     if SMT_LOG.getEffectiveLevel() <= logging.DEBUG:
         SMT_LOG.debug(f"---> Trying to solve: {api_name} ~ {solver.assertions()}")
     results = process_model(solver, noises, args_types)
@@ -428,15 +426,10 @@ def _gen_val(
         args_values = None
     return args_values
 
-def init_solver() -> z3.Solver :
-    solver = z3.Solver()
-    solver.set(timeout=10000)
-    return solver
-
 def is_solver_solvable(solver: z3.Solver) -> bool:
     res = False
     if solver.check() == z3.unknown :
-        solver.set("timeout", 50000)
+        solver.set("timeout", 100000)
     res = solver.check() == z3.sat
     return res 
 

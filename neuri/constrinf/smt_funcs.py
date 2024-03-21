@@ -68,7 +68,7 @@ ComplexArr = DeclareArr(Complex)
 TensorArr = DeclareArr(TensorZ3)
 ARRTYPES = [IntArr, FloatArr, StrArr, BoolArr, ComplexArr, TensorArr]
 
-MAX_ARR_LEN = 6
+MAX_ARR_LEN = 7
 MAX_SHAPE_SUM = 2 * 1024**2 / 16
 MIN_VALUE = -4
 MAX_VALUE = 9
@@ -89,13 +89,22 @@ def length_not_zero_constraints(length) :
 def pos_max_constraints(z3obj, len_var, include_zero) : 
     i = z3.Int('i')
     if include_zero :
+        return z3.And([
+            z3.And(z3obj[i]<=MAX_VALUE, z3obj[i] >= 0) for i in range(MAX_ARR_LEN)
+        ])
         return z3.ForAll([i], z3.Implies(z3.And(i>=0, i<=len_var), z3.And(z3obj[i]<=MAX_VALUE, z3obj[i] >= 0)))
     else :
+        return z3.And([
+            z3.And(z3obj[i]<=MAX_VALUE, z3obj[i] > 0) for i in range(MAX_ARR_LEN)
+        ])
         return z3.ForAll([i], z3.Implies(z3.And(i>=0, i<=len_var), z3.And(z3obj[i]<=MAX_VALUE, z3obj[i] > 0)))
     
 def min_max_constraints(z3obj, len_var) : 
-    i = z3.Int('i')
-    return z3.ForAll([i], z3.Implies(z3.And(i>=0, i<=len_var), z3.And(z3obj[i]<=MAX_VALUE, z3obj[i] >= MIN_VALUE)))
+    return z3.And([
+        z3.And(z3obj[i]<=MAX_VALUE, z3obj[i] >= MIN_VALUE) for i in range(MAX_ARR_LEN)
+    ])
+    # i = z3.Int('i')
+    # return z3.ForAll([i], z3.Implies(z3.And(i>=0, i<=len_var), z3.And(z3obj[i]<=MAX_VALUE, z3obj[i] >= MIN_VALUE)))
     
 def check_numel_constr(shape, len_var=None) :
     # Create a Z3 array of integers

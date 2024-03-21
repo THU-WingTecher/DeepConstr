@@ -20,7 +20,7 @@ from neuri.abstract.op import (
 )
 from neuri.autoinf import AutoInfOpBase, OpInstance, OpRecordFinder
 from neuri.constrinf import record_args_info
-from neuri.constrinf.smt_funcs import TensorZ3
+from neuri.constrinf.smt_funcs import MAX_VALUE, TensorZ3
 from neuri.error import ConstraintCheck, ConstraintError, SanityCheck
 from neuri.gir import GraphIR, InstExpr, InstIR
 from neuri.logger import MGEN_LOG, SMT_LOG
@@ -1193,7 +1193,7 @@ class ConstrInf(NeuriR):
         return len(self.ir.vars) > 0
     
     def make_random_concrete_placeholder(self, rank, dtype=None):
-        shape = [random.randint(1, 10) for _ in range(rank)]
+        shape = [random.randint(1, MAX_VALUE) for _ in range(rank)]
         dtype = random.choice(DTYPE_ALL[self.model.package])
         # FIXME : make uncommon dtype rarely appear
 
