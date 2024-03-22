@@ -253,7 +253,7 @@ class FuzzingLoop:
                 test_pool=cfg["mgen"]["test_pool"],
             )
         
-        assert len(self.opset) > 0, "No opset found."
+        # assert len(self.opset) > 0, "No opset found."
         seed = cfg["fuzz"]["seed"] or random.getrandbits(32)
         set_seed(seed)
 

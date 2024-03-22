@@ -92,7 +92,7 @@ class Synthesizer:
         TRAIN_LOG.debug(f"current seeds : {[(score, c.txt, c.length) for score, c in self.seeds]}")
 
     def need_synthesis(self, left : Constraint, right : Constraint) -> bool :
-        return not is_implies(left.z3expr, right.z3expr) and not is_implies(right.z3expr, left.z3expr)
+        return not is_implies(left.z3expr, right.z3expr) and not is_implies(right.z3expr, left.z3expr) and (left.length+right.length <= self.cfg["max_length"])
     def synthesize_constrs(self, left : Constraint, right : Constraint, method = ' or ') -> List[Constraint] :
         # Placeholder: Combine the given 'best' constraint with all other atomic constraints
         # and add them to the queue for further testing

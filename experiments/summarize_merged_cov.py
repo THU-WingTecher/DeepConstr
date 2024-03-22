@@ -92,20 +92,22 @@ def process_pickle_files(api_coverage_data):
     """
     summarized_data = {}
     for api_name, columns in api_coverage_data.items():
-        api_summary = {}
-        for column, pickle_path in columns.items():
-            # Load the pickle file
-            with open(pickle_path, 'rb') as file:
-                data = pickle.load(file)
-            
-            # Summarize the data
-            branch_by_time, final_bf = cov_summerize(data)
-            api_summary[column] = {
-                'branch_by_time': branch_by_time,
-                'final_bf': max([bf for _,_,bf in branch_by_time])
-            }
-        summarized_data[api_name] = api_summary
-
+        try :
+            api_summary = {}
+            for column, pickle_path in columns.items():
+                # Load the pickle file
+                with open(pickle_path, 'rb') as file:
+                    data = pickle.load(file)
+                
+                # Summarize the data
+                branch_by_time, final_bf = cov_summerize(data)
+                api_summary[column] = {
+                    'branch_by_time': branch_by_time,
+                    'final_bf': max([bf for _,_,bf in branch_by_time])
+                }
+            summarized_data[api_name] = api_summary
+        except FileNotFoundError :
+            print("File not found for API: ", api_name)
     return summarized_data
 
 def aggregate_summarized_data(processed_data):

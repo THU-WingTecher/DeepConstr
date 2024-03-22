@@ -463,24 +463,25 @@ class TrainingLoop:
             self.is_trained(record) is False \
         )
     def runs(self) :
-        n_debug = 100
         n_func = 0
-        # while True :
-        while n_func < n_debug :
+        trained_func_index = 39
+        while True :
             n_func+=1
             record_path = self.select_train_op()
-            if record_path is None :
-                break
-            op_record = _process_record(record_path)
-            TRAIN_LOG.info(f"Start infering {op_record['name']}")
-            if self.is_trainable(op_record) :
-                try :
-                    self.run(op_record, record_path)
-                    self.finalize_infering(op_record, record_path)
-                except :
-                    TRAIN_LOG.error(f"{traceback.format_exc()}")
-            else :
-                TRAIN_LOG.warning(f"""Record don't need-train/trainable : {formatted_dict(op_record, sep=":", split=SPLITTER)}""")
+            if n_func >= trained_func_index :
+                if record_path is None :
+                    break
+                op_record = _process_record(record_path)
+                TRAIN_LOG.info(f"Start infering {op_record['name']}({n_func})")
+                if self.is_trainable(op_record) :
+                    try :
+                        self.run(op_record, record_path)
+                        self.finalize_infering(op_record, record_path)
+                    except :
+                        TRAIN_LOG.error(f"{traceback.format_exc()}")
+                else :
+                    TRAIN_LOG.warning(f"""Record don't need-train/trainable : {formatted_dict(op_record, sep=":", split=SPLITTER)}""")
+
     def finalize_infering(self, record, record_path) :
         pass_rate, unsolved = self.get_pass_rate_and_err_msgs(record, self.cfg["train"]["eval_asset"])
         unsolved_msgs = [e[0].dump() for e in unsolved if e] if unsolved else []
