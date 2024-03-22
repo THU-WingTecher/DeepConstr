@@ -21,8 +21,22 @@ args:
   - false
 name: torch.Tensor.addcdiv_
 package: torch
-pass_rate: 0.4008016032064128
+pass_rate: 5.6000000000000005
 rules:
+- - cot: divided
+    target:
+      choosen_dtype:
+        self: tensor
+        tensor1: tensor
+        tensor2: tensor
+        value: int
+      msg: output with shape [1] doesn't match the broadcast shape [9, 9, 9]
+      package: torch
+    txt: self.dim() == tensor1.dim() == tensor2.dim()
+  - f1_score: 81.80300500834726
+    overall_score: 45.90150250417363
+    precision: 100.0
+    recall: 69.2090395480226
 - - cot: ''
     target:
       choosen_dtype:
@@ -35,21 +49,42 @@ rules:
       package: torch
     txt: self.shape[0] == tensor1.shape[0] and self.shape[0] == tensor2.shape[0] and
       tensor1.shape[0] == tensor2.shape[1]
-  - f1_score: 72.44852482395935
-    overall_score: 32.35010482180294
-    precision: 58.700209643605874
-    recall: 94.60654876321092
-- - cot: divided
+  - f1_score: 63.419120758826544
+    overall_score: 36.709560379413276
+    precision: 47.4468085106383
+    recall: 95.60232047770538
+- - cot: ''
+    length: 1
     target:
       choosen_dtype:
         self: tensor
         tensor1: tensor
         tensor2: tensor
         value: int
-      msg: output with shape [1] doesn't match the broadcast shape [9, 9, 9]
+      msg: result type Float can't be cast to the desired output type Int
       package: torch
-    txt: tensor1.shape() == tensor2.shape()
-  - f1_score: 72.87020007282165
-    overall_score: 49.470588235294116
-    precision: 92.94117647058823
-    recall: 59.92844090232029
+    txt: dtype(tensor1) == dtype(tensor2)
+  - f1_score: 66.71114076050699
+    overall_score: 100
+    precision: 100.0
+    recall: 50.050050050050054
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        tensor1: tensor
+        tensor2: tensor
+        value: int
+      msg: 'Integer division with addcdiv is no longer supported, and in a future  release
+        addcdiv will perform a true division of tensor1 and tensor2. The historic
+        addcdiv behavior can be implemented as (input + value * torch.trunc(tensor1
+        / tensor2)).to(input.dtype) for integer inputs and as (input + value * tensor1
+        / tensor2) for float inputs. The future addcdiv behavior is just the latter
+        implementation: (input + value * tensor1 / tensor2), for all dtypes.'
+      package: torch
+    txt: dtype(tensor2) in ["float16", "float32", "float64"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

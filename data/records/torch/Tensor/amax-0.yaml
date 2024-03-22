@@ -17,9 +17,10 @@ args:
   - false
 name: torch.Tensor.amax
 package: torch
-pass_rate: 43.4
+pass_rate: 33.4
 rules:
 - - cot: ''
+    length: 1
     target:
       choosen_dtype:
         dim: list[int]

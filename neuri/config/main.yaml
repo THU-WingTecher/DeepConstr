@@ -87,6 +87,7 @@ train:
   pass_rate: 95
   precision_threshold: 10 # 0 ~ 100
   list: "/artifact/data/torch_overall_apis.json" # list of train-target apis
+  max_length: 5
   api_name: null # api name to train(in this case, we only train one api)
   start_from: null
 llm:

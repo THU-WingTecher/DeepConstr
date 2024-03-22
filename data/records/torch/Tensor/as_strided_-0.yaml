@@ -21,7 +21,7 @@ args:
   - false
 name: torch.Tensor.as_strided_
 package: torch
-pass_rate: 6.490872210953347
+pass_rate: 43.92712550607287
 rules:
 - - cot: ''
     target:
@@ -36,4 +36,38 @@ rules:
   - f1_score: 88.73873873873873
     overall_score: 49.369369369369366
     precision: 79.75708502024291
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        self: tensor
+        size: list[int]
+        storage_offset: None
+        stride: list[int]
+      msg: 'numel: integer multiplication overflow'
+      package: torch
+    txt: (size[0] * stride[0] <= 2147483647) and (all(i > 0 for i in size))
+  - f1_score: 68.9655172413793
+    overall_score: 100
+    precision: 100.0
+    recall: 52.63157894736842
+- - cot: 'The error is triggered because negative strides are not supported in the
+      as_strided_ function. It appears that the stride parameter was set to [-1].
+      Therefore, the constraint that prevents this error should ensure that stride
+      values are non-negative. Here is the constraint:'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        size: list[int]
+        storage_offset: int
+        stride: list[int]
+      msg: 'as_strided: Negative strides are not supported at the moment, got strides:
+        [-1]'
+      package: torch
+    txt: all(i >= 0 for i in stride)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
     recall: 100.0

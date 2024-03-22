@@ -21,5 +21,26 @@ args:
   - false
 name: torch.Tensor.addcmul
 package: torch
-pass_rate: 2.620967741935484
-rules: []
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        self: tensor
+        tensor1: tensor
+        tensor2: tensor
+        value: int
+      msg: The size of tensor a (4) must match the size of tensor b (6) at non-singleton
+        dimension 5
+      package: torch
+    txt: (((all(self.shape[i] == tensor2.shape[i] or self.shape[i] == 1 or tensor2.shape[i]
+      == 1 for i in range(-1, -min(len(self.shape), len(tensor2.shape))-1, -1))) and
+      (all(tensor1.shape[i] == tensor2.shape[i] or tensor1.shape[i] == 1 or tensor2.shape[i]
+      == 1 for i in range(-1, -min(len(tensor1.shape), len(tensor2.shape))-1, -1))))
+      and (self.dim == tensor1.dim and self.shape == tensor1.shape)) and (tensor1.dim
+      == tensor2.dim and tensor1.shape == tensor2.shape)
+  - f1_score: 99.20634920634919
+    overall_score: 52.603174603174594
+    precision: 100.0
+    recall: 98.4251968503937

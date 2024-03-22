@@ -21,7 +21,7 @@ args:
   - false
 name: torch.Tensor.as_strided_
 package: torch
-pass_rate: 5.2
+pass_rate: 7.000000000000001
 rules:
 - - cot: ''
     target:
@@ -33,7 +33,57 @@ rules:
       msg: mismatch in length of strides and shape
       package: torch
     txt: len(stride) == len(size)
-  - f1_score: 89.83240223463687
-    overall_score: 43.77079107505071
-    precision: 81.54158215010142
+  - f1_score: 88.73873873873873
+    overall_score: 49.369369369369366
+    precision: 79.75708502024291
     recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        self: tensor
+        size: list[int]
+        storage_offset: None
+        stride: list[int]
+      msg: 'numel: integer multiplication overflow'
+      package: torch
+    txt: (size[0] * stride[0] <= 2147483647) and (all(i > 0 for i in size))
+  - f1_score: 68.9655172413793
+    overall_score: 100
+    precision: 100.0
+    recall: 52.63157894736842
+- - cot: 'The error is triggered because negative strides are not supported in the
+      as_strided_ function. It appears that the stride parameter was set to [-1].
+      Therefore, the constraint that prevents this error should ensure that stride
+      values are non-negative. Here is the constraint:'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        size: list[int]
+        storage_offset: int
+        stride: list[int]
+      msg: 'as_strided: Negative strides are not supported at the moment, got strides:
+        [-1]'
+      package: torch
+    txt: all(i >= 0 for i in stride)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        size: list[int]
+        storage_offset: int
+        stride: list[int]
+      msg: 'setStorage: sizes [-3, 6], strides [1, 6], storage offset 77, and itemsize
+        4 requiring a storage size of 416 are out of bounds for storage of size 32'
+      package: torch
+    txt: all(stride[i] > 0 for i in range(len(stride)))
+  - f1_score: 53.6431135770235
+    overall_score: 24.6
+    precision: 43.2
+    recall: 70.74489548866113

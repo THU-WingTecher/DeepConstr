@@ -13,43 +13,51 @@ args:
   - true
 name: torch.Tensor.__or__
 package: torch
-pass_rate: 87.66519823788546
+pass_rate: 44.4
 rules:
-- - cot: 'The error occurs because the bitwise OR operation (`bitwise_or_cpu`) is
-      not implemented for tensors with the data type `Float`. To prevent this error,
-      the data type of both tensors (`self` and `other`) should be changed to a compatible
-      type that supports bitwise OR operation. The compatible data types are `half`,
-      `int8`, `int16`, `int32`, `int64`, `uint8`, `uint16`, `uint32`, and `uint64`.
-      So, the final formula to prevent the error is:'
+- - cot: 'Based on the given runtime information, to prevent the error, the constraint
+      can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (4) at non-singleton
+        dimension 0
+      package: torch
+    txt: self.dim == other.dim and self.shape == other.shape
+  - f1_score: 95.60229445506693
+    overall_score: 59.80114722753346
+    precision: 100.0
+    recall: 91.57509157509158
+- - cot: synthesized
+    length: 6
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: uint32
+      package: torch
+    txt: ((((dtype(other) in ["half", "int16", "int32", "int64", "uint8", "uint16",
+      "uint32", "uint64"]) or (dtype(other) == dtype(self))) and (self.dim() == other.dim()))
+      and ((dtype(self) in ["half", "int16", "int32", "int64", "uint8", "uint16",
+      "uint32", "uint64"]) or (dtype(other) == dtype(self)))) or (dtype(self) == "uint32"
+      and dtype(other) == "int8")
+  - f1_score: 96.60523763336566
+    overall_score: 50.70261881668283
+    precision: 99.6
+    recall: 93.78531073446327
+- - cot: synthesized
+    length: 2
     target:
       choosen_dtype:
         other: tensor
         self: tensor
       msg: '"bitwise_or_cpu" not implemented for ''Float'''
       package: torch
-    txt: (dtype(self) in ["half", "int8", "int16", "int32", "int64", "uint8", "uint16",
-      "uint32", "uint64"]) and (dtype(other) in ["half", "int8", "int16", "int32",
-      "int64", "uint8", "uint16", "uint32", "uint64"])
-  - f1_score: 92.72727272727273
+    txt: ((dtype(other) in ["int8", "int16", "int32", "int64", "uint8", "uint16",
+      "uint32", "uint64"])) or ((dtype(self) != Float) and (dtype(other) != Float))
+  - f1_score: 100.0
     overall_score: 100
     precision: 100.0
-    recall: 86.4406779661017
-- - cot: "Based on the given runtime information, the error arises because the operation\
-      \ \"bitwise_or_cpu\" is not implemented for dtype 'Half' (float16). \n\nTo prevent\
-      \ this error, we need to ensure that both tensors have a compatible dtype that\
-      \ supports the \"bitwise_or_cpu\" operation. In this case, the allowed dtypes\
-      \ are 'int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', and 'uint64'.\n\
-      \nSo, the condition to prevent this error would be:"
-    target:
-      choosen_dtype:
-        other: tensor
-        self: tensor
-      msg: '"bitwise_or_cpu" not implemented for ''Half'''
-      package: torch
-    txt: dtype(self) in ["int8", "int16", "int32", "int64", "uint8", "uint16", "uint32",
-      "uint64"] and dtype(other) in ["int8", "int16", "int32", "int64", "uint8", "uint16",
-      "uint32", "uint64"]
-  - f1_score: 90.80675422138835
-    overall_score: 50.40337711069417
-    precision: 100.0
-    recall: 83.1615120274914
+    recall: 100.0

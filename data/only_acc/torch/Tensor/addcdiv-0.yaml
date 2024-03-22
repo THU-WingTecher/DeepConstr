@@ -21,7 +21,7 @@ args:
   - false
 name: torch.Tensor.addcdiv
 package: torch
-pass_rate: 2.658486707566462
+pass_rate: 5.0
 rules:
 - - cot: ''
     target:
@@ -33,8 +33,8 @@ rules:
       msg: The size of tensor a (7) must match the size of tensor b (5) at non-singleton
         dimension 5
       package: torch
-    txt: self.shape[0] == tensor1.shape[0]
-  - f1_score: 29.657144541729313
-    overall_score: 11.982035928143713
-    precision: 17.964071856287426
-    recall: 84.9566490260106
+    txt: tensor1.dim == tensor2.dim and tensor1.shape == tensor2.shape
+  - f1_score: 63.282760327255296
+    overall_score: 36.641380163627645
+    precision: 48.23529411764706
+    recall: 91.97536414313973

@@ -25,7 +25,7 @@ args:
   - false
 name: torch.Tensor.as_strided_scatter
 package: torch
-pass_rate: 0.6637168141592921
+pass_rate: 0.0
 rules:
 - - cot: ''
     target:
@@ -58,3 +58,20 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 95.89632829373652
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        size: list[int]
+        src: tensor
+        storage_offset: int
+        stride: list[int]
+      msg: Storage size calculation overflowed with sizes=[-1, 9, 9, 9, 9, 9, 9, 9,
+        9] and strides=[9, 9, 9, 9, 9, 9, 9, 9, 9]
+      package: torch
+    txt: all(size[i]>0 for i in range(len(size)))
+  - f1_score: 82.64462809917356
+    overall_score: 53.32231404958678
+    precision: 100.0
+    recall: 70.42253521126761

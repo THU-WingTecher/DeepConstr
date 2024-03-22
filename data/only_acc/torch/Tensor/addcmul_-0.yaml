@@ -21,8 +21,22 @@ args:
   - false
 name: torch.Tensor.addcmul_
 package: torch
-pass_rate: 0.2070393374741201
+pass_rate: 17.2
 rules:
+- - cot: divided
+    target:
+      choosen_dtype:
+        self: tensor
+        tensor1: tensor
+        tensor2: tensor
+        value: int
+      msg: output with shape [1] doesn't match the broadcast shape [1, 6, 6, 6]
+      package: torch
+    txt: self.shape == tensor2.shape
+  - f1_score: 62.30936819172114
+    overall_score: 36.154684095860574
+    precision: 85.8
+    recall: 48.91676168757127
 - - cot: 'For the first error message, the constraint to prevent the error is:'
     target:
       choosen_dtype:
@@ -34,21 +48,22 @@ rules:
         dimension 3
       package: torch
     txt: self.dim == tensor1.dim and self.shape == tensor1.shape
-  - f1_score: 18.3107841849468
-    overall_score: 8.161943319838056
-    precision: 10.323886639676113
-    recall: 80.88974854932303
-- - cot: synthesized
+  - f1_score: 52.42165242165242
+    overall_score: 31.21082621082621
+    precision: 36.8
+    recall: 91.0891089108911
+- - cot: ''
+    length: 1
     target:
       choosen_dtype:
         self: tensor
         tensor1: tensor
         tensor2: tensor
         value: int
-      msg: output with shape [1] doesn't match the broadcast shape [1, 6, 6, 6]
+      msg: result type Float can't be cast to the desired output type Int
       package: torch
-    txt: (self.shape == tensor1.shape) or (tensor2.shape[-1] == self.shape[0])
-  - f1_score: 65.15181583647549
-    overall_score: 48.87373737373737
-    precision: 94.74747474747474
-    recall: 49.644639346741265
+    txt: dtype(self) == dtype(tensor1) == dtype(tensor2) == int
+  - f1_score: 66.84491978609627
+    overall_score: 100
+    precision: 100.0
+    recall: 50.20080321285141

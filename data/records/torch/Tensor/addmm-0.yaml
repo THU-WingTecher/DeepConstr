@@ -25,9 +25,99 @@ args:
   - false
 name: torch.Tensor.addmm
 package: torch
-pass_rate: 0.0
+pass_rate: 38.677354709418836
 rules:
 - - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat1: tensor
+        mat2: tensor
+        self: tensor
+      msg: 'The expanded size of the tensor (9) must match the existing size (5) at
+        non-singleton dimension 1.  Target sizes: [7, 9].  Tensor sizes: [8, 5]'
+      package: torch
+    txt: mat1.shape[1] == self.shape[1]
+  - f1_score: 67.97202797202797
+    overall_score: 45.98601398601399
+    precision: 97.2
+    recall: 52.25806451612903
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat1: tensor
+        mat2: tensor
+        self: tensor
+      msg: 'expand(torch.FloatTensor{[8, 2, 9, 2, 1, 5, 4]}, size=[2, 5]): the number
+        of sizes provided (2) must be greater or equal to the number of dimensions
+        in the tensor (7)'
+      package: torch
+    txt: self.dim <= len(mat2.shape)
+  - f1_score: 70.52186177715093
+    overall_score: 47.260930888575466
+    precision: 100.0
+    recall: 54.46623093681917
+- - cot: 'The error is triggered because the shapes of mat1 and mat2 are not compatible
+      for matrix multiplication. The shapes are (2x1) and (4x9). To prevent this error,
+      the shape of mat2 should have the same number of rows as the number of columns
+      in mat1. Therefore, the condition can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat1: tensor
+        mat2: tensor
+        self: tensor
+      msg: mat1 and mat2 shapes cannot be multiplied (5x9 and 7x5)
+      package: torch
+    txt: mat2.shape[0] == mat1.shape[1]
+  - f1_score: 68.72852233676976
+    overall_score: 46.36426116838488
+    precision: 100.0
+    recall: 52.35602094240838
+- - cot: 'The error is caused because the self tensor and mat2 tensor have different
+      data types. In this case, self tensor has data type Int and mat2 tensor has
+      data type Float. To prevent this error, the data types of self tensor and mat2
+      tensor should be the same. Therefore, the constraint is:'
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat1: tensor
+        mat2: tensor
+        self: tensor
+      msg: self and mat2 must have the same dtype, but got Int and Float
+      package: torch
+    txt: self.dtype == mat2.dtype
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat1: tensor
+        mat2: tensor
+        self: tensor
+      msg: mat1 must be a matrix, got 7-D tensor
+      package: torch
+    txt: (mat1.dim() == 2) and (len(mat2.shape) == 2)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
     target:
       choosen_dtype:
         alpha: int
@@ -42,18 +132,3 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 100.0
-- - cot: ''
-    target:
-      choosen_dtype:
-        alpha: int
-        beta: int
-        mat1: tensor
-        mat2: tensor
-        self: tensor
-      msg: mat1 must be a matrix, got 1-D tensor
-      package: torch
-    txt: mat1.ndim == 2
-  - f1_score: 98.32375822607946
-    overall_score: 54.16187911303973
-    precision: 99.78494623655914
-    recall: 96.9047460560474

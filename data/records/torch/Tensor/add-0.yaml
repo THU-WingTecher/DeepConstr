@@ -17,5 +17,24 @@ args:
   - false
 name: torch.Tensor.add
 package: torch
-pass_rate: 35.4
-rules: []
+pass_rate: 100
+rules:
+- - cot: 'Based on the given values, the error is triggered because the dimensions
+      of the two tensors do not match. The function torch.Tensor.add expects the two
+      tensors to have the same dimensions. From the given arguments, it seems that
+      the dimensions and shape of the tensors ''self'' and ''other'' should be corrected.
+      Therefore, the condition that will prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (2) must match the size of tensor b (4) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.dim == other.dim and self.shape == other.shape
+  - f1_score: 95.96928982725528
+    overall_score: 59.98464491362764
+    precision: 100.0
+    recall: 92.25092250922509

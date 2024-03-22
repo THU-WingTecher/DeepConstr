@@ -21,35 +21,64 @@ args:
   - false
 name: torch.Tensor.addcdiv_
 package: torch
-pass_rate: 41.52173913043478
+pass_rate: 96.39999999999999
 rules:
 - - cot: divided
+    length: 1
     target:
       choosen_dtype:
         self: tensor
         tensor1: tensor
         tensor2: tensor
         value: int
-      msg: output with shape [1] doesn't match the broadcast shape [9, 9, 9]
+      msg: 'Integer division with addcdiv is no longer supported, and in a future  release
+        addcdiv will perform a true division of tensor1 and tensor2. The historic
+        addcdiv behavior can be implemented as (input + value * torch.trunc(tensor1
+        / tensor2)).to(input.dtype) for integer inputs and as (input + value * tensor1
+        / tensor2) for float inputs. The future addcdiv behavior is just the latter
+        implementation: (input + value * tensor1 / tensor2), for all dtypes.'
       package: torch
-    txt: self.dim() == tensor1.dim() == tensor2.dim()
-  - f1_score: 81.80300500834726
-    overall_score: 45.90150250417363
+    txt: dtype(tensor2) in ["float16", "float32", "float64"]
+  - f1_score: 100.0
+    overall_score: 100
     precision: 100.0
-    recall: 69.2090395480226
-- - cot: ''
+    recall: 100.0
+- - cot: 'The error is triggered because the size of the tensor1 (2) does not match
+      the size of self (8) at non-singleton dimension 0. The tensors need to have
+      the same shape or be broadcastable for the operation to succeed. This can be
+      resolved by ensuring that:'
+    length: 1
     target:
       choosen_dtype:
         self: tensor
         tensor1: tensor
         tensor2: tensor
         value: int
-      msg: The size of tensor a (8) must match the size of tensor b (5) at non-singleton
-        dimension 2
+      msg: The size of tensor a (5) must match the size of tensor b (2) at non-singleton
+        dimension 0
       package: torch
-    txt: self.shape[0] == tensor1.shape[0] and self.shape[0] == tensor2.shape[0] and
-      tensor1.shape[0] == tensor2.shape[1]
-  - f1_score: 63.419120758826544
-    overall_score: 36.709560379413276
-    precision: 47.4468085106383
-    recall: 95.60232047770538
+    txt: self.shape == tensor1.shape and tensor1.shape == tensor2.shape
+  - f1_score: 97.46588693957113
+    overall_score: 60.73294346978557
+    precision: 100.0
+    recall: 95.05703422053232
+- - cot: 'The error is occurred because the output shape [1] doesn''t match the broadcast
+      shape [1, 1, 9, 6, 5, 8, 8]. The tensor1 has additional dimensions which are
+      not present in self and tensor2. So we should make sure that all tensors involved
+      in the operation have the same dimensions. This can be corrected as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        tensor1: tensor
+        tensor2: tensor
+        value: int
+      msg: output with shape [1, 9, 1, 5] doesn't match the broadcast shape [1, 9,
+        9, 5]
+      package: torch
+    txt: self.dim == tensor1.dim and self.shape == tensor1.shape and tensor1.dim ==
+      tensor2.dim and tensor1.shape == tensor2.shape
+  - f1_score: 67.43088334457181
+    overall_score: 45.715441672285905
+    precision: 100.0
+    recall: 50.8646998982706

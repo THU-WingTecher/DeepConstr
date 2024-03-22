@@ -21,5 +21,63 @@ args:
   - false
 name: torch.Tensor.as_strided
 package: torch
-pass_rate: 2.0120724346076457
-rules: []
+pass_rate: 0.4
+rules:
+- - cot: "The error is caused because there is a mismatch in the length of strides\
+      \ and shape of the tensor. Let's see what the runtime information tells us.\
+      \ The size of the tensor is [-3, 4, 8, 9, 7] and the stride is [8, -4, 7, -1,\
+      \ 1, -4]. The number of elements in the shape and stride should be the same.\
+      \ \n\nTo prevent this error, we need to ensure that the length of the stride\
+      \ matches the length of the shape. We can express this constraint as:"
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        size: list[int]
+        storage_offset: int
+        stride: list[int]
+      msg: mismatch in length of strides and shape
+      package: torch
+    txt: len(size) == len(stride)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: The error is raised because negative strides are used in the `as_strided`
+      function, which is not supported. The arguments to the function include the
+      stride parameter which has negative values. To prevent this error, ensure that
+      all the values in the stride parameter are non-negative.
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        size: list[int]
+        storage_offset: None
+        stride: list[int]
+      msg: 'as_strided: Negative strides are not supported at the moment, got strides:
+        [9, 7, 3, -3, -4, 6, -1]'
+      package: torch
+    txt: all(i >= 0 for i in stride)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on given values, Error is triggered because the size calculation overflowed.
+      It expects to have non-negative size dimensions. Let''s see what the args were.
+      It seems size=[-3, -2] were negative, so size[i] should be corrected. Therefore,
+      Left : size[i], i in range(len(size)). Op : >=, Right : 0.'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        size: list[int]
+        storage_offset: int
+        stride: list[int]
+      msg: Storage size calculation overflowed with sizes=[-3, -2] and strides=[9,
+        7]
+      package: torch
+    txt: all(size[i]>=0 for i in range(len(size)))
+  - f1_score: 90.66183136899365
+    overall_score: 100
+    precision: 100.0
+    recall: 82.91873963515755

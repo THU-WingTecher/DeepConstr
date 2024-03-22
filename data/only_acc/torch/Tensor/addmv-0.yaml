@@ -25,7 +25,7 @@ args:
   - false
 name: torch.Tensor.addmv
 package: torch
-pass_rate: 0.0
+pass_rate: 97.6
 rules:
 - - cot: 'The error is due to incompatible matrix sizes for the addmv operation. The
       expected matrix sizes are (vector + matrix @ vector), but the actual sizes are

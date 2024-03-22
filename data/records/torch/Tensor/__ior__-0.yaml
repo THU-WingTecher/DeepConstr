@@ -13,59 +13,48 @@ args:
   - true
 name: torch.Tensor.__ior__
 package: torch
-pass_rate: 0.0
+pass_rate: 100
 rules:
-- - cot: "The error is triggered because the shape of the output tensor ([5]) doesn't\
-      \ match the broadcast shape ([]). This implies that there is a mismatch in the\
-      \ dimensions when performing the broadcasting operation. \n\nTo prevent this\
-      \ error, we need to ensure that the trailing dimensions of the tensors involved\
-      \ in the operation are either 1 or the same. Therefore, we can formulate the\
-      \ constraint as follows:"
-    target:
-      choosen_dtype:
-        other: tensor
-        self: tensor
-      msg: output with shape [] doesn't match the broadcast shape [5]
-      package: torch
-    txt: self.shape[i] == 1
-  - f1_score: 66.95661530999504
-    overall_score: 38.47830765499752
-    precision: 90.10309278350516
-    recall: 53.271708740742255
-- - cot: 'For the first error message, the constraint to prevent the error would be:'
-    target:
-      choosen_dtype:
-        other: tensor
-        self: tensor
-      msg: The size of tensor a (4) must match the size of tensor b (6) at non-singleton
-        dimension 2
-      package: torch
-    txt: self.shape[0] == other.shape[0]
-  - f1_score: 91.74311926605505
-    overall_score: 50.87155963302752
-    precision: 100.0
-    recall: 84.74576271186442
-- - cot: divided
-    target:
-      choosen_dtype:
-        other: tensor
-        self: tensor
-      msg: '"bitwise_or_cpu" not implemented for ''Float'''
-      package: torch
-    txt: (dtype(self) not in ["float16", "float32", "float64"])
-  - f1_score: 77.41935483870967
-    overall_score: 100
-    precision: 100.0
-    recall: 63.1578947368421
-- - cot: synthesized
+- - cot: ''
+    length: 1
     target:
       choosen_dtype:
         other: tensor
         self: tensor
       msg: result type Float can't be cast to the desired output type Int
       package: torch
-    txt: (dtype(self) == int32) and (dtype(self) == dtype(other))
-  - f1_score: 66.66666666666667
-    overall_score: 100
+    txt: dtype(self) == dtype(other)
+  - f1_score: 71.0732054015636
+    overall_score: 47.5366027007818
     precision: 100.0
-    recall: 50.0
+    recall: 55.126791620727666
+- - cot: The error occurs because the bitwise OR operation is not implemented for
+      floating point tensors. To prevent this error, the constraint should be that
+      both tensors `self` and `other` should have a data type other than float.
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"bitwise_or_cpu" not implemented for ''Float'''
+      package: torch
+    txt: (self.dtype not in ["float16", "float32", "float64"]) and (other.dtype not
+      in ["float16", "float32", "float64"])
+  - f1_score: 71.94244604316549
+    overall_score: 47.971223021582745
+    precision: 100.0
+    recall: 56.17977528089888
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (6) must match the size of tensor b (8) at non-singleton
+        dimension 3
+      package: torch
+    txt: self.dim() == other.dim() and self.shape == other.shape
+  - f1_score: 93.54536950420956
+    overall_score: 58.77268475210478
+    precision: 100.0
+    recall: 87.87346221441126

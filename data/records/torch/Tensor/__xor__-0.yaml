@@ -13,60 +13,62 @@ args:
   - true
 name: torch.Tensor.__xor__
 package: torch
-pass_rate: 94.88372093023256
+pass_rate: 100
 rules:
-- - cot: "Based on the given runtime information, the error occurs because the function\
-      \ 'bitwise_xor_cpu' is not implemented for the data type 'Float'. To prevent\
-      \ this error, the data types of both 'self' and 'other' tensors should be modified\
-      \ to one of the allowed data types for the 'bitwise_xor_cpu' operation. The\
-      \ allowed data types are 'half', 'int16', 'int32', 'int64', 'uint8', 'uint16',\
-      \ 'uint32', 'uint64'. \n\nTherefore, the constraints to prevent this error are:"
+- - cot: synthesized
+    length: 4
     target:
       choosen_dtype:
         other: tensor
         self: tensor
-      msg: '"bitwise_xor_cpu" not implemented for ''Float'''
+      msg: uint32
       package: torch
-    txt: dtype(self) in ["half", "int16", "int32", "int64", "uint8", "uint16", "uint32",
-      "uint64"] and dtype(other) in ["half", "int16", "int32", "int64", "uint8", "uint16",
-      "uint32", "uint64"]
-  - f1_score: 95.74036511156187
-    overall_score: 52.870182555780936
-    precision: 100.0
-    recall: 91.82879377431907
-- - cot: 'Error is triggered because size of tensors at non-singleton dimension 0
-      doesn''t match. What the args were? the two tensors matching problem at non-singleton
-      dimension looks like broadcasting request. Broadcasting in tensor operations
-      requires that the trailing dimensions of the tensors are either 1 or the same.
-      We start from the last dimension because broadcasting aligns dimensions from
-      the end. Therefore, we can revise the constraints as follows:'
-    target:
-      choosen_dtype:
-        other: tensor
-        self: tensor
-      msg: The size of tensor a (8) must match the size of tensor b (9) at non-singleton
-        dimension 0
-      package: torch
-    txt: self.shape[0] == other.shape[0]
-  - f1_score: 67.06408345752608
-    overall_score: 38.53204172876304
-    precision: 99.55156950672645
-    recall: 50.563333232105435
-- - cot: The error message indicates that the operation 'bitwise_xor_cpu' is not implemented
-      for the data type 'Half'. Therefore, in order to avoid this error, the data
-      type of the tensors 'self' and 'other' should be changed to a data type that
-      supports the 'bitwise_xor_cpu' operation. The allowed data types for the tensors
-      are 'half', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64'.
+    txt: (((dtype(self) in ["int8", "int16", "int32", "int64", "uint8", "uint16",
+      "uint32", "uint64"] and dtype(other) in ["int8", "int16", "int32", "int64",
+      "uint8", "uint16", "uint32", "uint64"]) and (self.dtype == other.dtype)) or
+      (self.dim() == other.dim())) and (dtype(other) == "uint8")
+  - f1_score: 84.5094664371773
+    overall_score: 45.25473321858865
+    precision: 98.2
+    recall: 74.16918429003022
+- - cot: divided
+    length: 1
     target:
       choosen_dtype:
         other: tensor
         self: tensor
       msg: '"bitwise_xor_cpu" not implemented for ''Half'''
       package: torch
-    txt: (dtype(self) in ["int16", "int32", "int64", "uint8", "uint16", "uint32",
-      "uint64"]) and (dtype(other) in ["int16", "int32", "int64", "uint8", "uint16",
-      "uint32", "uint64"])
-  - f1_score: 96.42857142857143
-    overall_score: 53.214285714285715
+    txt: not dtype(self) == "half"
+  - f1_score: 80.84074373484236
+    overall_score: 52.42037186742118
     precision: 100.0
-    recall: 93.10344827586208
+    recall: 67.84260515603799
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (6) at non-singleton
+        dimension 5
+      package: torch
+    txt: self.dim() == other.dim() and self.shape == other.shape
+  - f1_score: 86.6412213740458
+    overall_score: 49.3206106870229
+    precision: 90.8
+    recall: 82.84671532846714
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"bitwise_xor_cpu" not implemented for ''Float'''
+      package: torch
+    txt: dtype(self) != "float"
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

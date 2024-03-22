@@ -25,7 +25,7 @@ args:
   - false
 name: torch.Tensor.addbmm
 package: torch
-pass_rate: 0.0
+pass_rate: 3.5999999999999996
 rules:
 - - cot: ''
     target:
@@ -88,3 +88,35 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 52.004219409282705
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        batch1: tensor
+        batch2: tensor
+        beta: int
+        self: tensor
+      msg: Incompatible matrix sizes for bmm (6x8 and 5x2)
+      package: torch
+    txt: batch1.shape[-1] == batch2.shape[-2]
+  - f1_score: 70.0770847932726
+    overall_score: 47.0385423966363
+    precision: 100.0
+    recall: 53.937432578209275
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        batch1: tensor
+        batch2: tensor
+        beta: int
+        self: tensor
+      msg: batch1 and batch2 must have same number of batches, got 9 and 8
+      package: torch
+    txt: batch1.shape[0] == batch2.shape[0]
+  - f1_score: 67.11409395973153
+    overall_score: 45.55704697986577
+    precision: 100.0
+    recall: 50.505050505050505

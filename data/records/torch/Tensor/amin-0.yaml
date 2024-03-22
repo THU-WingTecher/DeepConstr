@@ -17,9 +17,10 @@ args:
   - false
 name: torch.Tensor.amin
 package: torch
-pass_rate: 52.104208416833664
+pass_rate: 38.6
 rules:
 - - cot: ''
+    length: 1
     target:
       choosen_dtype:
         dim: list[int]

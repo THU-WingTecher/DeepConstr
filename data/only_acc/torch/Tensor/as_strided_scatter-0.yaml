@@ -42,3 +42,35 @@ rules:
     overall_score: 47.09090909090909
     precision: 88.18181818181819
     recall: 100.0
+- - cot: divided
+    target:
+      choosen_dtype:
+        self: tensor
+        size: list[int]
+        src: tensor
+        storage_offset: int
+        stride: list[int]
+      msg: 'as_strided: Negative strides are not supported at the moment, got strides:
+        [-3]'
+      package: torch
+    txt: stride[0] > 0
+  - f1_score: 97.90518191841235
+    overall_score: 100
+    precision: 100.0
+    recall: 95.89632829373652
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        size: list[int]
+        src: tensor
+        storage_offset: int
+        stride: list[int]
+      msg: Storage size calculation overflowed with sizes=[-3] and strides=[7]
+      package: torch
+    txt: size[0] > 0 and all(size[i] >= 0 for i in range(1, len(size)))
+  - f1_score: 73.09941520467837
+    overall_score: 100
+    precision: 100.0
+    recall: 57.603686635944705
