@@ -132,7 +132,7 @@ class Executor:
                 MGEN_LOG.error(f"TIMEOUT error in execute: Process exceeded timeout.")
                 return_dict[processes.index(p)] = [False, err_instance]
         
-        results = [return_dict[i] for i in range(ntimes)]
+        results = [return_dict[i] for i in range(len(return_dict))]
         return results
     def _parallel_execute(self, ntimes, *args, **kwargs) -> Optional[List[Tuple[bool, ErrorMessage]]]:
         """

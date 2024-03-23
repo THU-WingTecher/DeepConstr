@@ -464,8 +464,11 @@ class TrainingLoop:
         )
     def runs(self) :
         n_func = 0
-        trained_func_index = 39
-        while True :
+        trained_func_index = self.cfg["temp"]["start"]
+        end_index = self.cfg["temp"]["end"]
+        TRAIN_LOG.info(f"Start training from {trained_func_index} to {end_index}")
+        # while True :
+        while n_func < end_index :
             n_func+=1
             record_path = self.select_train_op()
             if n_func >= trained_func_index :

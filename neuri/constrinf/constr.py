@@ -63,11 +63,12 @@ class Constraint:
         if dtypes is None :
             dtypes = self.dtypes
         converter = Ast2z3(arg_names, [[dtype] for dtype in dtypes], self.txt)
-        result = converter.convert(no_suff=True)
-        if result is None or result == True :
-            return False 
         try :
+            result = converter.convert(no_suff=True)
+            if result is None or result == True :
+                return False 
             _checker.add(result)
+            _checker.reset()
             return True 
         except :
             return False

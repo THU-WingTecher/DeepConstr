@@ -220,10 +220,14 @@ def map_error_messages_to_clusters_dynamic(raw_error_messages, threshold=0.5):
         found = False
         if clusters : 
             for _cls in clusters : 
-                if is_similar(err_msg, _cls[0], threshold) :
-                    _cls.append(err_msg)
-                    found = True
-                    break
+                try :
+                    if is_similar(err_msg, _cls[0], threshold) :
+                        _cls.append(err_msg)
+                        found = True
+                        break
+                except : 
+                    TRAIN_LOG.error(f"Error in comparing {err_msg} and {_cls[0]}")
+                    continue 
             if not found :
                 clusters.append([err_msg])
         else :

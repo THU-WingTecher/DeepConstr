@@ -26,6 +26,10 @@ model:
   path: "???" # can be multiple files tho.
   skip_err: true # skip bad models in model_exec
 
+temp:
+  start: 0
+  end: 50
+
 mgen: # model gen.
   max_nodes: 5
   pass_rate: 0.8 # 0 ~ 1 

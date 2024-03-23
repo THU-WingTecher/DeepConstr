@@ -151,19 +151,30 @@ def summarize_final_bf(aggregated_df):
     Returns:
     - str: A string representation of the summarized table.
     """
+    cnt = 0
     # Extracting and reshaping the final_bf values
     final_bf_summary = aggregated_df.pivot_table(index='API', columns='Column', values='Final BF', aggfunc='max')
 
     # Formatting the table to mark the largest value in each row with an asterisk
     for idx, row in final_bf_summary.iterrows():
         max_value = row.max()
+        max_column = row.idxmax()  # Identifying the column name of the max value
+
+        if max_column == 'constrinf' :
+            cnt+=1
         final_bf_summary.loc[idx] = row.apply(lambda x: f"*{x}" if x == max_value else x)
 
+    all_data = final_bf_summary.shape[0]
+    print("Total APIs with constrinf as the largest final BF: ", cnt)
+    print(f"Increase ratio of constrinf as the largest final BF: {cnt/all_data}")
     return final_bf_summary
 
 if __name__ == "__main__":
-
-    root_dir = '/artifact/exp/'
+    import sys
+    # if len(sys.argv) > 1:
+    #     root_dir = sys.argv[1]
+    # else:
+    root_dir = '/artifact/exp_sin/'
     api_coverage_data = traverse_and_classify(root_dir)
     processed_data = process_pickle_files(api_coverage_data)
     aggregated_df = aggregate_summarized_data(processed_data)

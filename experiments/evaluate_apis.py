@@ -10,7 +10,7 @@ from experiments.evaluate_models import model_exec, batched
 # Load the JSON file
 
 BASELINES = ["symbolic-cinit", "neuri", "constrinf"]
-FIXED_FUNC = "torch.Tensor.transpose"
+FIXED_FUNC = "torch.sin"
 cov_parallel = 4
 
 def activate_conda_environment(env_name):
