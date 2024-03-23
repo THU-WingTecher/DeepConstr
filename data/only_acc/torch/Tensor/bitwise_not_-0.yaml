@@ -9,7 +9,7 @@ args:
   - true
 name: torch.Tensor.bitwise_not_
 package: torch
-pass_rate: 0.0
+pass_rate: 100
 rules:
 - - cot: 'torch.Tensor.bitwise_not_ expects the input tensor to have a data type that
       is compatible with the bitwise_not operation. In this case, the input tensor

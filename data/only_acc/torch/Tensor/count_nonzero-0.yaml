@@ -13,7 +13,7 @@ args:
   - true
 name: torch.Tensor.count_nonzero
 package: torch
-pass_rate: 45.800000000000004
+pass_rate: 2.1999999999999997
 rules:
 - - cot: ''
     length: 1
@@ -23,8 +23,9 @@ rules:
         self: tensor
       msg: Dimension out of range (expected to be in range of [-4, 3], but got 5)
       package: torch
-    txt: all(d >= -len(self.shape) and d < len(self.shape) for d in dim)
-  - f1_score: 89.6626768226333
-    overall_score: 56.83133841131665
-    precision: 82.39999999999999
-    recall: 98.32935560859188
+    txt: all(dim[i] >= -len(self.shape) and dim[i] < len(self.shape) for i in range(len(dim)))
+      and all(d >= -len(self.shape) and d < len(self.shape) for d in dim)
+  - f1_score: 71.65492957746478
+    overall_score: 43.699999999999996
+    precision: 81.39999999999999
+    recall: 63.99371069182389

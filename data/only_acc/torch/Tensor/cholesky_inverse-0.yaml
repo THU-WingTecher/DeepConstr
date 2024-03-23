@@ -1,17 +1,17 @@
 args:
   dtype:
   - Tensor
-  - int
+  - bool
   is_pos:
   - true
   - false
   name:
   - self
-  - offset
+  - upper
   required:
   - true
   - false
-name: torch.Tensor.diagflat
+name: torch.Tensor.cholesky_inverse
 package: torch
-pass_rate: 100
+pass_rate: 97.6
 rules: []

@@ -1,17 +1,13 @@
 args:
   dtype:
   - Tensor
-  - int
   is_pos:
   - true
-  - false
   name:
   - self
-  - offset
   required:
   - true
-  - false
-name: torch.Tensor.diagflat
+name: torch.Tensor.corrcoef
 package: torch
-pass_rate: 100
+pass_rate: 97.0
 rules: []

@@ -9,20 +9,29 @@ args:
   - true
 name: torch.Tensor.bitwise_not_
 package: torch
-pass_rate: 0.0
+pass_rate: 100
 rules:
-- - cot: 'torch.Tensor.bitwise_not_ expects the input tensor to have a data type that
-      is compatible with the bitwise_not operation. In this case, the input tensor
-      has a data type of ''Float'' (f32), which is not compatible with the bitwise_not
-      operation. To prevent the error, the input tensor should have a data type that
-      is compatible with the bitwise_not operation. So, the constraint is:'
+- - cot: 'Based on the given error message, the error arises because the function
+      `torch.Tensor.bitwise_not_` does not support the ''Float'' datatype. The runtime
+      information shows that the input tensor `self` has the dtype ''Float'' (f32).
+
+
+      To prevent the error, the input tensor `self` should have a datatype that is
+      one of the supported types for the `bitwise_not_` operation. These supported
+      types include ''half'', ''int16'', ''int32'', ''int64'', ''uint8'', ''uint16'',
+      ''uint32'', and ''uint64''.
+
+
+      Therefore, the constraint that can prevent the error is:'
+    length: 1
     target:
       choosen_dtype:
         self: tensor
       msg: '"bitwise_not_cpu" not implemented for ''Float'''
       package: torch
-    txt: dtype(self) in [int8, int16, int32, int64, uint8, uint16, uint32, uint64]
-  - f1_score: 99.02912621359224
+    txt: dtype(self) in ["half", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+      "uint64"]
+  - f1_score: 100.0
     overall_score: 100
     precision: 100.0
-    recall: 98.07692307692308
+    recall: 100.0

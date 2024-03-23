@@ -9,21 +9,18 @@ args:
   - true
 name: torch.Tensor.bitwise_not
 package: torch
-pass_rate: 0.0
+pass_rate: 100
 rules:
-- - cot: "The error occurs because the function `bitwise_not` is not implemented for\
-      \ the data type 'Float'. To prevent this error, the data type of the input tensor\
-      \ should be one of the allowed types for `bitwise_not`, which are ['half', 'int8',\
-      \ 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64']. \n\nWrap\
-      \ the final formula with"
+- - cot: ''
+    length: 1
     target:
       choosen_dtype:
         self: tensor
       msg: '"bitwise_not_cpu" not implemented for ''Float'''
       package: torch
-    txt: dtype(self) in ['half', 'int8', 'int16', 'int32', 'int64', 'uint8', 'uint16',
-      'uint32', 'uint64']
-  - f1_score: 99.02912621359224
+    txt: dtype(self) in ["int8", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+      "uint64"]
+  - f1_score: 100.0
     overall_score: 100
     precision: 100.0
-    recall: 98.07692307692308
+    recall: 100.0

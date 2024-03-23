@@ -13,4 +13,19 @@ args:
   - true
 name: torch.Tensor.divide_
 package: torch
-pass_rate: 0
+pass_rate: 0.2
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (4) must match the size of tensor b (2) at non-singleton
+        dimension 5
+      package: torch
+    txt: self.shape[2] == other.shape[2]
+  - f1_score: 67.79661016949153
+    overall_score: 100
+    precision: 100.0
+    recall: 51.28205128205129

@@ -21,41 +21,32 @@ args:
   - false
 name: torch.Tensor.cov
 package: torch
-pass_rate: 18.11023622047244
+pass_rate: 68.4
 rules:
-- - cot: ''
+- - cot: 'The error occurs because the function expects the ''fweights'' parameter
+      to have an integral data type, but a float data type was provided. To prevent
+      this error in the future and generate constraints that do not trigger it, we
+      need to ensure that the ''fweights'' parameter always has an integral data type.
+      The constraint for the ''fweights'' parameter can be expressed as:'
+    length: 1
     target:
       choosen_dtype:
         aweights: tensor
         correction: int
-        fweights: None
-        self: tensor
-      msg: 'cov(): expected input to have two or fewer dimensions but got an input
-        with 3 dimensions'
-      package: torch
-    txt: self.rank <= 2
-  - f1_score: 99.02912621359224
-    overall_score: 100
-    precision: 100.0
-    recall: 98.07692307692308
-- - cot: ''
-    target:
-      choosen_dtype:
-        aweights: None
-        correction: int
         fweights: tensor
         self: tensor
-      msg: 'cov(): expected fweights to have one or fewer dimensions but got fweights
-        with 3 dimensions'
+      msg: 'cov(): expected fweights to have integral dtype but got fweights with
+        Float dtype'
       package: torch
-    txt: fweights.rank <= 1
-  - f1_score: 99.02912621359224
+    txt: fweights.dtype in [torch.int16, torch.int32, torch.int64, torch.int8, torch.uint8]
+  - f1_score: 100.0
     overall_score: 100
     precision: 100.0
-    recall: 98.07692307692308
-- - cot: '`aweights` should have one or fewer dimensions. Let''s see what the dimensions
-      of `aweights` are. The runtime information says that `aweights` has 5 dimensions.
-      Therefore, the constraint to prevent the error is:'
+    recall: 100.0
+- - cot: "The error is triggered because the `aweights` tensor has 4 dimensions, but\
+      \ it is expected to have one or fewer dimensions. \n\nTo prevent the error,\
+      \ we can add the following constraint:"
+    length: 1
     target:
       choosen_dtype:
         aweights: tensor
@@ -63,10 +54,42 @@ rules:
         fweights: None
         self: tensor
       msg: 'cov(): expected aweights to have one or fewer dimensions but got aweights
-        with 3 dimensions'
+        with 2 dimensions'
       package: torch
-    txt: aweights.rank <= 1
-  - f1_score: 99.02912621359224
-    overall_score: 100
+    txt: aweights.ndims() <= 1
+  - f1_score: 99.9000999000999
+    overall_score: 61.95004995004995
     precision: 100.0
-    recall: 98.07692307692308
+    recall: 99.8003992015968
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        aweights: tensor
+        correction: int
+        fweights: tensor
+        self: tensor
+      msg: 'cov(): expected fweights to have one or fewer dimensions but got fweights
+        with 9 dimensions'
+      package: torch
+    txt: len(fweights.shape) <= 1
+  - f1_score: 99.60159362549803
+    overall_score: 61.80079681274901
+    precision: 100.0
+    recall: 99.20634920634922
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        aweights: tensor
+        correction: int
+        fweights: None
+        self: tensor
+      msg: 'cov(): expected input to have two or fewer dimensions but got an input
+        with 8 dimensions'
+      package: torch
+    txt: self.ndims() <= 2
+  - f1_score: 99.8003992015968
+    overall_score: 61.9001996007984
+    precision: 100.0
+    recall: 99.60159362549801

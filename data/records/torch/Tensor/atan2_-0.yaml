@@ -13,5 +13,38 @@ args:
   - true
 name: torch.Tensor.atan2_
 package: torch
-pass_rate: 11.799999999999999
-rules: []
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (8) at non-singleton
+        dimension 5
+      package: torch
+    txt: self.shape[5] == other.shape[5]
+  - f1_score: 68.82312456985545
+    overall_score: 100
+    precision: 100.0
+    recall: 52.46589716684154
+- - cot: 'Based on the given runtime information, the error occurs because the shape
+      of the `other` tensor is too large compared to the shape of the `self` tensor.
+      To prevent this error, the shape of the `other` tensor should be adjusted to
+      match the shape of the `self` tensor.
+
+
+      Therefore, the constraint that should be applied is:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: 'Too large tensor shape: shape = [6, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: other.shape == self.shape
+  - f1_score: 67.75067750677506
+    overall_score: 45.87533875338753
+    precision: 100.0
+    recall: 51.229508196721305

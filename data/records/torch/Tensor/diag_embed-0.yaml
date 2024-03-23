@@ -21,7 +21,7 @@ args:
   - false
 name: torch.Tensor.diag_embed
 package: torch
-pass_rate: 0.19607843137254902
+pass_rate: 77.60000000000001
 rules:
 - - cot: ''
     target:
@@ -39,6 +39,7 @@ rules:
     precision: 100.0
     recall: 85.14190317195325
 - - cot: divided
+    length: 1
     target:
       choosen_dtype:
         dim1: int
@@ -48,7 +49,7 @@ rules:
       msg: diagonal dimensions cannot be identical 0, 0
       package: torch
     txt: dim1 != 0
-  - f1_score: 99.02912621359224
-    overall_score: 100
-    precision: 100.0
-    recall: 98.07692307692308
+  - f1_score: 88.39285714285715
+    overall_score: 56.19642857142858
+    precision: 79.2
+    recall: 100.0

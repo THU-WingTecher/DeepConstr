@@ -17,18 +17,59 @@ args:
   - false
 name: torch.Tensor.cholesky_solve
 package: torch
-pass_rate: 0.19607843137254902
+pass_rate: 96.2
 rules:
-- - cot: synthesized
+- - cot: 'This error is caused because the tensor shape is too large. The Cholesky
+      solve method in PyTorch is designed to solve a system of linear equations using
+      the Cholesky decomposition of a matrix. It expects input tensors to be square
+      matrices (i.e., tensors with the same number of rows and columns). The given
+      tensors have shapes [2, 4, 7, 5, 4, 9, 9, 9, 9] and [9, 8, 9, 9, 9, 9, 9, 9,
+      9] which are not square and have a large number of dimensions.
+
+
+      Therefore the constraint should be that the tensors must be square and have
+      a reasonable number of dimensions. Here, "reasonable" could be defined based
+      on the limitations of the system or the specific application.'
+    length: 1
     target:
       choosen_dtype:
         input2: tensor
         self: tensor
         upper: bool
-      msg: u should have at least 2 dimensions, but has 1 dimensions instead
+      msg: 'Too large tensor shape: shape = [8, 8, 9, 8, 8, 8, 8, 8, 8]'
       package: torch
-    txt: (self.dim() >= 2) and (input2.ndims() >= 2)
-  - f1_score: 99.02912621359224
+    txt: input2.dim == 2 and self.dim == 2 and input2.shape[0] == input2.shape[1]
+      and self.shape[0] == self.shape[1]
+  - f1_score: 70.37297677691767
+    overall_score: 47.186488388458834
+    precision: 100.0
+    recall: 54.28881650380022
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input2: tensor
+        self: tensor
+        upper: bool
+      msg: 'Incompatible matrix sizes for cholesky_solve: each A matrix is 1 by 1
+        but each b matrix is 9 by 9'
+      package: torch
+    txt: input2[-2] == self[-2] and input2[-1] == self[-1]
+  - f1_score: 98.23182711198429
+    overall_score: 61.115913555992144
+    precision: 100.0
+    recall: 96.52509652509652
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input2: tensor
+        self: tensor
+        upper: bool
+      msg: u should have at least 2 dimensions, but has 0 dimensions instead
+      package: torch
+    txt: input2.ndim() >= 2 and self.ndim() >= 2
+  - f1_score: 100.0
     overall_score: 100
     precision: 100.0
-    recall: 98.07692307692308
+    recall: 100.0

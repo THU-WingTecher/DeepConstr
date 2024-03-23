@@ -1,0 +1,136 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - int
+  - Optional[Tensor]
+  - Optional[Tensor]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - n
+  - dim
+  - prepend
+  - append
+  required:
+  - true
+  - false
+  - false
+  - false
+  - false
+name: torch.Tensor.diff
+package: torch
+pass_rate: 4.3999999999999995
+rules:
+- - cot: divided
+    target:
+      choosen_dtype:
+        append: None
+        dim: int
+        n: int
+        prepend: None
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got 89)
+      package: torch
+    txt: dim < len(self.shape)
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        append: tensor
+        dim: int
+        n: int
+        prepend: None
+        self: tensor
+      msg: diff expects input to be at least one-dimensional
+      package: torch
+    txt: self.ndims() >= 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        append: tensor
+        dim: int
+        n: int
+        prepend: tensor
+        self: tensor
+      msg: 'Too large tensor shape: shape = [9, 8, 9, 7, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: (((append.shape == prepend.shape == self.shape) and (len(self.shape) >= len(prepend.shape)))
+      and ((append.shape[dim] <= self.shape[dim]))) and (n < self.shape[0])
+  - f1_score: 74.34944237918216
+    overall_score: 100
+    precision: 100.0
+    recall: 59.171597633136095
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        append: tensor
+        dim: int
+        n: int
+        prepend: tensor
+        self: tensor
+      msg: diff expects prepend or append to be the same dimension as input
+      package: torch
+    txt: ((((prepend.shape[dim] == self.shape[dim])) and ((append.shape == self.shape)))
+      and ((prepend.dim == self.dim))) and ((append.rank == self.rank))
+  - f1_score: 80.84074373484236
+    overall_score: 100
+    precision: 100.0
+    recall: 67.84260515603799
+- - cot: The error is caused because the value of the argument "n" is negative. The
+      function "torch.Tensor.diff" expects the "n" value to be non-negative. Therefore,
+      the condition to prevent the error is "n >= 0".
+    length: 1
+    target:
+      choosen_dtype:
+        append: None
+        dim: int
+        n: int
+        prepend: tensor
+        self: tensor
+      msg: order must be non-negative but got -3
+      package: torch
+    txt: n >= 0
+  - f1_score: 94.7867298578199
+    overall_score: 100
+    precision: 100.0
+    recall: 90.09009009009009
+- - cot: Based on the given values, the error is triggered because the shape of the
+      input tensor and the prepend or append tensor do not match in the non-differencing
+      dimensions. Looking at the dimensions of the tensors and the error message,
+      it seems that the second dimension of the tensors (index 1) are not matching.
+      The second dimension of the input tensor is 6, but the second dimension of the
+      append tensor is 5. Therefore, the condition to prevent the error is that the
+      shapes of the tensors should be equal except along the differencing dimension.
+    length: 1
+    target:
+      choosen_dtype:
+        append: tensor
+        dim: int
+        n: int
+        prepend: tensor
+        self: tensor
+      msg: diff expects the shape of tensor to prepend or append to match that of
+        input except along the differencing dimension; input.size(1) = 6, but got
+        tensor.size(1) = 5
+      package: torch
+    txt: append.shape[1] == self.shape[1]
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0

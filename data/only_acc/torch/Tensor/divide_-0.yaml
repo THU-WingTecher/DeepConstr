@@ -1,17 +1,17 @@
 args:
   dtype:
   - Tensor
-  - int
+  - Tensor
   is_pos:
   - true
   - false
   name:
   - self
-  - offset
+  - other
   required:
   - true
-  - false
-name: torch.Tensor.diagflat
+  - true
+name: torch.Tensor.divide_
 package: torch
-pass_rate: 100
+pass_rate: 0.2
 rules: []

@@ -1,17 +1,21 @@
 args:
   dtype:
   - Tensor
-  - int
+  - Optional[number]
+  - Optional[number]
   is_pos:
   - true
   - false
+  - false
   name:
   - self
-  - offset
+  - min
+  - max
   required:
   - true
   - false
-name: torch.Tensor.diagflat
+  - false
+name: torch.Tensor.clamp_
 package: torch
-pass_rate: 100
+pass_rate: 75.0
 rules: []

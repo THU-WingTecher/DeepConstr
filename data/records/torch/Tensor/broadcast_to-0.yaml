@@ -13,67 +13,39 @@ args:
   - true
 name: torch.Tensor.broadcast_to
 package: torch
-pass_rate: 13.333333333333334
+pass_rate: 100
 rules:
-- - cot: 'The error is triggered because the expanded size of the tensor (6) does
-      not match the existing size (5) at non-singleton dimension 0. To prevent the
-      error, we need to ensure that the expanded size matches the existing size at
-      all dimensions. Therefore, the constraint can be formulated as:'
-    target:
-      choosen_dtype:
-        self: tensor
-        size: list[int]
-      msg: 'The expanded size of the tensor (6) must match the existing size (5) at
-        non-singleton dimension 0.  Target sizes: [6].  Tensor sizes: [5]'
-      package: torch
-    txt: size[0] == self.shape[0]
-  - f1_score: 68.31882116543872
-    overall_score: 100
-    precision: 100.0
-    recall: 51.88199389623601
-- - cot: Error is triggered because the number of sizes provided is not greater or
-      equal to the number of dimensions in the tensor. From the runtime information,
-      we can see that the size provided is an empty list and the number of dimensions
-      in the tensor is 1. Therefore, we can prevent the error by ensuring that the
-      number of sizes provided is greater than or equal to the number of dimensions
-      in the tensor.
-    target:
-      choosen_dtype:
-        self: tensor
-        size: list[int]
-      msg: 'expand(torch.FloatTensor{[3]}, size=[]): the number of sizes provided
-        (0) must be greater or equal to the number of dimensions in the tensor (1)'
-      package: torch
-    txt: len(size) >= self.dim()
-  - f1_score: 99.02912621359224
-    overall_score: 100
-    precision: 100.0
-    recall: 98.07692307692308
-- - cot: 'The error is triggered because the expanded size of the tensor is not allowed
-      in a leading, non-existing dimension. In this case, the expanded size is -1.
-      To prevent the error, the size of the tensor in the leading dimension should
-      be a positive integer. Therefore, the constraint can be formulated as:'
-    target:
-      choosen_dtype:
-        self: tensor
-        size: list[int]
-      msg: The expanded size of the tensor (-1) isn't allowed in a leading, non-existing
-        dimension 1
-      package: torch
-    txt: size[0] > 0
-  - f1_score: 66.66666666666667
-    overall_score: 100
-    precision: 100.0
-    recall: 50.0
-- - cot: divided
+- - cot: Error is triggered because of negative and zero values in the size list.
+      It is not possible to have a tensor of negative or zero size. Let's see what
+      the args were. The size list contains negative and zero values. Therefore, all
+      elements in the size list should be positive.
+    length: 1
     target:
       choosen_dtype:
         self: tensor
         size: list[int]
       msg: 'numel: integer multiplication overflow'
       package: torch
-    txt: size[0] > -3
+    txt: all(i > 0 for i in size)
+  - f1_score: 95.69377990430624
+    overall_score: 59.84688995215312
+    precision: 100.0
+    recall: 91.74311926605505
+- - cot: 'Based on given values, error is triggered because the number of sizes provided
+      is less than the number of dimensions in the tensor. It expects the number of
+      sizes provided to be greater than or equal to the number of dimensions in the
+      tensor. So, the condition that will prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        size: list[int]
+      msg: 'expand(torch.FloatTensor{[8, 4, 9, 4, 4, 4, 4, 4, 4]}, size=[]): the number
+        of sizes provided (0) must be greater or equal to the number of dimensions
+        in the tensor (9)'
+      package: torch
+    txt: len(size) >= self.dim
   - f1_score: 66.66666666666667
-    overall_score: 100
+    overall_score: 45.333333333333336
     precision: 100.0
     recall: 50.0

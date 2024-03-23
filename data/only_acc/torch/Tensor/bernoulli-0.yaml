@@ -1,17 +1,17 @@
 args:
   dtype:
   - Tensor
-  - int
+  - Optional[Generator]
   is_pos:
   - true
   - false
   name:
   - self
-  - offset
+  - generator
   required:
   - true
   - false
-name: torch.Tensor.diagflat
+name: torch.Tensor.bernoulli
 package: torch
-pass_rate: 100
+pass_rate: 5.4
 rules: []
