@@ -69,7 +69,7 @@ fuzz:
   resume: false
 
 train:
-  root: "???" # path to the root of the training data
+  root: "/artifact/data/debug/" # path to the root of the training data
   n_try: 20
   seed: null
   record_path: null
@@ -93,7 +93,6 @@ train:
   list: "/artifact/data/torch_overall_apis.json" # list of train-target apis
   max_length: 5
   api_name: null # api name to train(in this case, we only train one api)
-  start_from: null
 llm:
   settings:
     model_name: "gpt-3.5-turbo" # "gpt-4" # "gpt-3.5-turbo" # "gpt-3.5" # "gpt-3" # "gpt-2" # "gpt-2-xl"

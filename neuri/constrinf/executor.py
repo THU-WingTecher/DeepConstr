@@ -65,13 +65,13 @@ def worker(model, record, noise=0.8, allow_zero_length_rate=0.1, allow_zero_rate
         # Assuming record_args_info is a function to log or record argument info
         # self.record_args_info(record, values)  # Placeholder for actual logging or recording
         res_or_bug, abs_ret_list = model.execute_op(inst)
-        if res_or_bug == NotImplemented :
-            err_instance = ErrorMessage("NotImplemented", "", concretized_values, chosen_dtype)
-            err_instance.error_type = NotImplementedError
-            return False, err_instance
-        return True, ErrorMessage(NOERR_MSG, "", concretized_values, chosen_dtype)  # Assuming execution success
+        # if res_or_bug == NotImplemented :
+        #     err_instance = ErrorMessage("NotImplemented", "", concretized_values, chosen_dtype, package=model.package)
+        #     err_instance.error_type = NotImplementedError
+        #     return False, err_instance
+        return True, ErrorMessage(NOERR_MSG, "", concretized_values, chosen_dtype, package=model.package)  # Assuming execution success
     except Exception as e:
-        error_instance = ErrorMessage(e, traceback.format_exc(), concretized_values, chosen_dtype)
+        error_instance = ErrorMessage(e, traceback.format_exc(), concretized_values, chosen_dtype, package=model.package)
         assert isinstance(error_instance, ErrorMessage)
         return False, error_instance  # Return error state and message
 
@@ -89,7 +89,7 @@ class Executor:
         global _dtype_constrs_executable
         self.model = model
         self.parallel = parallel
-        _dtype_constrs_executable = DEFAULT_DTYPE_CONSTR.get(self.model().package)
+        _dtype_constrs_executable = DEFAULT_DTYPE_CONSTR.get(self.model.package)
 
     def execute(self, ntimes, constraints, *args, **kwargs) -> Optional[List[Tuple[bool, ErrorMessage]]]:
         MGEN_LOG.info(f"Executing {ntimes} times")

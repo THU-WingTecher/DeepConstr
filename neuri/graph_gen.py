@@ -1153,7 +1153,7 @@ class ConstrInf(NeuriR):
         **kwargs
     ):
         NeuriR.__init__(self, opset, record_finder, seed, **kwargs)
-        self.model = model()
+        self.model = model
         self.noise = noise
         self.allow_zero_length_rate = allow_zero_length_rate
         self.allow_zero_rate = allow_zero_rate

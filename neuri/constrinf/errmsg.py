@@ -10,7 +10,7 @@ from neuri.constrinf.util import formatted_dict
 from neuri.logger import TRAIN_LOG
 
 class ErrorMessage:
-    def __init__(self, msg: str, traceback_msg : str, values, choosen_dtype, package : Literal["torch", "tf"] = "torch"):
+    def __init__(self, msg: str, traceback_msg : str, values, choosen_dtype, package : Literal["torch", "tensorflow"] = "torch"):
         """
         Initialize an instance with error details.
 
@@ -97,16 +97,17 @@ class ErrorMessage:
         return res
 
     def get_core_msg(self) -> str :
+        msg = self.msg
         if self.msg == "no error" :
-            return self.msg
-        first_pos = self.msg.find("Error:")
+            return msg
+        first_pos = msg.find("Error:")
+        if self.package == 'tensorflow' :
+            msg = self.clean_errmsg(msg) #tf special
         if first_pos != -1 and self.msg.count('a') > 1:
-            error = self.msg[first_pos:].strip()
-            if self.package == 'tf' :
-                error = self.clean_errmsg(error) #tf special
-            return error 
+            msg = msg[first_pos:].strip()
+            return msg 
         else :
-            return self.msg 
+            return msg
 
 def delete_btw(msg, start_chr, end_chr, include=False):
     stack = []

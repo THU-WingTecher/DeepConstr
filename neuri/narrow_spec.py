@@ -275,7 +275,7 @@ def auto_opset(
     for op in model_cls.operators():
         if op.name() not in topset_config or (vulops == False and op.limit_domain) :
             continue
-        if test_pool and load_api_name(op, model_cls().gen_code) not in test_pool:
+        if test_pool and load_api_name(op, model_cls.gen_code) not in test_pool:
             continue
 
         op.in_dtypes = topset_config[op.name()].in_dtypes

@@ -17,13 +17,13 @@ from neuri.materialize.torch.symbolnet import SymbolNet
 from neuri.util import register_seed_setter
 from neuri.materialize.torch.code_gen import gen_code
 
-class TorchModel(Model):
+class TorchModel(Model): 
+    package = "torch"
+    gen_code = gen_code
     def __init__(self) -> None:
         super().__init__()
-        self.package = "torch"
         self.torch_model: SymbolNet = None
         self.sat_inputs = None
-        self.gen_code = gen_code
 
     @property
     def version(self) -> str:

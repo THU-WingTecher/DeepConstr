@@ -78,13 +78,12 @@ class TFModel(Model, ABC):  # Don't directly instantiate this class
     It only stores net. Other information like I/O info are temporarily generated.
     Other values like I/O values should be managed by the user.
     """
-
+    package = "tensorflow"
+    gen_code = gen_code 
     def __init__(self, ir: GraphIR) -> None:
         super().__init__()
-        self.package = "tensorflow"
         self.ir = ir
         self.net = TFNet(ir=ir)
-        self.gen_code = gen_code 
 
     @staticmethod
     def execute_op(inst : "OpInstance") : 
@@ -176,9 +175,9 @@ class TFModel(Model, ABC):  # Don't directly instantiate this class
         # To pre-check the graph integrity, we use graph mode
         # instead of eager mode.
         concrete_net = self.concrete_net(self.input_specs)
-        model = deepcopy(concrete_net)
+        # model = deepcopy(concrete_net)
         copied_input = deepcopy(input_dict)
-        output_dict = model(**copied_input)
+        output_dict = concrete_net(**copied_input)
 
         input_dict = np_dict_from_tf(input_dict)
         output_dict = np_dict_from_tf(output_dict)

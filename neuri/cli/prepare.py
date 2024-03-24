@@ -6,7 +6,7 @@ from omegaconf import DictConfig
 import torch
 from torch import Tensor
 import yaml
-
+import tensorflow as tf 
 from neuri.autoinf.instrument.collect import parse_torch_sigs
 from neuri.constrinf import _process_record
 from neuri.constrinf.executor import Executor
@@ -22,6 +22,54 @@ def load_executor(model_type, backend_target, parallel):
     executor = Executor(ModelType, parallel = parallel)
     return executor
 
+def transfer_older_record_to_newer(record: dict) -> dict:
+    new = {
+        "args" : { 
+            "is_pos" : [],
+            "dtype" : [],
+            "name" : [],
+            "required" : [],
+        },
+        "name" : None,
+        "package" : None,
+        "pass_rate" : 0,
+    }
+    new["name"] = record["title"]
+    new["args"]["name"] = list(record["constraints"].keys())
+    new["args"]["dtype"] = list([a["dtype"] for a in record["constraints"].values()])
+    new["args"]["required"] = list([a["required"] for a in record["constraints"].values()])
+    new["args"]["is_pos"] = [False for _ in range(len(new["args"]["name"]))]
+    new["args"]["value"] = [None for _ in range(len(new["args"]["name"]))]
+
+    assert record["package"] == "tf"
+    new["package"] = "tensorflow"
+    return new
+
+def build_record_from_sig(api) :
+    def dtype_infer(name, default) :
+        if name in ["name"] :
+            return "str"
+        elif name in ["input", "x", "y"] :
+            return "tensor" 
+        elif param.default != inspect.Parameter.empty :
+            return type(param.default)
+        else :
+            print(name, default)
+            return None
+    import inspect 
+    sig = inspect.signature(api)
+    names = []
+    dtypes = []
+    is_pos = []
+    required_list = []
+    for param in sig.parameters.values() :
+        names.append(param.name)
+        if dtype_infer(param.name, param.default) is None :
+            continue
+        dtypes.append(param.annotation)
+        is_pos.append(True)
+        required_list.append(param.default == inspect.Parameter.empty)
+    print(names, dtypes, is_pos, required_list)
 def transform_record_for_saving(record: dict) -> dict:
     """
     Transform the record dictionary to the original format expected for saving.
@@ -180,31 +228,12 @@ def torch_prepare(save_dir, executor):
                     continue
                 TRAIN_LOG.info(f"deal with {save_path}")
                 record = gen_record_for_operator(op_name, op_args, is_tensor_method)
-                record['args']['dtype_obj'] = [materalize_dtypes(dtype) for dtype in record['args']['dtype']]
-                record['outputs'] = {'value': []} # Placeholder for the output values
-                deal_special_case(record)
-                constr = []
-                ntimes = executor.parallel
-                results = executor.execute(ntimes, constr, record=record) 
-                illegal_cnt = 0
-                for res in results : 
-                    if res is None : 
-                        illegal_cnt+=1
-                        continue 
-                    if res[0] == False : 
-                        if res[1].error_type in [TypeError, NotImplementedError] :
-                            # TRAIN_LOG.info(f"  (Ignored: {obj = } from {op_name = } is illegal({res[1]})")
-                            record["error"] = str(res[1].error_type)
-                            illegal_cnt+=1
-                if res is None :
-                    res = (False, None)
-                if illegal_cnt > ntimes * 0.8 :
-                    illegal+=1
-                    TRAIN_LOG.warning(f"  (Ignored: {obj = } from {op_name = } is illegal({res[1]}) N_ILLEGAL : {illegal_cnt}")
-                else :
+                res, record = check_trainable(record, executor, save_path)
+                if res :
                     legal+=1
-                    TRAIN_LOG.info(f"SELECTED  {op_name = } from {op_args = } is legal({res[1]})")
-                save_record(transform_record_for_saving(record), save_path)
+                    save_record(transform_record_for_saving(record), save_path)
+                else :
+                    illegal+=1
             else:
                 TRAIN_LOG.info(f"  (Ignored: {obj = } from {op_name = } is not callable")
         # end if
@@ -212,6 +241,65 @@ def torch_prepare(save_dir, executor):
     # end while
     TRAIN_LOG.info(f"end of torch_prepare, {legal} legal methods, {illegal} illegal funcs, cur_line {i_line}, all {n_} operators")
     return tensor_methods, torch_funcs
+
+def tf_prepare(save_dir, executor):
+    legal, illegal, notfound = 0, 0, 0
+    notfounds = []
+    illegals = []
+    with open("/artifact/data/tf_overall_apis.json", "r") as f:
+        overall_apis = yaml.safe_load(f)
+    
+    for api in overall_apis:
+        nm_to_path = api.replace(".", "/")
+        save_path = os.path.join(save_dir, f"{nm_to_path}-{0}.yaml")
+        if not os.path.exists(save_path):
+            TRAIN_LOG.warning(f"{save_path} not found")
+            notfounds.append(api)
+            continue
+        with open(save_path, 'r') as f:
+            record = yaml.safe_load(f)
+            res, record = check_trainable(record, executor, save_path)
+            if res :
+                legal+=1
+                save_record(transform_record_for_saving(record), save_path)
+            else :
+                TRAIN_LOG.info(f"Ignored: {record['name'] = }")
+                illegals.append(api)
+                illegal+=1
+    print(illegals)
+    print(notfounds)
+    TRAIN_LOG.info(f"end of tf_prepare, {legal} legal methods, {illegal} illegal funcs, {notfound} not found")
+    return legal, illegal
+
+def check_trainable(record, executor, save_path, *args, **kwargs) : 
+
+    # record = transfer_older_record_to_newer(record)
+    record['args']['dtype_obj'] = [materalize_dtypes(dtype) for dtype in record['args']['dtype']]
+    record['args']['value'] = [None] * len(record['args']['name'])
+    record['outputs'] = {'value': []} # Placeholder for the output values
+    deal_special_case(record)
+    constr = []
+    ntimes = 100
+    results = executor.execute(ntimes, constr, record=record) 
+    illegal_cnt = 0
+    legal = 0
+    for res in results : 
+        if res is None : 
+            illegal_cnt+=1
+            continue 
+        if res[0] == False : 
+            if res[1].error_type in [TypeError, NotImplementedError] :
+                # TRAIN_LOG.info(f"  (Ignored: {obj = } from {op_name = } is illegal({res[1]})")
+                record["error"] = str(res[1].error_type)
+                illegal_cnt+=1
+    if res is None :
+        res = (False, None)
+    if illegal_cnt > ntimes * 0.8 :
+        TRAIN_LOG.warning(f"  (Ignored: {record['name'] = } from {record['args'] = } is illegal({res[1]}) N_ILLEGAL : {illegal_cnt}")
+        return False, record
+    else :
+        TRAIN_LOG.info(f"SELECTED  {record['name'] = } from {record['args'] = } is legal({res[1]})")
+        return True, record
 
 def save_record(record, path) :
     directory = os.path.dirname(path)
@@ -326,6 +414,8 @@ def main(cfg: DictConfig):
     executor = load_executor(cfg["model"]["type"], "cpu", cfg["train"]["parallel"])
     if cfg["model"]["type"] == "torch":
         torch_prepare(cfg["train"]["root"], executor)
+    elif cfg["model"]["type"] == "tensorflow":
+        tf_prepare(cfg["train"]["root"], executor)
     else :
         raise NotImplementedError
 

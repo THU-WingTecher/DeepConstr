@@ -205,8 +205,7 @@ class TrainingLoop:
 
         self.executor : Executor = Executor(self.ModelType, parallel = cfg["train"]["parallel"])
         self.train_list = self.get_train_list(path = cfg["train"]["list"], 
-                                              api_name = cfg["train"]["api_name"],
-                                              start_from=cfg["train"]["start_from"])
+                                              api_name = cfg["train"]["api_name"])
         TRAIN_LOG.info(
             f"{len(self.train_list)} opsets wait for inferring"
         )
@@ -234,7 +233,7 @@ class TrainingLoop:
             "save" : 0
         }
 
-    def get_train_list(self, path, api_name = None, start_from = None) -> List[str]:
+    def get_train_list(self, path = None, api_name = None) -> List[str]:
         """
         get operator yaml file path
         """
@@ -242,25 +241,24 @@ class TrainingLoop:
             base_name, index_with_extension = file_name.split('-')[0], file_name.split('-')[1]
             index = index_with_extension.replace('.yaml', '')
             return base_name, index
-        with open(path, "r") as f:
-            data = json.load(f)
-
-        li = []
-
+        train_list = []
+        record_paths = []
+        if api_name is not None :
+            train_list = [api_name]
+        elif path is not None :
+            with open(path, "r") as f:
+                train_list = json.load(f)
+        
         root_path = self.cfg["train"]["record_path"] 
         for root, _, files in os.walk(root_path):
             for file in files:
                 if file.endswith(".yaml"):
                     name = file.split(".")[0].split("-")[0]
-                    if api_name is not None :
-                        if name == api_name.split(".")[-1] :
-                            li.append(os.path.join(root, file))
-                    elif name in data :
-                        li.append(os.path.join(root, file))
-        li = sorted(li, key=sort_key)
-        if start_from is not None :
-            li = li[li.index(start_from):]
-        return sorted(li, key=sort_key)
+                    full_name = ".".join(os.path.join(root, file).replace('/','.').split('-')[0].split('.')[2:])
+                    if full_name in train_list :
+                        record_paths.append(os.path.join(root, file))
+        record_paths = sorted(record_paths, key=sort_key)
+        return sorted(record_paths, key=sort_key)
         ### all records of torch apis ###
         # li = []
         # root_path = self.cfg["train"]["record_path"] 
@@ -538,7 +536,7 @@ unsolved_err_msgs : {unsolved_msgs}
             TRAIN_LOG.info(f"No error messages encountered")
             return True 
         if all([self.is_triaged_err_msg(e[0], constr_list) for e in sorted_err_instances]) :
-            TRAIN_LOG.info(f"All err messages[{SPLITER.join(e[0] for e in sorted_err_instances)} are alredy triaged")
+            TRAIN_LOG.info(f"All err messages[{SPLITTER.join([e[0].get_core_msg() for e in sorted_err_instances])} are alredy triaged")
             return True 
         return False 
     def run(self, op_record, record_path):

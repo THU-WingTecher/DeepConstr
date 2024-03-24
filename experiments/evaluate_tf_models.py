@@ -59,7 +59,7 @@ def batched(iterable, n=1):
         yield iterable[ndx : min(ndx + n, l)]
 
 
-def model_exec(
+def tf_model_exec(
     test_paths, model_type, backend_type, backend_target, output_path, id_path
 ):
     model_paths = []
@@ -136,7 +136,7 @@ if __name__ == "__main__":
     def batch_exec(batch):
         batch_paths = [time2path[time] for time in batch]
         profraw_path = os.path.join(cov_save, f"{max(batch)}.info")
-        model_exec(
+        tf_model_exec(
             batch_paths, "tensorflow", "xla", "cpu", profraw_path, str(max(batch))
         )
 
