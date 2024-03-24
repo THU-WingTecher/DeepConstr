@@ -384,6 +384,7 @@ class TrainingLoop:
         return solved, tolerance, highest_prev, prev_answer
 
     def finalize_training_session(self, 
+                                  target : ErrorMessage, 
                                   highest_prev : Dict[str, float], 
                                   record : Dict[str, Any], 
                                   constr_list : List[Tuple[Constraint, Scores]],
@@ -398,7 +399,7 @@ class TrainingLoop:
         :return: Boolean indicating whether a satisfactory rule was found.
         """
         # Log the tried rules and their outcomes
-        TRAIN_LOG.debug(f"Tried rules:\n{SPLITTER.join(map(str, synthesizer.tried))}")
+        TRAIN_LOG.debug(f"Solving: {target.get_core_msg()}Tried rules:\n{SPLITTER.join(map(str, synthesizer.tried))}")
         
         if highest_prev["overall_score"] == 0:
             # No improvement found
@@ -529,6 +530,17 @@ unsolved_err_msgs : {unsolved_msgs}
 
     def is_retrainable(self, record : Record) :
         return record is not None and record.get("pass_rate", 0) > 0
+    def extra_exit_check(self, pass_rate, sorted_err_instances, constr_list) :
+        # if pass_rate >= self.cfg["train"]["pass_rate"] :
+        #     TRAIN_LOG.info(f"pass_rate is over {self.cfg['train']['precision_threshold']}")
+        #     return True
+        if not sorted_err_instances :
+            TRAIN_LOG.info(f"No error messages encountered")
+            return True 
+        if all([self.is_triaged_err_msg(e[0], constr_list) for e in sorted_err_instances]) :
+            TRAIN_LOG.info(f"All err messages[{SPLITER.join(e[0] for e in sorted_err_instances)} are alredy triaged")
+            return True 
+        return False 
     def run(self, op_record, record_path):
 
         n_try = 0
@@ -540,8 +552,7 @@ unsolved_err_msgs : {unsolved_msgs}
         while n_try < self.cfg["train"]["n_try"] :
             pass_rate, sorted_err_instances = self.get_pass_rate_and_err_msgs(op_record, self.cfg["train"]["eval_asset"])
             self.update_pass_rate(op_record, pass_rate)
-            if pass_rate >= self.cfg["train"]["pass_rate"] :
-                TRAIN_LOG.info(f"pass_rate is over {self.cfg['train']['precision_threshold']}")
+            if self.extra_exit_check(pass_rate, sorted_err_instances, constr_list) :
                 break
             while sorted_err_instances :
                 most_frequents = sorted_err_instances.pop(0)
@@ -554,8 +565,6 @@ unsolved_err_msgs : {unsolved_msgs}
                 else :
                     TRAIN_LOG.warning(f"Failed to train {most_frequents[0].get_core_msg()}")
                     break
-            TRAIN_LOG.info(f"No err messages encountered.")
-            break
         
         self.save_only_acc(op_record, record_path)
         # if not self.is_retrainable(op_record) :
@@ -692,7 +701,9 @@ unsolved_err_msgs : {unsolved_msgs}
                 result = None
                 
             solved, tolerance, highest_prev, prev_answer = self.update_tolerance_and_history(result, tolerance, highest_prev, prev_answer)
-        return self.finalize_training_session(highest_prev, orig_record, constr_list, synthesizer, prev_answer)
+        return self.finalize_training_session(targets[0] if targets else prompter.Q_history[-1],
+                                              highest_prev, orig_record, constr_list, synthesizer, prev_answer
+                                              )
     
     def update_record_constr(self, constr : Constraint, record, scores) :
         record["rules"].append(
