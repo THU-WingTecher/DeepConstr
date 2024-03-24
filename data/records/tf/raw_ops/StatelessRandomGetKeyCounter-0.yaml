@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - str
+  - int32,int64
+  is_pos:
+  - false
+  - false
+  name:
+  - name
+  - seed
+  required:
+  - false
+  - true
+name: tf.raw_ops.StatelessRandomGetKeyCounter
+package: tensorflow
+pass_rate: 0

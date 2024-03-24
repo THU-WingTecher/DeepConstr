@@ -1,0 +1,32 @@
+args:
+  dtype:
+  - int
+  - uint64
+  - int32,int64,uint32,uint64
+  - int
+  - str
+  - int
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - alg
+  - counter
+  - dtype
+  - key
+  - name
+  - shape
+  required:
+  - true
+  - true
+  - false
+  - true
+  - false
+  - true
+name: tf.raw_ops.StatelessRandomUniformFullIntV2
+package: tensorflow
+pass_rate: 0

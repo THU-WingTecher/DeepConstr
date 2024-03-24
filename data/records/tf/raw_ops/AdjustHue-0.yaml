@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - float
+  - float16,float32
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - delta
+  - images
+  - name
+  required:
+  - true
+  - true
+  - false
+name: tf.raw_ops.AdjustHue
+package: tensorflow
+pass_rate: 0

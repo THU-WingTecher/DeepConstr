@@ -13,7 +13,7 @@ args:
   - true
 name: torch.Tensor.matmul
 package: torch
-pass_rate: 0.4
+pass_rate: 92.80000000000001
 rules:
 - - cot: divided
     length: 1
@@ -29,37 +29,19 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 51.17707267144319
-- - cot: divided
+- - cot: ''
     length: 1
     target:
       choosen_dtype:
         other: tensor
         self: tensor
-      msg: 'Expected size for first two dimensions of batch2 tensor to be: [2016,
-        1] but got: [2016, 8].'
+      msg: expected scalar type Float but found Int
       package: torch
-    txt: other.size(1) == self.size(1)
-  - f1_score: 66.66666666666667
-    overall_score: 100
+    txt: dtype(self) == dtype(other) == torch.float32
+  - f1_score: 68.68131868131867
+    overall_score: 46.340659340659336
     precision: 100.0
-    recall: 50.0
-- - cot: "The error is caused because the shape of the self tensor is too large for\
-      \ the matmul operation. The shape of self tensor is [8, 8, 6, 5, 6, 9, 8] and\
-      \ the shape of the other tensor is [9, 9, 9, 9, 9, 9, 9, 9, 9]. \n\nTherefore,\
-      \ the condition to prevent this error is:"
-    length: 1
-    target:
-      choosen_dtype:
-        other: tensor
-        self: tensor
-      msg: 'Too large tensor shape: shape = [9, 9, 9, 9, 9, 9, 9, 9, 9]'
-      package: torch
-    txt: self.shape[0] <= 8 and self.shape[1] <= 8 and self.shape[2] <= 6 and self.shape[3]
-      <= 5 and self.shape[4] <= 6 and self.shape[5] <= 9 and self.shape[6] <= 8
-  - f1_score: 70.62146892655367
-    overall_score: 100
-    precision: 100.0
-    recall: 54.58515283842795
+    recall: 52.30125523012552
 - - cot: ''
     length: 1
     target:
@@ -73,16 +55,68 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 100.0
-- - cot: ''
+- - cot: "The error is caused because the shape of the self tensor is too large for\
+      \ the matmul operation. The shape of self tensor is [8, 8, 6, 5, 6, 9, 8] and\
+      \ the shape of the other tensor is [9, 9, 9, 9, 9, 9, 9, 9, 9]. \n\nTherefore,\
+      \ the condition to prevent this error is:"
     length: 1
     target:
       choosen_dtype:
         other: tensor
         self: tensor
-      msg: expected scalar type Float but found Int
+      msg: 'Too large tensor shape: shape = [9, 9, 9, 9, 9, 9, 9, 9, 9]'
       package: torch
-    txt: dtype(self) == dtype(other) == torch.float32
-  - f1_score: 68.39945280437756
+    txt: self.shape[0] <= 8 and self.shape[1] <= 8 and self.shape[2] <= 6 and self.shape[3]
+      <= 5 and self.shape[4] <= 6 and self.shape[5] <= 9 and self.shape[6] <= 8
+  - f1_score: 69.01311249137335
+    overall_score: 46.506556245686674
+    precision: 100.0
+    recall: 52.68703898840885
+- - cot: 'The error is due to the non-matching shapes of the tensors for matmul operation.
+      The matmul operation requires the last dimension of the first tensor to match
+      the second-to-last dimension of the second tensor. In this case, the shapes
+      are (18x9 and 7x1) which are not compatible for matrix multiplication.
+
+
+      Here, the last dimension of the first tensor is 9 and the second-to-last dimension
+      of the second tensor is 7. Therefore, the constraint should be that these two
+      dimensions are equal.'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: mat1 and mat2 shapes cannot be multiplied (8x9 and 6x1)
+      package: torch
+    txt: self.shape[-1] == other.shape[-2]
+  - f1_score: 68.54009595613434
     overall_score: 100
     precision: 100.0
-    recall: 51.975051975051976
+    recall: 52.137643378519286
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: size mismatch, got input (432), mat (432x2), vec (9)
+      package: torch
+    txt: ((self.size(-1) == other.size(-2)) and (self.shape[0] == other.shape[0]))
+      or (self.shape[-1] == other.shape[0])
+  - f1_score: 84.7457627118644
+    overall_score: 100
+    precision: 100.0
+    recall: 73.52941176470588
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(dim >= 0 for dim in self.shape)
+  - f1_score: 98.9119683481701
+    overall_score: 100
+    precision: 100.0
+    recall: 97.84735812133071

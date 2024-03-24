@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - int32,int64,uint32,uint64
+  - str
+  - int32,int64,uint32,uint64
+  - int32,int64
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - dtype
+  - name
+  - seed
+  - shape
+  required:
+  - false
+  - false
+  - true
+  - true
+error: <class 'TypeError'>
+name: tf.raw_ops.StatelessRandomUniformFullInt
+package: tensorflow
+pass_rate: 0

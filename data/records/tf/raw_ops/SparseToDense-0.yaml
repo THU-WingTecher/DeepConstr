@@ -1,0 +1,32 @@
+args:
+  dtype:
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  - int32,int64
+  - int32,int64
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - default_value
+  - name
+  - output_shape
+  - sparse_indices
+  - sparse_values
+  - validate_indices
+  required:
+  - true
+  - false
+  - true
+  - true
+  - true
+  - false
+name: tf.raw_ops.SparseToDense
+package: tensorflow
+pass_rate: 0

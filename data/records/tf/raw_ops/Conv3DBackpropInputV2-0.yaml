@@ -1,0 +1,40 @@
+args:
+  dtype:
+  - str
+  - list[int]
+  - float16,bfloat16,float32,float64
+  - int32,int64
+  - str
+  - float16,bfloat16,float32,float64
+  - str
+  - list[int]
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - data_format
+  - dilations
+  - filter
+  - input_sizes
+  - name
+  - out_backprop
+  - padding
+  - strides
+  required:
+  - false
+  - false
+  - true
+  - true
+  - false
+  - true
+  - true
+  - true
+name: tf.raw_ops.Conv3DBackpropInputV2
+package: tensorflow
+pass_rate: 0

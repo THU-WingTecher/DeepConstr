@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - int32,int64
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - input
+  - multiples
+  - name
+  required:
+  - true
+  - true
+  - false
+name: tf.raw_ops.Tile
+package: tensorflow
+pass_rate: 0

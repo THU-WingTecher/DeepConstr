@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - str
+  - bfloat16,float16,float32,float64
+  is_pos:
+  - false
+  - false
+  name:
+  - name
+  - x
+  required:
+  - false
+  - true
+name: tf.raw_ops.Ndtri
+package: tensorflow
+pass_rate: 0

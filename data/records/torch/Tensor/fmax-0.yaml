@@ -13,4 +13,18 @@ args:
   - true
 name: torch.Tensor.fmax
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: 'Too large tensor shape: shape = [8, 9, 9, 9, 9, 6, 9, 9, 9]'
+      package: torch
+    txt: (self.shape[1] == 9) and (len(other.shape) < 9)
+  - f1_score: 69.6165191740413
+    overall_score: 46.80825958702065
+    precision: 94.39999999999999
+    recall: 55.140186915887845

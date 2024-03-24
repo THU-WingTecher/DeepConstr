@@ -1,0 +1,88 @@
+args:
+  dtype:
+  - str
+  - str
+  - str
+  - str
+  - str
+  - str
+  - int
+  - str
+  - str
+  - str
+  - int,list[int]
+  - int
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - int,list[int]
+  - str
+  - str
+  - str
+  - str
+  - int,list[int]
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - activation
+  - activity_regularizer
+  - bias_constraint
+  - bias_initializer
+  - bias_regularizer
+  - data_format
+  - depth_multiplier
+  - depthwise_constraint
+  - depthwise_initializer
+  - depthwise_regularizer
+  - dilation_rate
+  - filters
+  - inputs
+  - kernel_size
+  - padding
+  - pointwise_constraint
+  - pointwise_initializer
+  - pointwise_regularizer
+  - strides
+  - use_bias
+  required:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - true
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+name: tf.keras.layers.SeparableConv2D
+package: tensorflow
+pass_rate: 0

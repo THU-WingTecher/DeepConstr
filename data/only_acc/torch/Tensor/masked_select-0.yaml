@@ -13,21 +13,8 @@ args:
   - true
 name: torch.Tensor.masked_select
 package: torch
-pass_rate: 0.0
+pass_rate: 100
 rules:
-- - cot: ''
-    length: 1
-    target:
-      choosen_dtype:
-        mask: tensor
-        self: tensor
-      msg: 'masked_select: expected BoolTensor for mask'
-      package: torch
-    txt: mask.dtype == torch.bool
-  - f1_score: 96.15384615384615
-    overall_score: 100
-    precision: 100.0
-    recall: 92.59259259259258
 - - cot: divided
     length: 1
     target:
@@ -37,7 +24,34 @@ rules:
       msg: 'Too large tensor shape: shape = [8, 9, 9, 9, 9, 9, 9, 9, 9]'
       package: torch
     txt: self.shape == mask.shape
-  - f1_score: 69.54102920723227
+  - f1_score: 68.77579092159559
+    overall_score: 46.38789546079779
+    precision: 100.0
+    recall: 52.41090146750524
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        mask: tensor
+        self: tensor
+      msg: 'masked_select: expected BoolTensor for mask'
+      package: torch
+    txt: mask.dtype == torch.bool
+  - f1_score: 100.0
     overall_score: 100
     precision: 100.0
-    recall: 53.304904051172706
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        mask: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (5) at non-singleton
+        dimension 8
+      package: torch
+    txt: mask.dim == self.dim
+  - f1_score: 91.40767824497257
+    overall_score: 100
+    precision: 100.0
+    recall: 84.17508417508418

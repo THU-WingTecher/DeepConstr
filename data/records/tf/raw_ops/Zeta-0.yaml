@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - str
+  - float32,float64
+  - float32,float64
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - name
+  - q
+  - x
+  required:
+  - false
+  - true
+  - true
+name: tf.raw_ops.Zeta
+package: tensorflow
+pass_rate: 0

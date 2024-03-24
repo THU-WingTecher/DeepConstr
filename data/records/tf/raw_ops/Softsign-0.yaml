@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - bfloat16,float32,float64
+  - str
+  is_pos:
+  - false
+  - false
+  name:
+  - features
+  - name
+  required:
+  - true
+  - false
+name: tf.raw_ops.Softsign
+package: tensorflow
+pass_rate: 0

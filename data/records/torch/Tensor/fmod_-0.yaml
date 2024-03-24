@@ -13,4 +13,31 @@ args:
   - true
 name: torch.Tensor.fmod_
 package: torch
-pass_rate: 0
+pass_rate: 98.0
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: ((dtype(self) == int32) and (dtype(other) == float)) or (dtype(self)==dtype(other))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: output with shape [7, 7] doesn't match the broadcast shape [1, 7, 7]
+      package: torch
+    txt: (self.shape == other.shape) and (self.dim == other.dim)
+  - f1_score: 67.0906200317965
+    overall_score: 45.54531001589825
+    precision: 84.39999999999999
+    recall: 55.67282321899736

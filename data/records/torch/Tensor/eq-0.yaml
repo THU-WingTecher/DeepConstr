@@ -13,24 +13,18 @@ args:
   - true
 name: torch.Tensor.eq
 package: torch
-pass_rate: 92.4
+pass_rate: 100
 rules:
-- - cot: 'Error is triggered because the shape of the tensors is too large, and exceeds
-      the maximum limit. The shape of the self tensor is [9, 9, 9, 7, 9, 9, 9, 9,
-      9]. To prevent the error, we need to limit the shape of the tensors to a smaller
-      size. Let''s say the maximum allowed shape is [5, 5, 5, 5, 5, 5, 5, 5, 5]. Therefore,
-      the constraint can be formulated as:'
+- - cot: ''
     length: 1
     target:
       choosen_dtype:
         other: tensor
         self: tensor
-      msg: 'Too large tensor shape: shape = [9, 9, 9, 7, 9, 9, 9, 9, 9]'
+      msg: 'Too large tensor shape: shape = [7, 9, 6, 8, 9, 9, 9, 9, 9]'
       package: torch
-    txt: self.shape[0] <= 5 and self.shape[1] <= 5 and self.shape[2] <= 5 and self.shape[3]
-      <= 5 and self.shape[4] <= 5 and self.shape[5] <= 5 and self.shape[6] <= 5 and
-      self.shape[7] <= 5 and self.shape[8] <= 5
-  - f1_score: 67.70480704129993
-    overall_score: 45.852403520649965
-    precision: 100.0
-    recall: 51.17707267144319
+    txt: self.dim() == other.dim() and self.shape() == other.shape()
+  - f1_score: 67.63888888888889
+    overall_score: 45.81944444444444
+    precision: 97.39999999999999
+    recall: 51.808510638297875

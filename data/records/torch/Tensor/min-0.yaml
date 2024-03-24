@@ -13,23 +13,22 @@ args:
   - true
 name: torch.Tensor.min
 package: torch
-pass_rate: 78.0
+pass_rate: 21.2
 rules:
-- - cot: 'The error is caused because the shape of the tensor `other` is too large.
-      The shape of `other` is [9, 9, 9, 9, 9, 9, 9, 9, 9] which exceeds the maximum
-      allowable size. To prevent the error, the shape of `other` should be reduced.
-      Therefore, the constraint is:'
+- - cot: 'The error is caused because the shape of the tensor "self" is smaller than
+      the shape of the tensor "other" at non-singleton dimensions. To prevent this
+      error, we need to ensure that the shape of "self" matches the shape of "other"
+      at all non-singleton dimensions. Therefore, we can formulate the constraint
+      as follows:'
     length: 1
     target:
       choosen_dtype:
         other: tensor
         self: tensor
-      msg: 'Too large tensor shape: shape = [9, 9, 9, 7, 9, 9, 9, 9, 9]'
+      msg: 'Too large tensor shape: shape = [5, 9, 9, 9, 9, 9, 9, 9, 9]'
       package: torch
-    txt: other.shape[0] <= 8 and other.shape[1] <= 8 and other.shape[2] <= 8 and other.shape[3]
-      <= 8 and other.shape[4] <= 8 and other.shape[5] <= 8 and other.shape[6] <= 8
-      and other.shape[7] <= 8 and other.shape[8] <= 8
-  - f1_score: 69.6927374301676
-    overall_score: 46.8463687150838
-    precision: 99.8
-    recall: 53.54077253218884
+    txt: self.shape == other.shape
+  - f1_score: 73.04907481898634
+    overall_score: 48.52453740949317
+    precision: 90.8
+    recall: 61.103633916554514

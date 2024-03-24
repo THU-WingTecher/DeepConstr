@@ -13,24 +13,8 @@ args:
   - true
 name: torch.Tensor.floor_divide
 package: torch
-pass_rate: 8.200000000000001
+pass_rate: 100
 rules:
-- - cot: 'Error is triggered because the size of tensor a (8) must match the size
-      of tensor b (9) at non-singleton dimension 8. Therefore, the constraint to prevent
-      the error is:'
-    length: 1
-    target:
-      choosen_dtype:
-        other: tensor
-        self: tensor
-      msg: The size of tensor a (9) must match the size of tensor b (6) at non-singleton
-        dimension 4
-      package: torch
-    txt: self.shape[8] == other.shape[8]
-  - f1_score: 72.93946024799416
-    overall_score: 100
-    precision: 100.0
-    recall: 57.405281285878296
 - - cot: ''
     length: 1
     target:
@@ -40,7 +24,22 @@ rules:
       msg: 'Too large tensor shape: shape = [4, 9, 9, 9, 9, 9, 9, 9, 9]'
       package: torch
     txt: self.shape == other.shape
-  - f1_score: 66.71114076050699
-    overall_score: 100
+  - f1_score: 67.29475100942126
+    overall_score: 45.64737550471063
     precision: 100.0
-    recall: 50.050050050050054
+    recall: 50.709939148073026
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (2) at non-singleton
+        dimension 5
+      package: torch
+    txt: self.dim == other.dim and self.shape == other.shape
+  - f1_score: 90.41591320072332
+    overall_score: 57.20795660036166
+    precision: 100.0
+    recall: 82.50825082508251

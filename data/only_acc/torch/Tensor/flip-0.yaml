@@ -13,7 +13,7 @@ args:
   - true
 name: torch.Tensor.flip
 package: torch
-pass_rate: 1.4000000000000001
+pass_rate: 84.6
 rules:
 - - cot: "The error occurs because the dimension provided is out of the valid range.\
       \ The runtime information shows that the error happened when calling the `torch.Tensor.flip`\
@@ -31,7 +31,46 @@ rules:
       msg: Dimension out of range (expected to be in range of [-4, 3], but got 5)
       package: torch
     txt: all(dim >= -len(self.shape) and dim < len(self.shape) for dim in dims)
-  - f1_score: 90.79627714581179
-    overall_score: 46.9
-    precision: 87.8
-    recall: 94.00428265524626
+  - f1_score: 92.89501590668081
+    overall_score: 58.447507953340406
+    precision: 87.6
+    recall: 98.87133182844244
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dims: list[int]
+        self: tensor
+      msg: dim 8 appears multiple times in the list of dims
+      package: torch
+    txt: len(dims) <= self.ndim
+  - f1_score: 86.50519031141869
+    overall_score: 100
+    precision: 100.0
+    recall: 76.21951219512195
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dims: list[int]
+        self: tensor
+      msg: 'Too large tensor shape: shape = [4, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: len(dims) == len(self.shape)
+  - f1_score: 69.1085003455425
+    overall_score: 100
+    precision: 100.0
+    recall: 52.798310454065465
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dims: list[int]
+        self: tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(dim >= 0 for dim in dims)
+  - f1_score: 78.73517786561264
+    overall_score: 52.8
+    precision: 99.6
+    recall: 65.09803921568627

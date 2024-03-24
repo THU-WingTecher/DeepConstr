@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - str
+  - bfloat16,float16,float32,float64,complex64,complex128
+  is_pos:
+  - false
+  - false
+  name:
+  - name
+  - x
+  required:
+  - false
+  - true
+name: tf.raw_ops.Expm1
+package: tensorflow
+pass_rate: 0

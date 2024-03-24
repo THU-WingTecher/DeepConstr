@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - int
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - axis
+  - logits
+  - name
+  required:
+  - false
+  - true
+  - false
+name: tf.nn.softmax
+package: tensorflow
+pass_rate: 0

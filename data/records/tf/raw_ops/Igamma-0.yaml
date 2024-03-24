@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - bfloat16,float16,float32,float64
+  - str
+  - bfloat16,float16,float32,float64
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - a
+  - name
+  - x
+  required:
+  - true
+  - false
+  - true
+name: tf.raw_ops.Igamma
+package: tensorflow
+pass_rate: 0

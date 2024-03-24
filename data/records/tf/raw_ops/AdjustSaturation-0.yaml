@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - float16,float32
+  - str
+  - float
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - images
+  - name
+  - scale
+  required:
+  - true
+  - false
+  - true
+name: tf.raw_ops.AdjustSaturation
+package: tensorflow
+pass_rate: 0

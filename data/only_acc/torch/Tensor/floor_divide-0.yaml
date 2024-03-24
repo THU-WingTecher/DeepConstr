@@ -13,7 +13,7 @@ args:
   - true
 name: torch.Tensor.floor_divide
 package: torch
-pass_rate: 8.200000000000001
+pass_rate: 21.2
 rules:
 - - cot: 'Error is triggered because the size of tensor a (8) must match the size
       of tensor b (9) at non-singleton dimension 8. Therefore, the constraint to prevent

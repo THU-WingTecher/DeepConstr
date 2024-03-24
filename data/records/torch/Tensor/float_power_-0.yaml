@@ -13,21 +13,21 @@ args:
   - true
 name: torch.Tensor.float_power_
 package: torch
-pass_rate: 0.0
+pass_rate: 100
 rules:
-- - cot: synthesized
-    length: 2
+- - cot: divided
+    length: 1
     target:
       choosen_dtype:
         exponent: tensor
         self: tensor
-      msg: 'Too large tensor shape: shape = [9, 9, 9, 9, 9, 9, 9, 9, 9]'
+      msg: output with shape [] doesn't match the broadcast shape [4, 8, 8, 9, 8]
       package: torch
-    txt: (exponent.shape == self.shape) and (len(self.shape) < 9)
-  - f1_score: 82.44023083264634
-    overall_score: 47.22011541632317
+    txt: exponent.ndim == 0
+  - f1_score: 100.0
+    overall_score: 100
     precision: 100.0
-    recall: 70.12622720897616
+    recall: 100.0
 - - cot: ''
     length: 1
     target:
@@ -42,3 +42,22 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 100.0
+- - cot: 'The error is triggered because the shape of the tensor is too large. The
+      shape of the tensor is [9, 8, 6, 7, 9, 8, 9, 9, 9]. To prevent this error, we
+      need to ensure that the shape of the tensor does not exceed a certain limit.
+      Let''s say the maximum allowed shape is [10, 10, 10, 10, 10, 10, 10, 10, 10].
+      Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        exponent: tensor
+        self: tensor
+      msg: 'Too large tensor shape: shape = [9, 8, 6, 7, 9, 8, 9, 9, 9]'
+      package: torch
+    txt: self.shape[0] <= 10 and self.shape[1] <= 10 and self.shape[2] <= 10 and self.shape[3]
+      <= 10 and self.shape[4] <= 10 and self.shape[5] <= 10 and self.shape[6] <= 10
+      and self.shape[7] <= 10 and self.shape[8] <= 10
+  - f1_score: 70.48799380325329
+    overall_score: 47.243996901626645
+    precision: 100.0
+    recall: 54.42583732057415

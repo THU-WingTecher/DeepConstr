@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - str
+  - int32,int64
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - name
+  - out_idx
+  - x
+  - y
+  required:
+  - false
+  - false
+  - true
+  - true
+error: <class 'TypeError'>
+name: tf.raw_ops.ListDiff
+package: tensorflow
+pass_rate: 0

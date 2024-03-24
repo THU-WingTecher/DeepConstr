@@ -1,0 +1,33 @@
+args:
+  dtype:
+  - float32,float64,int16,int32,int64,complex64
+  - bool
+  - bool
+  - str
+  - float16,float32,float64,uint8,int8,int16,int32,int64,complex64
+  - float16,float32,float64,uint8,int8,int16,int32,int64,complex64
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - Tout
+  - adj_x
+  - adj_y
+  - name
+  - x
+  - y
+  required:
+  - false
+  - false
+  - false
+  - false
+  - true
+  - true
+error: <class 'TypeError'>
+name: tf.raw_ops.BatchMatMulV3
+package: tensorflow
+pass_rate: 0

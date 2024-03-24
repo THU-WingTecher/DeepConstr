@@ -13,35 +13,40 @@ args:
   - true
 name: torch.Tensor.matmul
 package: torch
-pass_rate: 7.8
+pass_rate: 28.799999999999997
 rules:
+- - cot: 'The error occurs because the dimensions of the tensors do not match for
+      matrix multiplication. The number of columns in the first tensor (or matrix)
+      must be equal to the number of rows in the second tensor (or vector). Let''s
+      look at the arguments. We have an input tensor of size (4, 7, 8) and another
+      tensor of size (9). For matrix multiplication, the last dimension of the input
+      tensor should be equal to the size of the other tensor. Therefore, Left : self.shape[-1],
+      Op : ==, Right : other.shape[0]'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: size mismatch, got input (56), mat (56x8), vec (2)
+      package: torch
+    txt: self.shape[-1] == other.shape[0]
+  - f1_score: 90.25270758122744
+    overall_score: 57.12635379061372
+    precision: 100.0
+    recall: 82.23684210526316
 - - cot: divided
     length: 1
     target:
       choosen_dtype:
         other: tensor
         self: tensor
-      msg: The size of tensor a (8) must match the size of tensor b (9) at non-singleton
-        dimension 2
+      msg: 'Too large tensor shape: shape = [8, 8, 8, 8, 8, 8, 9, 8, 8]'
       package: torch
-    txt: other.shape[4] == 1
-  - f1_score: 67.70480704129993
-    overall_score: 100
+    txt: self.shape[1] == 6
+  - f1_score: 76.33587786259541
+    overall_score: 50.167938931297705
     precision: 100.0
-    recall: 51.17707267144319
-- - cot: ''
-    length: 1
-    target:
-      choosen_dtype:
-        other: tensor
-        self: tensor
-      msg: expected scalar type Float but found Int
-      package: torch
-    txt: dtype(self) == dtype(other) == torch.float32
-  - f1_score: 68.68131868131867
-    overall_score: 46.340659340659336
-    precision: 100.0
-    recall: 52.30125523012552
+    recall: 61.72839506172839
 - - cot: ''
     length: 1
     target:
@@ -55,20 +60,17 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 100.0
-- - cot: "The error is caused because the shape of the self tensor is too large for\
-      \ the matmul operation. The shape of self tensor is [8, 8, 6, 5, 6, 9, 8] and\
-      \ the shape of the other tensor is [9, 9, 9, 9, 9, 9, 9, 9, 9]. \n\nTherefore,\
-      \ the condition to prevent this error is:"
+- - cot: divided
     length: 1
     target:
       choosen_dtype:
         other: tensor
         self: tensor
-      msg: 'Too large tensor shape: shape = [9, 9, 9, 9, 9, 9, 9, 9, 9]'
+      msg: The size of tensor a (6) must match the size of tensor b (7) at non-singleton
+        dimension 6
       package: torch
-    txt: self.shape[0] <= 8 and self.shape[1] <= 8 and self.shape[2] <= 6 and self.shape[3]
-      <= 5 and self.shape[4] <= 6 and self.shape[5] <= 9 and self.shape[6] <= 8
-  - f1_score: 69.01311249137335
-    overall_score: 46.506556245686674
-    precision: 100.0
-    recall: 52.68703898840885
+    txt: self.shape[2] == other.shape[2]
+  - f1_score: 97.69769769769769
+    overall_score: 60.848848848848846
+    precision: 97.6
+    recall: 97.79559118236473

@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - float32,float64
+  - str
+  - float32,float64
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - alpha
+  - name
+  - sample
+  required:
+  - true
+  - false
+  - true
+name: tf.raw_ops.RandomGammaGrad
+package: tensorflow
+pass_rate: 0

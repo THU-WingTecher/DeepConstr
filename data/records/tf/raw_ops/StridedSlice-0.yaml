@@ -1,0 +1,48 @@
+args:
+  dtype:
+  - list[int]
+  - int
+  - int
+  - list[int]
+  - int
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  - int
+  - int
+  - list[int]
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - begin
+  - begin_mask
+  - ellipsis_mask
+  - end
+  - end_mask
+  - input
+  - name
+  - new_axis_mask
+  - shrink_axis_mask
+  - strides
+  required:
+  - true
+  - false
+  - false
+  - true
+  - false
+  - true
+  - false
+  - false
+  - false
+  - true
+name: tf.raw_ops.StridedSlice
+package: tensorflow
+pass_rate: 0

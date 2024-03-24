@@ -17,23 +17,53 @@ args:
   - false
 name: torch.Tensor.flatten
 package: torch
-pass_rate: 0.8
+pass_rate: 80.0
 rules:
 - - cot: synthesized
-    length: 3
+    length: 2
     target:
       choosen_dtype:
         end_dim: int
         self: tensor
         start_dim: int
-      msg: Dimension out of range (expected to be in range of [-2, 1], but got 99)
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got -4)
       package: torch
-    txt: ((start_dim >= -len(self.shape) and start_dim < len(self.shape)) and (end_dim
-      >= -len(self.shape))) and (start_dim >= 0)
-  - f1_score: 94.82926829268293
-    overall_score: 49.6
-    precision: 97.2
-    recall: 92.57142857142856
+    txt: (start_dim >= -len(self.shape)) and (end_dim >= -len(self.shape))
+  - f1_score: 96.94501018329937
+    overall_score: 54.47250509164969
+    precision: 95.19999999999999
+    recall: 98.75518672199169
+- - cot: 'The error message suggests that the `start_dim` argument cannot come after
+      the `end_dim` argument in the `torch.Tensor.flatten` function. To prevent this
+      error, we need to ensure that `start_dim` is less than or equal to `end_dim`.
+      Therefore, the constraint that prevents the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        end_dim: int
+        self: tensor
+        start_dim: int
+      msg: 'flatten() has invalid args: start_dim cannot come after end_dim'
+      package: torch
+    txt: (start_dim <= end_dim)
+  - f1_score: 91.52854511970534
+    overall_score: 52.7
+    precision: 99.4
+    recall: 84.8122866894198
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        end_dim: int
+        self: tensor
+        start_dim: int
+      msg: 'Too large tensor shape: shape = [9, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: (start_dim < end_dim) and (len(self.shape) <= 5)
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
 - - cot: divided
     length: 1
     target:

@@ -1,0 +1,16 @@
+args:
+  dtype:
+  - str
+  - int8,int16,int32,int64,uint8,uint16,uint32,uint64
+  is_pos:
+  - false
+  - false
+  name:
+  - name
+  - x
+  required:
+  - false
+  - true
+name: tf.raw_ops.Invert
+package: tensorflow
+pass_rate: 0

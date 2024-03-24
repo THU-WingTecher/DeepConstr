@@ -1,0 +1,44 @@
+args:
+  dtype:
+  - str
+  - list[int]
+  - list[int]
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  - list[int]
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - data_format
+  - dilations
+  - explicit_paddings
+  - filter
+  - input_sizes
+  - name
+  - out_backprop
+  - padding
+  - strides
+  required:
+  - false
+  - false
+  - false
+  - true
+  - true
+  - false
+  - true
+  - true
+  - true
+name: tf.raw_ops.DepthwiseConv2dNativeBackpropInput
+package: tensorflow
+pass_rate: 0

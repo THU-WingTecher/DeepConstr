@@ -1,0 +1,32 @@
+args:
+  dtype:
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - int
+  - str
+  - str
+  - int
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - data_format
+  - input
+  - ksize
+  - name
+  - padding
+  - strides
+  required:
+  - false
+  - true
+  - true
+  - false
+  - true
+  - true
+name: tf.raw_ops.MaxPoolV2
+package: tensorflow
+pass_rate: 0

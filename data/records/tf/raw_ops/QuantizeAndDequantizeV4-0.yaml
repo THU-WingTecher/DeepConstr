@@ -1,0 +1,49 @@
+args:
+  dtype:
+  - list[int]
+  - float16,float32,float64
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  - bool
+  - int
+  - bool
+  - str
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - axis
+  - input
+  - input_max
+  - input_min
+  - name
+  - narrow_range
+  - num_bits
+  - range_given
+  - round_mode
+  - signed_input
+  required:
+  - false
+  - true
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+error: <class 'TypeError'>
+name: tf.raw_ops.QuantizeAndDequantizeV4
+package: tensorflow
+pass_rate: 0

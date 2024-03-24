@@ -1,0 +1,32 @@
+args:
+  dtype:
+  - str
+  - float16,bfloat16,float32,float64
+  - list[int]
+  - str
+  - str
+  - list[int]
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - data_format
+  - input
+  - ksize
+  - name
+  - padding
+  - strides
+  required:
+  - false
+  - true
+  - true
+  - false
+  - true
+  - true
+name: tf.raw_ops.AvgPool3D
+package: tensorflow
+pass_rate: 0

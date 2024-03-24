@@ -1,0 +1,77 @@
+args:
+  dtype:
+  - int
+  - str
+  - str
+  - str
+  - bool
+  - float
+  - str
+  - str
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - float
+  - str
+  - str
+  - bool
+  - bool
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - axis
+  - beta_constraint
+  - beta_initializer
+  - beta_regularizer
+  - center
+  - epsilon
+  - gamma_constraint
+  - gamma_initializer
+  - gamma_regularizer
+  - inputs
+  - mask
+  - momentum
+  - moving_mean_initializer
+  - moving_variance_initializer
+  - scale
+  - synchronized
+  - training
+  required:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+error: <class 'TypeError'>
+name: tf.keras.layers.BatchNormalization
+package: tensorflow
+pass_rate: 0

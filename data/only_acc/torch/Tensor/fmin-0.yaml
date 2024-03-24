@@ -1,0 +1,47 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.Tensor.fmin
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'Error is triggered because the size of tensor a (4) must match the size
+      of tensor b (7) at non-singleton dimension 5. Let''s see what the args were.
+      The two tensors have different sizes at non-singleton dimension 5. Therefore,
+      the condition that would prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (8) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.shape[5] == other.shape[5]
+  - f1_score: 69.78367062107468
+    overall_score: 100
+    precision: 100.0
+    recall: 53.59056806002144
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: 'Too large tensor shape: shape = [9, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: len(self.shape) == len(other.shape)
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0

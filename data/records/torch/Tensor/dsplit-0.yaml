@@ -13,8 +13,28 @@ args:
   - true
 name: torch.Tensor.dsplit
 package: torch
-pass_rate: 3.5999999999999996
+pass_rate: 100
 rules:
+- - cot: 'The error is caused because the number of sections provided is not as expected.
+      The function `torch.Tensor.dsplit` expects the number of sections to be larger
+      than 0, but the given number of sections is -1.
+
+
+      To prevent this error, we need to ensure that the number of sections provided
+      is larger than 0. The constraint for the `sections` parameter can be expressed
+      as:'
+    length: 1
+    target:
+      choosen_dtype:
+        sections: int
+        self: tensor
+      msg: number of sections must be larger than 0, got -1
+      package: torch
+    txt: sections > 0
+  - f1_score: 79.42811755361399
+    overall_score: 51.71405877680699
+    precision: 100.0
+    recall: 65.87615283267458
 - - cot: 'The error is triggered because the input tensor has only 2 dimensions, but
       `torch.dsplit` requires a tensor with at least 3 dimensions. To prevent the
       error, we need to ensure that the tensor has at least 3 dimensions. Therefore,

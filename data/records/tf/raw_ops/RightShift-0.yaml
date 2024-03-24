@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - str
+  - int8,int16,int32,int64,uint8,uint16,uint32,uint64
+  - int8,int16,int32,int64,uint8,uint16,uint32,uint64
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - name
+  - x
+  - y
+  required:
+  - false
+  - true
+  - true
+name: tf.raw_ops.RightShift
+package: tensorflow
+pass_rate: 0

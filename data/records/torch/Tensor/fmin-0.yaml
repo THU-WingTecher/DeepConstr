@@ -13,4 +13,35 @@ args:
   - true
 name: torch.Tensor.fmin
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: 'Too large tensor shape: shape = [9, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: len(self.shape) == len(other.shape)
+  - f1_score: 66.93494299128102
+    overall_score: 45.46747149564051
+    precision: 99.8
+    recall: 50.35317860746721
+- - cot: Based on the given runtime information, Error is triggered because the two
+      tensors have different shapes. It expects to have same shape among all tensors.
+      Let's see what the args were. It seems dimensions and shape of a, and b are
+      which should be corrected. Therefore,
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (5) must match the size of tensor b (6) at non-singleton
+        dimension 2
+      package: torch
+    txt: other.shape == self.shape
+  - f1_score: 99.8003992015968
+    overall_score: 61.9001996007984
+    precision: 100.0
+    recall: 99.60159362549801

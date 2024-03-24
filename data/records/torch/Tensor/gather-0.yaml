@@ -21,4 +21,118 @@ args:
   - false
 name: torch.Tensor.gather
 package: torch
-pass_rate: 0
+pass_rate: 1.7999999999999998
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        self: tensor
+        sparse_grad: bool
+      msg: 'gather(): Expected dtype int64 for index'
+      package: torch
+    txt: index.dtype == int64
+  - f1_score: 80.45052292839904
+    overall_score: 100
+    precision: 100.0
+    recall: 67.29475100942126
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        self: tensor
+        sparse_grad: bool
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 78)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 71.48014440433214
+    overall_score: 52.5
+    precision: 99.0
+    recall: 55.932203389830505
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        self: tensor
+        sparse_grad: bool
+      msg: 'Too large tensor shape: shape = [5, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: index.shape[2] <= 9
+  - f1_score: 70.20057306590257
+    overall_score: 52.0
+    precision: 98.0
+    recall: 54.6875
+- - cot: 'Based on the given runtime information, the error is caused because the
+      index tensor doesn''t have the same number of dimensions as the input tensor.
+      To prevent this error, we can formulate the following constraint:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        self: tensor
+        sparse_grad: bool
+      msg: Index tensor must have the same number of dimensions as input tensor
+      package: torch
+    txt: index.dim() == self.dim()
+  - f1_score: 75.13148009015778
+    overall_score: 100
+    precision: 100.0
+    recall: 60.168471720818296
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        self: tensor
+        sparse_grad: bool
+      msg: Size does not match at dimension 1 expected index [4, 4] to be smaller
+        than self [1, 1] apart from dimension 0
+      package: torch
+    txt: (index.size(1) <= self.size(1)) and (all(index[i] < self.shape[i] for i in
+      range(len(index))))
+  - f1_score: 82.9875518672199
+    overall_score: 100
+    precision: 100.0
+    recall: 70.92198581560284
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        self: tensor
+        sparse_grad: bool
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(index[i] >= 0 for i in range(len(index)))
+  - f1_score: 86.20689655172413
+    overall_score: 55.103448275862064
+    precision: 100.0
+    recall: 75.75757575757575
+- - cot: The error message indicates that the index is out of bounds for dimension
+      0 of the tensor. The tensor only has size 9 in this dimension, but the function
+      tries to gather at index 465971. So, the constraint that prevents this error
+      would be that the index should be less than the size of the dimension it's trying
+      to gather from.
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        self: tensor
+        sparse_grad: bool
+      msg: index 789643 is out of bounds for dimension 0 with size 6
+      package: torch
+    txt: all(i < self.shape[dim] for i in index)
+  - f1_score: 64.54413892908828
+    overall_score: 44.27206946454414
+    precision: 89.2
+    recall: 50.56689342403629

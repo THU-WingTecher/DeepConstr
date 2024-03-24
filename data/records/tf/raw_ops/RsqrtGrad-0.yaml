@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - bfloat16,float16,float32,float64,complex64,complex128
+  - str
+  - bfloat16,float16,float32,float64,complex64,complex128
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - dy
+  - name
+  - y
+  required:
+  - true
+  - false
+  - true
+name: tf.raw_ops.RsqrtGrad
+package: tensorflow
+pass_rate: 0

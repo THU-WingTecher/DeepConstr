@@ -1,0 +1,73 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.Tensor.fmod_
+package: torch
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (4) must match the size of tensor b (7) at non-singleton
+        dimension 2
+      package: torch
+    txt: ((self.dim() == other.dim()) or (self.size(3) == other.size(3))) or (self.shape[3]
+      == other.shape[3])
+  - f1_score: 77.57951900698217
+    overall_score: 100
+    precision: 100.0
+    recall: 63.37135614702155
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: output with shape [7, 7] doesn't match the broadcast shape [1, 7, 7]
+      package: torch
+    txt: (self.shape == other.shape) and (self.dim == other.dim)
+  - f1_score: 75.75757575757576
+    overall_score: 100
+    precision: 100.0
+    recall: 60.97560975609756
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: 'Too large tensor shape: shape = [9, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: ((other.shape[i] == 1) and (other.shape == self.shape or all(other.shape[i]
+      == self.shape[i] or self.shape[i] == 1 for i in range(-1, -min(len(other.shape),
+      len(self.shape))-1, -1)))) and (len(self.shape) < 8 and len(other.shape) < 8)
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self)==dtype(other)
+  - f1_score: 67.98096532970769
+    overall_score: 100
+    precision: 100.0
+    recall: 51.493305870236874

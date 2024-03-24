@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - align
+  - diagonal
+  - input
+  - k
+  - name
+  required:
+  - false
+  - true
+  - true
+  - true
+  - false
+name: tf.raw_ops.MatrixSetDiagV3
+package: tensorflow
+pass_rate: 0

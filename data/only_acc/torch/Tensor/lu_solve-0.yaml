@@ -26,28 +26,14 @@ rules:
         LU_data: tensor
         LU_pivots: tensor
         self: tensor
-      msg: 'linalg.lu_solve: pivots should be a Tensor of scalar type torch.int32'
+      msg: 'linalg.lu_solve: Expected LU and B to have the same dtype, but found LU
+        of type Float and B of type ComplexFloat instead'
       package: torch
-    txt: LU_pivots.dtype == torch.int32
-  - f1_score: 77.7000777000777
+    txt: dtype(LU_data) == dtype(self)
+  - f1_score: 100.0
     overall_score: 100
     precision: 100.0
-    recall: 63.53240152477764
-- - cot: synthesized
-    length: 2
-    target:
-      choosen_dtype:
-        LU_data: tensor
-        LU_pivots: tensor
-        self: tensor
-      msg: 'Too large tensor shape: shape = [9, 9, 9, 9, 9, 9, 9, 9, 9]'
-      package: torch
-    txt: (LU_data.shape == self.shape and LU_pivots.shape == self.shape) and (len(LU_data.shape)
-      == 3)
-  - f1_score: 71.78750897343862
-    overall_score: 100
-    precision: 100.0
-    recall: 55.99104143337066
+    recall: 100.0
 - - cot: synthesized
     length: 2
     target:
@@ -58,12 +44,59 @@ rules:
       msg: 'torch.linalg.lu_solve: Expected a floating point or complex tensor as
         input. Got Int'
       package: torch
-    txt: (self.dtype() == torch.float32 or self.dtype() == torch.complex64) and (LU_data.dtype
-      == torch.float32)
-  - f1_score: 70.0280112044818
+    txt: (self.dtype == torch.complex64) or (self.dtype == torch.float32 or self.dtype
+      == torch.float64)
+  - f1_score: 100.0
     overall_score: 100
     precision: 100.0
-    recall: 53.879310344827594
+    recall: 100.0
+- - cot: 'The error message indicates that the tensor shape is too large, with a shape
+      of [8, 9, 7, 9, 9, 9, 9, 9, 9]. To prevent this error, the shape of the tensor
+      should be reduced. Therefore, the constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        LU_data: tensor
+        LU_pivots: tensor
+        self: tensor
+      msg: 'Too large tensor shape: shape = [9, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: self.shape[0] <= 7 and self.shape[1] <= 8 and self.shape[2] <= 6 and self.shape[3]
+      <= 8 and self.shape[4] <= 8 and self.shape[5] <= 8 and self.shape[6] <= 8 and
+      self.shape[7] <= 8 and self.shape[8] <= 8
+  - f1_score: 72.39057239057239
+    overall_score: 48.195286195286194
+    precision: 86.0
+    recall: 62.5
+- - cot: '`LU_pivots` should be a Tensor of scalar type `torch.int32`. Therefore,
+      the constraint is:'
+    length: 1
+    target:
+      choosen_dtype:
+        LU_data: tensor
+        LU_pivots: tensor
+        self: tensor
+      msg: 'linalg.lu_solve: pivots should be a Tensor of scalar type torch.int32'
+      package: torch
+    txt: LU_pivots.dtype == torch.int32
+  - f1_score: 94.96676163342829
+    overall_score: 59.483380816714146
+    precision: 100.0
+    recall: 90.41591320072332
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        LU_data: tensor
+        LU_pivots: tensor
+        self: tensor
+      msg: 'linalg.lu_solve: The input tensor B must have at least 2 dimensions.'
+      package: torch
+    txt: self.dim() >= 2
+  - f1_score: 91.99632014719411
+    overall_score: 100
+    precision: 100.0
+    recall: 85.17887563884156
 - - cot: ''
     length: 1
     target:
@@ -71,11 +104,30 @@ rules:
         LU_data: tensor
         LU_pivots: tensor
         self: tensor
-      msg: 'linalg.lu_solve: Expected LU and B to have the same dtype, but found LU
-        of type Float and B of type Int instead'
+      msg: 'linalg.lu_solve: Incompatible shapes of A and B for the equation AX =
+        B (9x9 and 8x8)'
       package: torch
-    txt: dtype(LU_data) == dtype(self)
-  - f1_score: 99.9000999000999
+    txt: LU_data.shape[-2] == self.shape[-2]
+  - f1_score: 69.78367062107468
     overall_score: 100
     precision: 100.0
-    recall: 99.8003992015968
+    recall: 53.59056806002144
+- - cot: "Based on the given runtime information, the error message suggests that\
+      \ the number of pivots per batch should be the same as the dimension of the\
+      \ matrix. To prevent this error, we can add a constraint that checks if the\
+      \ number of pivots per batch is equal to the dimension of the matrix. \n\nThe\
+      \ constraint can be formulated as:"
+    length: 1
+    target:
+      choosen_dtype:
+        LU_data: tensor
+        LU_pivots: tensor
+        self: tensor
+      msg: 'linalg.lu_solve: Number of pivots per batch should be same as the dimension
+        of the matrix'
+      package: torch
+    txt: self.shape[-2] == LU_pivots.shape[-1]
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0

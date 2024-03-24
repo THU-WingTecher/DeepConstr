@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - int16,int32,int64
+  - str
+  - int16,int32,int64
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - indices
+  - name
+  - params
+  required:
+  - true
+  - false
+  - true
+name: tf.raw_ops.GatherNd
+package: tensorflow
+pass_rate: 0

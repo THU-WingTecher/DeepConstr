@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - clip_value_max
+  - clip_value_min
+  - name
+  - t
+  required:
+  - true
+  - true
+  - false
+  - true
+name: tf.raw_ops.ClipByValue
+package: tensorflow
+pass_rate: 0

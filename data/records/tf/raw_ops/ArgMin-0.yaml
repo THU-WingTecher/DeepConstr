@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - int32,int64
+  - float32,float64,int32,uint8,int16,int8,int64,bfloat16,uint16,float16,uint32,uint64,qint8,qint32,qint16,bool
+  - str
+  - int32,int64
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - dimension
+  - input
+  - name
+  - output_type
+  required:
+  - true
+  - true
+  - false
+  - false
+error: <class 'TypeError'>
+name: tf.raw_ops.ArgMin
+package: tensorflow
+pass_rate: 0

@@ -1,0 +1,50 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.Tensor.fmax
+package: torch
+pass_rate: 82.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (5) at non-singleton
+        dimension 2
+      package: torch
+    txt: self.shape[2] == other.shape[2]
+  - f1_score: 68.02721088435375
+    overall_score: 100
+    precision: 100.0
+    recall: 51.54639175257733
+- - cot: 'The error message indicates that the shape of the tensor `self` is empty,
+      while the shape of the `other` tensor is `[8, 9, 9, 9, 9, 6, 9, 9, 9]`. To prevent
+      this error, we need to ensure that the shape of `self` matches the shape of
+      `other` at all dimensions.
+
+
+      The constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: 'Too large tensor shape: shape = [8, 9, 9, 9, 9, 6, 9, 9, 9]'
+      package: torch
+    txt: self.shape == other.shape
+  - f1_score: 65.89986468200271
+    overall_score: 51.699999999999996
+    precision: 97.39999999999999
+    recall: 49.79550102249489

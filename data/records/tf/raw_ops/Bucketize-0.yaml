@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - list[float]
+  - int32,int64,float32,float64
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - boundaries
+  - input
+  - name
+  required:
+  - true
+  - true
+  - false
+name: tf.raw_ops.Bucketize
+package: tensorflow
+pass_rate: 0

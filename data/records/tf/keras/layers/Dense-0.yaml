@@ -1,0 +1,49 @@
+args:
+  dtype:
+  - str
+  - str
+  - str
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  - str
+  - str
+  - int
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - activity_regularizer
+  - bias_constraint
+  - bias_initializer
+  - bias_regularizer
+  - inputs
+  - kernel_constraint
+  - kernel_initializer
+  - kernel_regularizer
+  - units
+  - use_bias
+  required:
+  - false
+  - false
+  - false
+  - false
+  - true
+  - false
+  - false
+  - false
+  - true
+  - false
+error: <class 'TypeError'>
+name: tf.keras.layers.Dense
+package: tensorflow
+pass_rate: 0

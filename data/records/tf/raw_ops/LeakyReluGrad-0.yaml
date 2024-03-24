@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - float
+  - float16,bfloat16,float32,float64
+  - float16,bfloat16,float32,float64
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - alpha
+  - features
+  - gradients
+  - name
+  required:
+  - false
+  - true
+  - true
+  - false
+name: tf.raw_ops.LeakyReluGrad
+package: tensorflow
+pass_rate: 0
