@@ -13,4 +13,31 @@ args:
   - true
 name: torch.Tensor.masked_select
 package: torch
-pass_rate: 0
+pass_rate: 19.6
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        mask: tensor
+        self: tensor
+      msg: 'Too large tensor shape: shape = [8, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: self.shape == mask.shape
+  - f1_score: 68.77579092159559
+    overall_score: 46.38789546079779
+    precision: 100.0
+    recall: 52.41090146750524
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        mask: tensor
+        self: tensor
+      msg: 'masked_select: expected BoolTensor for mask'
+      package: torch
+    txt: mask.dtype == torch.bool
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

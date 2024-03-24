@@ -17,19 +17,44 @@ args:
   - false
 name: torch.Tensor.dist
 package: torch
-pass_rate: 28.235294117647058
+pass_rate: 99.8
 rules:
 - - cot: synthesized
+    length: 3
     target:
       choosen_dtype:
         other: tensor
         p: int
         self: tensor
-      msg: The size of tensor a (6) must match the size of tensor b (7) at non-singleton
-        dimension 3
+      msg: 'Too large tensor shape: shape = [5, 9, 9, 9, 9, 9, 9, 9, 9]'
       package: torch
-    txt: (self.shape[2] == 1) and (self.shape[1] == other.shape[0])
-  - f1_score: 46.11590628853268
-    overall_score: 25.55795314426634
-    precision: 36.666666666666664
-    recall: 62.12624584717608
+    txt: ((self.shape == other.shape) and (self.dim() == other.dim())) or (all(x <
+      9 for x in self.shape))
+  - f1_score: 71.19370979270907
+    overall_score: 47.596854896354536
+    precision: 99.6
+    recall: 55.39488320355951
+- - cot: 'From the error message, it''s clear that the dimensions of the two tensors
+      `other` and `self` do not match. The dist function is expecting tensors of the
+      same shape. In this case, the shape of the `self` tensor is (2, 2, 3, 2, 2,
+      2, 2, 2, 2) and the shape of the `other` tensor is (7, 8, 8, 8). The error message
+      indicates that the size of tensor a (2) must match the size of tensor b (8)
+      at non-singleton dimension 8.
+
+
+      The condition that will prevent this error is that the dimensions and shapes
+      of the `other` and `self` tensors must be equal. This can be formulated as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        p: int
+        self: tensor
+      msg: The size of tensor a (8) must match the size of tensor b (5) at non-singleton
+        dimension 8
+      package: torch
+    txt: other.dim == self.dim and other.shape == self.shape
+  - f1_score: 91.85185185185186
+    overall_score: 57.92592592592593
+    precision: 99.2
+    recall: 85.51724137931035

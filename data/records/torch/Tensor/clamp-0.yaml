@@ -17,4 +17,5 @@ args:
   - false
 name: torch.Tensor.clamp
 package: torch
-pass_rate: 0
+pass_rate: 74.8
+rules: []

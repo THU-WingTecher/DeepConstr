@@ -1,0 +1,44 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.Tensor.minimum
+package: torch
+pass_rate: 7.3999999999999995
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (6) at non-singleton
+        dimension 3
+      package: torch
+    txt: self.dim == other.dim and self.shape == other.shape
+  - f1_score: 94.96676163342829
+    overall_score: 100
+    precision: 100.0
+    recall: 90.41591320072332
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: 'Too large tensor shape: shape = [4, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: (self.shape == other.shape) or (other.shape[4] <= 9)
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0

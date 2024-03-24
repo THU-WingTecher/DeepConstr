@@ -1,0 +1,13 @@
+args:
+  dtype:
+  - Tensor
+  is_pos:
+  - true
+  name:
+  - self
+  required:
+  - true
+name: torch.Tensor.corrcoef
+package: torch
+pass_rate: 97.0
+rules: []

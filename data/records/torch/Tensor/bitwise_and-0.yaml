@@ -13,58 +13,33 @@ args:
   - true
 name: torch.Tensor.bitwise_and
 package: torch
-pass_rate: 52.09205020920502
+pass_rate: 95.39999999999999
 rules:
-- - cot: "Based on the given error message, the error arises because the function\
-      \ is trying to perform a bitwise_and operation on a tensor of type int64 and\
-      \ a tensor of type uint16. However, the function does not support promotion\
-      \ for uint16, uint32, and uint64 types. \n\nTo prevent this error, the tensors\
-      \ 'self' and 'other' should have the same data type or the 'other' tensor should\
-      \ be converted to a compatible data type. \n\nTherefore, the constraint to prevent\
-      \ the error is:"
-    target:
-      choosen_dtype:
-        other: tensor
-        self: tensor
-      msg: Promotion for uint16, uint32, uint64 types is not supported, attempted
-        to promote Long and UInt16
-      package: torch
-    txt: dtype(self) == dtype(other)
-  - f1_score: 69.73125884016973
-    overall_score: 39.865629420084865
-    precision: 100.0
-    recall: 53.528773072747015
 - - cot: synthesized
-    target:
-      choosen_dtype:
-        other: tensor
-        self: tensor
-      msg: The size of tensor a (5) must match the size of tensor b (6) at non-singleton
-        dimension 0
-      package: torch
-    txt: '((self.shape[0] == other.shape[0]) and (
-
-      len(self.shape) == len(other.shape))) and (all(self.shape[i] == other.shape[i]
-      or self.shape[i] == 1 or other.shape[i] == 1 for i in range(-1, -min(len(self.shape),
-      len(other.shape))-1, -1)))'
-  - f1_score: 84.38049661685707
-    overall_score: 43.8569149750952
-    precision: 86.40973630831643
-    recall: 82.4443790738361
-- - cot: The error occurs because the function `torch.Tensor.bitwise_and` is not implemented
-      for floats. To prevent this error, the input tensors `self` and `other` should
-      have a data type that is compatible with the function, such as int8, int16,
-      int32, int64, uint8, uint16, uint32, or uint64.
+    length: 2
     target:
       choosen_dtype:
         other: tensor
         self: tensor
       msg: '"bitwise_and_cpu" not implemented for ''Float'''
       package: torch
-    txt: (dtype(self) in ["int8", "int16", "int32", "int64", "uint8", "uint16", "uint32",
-      "uint64"]) and (dtype(other) in ["int8", "int16", "int32", "int64", "uint8",
-      "uint16", "uint32", "uint64"])
-  - f1_score: 88.56358645928637
-    overall_score: 49.281793229643185
+    txt: (dtype(other) in ['half', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32',
+      'uint64']) or (dtype(self) != 'Float' and dtype(other) != 'Float')
+  - f1_score: 100.0
+    overall_score: 100
     precision: 100.0
-    recall: 79.47454844006569
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (6) at non-singleton
+        dimension 1
+      package: torch
+    txt: self.dim() == other.dim() and self.shape == other.shape
+  - f1_score: 96.43201542912246
+    overall_score: 60.21600771456123
+    precision: 100.0
+    recall: 93.10986964618249

@@ -13,5 +13,19 @@ args:
   - true
 name: torch.Tensor.atan2
 package: torch
-pass_rate: 29.4
-rules: []
+pass_rate: 91.8
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (2) must match the size of tensor b (9) at non-singleton
+        dimension 5
+      package: torch
+    txt: self.shape[5] == other.shape[5]
+  - f1_score: 69.06077348066299
+    overall_score: 100
+    precision: 100.0
+    recall: 52.742616033755276

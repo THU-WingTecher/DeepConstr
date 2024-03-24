@@ -1,0 +1,13 @@
+args:
+  dtype:
+  - Tensor
+  is_pos:
+  - true
+  name:
+  - self
+  required:
+  - true
+name: torch.Tensor.fliplr
+package: torch
+pass_rate: 97.6
+rules: []

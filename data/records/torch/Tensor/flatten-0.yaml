@@ -17,4 +17,19 @@ args:
   - false
 name: torch.Tensor.flatten
 package: torch
-pass_rate: 0
+pass_rate: 78.0
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        end_dim: int
+        self: tensor
+        start_dim: int
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got -4)
+      package: torch
+    txt: (start_dim >= -len(self.shape)) and (end_dim >= -len(self.shape))
+  - f1_score: 96.94501018329937
+    overall_score: 54.47250509164969
+    precision: 95.19999999999999
+    recall: 98.75518672199169

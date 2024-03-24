@@ -1,0 +1,57 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - number
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - mask
+  - value
+  required:
+  - true
+  - true
+  - true
+name: torch.Tensor.masked_fill_
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: "The error is caused by passing a mask tensor with a float dtype when only\
+      \ boolean masks are supported. The mask tensor has the shape [9, 3, 8, 5, 9,\
+      \ 9, 9], and the self tensor has the shape [4, 9, 9, 9, 9, 9]. To prevent the\
+      \ error, the mask tensor should be converted to a boolean dtype. \n\nThe condition\
+      \ to prevent the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        mask: tensor
+        self: tensor
+        value: int
+      msg: masked_fill_ only supports boolean masks, but got mask with dtype float
+      package: torch
+    txt: mask.dtype == torch.bool
+  - f1_score: 94.5179584120983
+    overall_score: 100
+    precision: 100.0
+    recall: 89.60573476702508
+- - cot: "The error is caused because the shape of the mask tensor [8, 9, 9, 9, 9,\
+      \ 9, 9, 9, 9] is too large compared to the shape of the self tensor [3, 7, 1,\
+      \ 4, 9, 4]. \n\nTo prevent the error, the shape of the mask tensor should match\
+      \ or be compatible with the shape of the self tensor. Therefore, the constraint\
+      \ can be formulated as:"
+    length: 1
+    target:
+      choosen_dtype:
+        mask: tensor
+        self: tensor
+        value: int
+      msg: 'Too large tensor shape: shape = [4, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: mask.shape == self.shape
+  - f1_score: 69.3000693000693
+    overall_score: 100
+    precision: 100.0
+    recall: 53.022269353128316

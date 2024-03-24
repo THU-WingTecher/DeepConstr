@@ -1,0 +1,58 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.Tensor.bitwise_right_shift
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: divided
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (8) at non-singleton
+        dimension 2
+      package: torch
+    txt: self.shape[2] == other.shape[2]
+  - f1_score: 30.28649386084584
+    overall_score: 13.882352941176471
+    precision: 21.764705882352942
+    recall: 49.775784753363226
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"rshift_cpu" not implemented for ''Float'''
+      package: torch
+    txt: self.dtype in ["int8", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+      "uint64"] and other.dtype in ["int8", "int16", "int32", "int64", "uint8", "uint16",
+      "uint32", "uint64"]
+  - f1_score: 99.8003992015968
+    overall_score: 100
+    precision: 100.0
+    recall: 99.60159362549801
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: 'Too large tensor shape: shape = [8, 9, 9, 9, 9, 7, 9, 9, 9]'
+      package: torch
+    txt: self.shape == other.shape
+  - f1_score: 66.62125340599455
+    overall_score: 51.9
+    precision: 97.8
+    recall: 50.51652892561983

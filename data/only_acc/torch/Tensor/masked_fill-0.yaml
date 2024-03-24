@@ -1,0 +1,78 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - number
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - mask
+  - value
+  required:
+  - true
+  - true
+  - true
+name: torch.Tensor.masked_fill
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: 'Based on the given runtime information, the error occurs because the size
+      of dimension 2 of the mask tensor (6) does not match the size of dimension 2
+      of the self tensor (5). To prevent this error, the size of dimension 2 of the
+      mask tensor must be equal to the size of dimension 2 of the self tensor.
+
+
+      Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        mask: tensor
+        self: tensor
+        value: int
+      msg: The size of tensor a (8) must match the size of tensor b (9) at non-singleton
+        dimension 5
+      package: torch
+    txt: mask.shape[2] == self.shape[2]
+  - f1_score: 70.32348804500704
+    overall_score: 100
+    precision: 100.0
+    recall: 54.229934924078094
+- - cot: 'Based on the given runtime information, the error is caused because the
+      shape of the mask tensor [6, 9, 9, 9, 9, 9, 9, 9, 9] is larger than the shape
+      of the self tensor [8, 9, 7, 5]. To prevent this error, the shape of the mask
+      tensor should match the shape of the self tensor. Therefore, the constraint
+      that prevents the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        mask: tensor
+        self: tensor
+        value: int
+      msg: 'Too large tensor shape: shape = [8, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: mask.shape == self.shape
+  - f1_score: 66.26098715348208
+    overall_score: 52.0
+    precision: 98.0
+    recall: 50.05107252298263
+- - cot: 'The error is triggered because the ''mask'' parameter is expected to be
+      a boolean mask, but it has a dtype float. To prevent this error, we need to
+      ensure that the ''mask'' parameter is a boolean mask. This can be achieved by
+      adding a constraint that checks the dtype of the ''mask'' parameter and ensures
+      that it is boolean. The constraint can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        mask: tensor
+        self: tensor
+        value: int
+      msg: masked_fill_ only supports boolean masks, but got mask with dtype float
+      package: torch
+    txt: mask.dtype == torch.bool
+  - f1_score: 91.32420091324202
+    overall_score: 100
+    precision: 100.0
+    recall: 84.03361344537815

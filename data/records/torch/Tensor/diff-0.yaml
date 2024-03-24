@@ -25,20 +25,110 @@ args:
   - false
 name: torch.Tensor.diff
 package: torch
-pass_rate: 2.75049115913556
+pass_rate: 68.8
 rules:
-- - cot: divided
+- - cot: ''
+    length: 1
     target:
       choosen_dtype:
         append: None
         dim: int
         n: int
+        prepend: tensor
+        self: tensor
+      msg: diff expects the shape of tensor to prepend or append to match that of
+        input except along the differencing dimension; input.size(1) = 7, but got
+        tensor.size(1) = 5
+      package: torch
+    txt: prepend.shape[0] == self.shape[0]
+  - f1_score: 73.80073800738006
+    overall_score: 48.90036900369003
+    precision: 100.0
+    recall: 58.47953216374269
+- - cot: 'The error is caused because the value of the argument "n" is not as expected.
+      The function expects the "n" value to be non-negative, but it received a value
+      of -4. Therefore, the constraint to prevent the error is: n >= 0.'
+    length: 1
+    target:
+      choosen_dtype:
+        append: tensor
+        dim: int
+        n: int
         prepend: None
         self: tensor
-      msg: Dimension out of range (expected to be in range of [-1, 0], but got 89)
+      msg: order must be non-negative but got -4
       package: torch
-    txt: dim < len(self.shape)
-  - f1_score: 66.66666666666667
+    txt: n >= 0
+  - f1_score: 95.60229445506693
+    overall_score: 59.80114722753346
+    precision: 100.0
+    recall: 91.57509157509158
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        append: None
+        dim: int
+        n: int
+        prepend: tensor
+        self: tensor
+      msg: diff expects prepend or append to be the same dimension as input
+      package: torch
+    txt: (len(prepend) == self.dim())
+  - f1_score: 82.81407035175879
+    overall_score: 53.40703517587939
+    precision: 82.39999999999999
+    recall: 83.23232323232322
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        append: tensor
+        dim: int
+        n: int
+        prepend: tensor
+        self: tensor
+      msg: 'Too large tensor shape: shape = [9, 8, 9, 7, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: (((append.shape == prepend.shape == self.shape) and (len(self.shape) >= len(prepend.shape)))
+      and ((append.shape[dim] <= self.shape[dim]))) and (n < self.shape[0])
+  - f1_score: 77.04280155642023
+    overall_score: 41.521400778210115
+    precision: 99.0
+    recall: 63.05732484076434
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        append: tensor
+        dim: int
+        n: int
+        prepend: None
+        self: tensor
+      msg: diff expects input to be at least one-dimensional
+      package: torch
+    txt: self.ndims() >= 1
+  - f1_score: 100.0
     overall_score: 100
     precision: 100.0
-    recall: 50.0
+    recall: 100.0
+- - cot: 'The error occurs because the dimension provided is out of the valid range.
+      In this case, the valid range for the dimension would be [-1, 0]. Therefore,
+      to prevent this error in the future, we need to ensure that the "dim" value
+      is always within the valid range for the given tensor. The constraint for the
+      ''dim'' parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        append: None
+        dim: int
+        n: int
+        prepend: tensor
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-9, 8], but got 96)
+      package: torch
+    txt: dim >= -1 and dim < 1
+  - f1_score: 96.27329192546584
+    overall_score: 60.13664596273292
+    precision: 93.0
+    recall: 99.78540772532189

@@ -13,4 +13,18 @@ args:
   - true
 name: torch.Tensor.float_power
 package: torch
-pass_rate: 0
+pass_rate: 99.8
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        exponent: tensor
+        self: tensor
+      msg: 'Too large tensor shape: shape = [8, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: (exponent.shape[7] <= 9) and (len(self.shape) < 9)
+  - f1_score: 68.54783207157604
+    overall_score: 46.27391603578802
+    precision: 99.6
+    recall: 52.25603357817419

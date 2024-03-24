@@ -9,19 +9,36 @@ args:
   - true
 name: torch.Tensor.det
 package: torch
-pass_rate: 27.450980392156865
+pass_rate: 100
 rules:
-- - cot: 'Error is triggered because the input tensor A has less than 2 dimensions.
-      To prevent the error, we can add a constraint to check if the number of dimensions
-      of the input tensor A is at least 2. Therefore, the constraint can be formulated
-      as:'
+- - cot: The error is because the matrix for which the determinant needs to be calculated
+      is not a square matrix. Let's see what the args were. The matrix is of shape
+      [8, 6], which is not a square matrix. In order to calculate the determinant,
+      the matrix should be a square matrix, i.e., number of rows should equal number
+      of columns. Therefore, the constraint would be that the last two dimensions
+      of the tensor should be equal.
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+      msg: 'linalg.det: A must be batches of square matrices, but they are 3 by 7
+        matrices'
+      package: torch
+    txt: self.shape[-1] == self.shape[-2]
+  - f1_score: 66.66666666666667
+    overall_score: 45.333333333333336
+    precision: 100.0
+    recall: 50.0
+- - cot: 'The error message states that the input tensor must have at least 2 dimensions.
+      Therefore, the constraint to prevent the error can be formulated as:'
+    length: 1
     target:
       choosen_dtype:
         self: tensor
       msg: 'linalg.det: The input tensor A must have at least 2 dimensions.'
       package: torch
-    txt: self.dim() >= 2
-  - f1_score: 99.02912621359224
+    txt: self.ndim >= 2
+  - f1_score: 100.0
     overall_score: 100
     precision: 100.0
-    recall: 98.07692307692308
+    recall: 100.0

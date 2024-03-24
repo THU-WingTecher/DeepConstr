@@ -1,0 +1,82 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - mask
+  - source
+  required:
+  - true
+  - true
+  - true
+name: torch.Tensor.masked_scatter
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        mask: tensor
+        self: tensor
+        source: tensor
+      msg: The size of tensor a (3) must match the size of tensor b (9) at non-singleton
+        dimension 2
+      package: torch
+    txt: self.shape[-1] == source.shape[-1]
+  - f1_score: 66.75938803894297
+    overall_score: 51.0
+    precision: 96.0
+    recall: 51.1727078891258
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        mask: tensor
+        self: tensor
+        source: tensor
+      msg: 'Too large tensor shape: shape = [5, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: (self.shape == mask.shape) and (self.shape == source.shape)
+  - f1_score: 71.3775874375446
+    overall_score: 100
+    precision: 100.0
+    recall: 55.49389567147613
+- - cot: 'The error is due to the incorrect data type of the mask. The mask should
+      be a boolean mask, but it is currently of dtype Float. To prevent this error,
+      the mask should be converted to a boolean mask. The formula to prevent the error
+      is:'
+    length: 1
+    target:
+      choosen_dtype:
+        mask: tensor
+        self: tensor
+        source: tensor
+      msg: masked_scatter_ only supports boolean masks, but got mask with dtype Float
+      package: torch
+    txt: mask.dtype == torch.bool
+  - f1_score: 95.41984732824429
+    overall_score: 100
+    precision: 100.0
+    recall: 91.24087591240875
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        mask: tensor
+        self: tensor
+        source: tensor
+      msg: 'masked_scatter: expected self and source to have same dtypes but gotInt
+        and Float'
+      package: torch
+    txt: self.dtype == source.dtype
+  - f1_score: 93.28358208955224
+    overall_score: 100
+    precision: 100.0
+    recall: 87.41258741258741

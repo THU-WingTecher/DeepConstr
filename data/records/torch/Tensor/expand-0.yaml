@@ -17,4 +17,42 @@ args:
   - false
 name: torch.Tensor.expand
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: Error is caused due to the negative values in the size parameter. The function
+      torch.Tensor.expand expects the size parameter to be non-negative integers.
+      If size parameter is negative, it will cause an integer multiplication overflow
+      error. Thus, the condition to prevent this error would be that all elements
+      in the size parameter must be non-negative integers.
+    length: 1
+    target:
+      choosen_dtype:
+        implicit: bool
+        self: tensor
+        size: list[int]
+      msg: 'numel: integer multiplication overflow'
+      package: torch
+    txt: all(i >= 0 for i in size)
+  - f1_score: 99.70089730807577
+    overall_score: 61.85044865403788
+    precision: 100.0
+    recall: 99.40357852882704
+- - cot: "The error is triggered because the number of sizes provided is not greater\
+      \ or equal to the number of dimensions in the tensor. \n\nTo prevent the error,\
+      \ we can add a constraint that checks the number of sizes provided is greater\
+      \ or equal to the number of dimensions in the tensor. \n\nTherefore, the constraint\
+      \ can be formulated as:"
+    length: 1
+    target:
+      choosen_dtype:
+        implicit: bool
+        self: tensor
+        size: list[int]
+      msg: 'expand(torch.FloatTensor{[1, 1]}, size=[]): the number of sizes provided
+        (0) must be greater or equal to the number of dimensions in the tensor (2)'
+      package: torch
+    txt: len(size) >= self.dim()
+  - f1_score: 66.66666666666667
+    overall_score: 45.333333333333336
+    precision: 100.0
+    recall: 50.0

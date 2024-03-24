@@ -13,4 +13,62 @@ args:
   - true
 name: torch.Tensor.matmul
 package: torch
-pass_rate: 0
+pass_rate: 7.8
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (8) must match the size of tensor b (9) at non-singleton
+        dimension 2
+      package: torch
+    txt: other.shape[4] == 1
+  - f1_score: 67.70480704129993
+    overall_score: 100
+    precision: 100.0
+    recall: 51.17707267144319
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: expected scalar type Float but found Int
+      package: torch
+    txt: dtype(self) == dtype(other) == torch.float32
+  - f1_score: 68.68131868131867
+    overall_score: 46.340659340659336
+    precision: 100.0
+    recall: 52.30125523012552
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: both arguments to matmul need to be at least 1D, but they are 2D and 0D
+      package: torch
+    txt: self.ndims() >= 1 and other.ndims() >= 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: "The error is caused because the shape of the self tensor is too large for\
+      \ the matmul operation. The shape of self tensor is [8, 8, 6, 5, 6, 9, 8] and\
+      \ the shape of the other tensor is [9, 9, 9, 9, 9, 9, 9, 9, 9]. \n\nTherefore,\
+      \ the condition to prevent this error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: 'Too large tensor shape: shape = [9, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: self.shape[0] <= 8 and self.shape[1] <= 8 and self.shape[2] <= 6 and self.shape[3]
+      <= 5 and self.shape[4] <= 6 and self.shape[5] <= 9 and self.shape[6] <= 8
+  - f1_score: 69.01311249137335
+    overall_score: 46.506556245686674
+    precision: 100.0
+    recall: 52.68703898840885

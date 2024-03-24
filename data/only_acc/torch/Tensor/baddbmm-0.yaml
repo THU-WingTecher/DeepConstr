@@ -26,4 +26,129 @@ args:
 name: torch.Tensor.baddbmm
 package: torch
 pass_rate: 0.0
-rules: []
+rules:
+- - cot: synthesized
+    target:
+      choosen_dtype:
+        alpha: int
+        batch1: tensor
+        batch2: tensor
+        beta: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got 2)
+      package: torch
+    txt: '(\
+
+      batch2.shape[1] == 8) and (batch1.shape[-1] == self.shape[-2])'
+  - f1_score: 63.937208083162396
+    overall_score: 37.577235772357724
+    precision: 72.15447154471545
+    recall: 57.40022236580158
+- - cot: divided
+    target:
+      choosen_dtype:
+        alpha: int
+        batch1: tensor
+        batch2: tensor
+        beta: int
+        self: tensor
+      msg: 'The expanded size of the tensor (8) must match the existing size (7) at
+        non-singleton dimension 2.  Target sizes: [2, 2, 8].  Tensor sizes: [7, 7]'
+      package: torch
+    txt: batch1.shape[2] == batch2.shape[2]
+  - f1_score: 65.62962962962962
+    overall_score: 46.86138613861386
+    precision: 87.72277227722772
+    recall: 52.42603550295858
+- - cot: divided
+    target:
+      choosen_dtype:
+        alpha: int
+        batch1: tensor
+        batch2: tensor
+        beta: int
+        self: tensor
+      msg: 'expand(torch.FloatTensor{[9, 9, 9, 7, 7]}, size=[7, 7, 8]): the number
+        of sizes provided (3) must be greater or equal to the number of dimensions
+        in the tensor (5)'
+      package: torch
+    txt: batch1.dim == batch2.dim
+  - f1_score: 64.75298693378934
+    overall_score: 48.445544554455445
+    precision: 90.89108910891089
+    recall: 50.29061075183392
+- - cot: 'Based on the given runtime information, the error occurs because the function
+      is trying to access a dimension that does not exist in the tensor. The error
+      message states that the dimension specified is 0, but the tensor has no dimensions.
+
+
+      To prevent this error, we need to ensure that the tensor has at least one dimension
+      before accessing a specific dimension. We can do this by checking the size or
+      shape of the tensor to verify that it has dimensions.
+
+
+      Therefore, the constraint to prevent the error is:'
+    target:
+      choosen_dtype:
+        alpha: int
+        batch1: tensor
+        batch2: tensor
+        beta: int
+        self: tensor
+      msg: Dimension specified as 0 but tensor has no dimensions
+      package: torch
+    txt: len(self.shape) > 0
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: ''
+    target:
+      choosen_dtype:
+        alpha: int
+        batch1: tensor
+        batch2: tensor
+        beta: int
+        self: tensor
+      msg: batch1 must be a 3D tensor
+      package: torch
+    txt: batch1.dim() == 3
+  - f1_score: 67.82145236508994
+    overall_score: 100
+    precision: 100.0
+    recall: 51.31048387096774
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        alpha: int
+        batch1: tensor
+        batch2: tensor
+        beta: int
+        self: tensor
+      msg: 'Expected size for first two dimensions of batch2 tensor to be: [4, 1]
+        but got: [8, 8].'
+      package: torch
+    txt: (((batch2.shape[0] == batch1.shape[0]) and (batch2.size(0) == 7)) or (batch2.shape[0]
+      == 6)) and (batch2.size()[0] == batch1.size()[0] and batch2.size()[1] == batch1.size()[2])
+  - f1_score: 68.82312456985545
+    overall_score: 100
+    precision: 100.0
+    recall: 52.46589716684154
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        batch1: tensor
+        batch2: tensor
+        beta: int
+        self: tensor
+      msg: 'Input dtypes must be the same, got: input int, batch1: float, batch2:
+        float'
+      package: torch
+    txt: dtype(self) == dtype(batch1) == dtype(batch2)
+  - f1_score: 67.75067750677506
+    overall_score: 100
+    precision: 100.0
+    recall: 51.229508196721305

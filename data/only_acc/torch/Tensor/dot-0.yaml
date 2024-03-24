@@ -1,0 +1,43 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - tensor
+  required:
+  - true
+  - true
+name: torch.Tensor.dot
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        self: tensor
+        tensor: tensor
+      msg: 1D tensors expected, but got 4D and 5D tensors
+      package: torch
+    txt: (tensor.dim() == 1) and (self.dim() == 1)
+  - f1_score: 99.40357852882703
+    overall_score: 100
+    precision: 100.0
+    recall: 98.81422924901186
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        tensor: tensor
+      msg: 'Too large tensor shape: shape = [6, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: tensor.shape[8] <= 8
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0

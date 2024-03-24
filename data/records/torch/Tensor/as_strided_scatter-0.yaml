@@ -27,37 +27,6 @@ name: torch.Tensor.as_strided_scatter
 package: torch
 pass_rate: 0.0
 rules:
-- - cot: ''
-    target:
-      choosen_dtype:
-        self: tensor
-        size: list[int]
-        src: tensor
-        storage_offset: None
-        stride: list[int]
-      msg: mismatch in length of strides and shape
-      package: torch
-    txt: len(stride) == len(size)
-  - f1_score: 93.71980676328502
-    overall_score: 47.09090909090909
-    precision: 88.18181818181819
-    recall: 100.0
-- - cot: divided
-    target:
-      choosen_dtype:
-        self: tensor
-        size: list[int]
-        src: tensor
-        storage_offset: int
-        stride: list[int]
-      msg: 'as_strided: Negative strides are not supported at the moment, got strides:
-        [-3]'
-      package: torch
-    txt: stride[0] > 0
-  - f1_score: 97.90518191841235
-    overall_score: 100
-    precision: 100.0
-    recall: 95.89632829373652
 - - cot: divided
     length: 1
     target:
@@ -75,3 +44,39 @@ rules:
     overall_score: 53.32231404958678
     precision: 100.0
     recall: 70.42253521126761
+- - cot: 'The error has occurred because the function torch.Tensor.as_strided_scatter
+      does not support negative strides, and a negative stride value of -3 is being
+      used. Therefore, the constraint should ensure that all stride values are non-negative.
+      Here is the condition:'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        size: list[int]
+        src: tensor
+        storage_offset: None
+        stride: list[int]
+      msg: 'as_strided: Negative strides are not supported at the moment, got strides:
+        [-3, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: all(i >= 0 for i in stride)
+  - f1_score: 81.10300081103
+    overall_score: 52.551500405515
+    precision: 100.0
+    recall: 68.21282401091405
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        size: list[int]
+        src: tensor
+        storage_offset: None
+        stride: list[int]
+      msg: mismatch in length of strides and shape
+      package: torch
+    txt: len(stride) == len(size)
+  - f1_score: 70.2247191011236
+    overall_score: 47.1123595505618
+    precision: 100.0
+    recall: 54.112554112554115

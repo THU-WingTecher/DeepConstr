@@ -17,4 +17,42 @@ args:
   - true
 name: torch.Tensor.masked_fill_
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'The error is caused because the mask tensor has a shape that is too large.
+      The torch.Tensor.masked_fill_ function cannot handle such a large tensor. Therefore,
+      the shape of the mask tensor needs to be reduced. Considering the shape of tensor
+      as an array, we get Left : len(mask.shape), Op : <= and Right : some reasonable
+      number let''s say 4.'
+    length: 1
+    target:
+      choosen_dtype:
+        mask: tensor
+        self: tensor
+        value: int
+      msg: 'Too large tensor shape: shape = [6, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: len(mask.shape) <= 4
+  - f1_score: 69.88120195667366
+    overall_score: 46.94060097833683
+    precision: 100.0
+    recall: 53.70569280343717
+- - cot: 'The error occurs because the `mask` provided to `torch.Tensor.masked_fill_`
+      has a dtype of `int` instead of `bool`. To prevent this error in the future,
+      we need to ensure that the `mask` tensor has a dtype of `bool`.
+
+
+      The constraint for the `mask` parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        mask: tensor
+        self: tensor
+        value: int
+      msg: masked_fill_ only supports boolean masks, but got mask with dtype float
+      package: torch
+    txt: mask.dtype == torch.bool
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

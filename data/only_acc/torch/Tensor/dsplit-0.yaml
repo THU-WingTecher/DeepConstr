@@ -1,0 +1,34 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - sections
+  required:
+  - true
+  - true
+name: torch.Tensor.dsplit
+package: torch
+pass_rate: 0.2
+rules:
+- - cot: 'The error is triggered because the input tensor has only 2 dimensions, but
+      `torch.dsplit` requires a tensor with at least 3 dimensions. To prevent the
+      error, we need to ensure that the tensor has at least 3 dimensions. Therefore,
+      the constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        sections: int
+        self: tensor
+      msg: torch.dsplit requires a tensor with at least 3 dimension, but got a tensor
+        with 2 dimensions!
+      package: torch
+    txt: self.dim() >= 3
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

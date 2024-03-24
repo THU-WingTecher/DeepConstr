@@ -13,7 +13,7 @@ args:
   - true
 name: torch.Tensor.copysign
 package: torch
-pass_rate: 24.509803921568626
+pass_rate: 93.60000000000001
 rules:
 - - cot: ''
     target:

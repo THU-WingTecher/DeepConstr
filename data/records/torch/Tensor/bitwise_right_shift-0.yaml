@@ -28,3 +28,31 @@ rules:
     overall_score: 13.882352941176471
     precision: 21.764705882352942
     recall: 49.775784753363226
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: 'Too large tensor shape: shape = [4, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: other.dim() == self.dim()
+  - f1_score: 72.07602339181287
+    overall_score: 48.038011695906434
+    precision: 98.6
+    recall: 56.79723502304147
+- - cot: 'The error message states that the function "rshift_cpu" is not implemented
+      for ''Float''. Therefore, to prevent the error, the input tensors should not
+      have the data type ''Float''. The constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"rshift_cpu" not implemented for ''Float'''
+      package: torch
+    txt: (dtype(self) != "Float") and (dtype(other) != "Float")
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

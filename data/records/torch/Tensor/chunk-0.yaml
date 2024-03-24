@@ -17,25 +17,26 @@ args:
   - false
 name: torch.Tensor.chunk
 package: torch
-pass_rate: 1.1764705882352942
+pass_rate: 100
 rules:
-- - cot: divided
+- - cot: ''
+    length: 1
     target:
       choosen_dtype:
         chunks: int
         dim: int
         self: tensor
-      msg: Dimension out of range (expected to be in range of [-1, 0], but got 80)
+      msg: chunk expects at least a 1-dimensional tensor
       package: torch
-    txt: dim < len(self.shape)
-  - f1_score: 66.66666666666667
+    txt: self.ndim() >= 1
+  - f1_score: 100.0
     overall_score: 100
     precision: 100.0
-    recall: 50.0
-- - cot: 'The error is due to the invalid ''chunks'' value. The ''chunks'' parameter
-      in torch.Tensor.chunk should be greater than 0, but it is currently 0. Therefore,
-      ''chunks'' should be corrected to a value greater than 0. The condition that
-      prevents the error is:'
+    recall: 100.0
+- - cot: 'The error is triggered because the value of `chunks` is 0, which is not
+      valid. To prevent this error, we need to ensure that `chunks` is always greater
+      than 0. The constraint for the `chunks` parameter can be expressed as:'
+    length: 1
     target:
       choosen_dtype:
         chunks: int
@@ -44,20 +45,21 @@ rules:
       msg: 'chunk expects `chunks` to be greater than 0, got: 0'
       package: torch
     txt: chunks > 0
-  - f1_score: 96.40831758034027
+  - f1_score: 100.0
     overall_score: 100
     precision: 100.0
-    recall: 93.06569343065694
-- - cot: ''
+    recall: 100.0
+- - cot: divided
+    length: 1
     target:
       choosen_dtype:
         chunks: int
         dim: int
         self: tensor
-      msg: chunk expects at least a 1-dimensional tensor
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got 82)
       package: torch
-    txt: self.dim() >= 1
-  - f1_score: 98.68073878627968
+    txt: dim < len(self.shape)
+  - f1_score: 100.0
     overall_score: 100
     precision: 100.0
-    recall: 97.39583333333333
+    recall: 100.0

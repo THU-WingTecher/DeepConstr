@@ -13,9 +13,23 @@ args:
   - true
 name: torch.Tensor.bitwise_left_shift
 package: torch
-pass_rate: 0.0
+pass_rate: 100
 rules:
 - - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"lshift_cpu" not implemented for ''Float'''
+      package: torch
+    txt: dtype(self) != "float32" and dtype(other) != "float32"
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
     target:
       choosen_dtype:
         other: tensor
@@ -24,24 +38,7 @@ rules:
         dimension 0
       package: torch
     txt: self.dim == other.dim and self.shape == other.shape
-  - f1_score: 90.02647837599292
-    overall_score: 100
+  - f1_score: 97.46588693957113
+    overall_score: 60.73294346978557
     precision: 100.0
-    recall: 81.86195826645263
-- - cot: "The error occurs because the function `torch.Tensor.bitwise_left_shift`\
-      \ is not implemented for the data type 'Float'. To prevent this error, the input\
-      \ tensors `other` and `self` should have a data type that is supported for bitwise\
-      \ left shift operations. \n\nThe constraint to prevent the error would be:"
-    target:
-      choosen_dtype:
-        other: tensor
-        self: tensor
-      msg: '"lshift_cpu" not implemented for ''Float'''
-      package: torch
-    txt: dtype(other) in ["int8", "int16", "int32", "int64", "uint8", "uint16", "uint32",
-      "uint64"] and dtype(self) in ["int8", "int16", "int32", "int64", "uint8", "uint16",
-      "uint32", "uint64"]
-  - f1_score: 99.02912621359224
-    overall_score: 100
-    precision: 100.0
-    recall: 98.07692307692308
+    recall: 95.05703422053232

@@ -21,7 +21,7 @@ args:
   - false
 name: torch.Tensor.diag_embed
 package: torch
-pass_rate: 0.19607843137254902
+pass_rate: 77.60000000000001
 rules:
 - - cot: ''
     target:

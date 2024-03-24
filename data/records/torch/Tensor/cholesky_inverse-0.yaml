@@ -13,4 +13,5 @@ args:
   - false
 name: torch.Tensor.cholesky_inverse
 package: torch
-pass_rate: 0
+pass_rate: 96.8
+rules: []

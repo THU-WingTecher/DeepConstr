@@ -13,4 +13,19 @@ args:
   - true
 name: torch.Tensor.minimum
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (6) at non-singleton
+        dimension 3
+      package: torch
+    txt: self.dim == other.dim and self.shape == other.shape
+  - f1_score: 94.5179584120983
+    overall_score: 59.25897920604915
+    precision: 100.0
+    recall: 89.60573476702508

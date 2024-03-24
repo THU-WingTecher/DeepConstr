@@ -1,0 +1,88 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.Tensor.matmul
+package: torch
+pass_rate: 0.4
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (8) must match the size of tensor b (9) at non-singleton
+        dimension 2
+      package: torch
+    txt: other.shape[4] == 1
+  - f1_score: 67.70480704129993
+    overall_score: 100
+    precision: 100.0
+    recall: 51.17707267144319
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: 'Expected size for first two dimensions of batch2 tensor to be: [2016,
+        1] but got: [2016, 8].'
+      package: torch
+    txt: other.size(1) == self.size(1)
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: "The error is caused because the shape of the self tensor is too large for\
+      \ the matmul operation. The shape of self tensor is [8, 8, 6, 5, 6, 9, 8] and\
+      \ the shape of the other tensor is [9, 9, 9, 9, 9, 9, 9, 9, 9]. \n\nTherefore,\
+      \ the condition to prevent this error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: 'Too large tensor shape: shape = [9, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: self.shape[0] <= 8 and self.shape[1] <= 8 and self.shape[2] <= 6 and self.shape[3]
+      <= 5 and self.shape[4] <= 6 and self.shape[5] <= 9 and self.shape[6] <= 8
+  - f1_score: 70.62146892655367
+    overall_score: 100
+    precision: 100.0
+    recall: 54.58515283842795
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: both arguments to matmul need to be at least 1D, but they are 2D and 0D
+      package: torch
+    txt: self.ndims() >= 1 and other.ndims() >= 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: expected scalar type Float but found Int
+      package: torch
+    txt: dtype(self) == dtype(other) == torch.float32
+  - f1_score: 68.39945280437756
+    overall_score: 100
+    precision: 100.0
+    recall: 51.975051975051976

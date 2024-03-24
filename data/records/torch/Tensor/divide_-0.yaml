@@ -13,4 +13,18 @@ args:
   - true
 name: torch.Tensor.divide_
 package: torch
-pass_rate: 0
+pass_rate: 95.39999999999999
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: output with shape [] doesn't match the broadcast shape [5, 6]
+      package: torch
+    txt: other.shape[-1] == 1
+  - f1_score: 80.11639185257032
+    overall_score: 52.05819592628516
+    precision: 82.6
+    recall: 77.77777777777779

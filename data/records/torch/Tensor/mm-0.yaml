@@ -13,4 +13,18 @@ args:
   - true
 name: torch.Tensor.mm
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        mat2: tensor
+        self: tensor
+      msg: self must be a matrix
+      package: torch
+    txt: self.dim() == 2
+  - f1_score: 96.99321047526674
+    overall_score: 100
+    precision: 100.0
+    recall: 94.16195856873823

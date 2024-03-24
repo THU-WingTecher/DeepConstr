@@ -1,0 +1,81 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - LU_data
+  - LU_pivots
+  required:
+  - true
+  - true
+  - true
+name: torch.Tensor.lu_solve
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        LU_data: tensor
+        LU_pivots: tensor
+        self: tensor
+      msg: 'linalg.lu_solve: pivots should be a Tensor of scalar type torch.int32'
+      package: torch
+    txt: LU_pivots.dtype == torch.int32
+  - f1_score: 77.7000777000777
+    overall_score: 100
+    precision: 100.0
+    recall: 63.53240152477764
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        LU_data: tensor
+        LU_pivots: tensor
+        self: tensor
+      msg: 'Too large tensor shape: shape = [9, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: (LU_data.shape == self.shape and LU_pivots.shape == self.shape) and (len(LU_data.shape)
+      == 3)
+  - f1_score: 71.78750897343862
+    overall_score: 100
+    precision: 100.0
+    recall: 55.99104143337066
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        LU_data: tensor
+        LU_pivots: tensor
+        self: tensor
+      msg: 'torch.linalg.lu_solve: Expected a floating point or complex tensor as
+        input. Got Int'
+      package: torch
+    txt: (self.dtype() == torch.float32 or self.dtype() == torch.complex64) and (LU_data.dtype
+      == torch.float32)
+  - f1_score: 70.0280112044818
+    overall_score: 100
+    precision: 100.0
+    recall: 53.879310344827594
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        LU_data: tensor
+        LU_pivots: tensor
+        self: tensor
+      msg: 'linalg.lu_solve: Expected LU and B to have the same dtype, but found LU
+        of type Float and B of type Int instead'
+      package: torch
+    txt: dtype(LU_data) == dtype(self)
+  - f1_score: 99.9000999000999
+    overall_score: 100
+    precision: 100.0
+    recall: 99.8003992015968

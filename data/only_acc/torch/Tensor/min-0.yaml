@@ -1,0 +1,48 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.Tensor.min
+package: torch
+pass_rate: 12.8
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (8) must match the size of tensor b (7) at non-singleton
+        dimension 5
+      package: torch
+    txt: self.shape[6] == other.shape[6]
+  - f1_score: 71.4796283059328
+    overall_score: 100
+    precision: 100.0
+    recall: 55.61735261401557
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      shape of the self tensor is [8, 1, 2, 8, 1, 7], which is incompatible with the
+      shape of the other tensor [9, 9, 9, 9, 9, 9, 9, 9, 9]. To prevent the error,
+      the shape of the self tensor should match the shape of the other tensor. Therefore,
+      the condition that prevents the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: 'Too large tensor shape: shape = [4, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: self.shape == other.shape
+  - f1_score: 67.2494956287828
+    overall_score: 100
+    precision: 100.0
+    recall: 50.658561296859176

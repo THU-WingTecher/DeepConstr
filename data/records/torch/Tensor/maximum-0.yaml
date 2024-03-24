@@ -13,4 +13,35 @@ args:
   - true
 name: torch.Tensor.maximum
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: 'Too large tensor shape: shape = [4, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: other.shape == self.shape
+  - f1_score: 68.0792891319207
+    overall_score: 46.03964456596035
+    precision: 99.6
+    recall: 51.71339563862928
+- - cot: 'Based on the given error, it seems that the dimensions of the two tensors
+      do not match. The torch.Tensor.maximum function requires tensors with matching
+      dimensions. Therefore, to prevent this error, the dimensions and shapes of the
+      two tensors should be equal. We can formulate the constraint as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (8) at non-singleton
+        dimension 4
+      package: torch
+    txt: other.dim == self.dim and other.shape == self.shape
+  - f1_score: 91.57509157509158
+    overall_score: 57.78754578754579
+    precision: 100.0
+    recall: 84.45945945945947

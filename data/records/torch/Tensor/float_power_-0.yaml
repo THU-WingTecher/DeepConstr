@@ -13,4 +13,32 @@ args:
   - true
 name: torch.Tensor.float_power_
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        exponent: tensor
+        self: tensor
+      msg: 'Too large tensor shape: shape = [9, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: (exponent.shape == self.shape) and (len(self.shape) < 9)
+  - f1_score: 82.44023083264634
+    overall_score: 47.22011541632317
+    precision: 100.0
+    recall: 70.12622720897616
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        exponent: tensor
+        self: tensor
+      msg: the base given to float_power_ has dtype Float but the operation's result
+        requires dtype Double
+      package: torch
+    txt: dtype(self) == dtype(exponent) == Double
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

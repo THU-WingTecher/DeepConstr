@@ -1,0 +1,17 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[Generator]
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - generator
+  required:
+  - true
+  - false
+name: torch.Tensor.bernoulli
+package: torch
+pass_rate: 5.4
+rules: []

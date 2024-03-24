@@ -43,3 +43,52 @@ rules:
     overall_score: 53.55212355212354
     precision: 98.62745098039215
     recall: 95.6273764258555
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim1: int
+        dim2: int
+        offset: int
+        self: tensor
+        src: tensor
+      msg: 'Too large tensor shape: shape = [6, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: all(self.shape[i] == src.shape[i] for i in range(len(self.shape)))
+  - f1_score: 83.0059777967549
+    overall_score: 51.6
+    precision: 97.2
+    recall: 72.42921013412817
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim1: int
+        dim2: int
+        offset: int
+        self: tensor
+        src: tensor
+      msg: diagonal dimensions cannot be identical -1, 0
+      package: torch
+    txt: dim1 != dim2
+  - f1_score: 77.29789590254705
+    overall_score: 37.9
+    precision: 69.8
+    recall: 86.60049627791562
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim1: int
+        dim2: int
+        offset: int
+        self: tensor
+        src: tensor
+      msg: expected src to have a size equal to the slice of self. src size = [7,
+        8, 5, 5, 5, 5, 5, 5, 5], slice size = [9, 9, 9, 9, 9, 9]
+      package: torch
+    txt: src.size(dim2) == self.size(dim2)
+  - f1_score: 46.40522875816994
+    overall_score: 24.3
+    precision: 42.6
+    recall: 50.95693779904307

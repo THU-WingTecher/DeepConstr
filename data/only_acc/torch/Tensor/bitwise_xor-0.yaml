@@ -13,7 +13,7 @@ args:
   - true
 name: torch.Tensor.bitwise_xor
 package: torch
-pass_rate: 0.0
+pass_rate: 97.6
 rules:
 - - cot: synthesized
     target:

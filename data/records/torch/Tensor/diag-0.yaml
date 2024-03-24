@@ -13,17 +13,18 @@ args:
   - false
 name: torch.Tensor.diag
 package: torch
-pass_rate: 70.7843137254902
+pass_rate: 100
 rules:
-- - cot: ''
+- - cot: divided
+    length: 1
     target:
       choosen_dtype:
         diagonal: int
         self: tensor
-      msg: 'diag(): Supports 1D or 2D tensors. Got 5D'
+      msg: 'diag(): Supports 1D or 2D tensors. Got 3D'
       package: torch
-    txt: self.dim <= 2
-  - f1_score: 68.00000000000001
+    txt: self.dim == 2
+  - f1_score: 100.0
     overall_score: 100
     precision: 100.0
-    recall: 51.515151515151516
+    recall: 100.0

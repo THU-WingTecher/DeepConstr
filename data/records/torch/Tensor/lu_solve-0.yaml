@@ -17,4 +17,69 @@ args:
   - true
 name: torch.Tensor.lu_solve
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        LU_data: tensor
+        LU_pivots: tensor
+        self: tensor
+      msg: 'linalg.lu_solve: Expected LU and B to have the same dtype, but found LU
+        of type Float and B of type ComplexFloat instead'
+      package: torch
+    txt: dtype(LU_data) == dtype(self)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        LU_data: tensor
+        LU_pivots: tensor
+        self: tensor
+      msg: 'torch.linalg.lu_solve: Expected a floating point or complex tensor as
+        input. Got Int'
+      package: torch
+    txt: (self.dtype == torch.complex64) or (self.dtype == torch.float32 or self.dtype
+      == torch.float64)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error message indicates that the tensor shape is too large, with a shape
+      of [8, 9, 7, 9, 9, 9, 9, 9, 9]. To prevent this error, the shape of the tensor
+      should be reduced. Therefore, the constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        LU_data: tensor
+        LU_pivots: tensor
+        self: tensor
+      msg: 'Too large tensor shape: shape = [9, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: self.shape[0] <= 7 and self.shape[1] <= 8 and self.shape[2] <= 6 and self.shape[3]
+      <= 8 and self.shape[4] <= 8 and self.shape[5] <= 8 and self.shape[6] <= 8 and
+      self.shape[7] <= 8 and self.shape[8] <= 8
+  - f1_score: 72.39057239057239
+    overall_score: 48.195286195286194
+    precision: 86.0
+    recall: 62.5
+- - cot: '`LU_pivots` should be a Tensor of scalar type `torch.int32`. Therefore,
+      the constraint is:'
+    length: 1
+    target:
+      choosen_dtype:
+        LU_data: tensor
+        LU_pivots: tensor
+        self: tensor
+      msg: 'linalg.lu_solve: pivots should be a Tensor of scalar type torch.int32'
+      package: torch
+    txt: LU_pivots.dtype == torch.int32
+  - f1_score: 94.96676163342829
+    overall_score: 59.483380816714146
+    precision: 100.0
+    recall: 90.41591320072332

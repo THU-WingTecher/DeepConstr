@@ -1,0 +1,46 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - exponent
+  required:
+  - true
+  - true
+name: torch.Tensor.float_power
+package: torch
+pass_rate: 3.2
+rules:
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        exponent: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (8) at non-singleton
+        dimension 4
+      package: torch
+    txt: self.shape[2] == exponent.shape[2]
+  - f1_score: 72.04610951008647
+    overall_score: 100
+    precision: 100.0
+    recall: 56.30630630630631
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        exponent: tensor
+        self: tensor
+      msg: 'Too large tensor shape: shape = [4, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: ((len(exponent.shape) <= 8 and all(i <= 8 for i in exponent.shape)) or (len(exponent.shape)
+      <= 6)) and (len(self.shape) <= 6)
+  - f1_score: 67.56756756756758
+    overall_score: 100
+    precision: 100.0
+    recall: 51.02040816326531

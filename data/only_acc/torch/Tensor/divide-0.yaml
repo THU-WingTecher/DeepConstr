@@ -1,0 +1,47 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.Tensor.divide
+package: torch
+pass_rate: 100
+rules:
+- - cot: "Error is triggered because the size of tensor a (9) does not match the size\
+      \ of tensor b (8) at non-singleton dimension 4. \n\nTo prevent this error, we\
+      \ can add a constraint that ensures the sizes of the tensors at non-singleton\
+      \ dimension 4 are the same. \n\nTherefore, the constraint is:"
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (4) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.shape[4] == other.shape[4]
+  - f1_score: 68.72852233676976
+    overall_score: 100
+    precision: 100.0
+    recall: 52.35602094240838
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: 'Too large tensor shape: shape = [4, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: (self.shape != other.shape) and (self.dim() == other.dim())
+  - f1_score: 60.917941585535466
+    overall_score: 42.45897079276773
+    precision: 87.6
+    recall: 46.695095948827294

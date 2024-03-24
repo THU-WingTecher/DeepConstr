@@ -17,7 +17,7 @@ args:
   - false
 name: torch.Tensor.chunk
 package: torch
-pass_rate: 1.1764705882352942
+pass_rate: 100
 rules:
 - - cot: divided
     target:

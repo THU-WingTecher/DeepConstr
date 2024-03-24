@@ -13,4 +13,18 @@ args:
   - true
 name: torch.Tensor.dot
 package: torch
-pass_rate: 0
+pass_rate: 0.4
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        self: tensor
+        tensor: tensor
+      msg: 1D tensors expected, but got 4D and 6D tensors
+      package: torch
+    txt: (self.dim() == tensor.dim()) and (tensor.dim() == 1)
+  - f1_score: 99.30486593843098
+    overall_score: 55.65243296921549
+    precision: 100.0
+    recall: 98.61932938856016

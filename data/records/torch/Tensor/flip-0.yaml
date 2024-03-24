@@ -13,4 +13,25 @@ args:
   - true
 name: torch.Tensor.flip
 package: torch
-pass_rate: 0
+pass_rate: 42.8
+rules:
+- - cot: "The error occurs because the dimension provided is out of the valid range.\
+      \ The runtime information shows that the error happened when calling the `torch.Tensor.flip`\
+      \ function with `dims=[5, -4, -3, -3, -3, -3]` on a tensor with shape `[5, 5,\
+      \ 5, 5]`. \n\nTo prevent this error in the future, we need to ensure that each\
+      \ dimension in the `dims` list is within the valid range for the given tensor.\
+      \ If we denote the shape of the tensor as `n`, the valid range for each dimension\
+      \ would be `[-n, n-1]`. \n\nThe constraint for the `dims` parameter can be expressed\
+      \ as:"
+    length: 1
+    target:
+      choosen_dtype:
+        dims: list[int]
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-4, 3], but got 5)
+      package: torch
+    txt: all(dim >= -len(self.shape) and dim < len(self.shape) for dim in dims)
+  - f1_score: 92.89501590668081
+    overall_score: 58.447507953340406
+    precision: 87.6
+    recall: 98.87133182844244

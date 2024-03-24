@@ -17,7 +17,7 @@ args:
   - false
 name: torch.Tensor.cholesky_solve
 package: torch
-pass_rate: 0.19607843137254902
+pass_rate: 0.6
 rules:
 - - cot: synthesized
     target:
@@ -32,3 +32,34 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 98.07692307692308
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        input2: tensor
+        self: tensor
+        upper: bool
+      msg: 'Incompatible matrix sizes for cholesky_solve: each A matrix is 2 by 2
+        but each b matrix is 5 by 5'
+      package: torch
+    txt: ((input2.shape[-2] == self.shape[-2]) and (self[-1] == input2[-2])) and (input2[-1]
+      == self[-2])
+  - f1_score: 68.75576036866359
+    overall_score: 38.3
+    precision: 74.6
+    recall: 63.76068376068377
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        input2: tensor
+        self: tensor
+        upper: bool
+      msg: 'Too large tensor shape: shape = [9, 8, 8, 8, 8, 8, 9, 8, 8]'
+      package: torch
+    txt: (self.shape[0] == self.shape[1] and len(self.shape) == 2 and len(input2.shape)
+      >= 2 and input2.shape[0] == self.shape[0]) and (len(input2.shape) <= 4)
+  - f1_score: 69.78367062107468
+    overall_score: 100
+    precision: 100.0
+    recall: 53.59056806002144
