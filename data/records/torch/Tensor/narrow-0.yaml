@@ -21,4 +21,70 @@ args:
   - true
 name: torch.Tensor.narrow
 package: torch
-pass_rate: 0
+pass_rate: 76.4
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        self: tensor
+        start: int
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 4)
+      package: torch
+    txt: ((dim < len(self.shape)) and (-length <= start < length)) and (66 >= -len(self.shape))
+  - f1_score: 61.19828815977174
+    overall_score: 43.9
+    precision: 85.8
+    recall: 47.5609756097561
+- - cot: The error occurs because the `narrow()` function is being applied to a 0-dimensional
+      tensor, which is not allowed. To prevent this error, we need to add a constraint
+      that checks whether the input tensor has at least one dimension.
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        self: tensor
+        start: int
+      msg: narrow() cannot be applied to a 0-dim tensor.
+      package: torch
+    txt: len(self.shape) > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: Based on the given runtime information, the error occurs because the value
+      for the 'start' parameter is -3, which is not allowed. The start parameter should
+      be a non-negative integer. To prevent this error, the start parameter should
+      be modified to be greater than or equal to 0.
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        self: tensor
+        start: int
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: start >= 0
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        self: tensor
+        start: int
+      msg: start (7) + length (8) exceeds dimension size (9).
+      package: torch
+    txt: start + length <= self.shape[0]
+  - f1_score: 91.74311926605505
+    overall_score: 57.87155963302752
+    precision: 100.0
+    recall: 84.74576271186442

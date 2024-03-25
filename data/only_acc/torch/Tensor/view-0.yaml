@@ -1,0 +1,43 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - size
+  required:
+  - true
+  - true
+name: torch.Tensor.view
+package: torch
+pass_rate: 21.507760532150776
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        size: list[int]
+      msg: invalid shape dimension -4
+      package: torch
+    txt: (size[i] > 0 for i in range(len(size)))
+  - f1_score: 98.61932938856016
+    overall_score: 100
+    precision: 100.0
+    recall: 97.27626459143968
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        self: tensor
+        size: list[int]
+      msg: shape '[6, 7, 7]' is invalid for input of size 5
+      package: torch
+    txt: ((len(self) == 6 * 7 * 7)) and (size[0] == 6)
+  - f1_score: 36.81860021136603
+    overall_score: 13.368131868131867
+    precision: 23.736263736263734
+    recall: 82.02946984657451

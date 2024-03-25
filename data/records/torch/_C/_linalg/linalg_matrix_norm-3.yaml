@@ -29,10 +29,10 @@ args:
   - true
 name: torch._C._linalg.linalg_matrix_norm
 package: torch
-pass_rate: 0.0
+pass_rate: 100
 rules:
 - - cot: synthesized
-    length: 4
+    length: 2
     target:
       choosen_dtype:
         dim: list[int]
@@ -41,18 +41,16 @@ rules:
         ord: str
         out: tensor
         self: tensor
-      msg: 'linalg.matrix_norm: Order Hmtd not supported.'
+      msg: 'linalg.matrix_norm expected out tensor dtype Double but got: Float'
       package: torch
-    txt: ((ord == "Fro") or (ord in ["fro", "nuc"])) and ((ord == "Nuc") or (ord in
-      ['fro', 'nuc', 'inf', 'ninf', '1', '2', '0']))
-  - f1_score: 100.0
-    overall_score: 100
-    precision: 100.0
-    recall: 100.0
-- - cot: 'The error occurs because the `dim` argument is not a 2-tuple as expected.
-      Instead, it contains the values [-2, -4, -3, -3, -3, -3, -3, -3, -3]. To prevent
-      this error, the `dim` argument should be a 2-tuple. Therefore, the constraint
-      can be formulated as follows:'
+    txt: (out.dtype == torch.float) and (out.dtype == self.dtype)
+  - f1_score: 83.81601362862011
+    overall_score: 53.908006814310056
+    precision: 98.4
+    recall: 72.99703264094957
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      input tensor `self` does not have at least 2 dimensions. To prevent the error,
+      the constraint should be formulated as:'
     length: 1
     target:
       choosen_dtype:
@@ -62,14 +60,65 @@ rules:
         ord: str
         out: tensor
         self: tensor
-      msg: 'linalg.matrix_norm: dim must be a 2-tuple. Got -2 -4 -3 -3 -3 -3 -3 -3
-        -3'
+      msg: 'linalg.matrix_norm: The input tensor A must have at least 2 dimensions.'
       package: torch
-    txt: len(dim) == 2
-  - f1_score: 98.3284169124877
+    txt: self.dim >= 2
+  - f1_score: 100.0
     overall_score: 100
     precision: 100.0
-    recall: 96.71179883945841
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: list[int]
+        dtype: None
+        keepdim: bool
+        ord: str
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank==self.rank) and (out.shape == self.shape)
+  - f1_score: 69.1444600280505
+    overall_score: 46.57223001402525
+    precision: 98.6
+    recall: 53.23974082073435
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: list[int]
+        dtype: None
+        keepdim: bool
+        ord: str
+        out: tensor
+        self: tensor
+      msg: 'linalg.matrix_norm: dims must be different. Got (3, 3)'
+      package: torch
+    txt: (len(set(dim)) == len(dim)) and (dim[0]!=3)
+  - f1_score: 92.55725190839694
+    overall_score: 58.27862595419847
+    precision: 97.0
+    recall: 88.50364963503648
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: list[int]
+        dtype: None
+        keepdim: bool
+        ord: str
+        out: tensor
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 8)
+      package: torch
+    txt: (all(d >= -len(self.shape) and d < len(self.shape) for d in dim)) and (all(d
+      in range(-len(self.shape), len(self.shape)) for d in dim))
+  - f1_score: 87.89237668161435
+    overall_score: 55.946188340807176
+    precision: 78.4
+    recall: 100.0
 - - cot: 'Based on the given runtime information, the error occurs because the function
       `torch._C._linalg.linalg_matrix_norm` expects a floating point or complex tensor
       as input, but it received an integer tensor instead.
@@ -90,6 +139,41 @@ rules:
         Got Int'
       package: torch
     txt: dtype(self) in [torch.float32, torch.float64, torch.complex64, torch.complex128]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: list[int]
+        dtype: None
+        keepdim: bool
+        ord: str
+        out: tensor
+        self: tensor
+      msg: 'linalg.matrix_norm: dim must be a 2-tuple. Got '
+      package: torch
+    txt: len(dim) == 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        dim: list[int]
+        dtype: None
+        keepdim: bool
+        ord: str
+        out: tensor
+        self: tensor
+      msg: 'linalg.matrix_norm: Order Hmtd not supported.'
+      package: torch
+    txt: ((ord == "Fro") or (ord in ["fro", "nuc"])) and ((ord == "Nuc") or (ord in
+      ['fro', 'nuc', 'inf', 'ninf', '1', '2', '0']))
   - f1_score: 100.0
     overall_score: 100
     precision: 100.0

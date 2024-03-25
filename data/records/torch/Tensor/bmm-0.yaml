@@ -13,7 +13,7 @@ args:
   - true
 name: torch.Tensor.bmm
 package: torch
-pass_rate: 0.2
+pass_rate: 98.2
 rules:
 - - cot: synthesized
     length: 2
@@ -28,3 +28,57 @@ rules:
     overall_score: 55.55401387512389
     precision: 100.0
     recall: 98.23182711198429
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        mat2: tensor
+        self: tensor
+      msg: expected scalar type Int but found Float
+      package: torch
+    txt: (dtype(self) == int) or (dtype(mat2) == float32)
+  - f1_score: 66.75567423230973
+    overall_score: 100
+    precision: 100.0
+    recall: 50.1002004008016
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        mat2: tensor
+        self: tensor
+      msg: 'Expected size for first two dimensions of batch2 tensor to be: [2, 8]
+        but got: [1, 5].'
+      package: torch
+    txt: ((mat2.size(0) == self.size(0)) and (mat2.shape[0] == 5 and mat2.shape[1]
+      == 4)) and (mat2.size(1) == self.size(2))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        mat2: tensor
+        self: tensor
+      msg: '"bmm" not implemented for ''Bool'''
+      package: torch
+    txt: self.dtype not in ['bool', torch.bool]
+  - f1_score: 99.70089730807577
+    overall_score: 100
+    precision: 100.0
+    recall: 99.40357852882704
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        mat2: tensor
+        self: tensor
+      msg: '''complex32'''
+      package: torch
+    txt: self.shape[-2] == mat2.shape[-1]
+  - f1_score: 66.53279785809906
+    overall_score: 52.7
+    precision: 99.4
+    recall: 50.0

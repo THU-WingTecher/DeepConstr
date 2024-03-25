@@ -17,4 +17,23 @@ args:
   - false
 name: tf.raw_ops.AdjustHue
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'The error occurs because the input tensor must be at least 3-dimensional,
+      but the shape of the input tensor is [4, 4]. To prevent the error, the shape
+      of the input tensor should have at least 3 dimensions. Therefore, the constraint
+      would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        delta: float
+        images: tensor
+        name: str
+      msg: '{{function_node __wrapped__AdjustHue_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        input must be at least 3-D, got shape[1,1] [Op:AdjustHue] name: aYmY'
+      package: tensorflow
+    txt: (images.rank >= 3)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

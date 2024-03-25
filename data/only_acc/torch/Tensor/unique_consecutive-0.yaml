@@ -1,0 +1,57 @@
+args:
+  dtype:
+  - Tensor
+  - bool
+  - bool
+  - Optional[int]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - return_inverse
+  - return_counts
+  - dim
+  required:
+  - true
+  - false
+  - false
+  - false
+name: torch.Tensor.unique_consecutive
+package: torch
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        return_counts: bool
+        return_inverse: bool
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 82)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 66.75567423230973
+    overall_score: 100
+    precision: 100.0
+    recall: 50.1002004008016
+- - cot: The error occurs because the dimension specified is 0, but the tensor has
+      no dimensions. To prevent this error, we need to ensure that the tensor has
+      at least one dimension before calling the function.
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        return_counts: bool
+        return_inverse: bool
+        self: tensor
+      msg: Dimension specified as 0 but tensor has no dimensions
+      package: torch
+    txt: len(self.shape) > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

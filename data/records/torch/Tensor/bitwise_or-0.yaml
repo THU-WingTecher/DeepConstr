@@ -13,35 +13,8 @@ args:
   - true
 name: torch.Tensor.bitwise_or
 package: torch
-pass_rate: 0.0
+pass_rate: 100
 rules:
-- - cot: ''
-    target:
-      choosen_dtype:
-        other: tensor
-        self: tensor
-      msg: The size of tensor a (6) must match the size of tensor b (7) at non-singleton
-        dimension 1
-      package: torch
-    txt: self.dim == other.dim and self.shape[3] == other.shape[3]
-  - f1_score: 29.65034965034965
-    overall_score: 13.392156862745098
-    precision: 20.784313725490197
-    recall: 51.707317073170735
-- - cot: synthesized
-    length: 2
-    target:
-      choosen_dtype:
-        other: tensor
-        self: tensor
-      msg: '"bitwise_or_cpu" not implemented for ''Float'''
-      package: torch
-    txt: (dtype(self) != "float32") and (dtype(other) in [int8, int16, int32, int64,
-      uint8, uint16, uint32, uint64])
-  - f1_score: 91.91176470588236
-    overall_score: 100
-    precision: 100.0
-    recall: 85.03401360544218
 - - cot: synthesized
     length: 2
     target:
@@ -55,3 +28,34 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 50.35246727089627
+- - cot: 'Based on the values given, the error arises because the ''bitwise_or_cpu''
+      operation is not implemented for ''Float'' dtype. The tensors ''other'' and
+      ''self'' are both provided as float32, which is not compatible. So, the Left
+      : dtype(other) or dtype(self) should be corrected to match an allowed type like
+      int. Op : in, and Right : [int].'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"bitwise_or_cpu" not implemented for ''Float'''
+      package: torch
+    txt: dtype(other) in ["int"] and dtype(self) in ["int"]
+  - f1_score: 78.80220646178094
+    overall_score: 51.40110323089047
+    precision: 100.0
+    recall: 65.01950585175553
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (8) at non-singleton
+        dimension 5
+      package: torch
+    txt: self.shape == other.shape
+  - f1_score: 91.99632014719411
+    overall_score: 57.998160073597056
+    precision: 100.0
+    recall: 85.17887563884156

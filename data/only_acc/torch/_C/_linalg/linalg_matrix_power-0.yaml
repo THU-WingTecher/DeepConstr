@@ -1,0 +1,44 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - n
+  required:
+  - true
+  - true
+name: torch._C._linalg.linalg_matrix_power
+package: torch
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        n: int
+        self: tensor
+      msg: 'linalg.matrix_power: The input tensor A must have at least 2 dimensions.'
+      package: torch
+    txt: self.dim() >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        n: int
+        self: tensor
+      msg: 'linalg.matrix_power: A must be batches of square matrices, but they are
+        4 by 3 matrices'
+      package: torch
+    txt: self.shape[-1] == self.shape[-2]
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0

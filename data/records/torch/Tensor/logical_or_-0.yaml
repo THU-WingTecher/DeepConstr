@@ -13,4 +13,38 @@ args:
   - true
 name: torch.Tensor.logical_or_
 package: torch
-pass_rate: 0
+pass_rate: 65.60000000000001
+rules:
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (5) must match the size of tensor b (3) at non-singleton
+        dimension 5
+      package: torch
+    txt: self.shape[6] == other.shape[6]
+  - f1_score: 79.74481658692184
+    overall_score: 100
+    precision: 100.0
+    recall: 66.3129973474801
+- - cot: "Error is triggered because the output shape [1, 1, 1, 7, 1, 1] doesn't match\
+      \ the broadcast shape []. The output shape is determined by the shape of the\
+      \ tensors being operated on, and the broadcast shape is determined by the shape\
+      \ of the output tensor. \n\nTo prevent this error, the output shape should match\
+      \ the broadcast shape. Therefore, the constraint can be formulated as follows:"
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: output with shape [] doesn't match the broadcast shape [9, 9, 9, 5, 9,
+        9, 9]
+      package: torch
+    txt: self.shape == other.shape
+  - f1_score: 70.91366303436713
+    overall_score: 47.456831517183566
+    precision: 84.6
+    recall: 61.038961038961034

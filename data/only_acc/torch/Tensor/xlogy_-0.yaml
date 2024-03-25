@@ -1,0 +1,61 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.Tensor.xlogy_
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'The error is triggered because the size of the tensors at non-singleton
+      dimension 5 doesn''t match. The two tensors in question are `self` with shape
+      [5, 9, 9, 9] and `other` with shape [7, 8, 3, 9, 8, 8]. Since the error message
+      specifies that the size of tensor `a` (self) must match the size of tensor `b`
+      (other), we can formulate the constraint as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (5) must match the size of tensor b (4) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.shape[5] == other.shape[5]
+  - f1_score: 73.90983000739098
+    overall_score: 100
+    precision: 100.0
+    recall: 58.61664712778429
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: output with shape [5, 5] doesn't match the broadcast shape [1, 5, 5]
+      package: torch
+    txt: (self.shape == other.shape) and (other.shape[0] == 1)
+  - f1_score: 66.80026720106882
+    overall_score: 100
+    precision: 100.0
+    recall: 50.150451354062184
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: (dtype(other) == dtype(self)) and (dtype(other)==float32)
+  - f1_score: 99.8003992015968
+    overall_score: 100
+    precision: 100.0
+    recall: 99.60159362549801

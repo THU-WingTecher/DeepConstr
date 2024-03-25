@@ -13,21 +13,36 @@ args:
   - true
 name: torch.Tensor.mul_
 package: torch
-pass_rate: 0.2
+pass_rate: 100
 rules:
-- - cot: ''
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
     length: 1
     target:
       choosen_dtype:
         other: tensor
         self: tensor
-      msg: result type Float can't be cast to the desired output type Int
+      msg: The size of tensor a (9) must match the size of tensor b (2) at non-singleton
+        dimension 6
       package: torch
-    txt: dtype(self) == dtype(other)
-  - f1_score: 98.13542688910698
-    overall_score: 61.06771344455349
+    txt: self.dim == other.dim and self.shape == other.shape
+  - f1_score: 97.27626459143968
+    overall_score: 60.63813229571984
     precision: 100.0
-    recall: 96.33911368015414
+    recall: 94.69696969696969
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: output with shape [] doesn't match the broadcast shape [3, 1, 2, 1]
+      package: torch
+    txt: len(self.shape) == 7
+  - f1_score: 95.60229445506693
+    overall_score: 100
+    precision: 100.0
+    recall: 91.57509157509158
 - - cot: divided
     length: 1
     target:
@@ -41,3 +56,16 @@ rules:
     overall_score: 45.96739130434783
     precision: 100.0
     recall: 51.440329218106996
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self) == dtype(other)
+  - f1_score: 99.10802775024779
+    overall_score: 61.55401387512389
+    precision: 100.0
+    recall: 98.23182711198429

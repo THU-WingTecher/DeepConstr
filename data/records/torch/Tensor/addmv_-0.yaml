@@ -25,5 +25,97 @@ args:
   - false
 name: torch.Tensor.addmv_
 package: torch
-pass_rate: 0.0
-rules: []
+pass_rate: 48.4
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat: tensor
+        self: tensor
+        vec: tensor
+      msg: 'Bad in-place call: input tensor dtype int and output tensor dtype float
+        should match'
+      package: torch
+    txt: dtype(self) == dtype(vec)
+  - f1_score: 73.6377025036819
+    overall_score: 48.81885125184095
+    precision: 100.0
+    recall: 58.27505827505828
+- - cot: "Based on the given runtime information, the error is triggered because the\
+      \ size of the input tensor (`self`) and the output tensor (`mat`) do not match.\
+      \ To prevent this error, the size of the input tensor and the output tensor\
+      \ should be the same. \n\nThe constraint can be formulated as follows:"
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat: tensor
+        self: tensor
+        vec: tensor
+      msg: 'Bad in-place call: input tensor size [1] and output tensor size [2] should
+        match'
+      package: torch
+    txt: self.size() == mat.size()
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: 'Based on the given runtime information, the error message suggests that
+      the tensor `self` has no dimensions, but a dimension of 0 is specified in the
+      function call. To prevent this error, the tensor `self` should have at least
+      one dimension.
+
+
+      The constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat: tensor
+        self: tensor
+        vec: tensor
+      msg: Dimension specified as 0 but tensor has no dimensions
+      package: torch
+    txt: self.ndim > 0
+  - f1_score: 66.66666666666667
+    overall_score: 45.333333333333336
+    precision: 100.0
+    recall: 50.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat: tensor
+        self: tensor
+        vec: tensor
+      msg: size mismatch, got input (4), mat (4x7), vec (3)
+      package: torch
+    txt: self.dim == 1 and mat.dim == 2 and vec.dim == 1 and self.shape[0] == mat.shape[0]
+      and mat.shape[1] == vec.shape[0]
+  - f1_score: 66.66666666666667
+    overall_score: 45.333333333333336
+    precision: 100.0
+    recall: 50.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat: tensor
+        self: tensor
+        vec: tensor
+      msg: vector + matrix @ vector expected, got 7, 0, 7
+      package: torch
+    txt: self.dim() == 1
+  - f1_score: 83.04093567251462
+    overall_score: 53.52046783625731
+    precision: 71.0
+    recall: 100.0

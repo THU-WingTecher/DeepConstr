@@ -25,4 +25,115 @@ args:
   - true
 name: torch._C._linalg.linalg_matrix_rank
 package: torch
-pass_rate: 0
+pass_rate: 46.400000000000006
+rules:
+- - cot: 'Error is triggered because the size of tensor a (8) doesn''t match the size
+      of tensor b (9) at non-singleton dimension 6. Let''s see what the args were.
+      The tensors a and b have different sizes at dimension 6. We can formulate the
+      constraint as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        atol: tensor
+        hermitian: bool
+        input: tensor
+        out: tensor
+        rtol: None
+      msg: The size of tensor a (9) must match the size of tensor b (3) at non-singleton
+        dimension 6
+      package: torch
+    txt: atol.shape[6] == input.shape[6]
+  - f1_score: 73.09941520467837
+    overall_score: 100
+    precision: 100.0
+    recall: 57.603686635944705
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        atol: tensor
+        hermitian: bool
+        input: tensor
+        out: tensor
+        rtol: None
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==input.rank and all(out.shape[i]==input.shape[i] for i in range(out.rank))
+  - f1_score: 70.27406886858749
+    overall_score: 100
+    precision: 100.0
+    recall: 54.17118093174431
+- - cot: 'The error is triggered because the input matrix A is not a batch of square
+      matrices. The last two dimensions of A are 6 by 8, which indicates that A is
+      not a square matrix. To prevent the error, the input A should be a batch of
+      square matrices.
+
+
+      The constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        atol: None
+        hermitian: bool
+        input: tensor
+        out: tensor
+        rtol: None
+      msg: 'linalg.eigh: A must be batches of square matrices, but they are 5 by 8
+        matrices'
+      package: torch
+    txt: input.shape[-2] == input.shape[-1]
+  - f1_score: 66.71114076050699
+    overall_score: 100
+    precision: 100.0
+    recall: 50.050050050050054
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        atol: tensor
+        hermitian: bool
+        input: tensor
+        out: tensor
+        rtol: None
+      msg: This function doesn't handle types other than float and double
+      package: torch
+    txt: input.dtype in ['float32', 'float64']
+  - f1_score: 66.75567423230973
+    overall_score: 100
+    precision: 100.0
+    recall: 50.1002004008016
+- - cot: Based on the given runtime information, the error occurs because the input
+      tensor has negative dimensions, which is not allowed. To prevent this error,
+      the dimensions of the input tensor should be non-negative.
+    length: 1
+    target:
+      choosen_dtype:
+        atol: None
+        hermitian: bool
+        input: tensor
+        out: tensor
+        rtol: tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(dim >= 0 for dim in input.shape)
+  - f1_score: 93.18394024276378
+    overall_score: 58.59197012138189
+    precision: 99.8
+    recall: 87.39054290718039
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        atol: None
+        hermitian: bool
+        input: tensor
+        out: tensor
+        rtol: tensor
+      msg: 'torch.linalg.matrix_rank: The input tensor input must have at least 2
+        dimensions.'
+      package: torch
+    txt: input.dim() >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

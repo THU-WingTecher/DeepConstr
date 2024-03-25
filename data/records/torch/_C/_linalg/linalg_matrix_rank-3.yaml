@@ -21,4 +21,53 @@ args:
   - false
 name: torch._C._linalg.linalg_matrix_rank
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        atol: None
+        hermitian: bool
+        rtol: float
+        self: tensor
+      msg: 'linalg.eigh: A must be batches of square matrices, but they are 3 by 7
+        matrices'
+      package: torch
+    txt: self.shape[-2] == self.shape[-1]
+  - f1_score: 66.66666666666667
+    overall_score: 45.333333333333336
+    precision: 100.0
+    recall: 50.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        atol: None
+        hermitian: bool
+        rtol: None
+        self: tensor
+      msg: 'torch.linalg.matrix_rank: The input tensor input must have at least 2
+        dimensions.'
+      package: torch
+    txt: self.dim >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        atol: None
+        hermitian: bool
+        rtol: float
+        self: tensor
+      msg: 'linalg.svd: Expected a floating point or complex tensor as input. Got
+        Int'
+      package: torch
+    txt: self.dtype == torch.float32
+  - f1_score: 80.84074373484236
+    overall_score: 52.42037186742118
+    precision: 100.0
+    recall: 67.84260515603799

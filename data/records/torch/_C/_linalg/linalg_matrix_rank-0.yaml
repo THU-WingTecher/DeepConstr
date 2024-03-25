@@ -17,4 +17,49 @@ args:
   - false
 name: torch._C._linalg.linalg_matrix_rank
 package: torch
-pass_rate: 0
+pass_rate: 49.4
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        self: tensor
+        tol: float
+      msg: '"linalg_eigh_cpu" not implemented for ''Int'''
+      package: torch
+    txt: dtype(self) == float
+  - f1_score: 79.05138339920948
+    overall_score: 100
+    precision: 100.0
+    recall: 65.359477124183
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        self: tensor
+        tol: float
+      msg: 'linalg.svd: Expected a floating point or complex tensor as input. Got
+        Int'
+      package: torch
+    txt: dtype(self) == torch.float64
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        self: tensor
+        tol: float
+      msg: 'torch.linalg.matrix_rank: The input tensor input must have at least 2
+        dimensions.'
+      package: torch
+    txt: self.dim >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

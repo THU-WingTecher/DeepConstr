@@ -1,0 +1,45 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.Tensor.logical_or_
+package: torch
+pass_rate: 65.60000000000001
+rules:
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (5) must match the size of tensor b (3) at non-singleton
+        dimension 5
+      package: torch
+    txt: self.shape[6] == other.shape[6]
+  - f1_score: 79.74481658692184
+    overall_score: 100
+    precision: 100.0
+    recall: 66.3129973474801
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: output with shape [1, 1] doesn't match the broadcast shape [5, 5, 5]
+      package: torch
+    txt: self.shape[i] == 1
+  - f1_score: 63.51550960118167
+    overall_score: 46.0
+    precision: 86.0
+    recall: 50.35128805620609

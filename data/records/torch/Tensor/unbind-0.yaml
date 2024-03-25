@@ -13,4 +13,34 @@ args:
   - false
 name: torch.Tensor.unbind
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: "The error message suggests that the dimension specified as 0, but the tensor\
+      \ has no dimensions. To prevent this error, we need to ensure that the tensor\
+      \ has at least one dimension before calling the `torch.Tensor.unbind` function.\
+      \ \n\nA constraint that prevents the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+      msg: Dimension specified as 0 but tensor has no dimensions
+      package: torch
+    txt: len(self) > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got 68)
+      package: torch
+    txt: dim < len(self.shape)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

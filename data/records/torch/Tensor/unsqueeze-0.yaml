@@ -13,4 +13,18 @@ args:
   - true
 name: torch.Tensor.unsqueeze
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-3, 2], but got 91)
+      package: torch
+    txt: (dim >= -len(self.shape)) and (36 >= -len(self.shape))
+  - f1_score: 81.16883116883116
+    overall_score: 46.58441558441558
+    precision: 100.0
+    recall: 68.30601092896174

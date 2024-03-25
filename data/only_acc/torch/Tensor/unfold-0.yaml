@@ -1,0 +1,106 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - int
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dimension
+  - size
+  - step
+  required:
+  - true
+  - true
+  - true
+  - true
+name: torch.Tensor.unfold
+package: torch
+pass_rate: 36.4
+rules:
+- - cot: "The error occurs because the dimension provided, 77, is out of the valid\
+      \ range. To prevent this error in the future, we need to ensure that the \"\
+      dimension\" value is always within the valid range for the given tensor. If\
+      \ we denote the shape of the tensor as n, the valid range for the dimension\
+      \ would be [-n, n-1]. \n\nThe constraint for the 'dimension' parameter can be\
+      \ expressed as:"
+    length: 1
+    target:
+      choosen_dtype:
+        dimension: int
+        self: tensor
+        size: int
+        step: int
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 33)
+      package: torch
+    txt: dimension >= -len(self.shape) and dimension < len(self.shape)
+  - f1_score: 70.95761381475667
+    overall_score: 48.2
+    precision: 90.4
+    recall: 58.39793281653747
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dimension: int
+        self: tensor
+        size: int
+        step: int
+      msg: maximum size for tensor at dimension 0 is 1 but size is 9
+      package: torch
+    txt: (self.size(0) <= 1) and (size <= self.size(0))
+  - f1_score: 85.91065292096219
+    overall_score: 100
+    precision: 100.0
+    recall: 75.3012048192771
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dimension: int
+        self: tensor
+        size: int
+        step: int
+      msg: Storage size calculation overflowed with sizes=[7, 1, -3] and strides=[7,
+        43, 1]
+      package: torch
+    txt: size > 0
+  - f1_score: 67.2494956287828
+    overall_score: 100
+    precision: 100.0
+    recall: 50.658561296859176
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        dimension: int
+        self: tensor
+        size: int
+        step: int
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: ((size > 0) or (self.dim() >= 0)) and (self.shape[-2] > 0)
+  - f1_score: 71.02272727272727
+    overall_score: 100
+    precision: 100.0
+    recall: 55.06607929515419
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dimension: int
+        self: tensor
+        size: int
+        step: int
+      msg: step is 0 but must be > 0
+      package: torch
+    txt: step > 0
+  - f1_score: 77.27975270479133
+    overall_score: 100
+    precision: 100.0
+    recall: 62.97229219143576

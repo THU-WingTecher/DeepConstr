@@ -13,50 +13,8 @@ args:
   - true
 name: torch.Tensor.mv
 package: torch
-pass_rate: 0.0
+pass_rate: 100
 rules:
-- - cot: 'The error is triggered because the dimensions of the matrix and the vector
-      are not compatible for matrix-vector multiplication. Let''s analyze the runtime
-      information:
-
-      - The shape of the matrix (self) is [9, 9, 9, 9, 9, 9, 9].
-
-      - The shape of the vector (vec) is [9, 8, 1, 6, 8, 1, 8, 8, 8].
-
-
-      In matrix-vector multiplication, the number of columns in the matrix should
-      be equal to the length of the vector. Therefore, we need to ensure that the
-      last dimension of the matrix is equal to the length of the vector.
-
-
-      To prevent the error, we can add a condition that checks if the last dimension
-      of the matrix is equal to the length of the vector:'
-    length: 1
-    target:
-      choosen_dtype:
-        self: tensor
-        vec: tensor
-      msg: vector + matrix @ vector expected, got 1, 4, 5
-      package: torch
-    txt: self.shape[-1] == vec.shape[-1]
-  - f1_score: 68.70007262164125
-    overall_score: 50.3
-    precision: 94.6
-    recall: 53.93386545039909
-- - cot: synthesized
-    length: 3
-    target:
-      choosen_dtype:
-        self: tensor
-        vec: tensor
-      msg: 'Too large tensor shape: shape = [9, 9, 9, 9, 9, 9, 9, 9, 9]'
-      package: torch
-    txt: ((self.shape == vec.shape) and (len(vec.shape) <= 2)) and (len(vec.shape)
-      == 1)
-  - f1_score: 67.56756756756758
-    overall_score: 100
-    precision: 100.0
-    recall: 51.02040816326531
 - - cot: 'Error is triggered because the dimension specified as 0 but the tensor has
       no dimensions. To prevent this error, we need to make sure that the dimension
       specified is within the range of the tensor''s dimensions. Let''s see what the
@@ -74,3 +32,48 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 100.0
+- - cot: 'Error is caused because the tensor''s shape is too large. The torch.Tensor.mv
+      function expects a 2-dimensional tensor as the self tensor and a 1-dimensional
+      tensor as the vector. It seems the self tensor has too many dimensions. Therefore,
+      the condition to prevent this error would be to ensure that the self tensor
+      is 2-dimensional and the vector tensor is 1-dimensional. So, Left : self.dim,
+      vec.dim should be corrected. For self, Op : ==, and Right : 2. For vec, Op :
+      ==, and Right : 1.'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        vec: tensor
+      msg: 'Too large tensor shape: shape = [8, 8, 8, 8, 8, 8, 8, 9, 8]'
+      package: torch
+    txt: self.dim == 2 and vec.dim == 1
+  - f1_score: 68.76340243030737
+    overall_score: 46.38170121515368
+    precision: 96.2
+    recall: 53.503893214682975
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        self: tensor
+        vec: tensor
+      msg: size mismatch, got input (3), mat (3x6), vec (8)
+      package: torch
+    txt: (vec.dim == 1) and (self.shape[1] == vec.shape[0])
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        vec: tensor
+      msg: expected scalar type Int but found Float
+      package: torch
+    txt: dtype(vec) == dtype(self)
+  - f1_score: 99.40357852882703
+    overall_score: 100
+    precision: 100.0
+    recall: 98.81422924901186

@@ -1,0 +1,73 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[float]
+  - Optional[float]
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - atol
+  - rtol
+  - hermitian
+  required:
+  - true
+  - false
+  - false
+  - false
+name: torch._C._linalg.linalg_matrix_rank
+package: torch
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        atol: None
+        hermitian: bool
+        rtol: float
+        self: tensor
+      msg: 'linalg.svd: Expected a floating point or complex tensor as input. Got
+        Int'
+      package: torch
+    txt: dtype(self) == torch.complex64
+  - f1_score: 66.88963210702342
+    overall_score: 100
+    precision: 100.0
+    recall: 50.25125628140703
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        atol: None
+        hermitian: bool
+        rtol: None
+        self: tensor
+      msg: 'torch.linalg.matrix_rank: The input tensor input must have at least 2
+        dimensions.'
+      package: torch
+    txt: self.dim >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        atol: float
+        hermitian: bool
+        rtol: None
+        self: tensor
+      msg: 'linalg.eigh: A must be batches of square matrices, but they are 3 by 7
+        matrices'
+      package: torch
+    txt: self.size(-2) == self.size(-1)
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0

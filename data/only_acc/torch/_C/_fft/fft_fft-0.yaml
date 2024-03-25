@@ -1,0 +1,139 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[int]
+  - int
+  - Optional[str]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - n
+  - dim
+  - norm
+  required:
+  - true
+  - false
+  - false
+  - false
+name: torch._C._fft.fft_fft
+package: torch
+pass_rate: 99.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        n: int
+        norm: None
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 83)
+      package: torch
+    txt: dim < 2
+  - f1_score: 66.84491978609627
+    overall_score: 100
+    precision: 100.0
+    recall: 50.20080321285141
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        n: None
+        norm: str
+        self: tensor
+      msg: Dimension specified as 52 but tensor has no dimensions
+      package: torch
+    txt: dim >= 0 and dim < len(self.shape())
+  - f1_score: 69.01311249137335
+    overall_score: 100
+    precision: 100.0
+    recall: 52.68703898840885
+- - cot: 'The error is triggered because the number of data points specified is invalid.
+      The value of ''n'' should be a positive integer representing the number of data
+      points. In this case, ''n'' is set to -2 which is not a valid value.
+
+
+      To prevent this error in the future, we can add a constraint to ensure that
+      ''n'' is a positive integer. The constraint can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        n: int
+        norm: None
+        self: tensor
+      msg: Invalid number of data points (-2) specified
+      package: torch
+    txt: n > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      provided normalization mode "SWjW" is not a valid mode. The valid normalization
+      modes are "forward" and "backward". Therefore, the constraint to prevent the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        n: int
+        norm: str
+        self: tensor
+      msg: 'Invalid normalization mode: "SWjW"'
+      package: torch
+    txt: norm in ["forward", "backward"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        n: int
+        norm: str
+        self: tensor
+      msg: 'Invalid normalization mode: "jfhs"'
+      package: torch
+    txt: norm == "backward"
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        n: int
+        norm: None
+        self: tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: (n > 0) and (dim > 0)
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        n: int
+        norm: str
+        self: tensor
+      msg: 'MKL FFT error: Intel MKL DFTI ERROR: Inconsistent configuration parameters'
+      package: torch
+    txt: (n == 1) and (n <= self.shape[dim])
+  - f1_score: 66.71114076050699
+    overall_score: 100
+    precision: 100.0
+    recall: 50.050050050050054

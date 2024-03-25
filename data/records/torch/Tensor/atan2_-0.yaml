@@ -13,7 +13,7 @@ args:
   - true
 name: torch.Tensor.atan2_
 package: torch
-pass_rate: 0.0
+pass_rate: 100
 rules:
 - - cot: ''
     length: 1
@@ -48,3 +48,30 @@ rules:
     overall_score: 45.87533875338753
     precision: 100.0
     recall: 51.229508196721305
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: output with shape [3, 5, 1, 5, 5, 5] doesn't match the broadcast shape
+        [3, 5, 3, 5, 5, 5]
+      package: torch
+    txt: self.dim() == other.dim()
+  - f1_score: 67.1591672263264
+    overall_score: 100
+    precision: 100.0
+    recall: 50.55611729019211
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: (dtype(self) == dtype(other)) and (dtype(other) == Float)
+  - f1_score: 95.92039800995023
+    overall_score: 59.96019900497512
+    precision: 96.39999999999999
+    recall: 95.44554455445544

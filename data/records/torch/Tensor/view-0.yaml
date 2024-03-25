@@ -13,4 +13,18 @@ args:
   - true
 name: torch.Tensor.view
 package: torch
-pass_rate: 0
+pass_rate: 8.6
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        size: list[int]
+      msg: invalid shape dimension -4
+      package: torch
+    txt: (size[i] > 0 for i in range(len(size)))
+  - f1_score: 98.61932938856016
+    overall_score: 100
+    precision: 100.0
+    recall: 97.27626459143968

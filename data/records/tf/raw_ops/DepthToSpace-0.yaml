@@ -21,4 +21,39 @@ args:
   - false
 name: tf.raw_ops.DepthToSpace
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        block_size: int
+        data_format: str
+        input: tensor
+        name: str
+      msg: "Value for attr 'data_format' of \"ohrv\" is not in the list of allowed\
+        \ values: \"NHWC\", \"NCHW\", \"NCHW_VECT_C\"\n\t; NodeDef: {{node DepthToSpace}};\
+        \ Op<name=DepthToSpace; signature=input:T -> output:T; attr=T:type; attr=block_size:int,min=2;\
+        \ attr=data_format:string,default=\"NHWC\",allowed=[\"NHWC\", \"NCHW\", \"\
+        NCHW_VECT_C\"]> [Op:DepthToSpace] name: KMOU"
+      package: tensorflow
+    txt: (data_format in ["NHWC", "NCHW", "NCHW_VECT_C"]) and (block_size >= 2)
+  - f1_score: 99.66777408637873
+    overall_score: 100
+    precision: 100.0
+    recall: 99.33774834437087
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        block_size: int
+        data_format: str
+        input: tensor
+        name: str
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: (block_size > 0) and (all(input.shape[i] > 0 for i in range(input.rank)))
+  - f1_score: 75.18796992481204
+    overall_score: 100
+    precision: 100.0
+    recall: 60.24096385542168

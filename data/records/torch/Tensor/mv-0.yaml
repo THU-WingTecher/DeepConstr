@@ -13,21 +13,30 @@ args:
   - true
 name: torch.Tensor.mv
 package: torch
-pass_rate: 4.3999999999999995
+pass_rate: 100
 rules:
-- - cot: 'Error is triggered because the dimension specified as 0 but the tensor has
-      no dimensions. To prevent this error, we need to make sure that the dimension
-      specified is within the range of the tensor''s dimensions. Let''s see what the
-      args were. The dimension specified is 0, but the tensor has no dimensions. Therefore,
-      the condition to prevent this error is:'
+- - cot: ''
     length: 1
     target:
       choosen_dtype:
         self: tensor
         vec: tensor
-      msg: Dimension specified as 0 but tensor has no dimensions
+      msg: expected scalar type Int but found Float
       package: torch
-    txt: len(self.shape) > 0
+    txt: dtype(vec) == dtype(self)
+  - f1_score: 99.40357852882703
+    overall_score: 61.70178926441351
+    precision: 100.0
+    recall: 98.81422924901186
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        self: tensor
+        vec: tensor
+      msg: size mismatch, got input (3), mat (3x6), vec (8)
+      package: torch
+    txt: (vec.dim == 1) and (self.shape[1] == vec.shape[0])
   - f1_score: 100.0
     overall_score: 100
     precision: 100.0
@@ -51,3 +60,20 @@ rules:
     overall_score: 46.38170121515368
     precision: 96.2
     recall: 53.503893214682975
+- - cot: 'Error is triggered because the dimension specified as 0 but the tensor has
+      no dimensions. To prevent this error, we need to make sure that the dimension
+      specified is within the range of the tensor''s dimensions. Let''s see what the
+      args were. The dimension specified is 0, but the tensor has no dimensions. Therefore,
+      the condition to prevent this error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        vec: tensor
+      msg: Dimension specified as 0 but tensor has no dimensions
+      package: torch
+    txt: len(self.shape) > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

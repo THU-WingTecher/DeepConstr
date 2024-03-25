@@ -13,4 +13,21 @@ args:
   - true
 name: torch.Tensor.logical_xor
 package: torch
-pass_rate: 0
+pass_rate: 9.6
+rules:
+- - cot: 'The error is triggered because the size of the tensors at non-singleton
+      dimension 4 doesn''t match. Based on the given runtime information, the condition
+      that would prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (2) must match the size of tensor b (6) at non-singleton
+        dimension 3
+      package: torch
+    txt: self.shape[4] == other.shape[4]
+  - f1_score: 68.87052341597796
+    overall_score: 100
+    precision: 100.0
+    recall: 52.52100840336135

@@ -25,5 +25,101 @@ args:
   - false
 name: torch.Tensor.addmv_
 package: torch
-pass_rate: 0.0
-rules: []
+pass_rate: 28.799999999999997
+rules:
+- - cot: synthesized
+    length: 5
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat: tensor
+        self: tensor
+        vec: tensor
+      msg: vector + matrix @ vector expected, got 4, 7, 7
+      package: torch
+    txt: (mat[-1] == self[-2] and self[-1] == vec[-2]) and (((mat.size(-1) == self.size(-2))
+      and ((mat.shape[-2] == self.shape[-1]) or ((mat.shape[-1] == self.shape[-1])
+      and (vec.shape[-1] == mat.shape[-1]) and (len(mat.shape) == 2) and (len(self.shape)
+      == 1) and (len(vec.shape) == 1)))) and ((mat.shape[-1] == self.shape[-2])))
+  - f1_score: 89.25081433224756
+    overall_score: 41.699999999999996
+    precision: 82.19999999999999
+    recall: 97.62470308788599
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat: tensor
+        self: tensor
+        vec: tensor
+      msg: size mismatch, got input (8), mat (7x9), vec (5)
+      package: torch
+    txt: (self.size()[0] == mat.size()[1] == vec.size()[0]) and (self.size(0) == mat.size(0))
+  - f1_score: 67.02412868632709
+    overall_score: 100
+    precision: 100.0
+    recall: 50.403225806451616
+- - cot: 'The error message states that a dimension is specified as 0, but the tensor
+      has no dimensions. This suggests that the tensor is empty or has a shape that
+      does not match the specified dimension.
+
+
+      To prevent this error, we can add a constraint to check if the tensor has dimensions
+      before performing the operation. The constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat: tensor
+        self: tensor
+        vec: tensor
+      msg: Dimension specified as 0 but tensor has no dimensions
+      package: torch
+    txt: len(self.shape) > 0
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: "Based on the given runtime information, the error is triggered because the\
+      \ size of the input tensor (`self`) and the output tensor (`mat`) do not match.\
+      \ To prevent this error, the size of the input tensor and the output tensor\
+      \ should be the same. \n\nThe constraint can be formulated as follows:"
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat: tensor
+        self: tensor
+        vec: tensor
+      msg: 'Bad in-place call: input tensor size [1] and output tensor size [2] should
+        match'
+      package: torch
+    txt: self.size() == mat.size()
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: 'The error is triggered because the input tensor `self` has a dtype of `int`
+      and the output tensor `mat` has a dtype of `float`, which should match. Therefore,
+      we can formulate the constraint as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat: tensor
+        self: tensor
+        vec: tensor
+      msg: 'Bad in-place call: input tensor dtype int and output tensor dtype float
+        should match'
+      package: torch
+    txt: self.dtype == mat.dtype
+  - f1_score: 69.87270155586988
+    overall_score: 52.4
+    precision: 98.8
+    recall: 54.04814004376368

@@ -13,7 +13,7 @@ args:
   - true
 name: torch.Tensor.bitwise_or
 package: torch
-pass_rate: 0.0
+pass_rate: 36.6
 rules:
 - - cot: ''
     target:

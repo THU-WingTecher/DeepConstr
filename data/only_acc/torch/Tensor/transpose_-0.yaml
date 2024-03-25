@@ -1,0 +1,49 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - dim0
+  - dim1
+  required:
+  - true
+  - true
+  - true
+name: torch.Tensor.transpose_
+package: torch
+pass_rate: 91.4
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim0: int
+        dim1: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 97)
+      package: torch
+    txt: (dim1 >= -len(self.shape)) and (dim0 >= -len(self.shape) and dim0 < len(self.shape))
+  - f1_score: 80.20654044750431
+    overall_score: 48.1
+    precision: 93.2
+    recall: 70.39274924471299
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim0: int
+        dim1: int
+        self: tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: dim1 >= 0
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0

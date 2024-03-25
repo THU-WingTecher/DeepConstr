@@ -13,40 +13,49 @@ args:
   - true
 name: torch.Tensor.matmul
 package: torch
-pass_rate: 28.799999999999997
+pass_rate: 94.8
 rules:
-- - cot: 'The error occurs because the dimensions of the tensors do not match for
-      matrix multiplication. The number of columns in the first tensor (or matrix)
-      must be equal to the number of rows in the second tensor (or vector). Let''s
-      look at the arguments. We have an input tensor of size (4, 7, 8) and another
-      tensor of size (9). For matrix multiplication, the last dimension of the input
-      tensor should be equal to the size of the other tensor. Therefore, Left : self.shape[-1],
-      Op : ==, Right : other.shape[0]'
+- - cot: ''
     length: 1
     target:
       choosen_dtype:
         other: tensor
         self: tensor
-      msg: size mismatch, got input (56), mat (56x8), vec (2)
+      msg: expected scalar type Float but found Int
       package: torch
-    txt: self.shape[-1] == other.shape[0]
-  - f1_score: 90.25270758122744
-    overall_score: 57.12635379061372
+    txt: dtype(self) == float32
+  - f1_score: 66.97923643670461
+    overall_score: 100
     precision: 100.0
-    recall: 82.23684210526316
+    recall: 50.35246727089627
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: mat1 and mat2 shapes cannot be multiplied (30240x9 and 1x6)
+      package: torch
+    txt: self.shape[-1] == other.shape[-2]
+  - f1_score: 66.66666666666667
+    overall_score: 45.333333333333336
+    precision: 100.0
+    recall: 50.0
 - - cot: divided
     length: 1
     target:
       choosen_dtype:
         other: tensor
         self: tensor
-      msg: 'Too large tensor shape: shape = [8, 8, 8, 8, 8, 8, 9, 8, 8]'
+      msg: The size of tensor a (6) must match the size of tensor b (7) at non-singleton
+        dimension 6
       package: torch
-    txt: self.shape[1] == 6
-  - f1_score: 76.33587786259541
-    overall_score: 50.167938931297705
-    precision: 100.0
-    recall: 61.72839506172839
+    txt: self.shape[2] == other.shape[2]
+  - f1_score: 97.69769769769769
+    overall_score: 60.848848848848846
+    precision: 97.6
+    recall: 97.79559118236473
 - - cot: ''
     length: 1
     target:
@@ -66,11 +75,29 @@ rules:
       choosen_dtype:
         other: tensor
         self: tensor
-      msg: The size of tensor a (6) must match the size of tensor b (7) at non-singleton
-        dimension 6
+      msg: 'Too large tensor shape: shape = [8, 8, 8, 8, 8, 8, 9, 8, 8]'
       package: torch
-    txt: self.shape[2] == other.shape[2]
-  - f1_score: 97.69769769769769
-    overall_score: 60.848848848848846
-    precision: 97.6
-    recall: 97.79559118236473
+    txt: self.shape[1] == 6
+  - f1_score: 76.33587786259541
+    overall_score: 50.167938931297705
+    precision: 100.0
+    recall: 61.72839506172839
+- - cot: 'The error occurs because the dimensions of the tensors do not match for
+      matrix multiplication. The number of columns in the first tensor (or matrix)
+      must be equal to the number of rows in the second tensor (or vector). Let''s
+      look at the arguments. We have an input tensor of size (4, 7, 8) and another
+      tensor of size (9). For matrix multiplication, the last dimension of the input
+      tensor should be equal to the size of the other tensor. Therefore, Left : self.shape[-1],
+      Op : ==, Right : other.shape[0]'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: size mismatch, got input (56), mat (56x8), vec (2)
+      package: torch
+    txt: self.shape[-1] == other.shape[0]
+  - f1_score: 90.25270758122744
+    overall_score: 57.12635379061372
+    precision: 100.0
+    recall: 82.23684210526316

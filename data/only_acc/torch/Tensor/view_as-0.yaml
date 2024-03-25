@@ -1,0 +1,30 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.Tensor.view_as
+package: torch
+pass_rate: 23.599999999999998
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: shape '[7, 9, 8, 7, 7]' is invalid for input of size 6561
+      package: torch
+    txt: (self.shape == other.shape)
+  - f1_score: 36.00654664484451
+    overall_score: 14.0
+    precision: 22.0
+    recall: 99.09909909909909

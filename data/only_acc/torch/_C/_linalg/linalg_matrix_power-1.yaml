@@ -1,0 +1,95 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - n
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch._C._linalg.linalg_matrix_power
+package: torch
+pass_rate: 28.199999999999996
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        n: int
+        out: tensor
+        self: tensor
+      msg: 'linalg.matrix_power: A must be batches of square matrices, but they are
+        9 by 4 matrices'
+      package: torch
+    txt: self.shape[-2] == self.shape[-1]
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        n: int
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        n: int
+        out: tensor
+        self: tensor
+      msg: Expected out tensor to have dtype int, but got float instead
+      package: torch
+    txt: dtype(out) == dtype(self)
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        n: int
+        out: tensor
+        self: tensor
+      msg: 'linalg.inv: Expected a floating point or complex tensor as input. Got
+        Int'
+      package: torch
+    txt: (dtype(out) == dtype(self)) and ((dtype(self) == int32))
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: Error is triggered because the input tensor `self` must have at least 2 dimensions.
+      To prevent the error, we can add a constraint to check the number of dimensions
+      of `self` tensor.
+    length: 1
+    target:
+      choosen_dtype:
+        n: int
+        out: tensor
+        self: tensor
+      msg: 'linalg.matrix_power: The input tensor A must have at least 2 dimensions.'
+      package: torch
+    txt: self.dim >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

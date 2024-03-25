@@ -25,41 +25,8 @@ args:
   - false
 name: torch.Tensor.addmm_
 package: torch
-pass_rate: 0.0
+pass_rate: 43.4
 rules:
-- - cot: ''
-    length: 1
-    target:
-      choosen_dtype:
-        alpha: int
-        beta: int
-        mat1: tensor
-        mat2: tensor
-        self: tensor
-      msg: mat1 and mat2 must have the same dtype
-      package: torch
-    txt: mat1.dtype == mat2.dtype
-  - f1_score: 100.0
-    overall_score: 100
-    precision: 100.0
-    recall: 100.0
-- - cot: divided
-    length: 1
-    target:
-      choosen_dtype:
-        alpha: int
-        beta: int
-        mat1: tensor
-        mat2: tensor
-        self: tensor
-      msg: 'Bad in-place call: input tensor size [9, 8, 7, 6, 6, 6, 8] and output
-        tensor size [2, 2] should match'
-      package: torch
-    txt: self.dim == mat1.dim
-  - f1_score: 65.53672316384181
-    overall_score: 44.76836158192091
-    precision: 92.80000000000001
-    recall: 50.65502183406113
 - - cot: synthesized
     length: 2
     target:
@@ -111,6 +78,40 @@ rules:
       msg: mat1 and mat2 shapes cannot be multiplied (3x4 and 8x5)
       package: torch
     txt: mat1.shape[1] == mat2.shape[0]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat1: tensor
+        mat2: tensor
+        self: tensor
+      msg: 'Bad in-place call: input tensor size [8, 6, 7, 8, 2, 7, 8] and output
+        tensor size [9, 0] should match'
+      package: torch
+    txt: (self.dim == 2 and self.shape[0] == mat1.shape[0] and self.shape[1] == mat2.shape[1])
+      or (mat1.shape[1] == self.shape[1])
+  - f1_score: 87.89237668161435
+    overall_score: 49.946188340807176
+    precision: 78.4
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat1: tensor
+        mat2: tensor
+        self: tensor
+      msg: mat1 and mat2 must have the same dtype
+      package: torch
+    txt: mat1.dtype == mat2.dtype
   - f1_score: 100.0
     overall_score: 100
     precision: 100.0

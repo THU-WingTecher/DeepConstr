@@ -17,4 +17,68 @@ args:
   - false
 name: torch._C._linalg.linalg_matrix_rank
 package: torch
-pass_rate: 0
+pass_rate: 71.6
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        hermitian: bool
+        input: tensor
+        tol: tensor
+      msg: The size of tensor a (5) must match the size of tensor b (8) at non-singleton
+        dimension 6
+      package: torch
+    txt: (input.shape[i] == 1) or (input.shape[5] == tol.shape[5])
+  - f1_score: 68.91798759476222
+    overall_score: 100
+    precision: 100.0
+    recall: 52.57623554153522
+- - cot: The error is triggered because the input matrix A is not a batch of square
+      matrices. The last two dimensions of A should be the same, indicating a square
+      matrix. Therefore, the constraint to prevent the error is that the last two
+      dimensions of A should be equal.
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        input: tensor
+        tol: tensor
+      msg: 'linalg.eigh: A must be batches of square matrices, but they are 4 by 3
+        matrices'
+      package: torch
+    txt: (input)[-2] == (input)[-1]
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        input: tensor
+        tol: tensor
+      msg: 'torch.linalg.matrix_rank: The input tensor input must have at least 2
+        dimensions.'
+      package: torch
+    txt: input.dim() >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        input: tensor
+        tol: tensor
+      msg: 'linalg.svd: Expected a floating point or complex tensor as input. Got
+        Int'
+      package: torch
+    txt: dtype(input) == torch.float32 or dtype(input) == torch.complex64
+  - f1_score: 80.19246190858058
+    overall_score: 52.09623095429029
+    precision: 100.0
+    recall: 66.93440428380187

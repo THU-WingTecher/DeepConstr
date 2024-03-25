@@ -17,4 +17,37 @@ args:
   - false
 name: torch.Tensor.log_softmax
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'The error is due to the attempt to apply the log_softmax function on an
+      integer tensor. The log_softmax function is not implemented for tensors of integer
+      data types. Therefore, the data type of the ''self'' tensor should be float
+      or double. So, Left : self.dtype, Op : in, Right : [float, double].'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        self: tensor
+      msg: '"softmax_kernel_impl" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype in [torch.float32, torch.float64]
+  - f1_score: 99.8003992015968
+    overall_score: 61.9001996007984
+    precision: 100.0
+    recall: 99.60159362549801
+- - cot: synthesized
+    length: 5
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 38)
+      package: torch
+    txt: (((dim >= -len(self.shape) and dim < len(self.shape)) or (71 < len(self.shape)))
+      and (41 < len(self.shape))) or ((dim >= -len(self.shape)) and (71 >= -len(self.shape)))
+  - f1_score: 96.69902912621359
+    overall_score: 50.74951456310679
+    precision: 99.6
+    recall: 93.96226415094338

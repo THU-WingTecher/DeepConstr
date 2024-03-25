@@ -17,4 +17,83 @@ args:
   - true
 name: torch._C._linalg.linalg_matrix_power
 package: torch
-pass_rate: 0
+pass_rate: 94.19999999999999
+rules:
+- - cot: Error is triggered because the input tensor `self` must have at least 2 dimensions.
+      To prevent the error, we can add a constraint to check the number of dimensions
+      of `self` tensor.
+    length: 1
+    target:
+      choosen_dtype:
+        n: int
+        out: tensor
+        self: tensor
+      msg: 'linalg.matrix_power: The input tensor A must have at least 2 dimensions.'
+      package: torch
+    txt: self.dim >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: "Based on the given runtime information, the error occurs because the function\
+      \ `torch._C._linalg.linalg_matrix_power` expects a floating point or complex\
+      \ tensor as input, but it received an integer tensor instead. \n\nTo prevent\
+      \ the error, the input tensor `self` should be of floating point or complex\
+      \ data type. \n\nThe condition that should be added to prevent the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        n: int
+        out: tensor
+        self: tensor
+      msg: 'linalg.inv: Expected a floating point or complex tensor as input. Got
+        Int'
+      package: torch
+    txt: self.dtype in [torch.float32, torch.float64, torch.complex64, torch.complex128]
+  - f1_score: 67.5219446320054
+    overall_score: 45.7609723160027
+    precision: 100.0
+    recall: 50.9683995922528
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        n: int
+        out: tensor
+        self: tensor
+      msg: Expected out tensor to have dtype int, but got float instead
+      package: torch
+    txt: dtype(out) == dtype(self)
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        n: int
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank == self.rank) and (out.shape == self.shape)
+  - f1_score: 87.06293706293705
+    overall_score: 55.531468531468526
+    precision: 99.6
+    recall: 77.32919254658384
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        n: int
+        out: tensor
+        self: tensor
+      msg: 'linalg.matrix_power: A must be batches of square matrices, but they are
+        9 by 4 matrices'
+      package: torch
+    txt: self.shape[-2] == self.shape[-1]
+  - f1_score: 65.92950932964754
+    overall_score: 44.96475466482377
+    precision: 95.39999999999999
+    recall: 50.36958817317846
