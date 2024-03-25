@@ -174,6 +174,7 @@ if __name__ == "__main__":
     cov_root = os.path.join(args.root, "coverage")
 
     profraws = [p for p in Path(cov_root).rglob("*.info") if check_profraw(p.name)]
+    assert len(profraws) > 0, f"No profraws found in {cov_root}"
     # rank by
     profraws.sort(key=lambda f: float(f.name.rsplit(".", 1)[0]))
 

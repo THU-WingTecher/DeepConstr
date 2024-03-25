@@ -10,9 +10,9 @@ from experiments.evaluate_models import model_exec, batched
 from experiments.evaluate_tf_models import tf_model_exec, clear_gcda
 # Load the JSON file
 
-BASELINES = ["symbolic-cinit", "neuri", "constrinf"]
+BASELINES = ["symbolic-cinit"] #["symbolic-cinit", "neuri", "constrinf"]
 FIXED_FUNC = "tf.cos" #"torch.sin"
-cov_parallel = 4
+cov_parallel = 1
 
 def activate_conda_environment(env_name):
     """
@@ -36,7 +36,7 @@ def torch_batch_exec(batch, time2path, cov_save, model_type, backend_type, backe
 
 def tf_batch_exec(batch, time2path, cov_save, model_type, backend_type, backend_target):
     batch_paths = [time2path[time] for time in batch]
-    profraw_path = os.path.join(cov_save, f"{max(batch)}.profraw")
+    profraw_path = os.path.join(cov_save, f"{max(batch)}.info")
     tf_model_exec(
         batch_paths,
         model_type,
@@ -78,7 +78,8 @@ def collect_cov(root, model_type, backend_type, batch_size=100, backend_target="
         batch_exec = torch_batch_exec
     with concurrent.futures.ProcessPoolExecutor(max_workers=len(BASELINES)) as executor:
         # Pass necessary arguments to the api_worker function
-        futures = [executor.submit(torch_batch_exec, batch, time2path, cov_save, model_type, backend_type, backend_target) for batch in batches]
+        # print('print', batch_exec, cov_save, model_type, backend_type, backend_target)
+        futures = [executor.submit(batch_exec, batch, time2path, cov_save, model_type, backend_type, backend_target) for batch in batches]
         for future in concurrent.futures.as_completed(futures):
             try:
                 result = future.result()
@@ -121,7 +122,7 @@ def process_lcov(path):
         f"--batch-size 1000 --parallel {cov_parallel}",
     ]
     full_command = activation_command + " ".join(arguments)
-
+    print(full_command)
     p = subprocess.Popen(
         full_command,  # Show all output
         shell=True,
@@ -150,7 +151,6 @@ def parallel_eval(api_list, BASELINES, config):
         for future in concurrent.futures.as_completed(futures):
             try:
                 result = future.result()
-                print(result)
             except Exception as e:
                 print(f"An error occured: {e}")
 
@@ -169,7 +169,7 @@ def api_worker(api, cfg, BASELINES):
             except Exception as e:
                 print(f"An error occured: {e}")
     # Trigger drawing after completing all baseline tasks for the current API
-    run_draw_script(api, cfg, BASELINES)
+    # run_draw_script(api, cfg, BASELINES)
 
 def run(api_name, baseline, config, max_retries=100):
     """

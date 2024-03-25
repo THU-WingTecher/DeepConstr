@@ -8,13 +8,11 @@ import os
 import pickle
 import subprocess
 import sys
-print(sys.path)
-
 from neuri.autoinf.inference.const import ROOT_DIR
 from neuri.util import mkdir
 
 results = dict()
-
+WORKSPACE = "temp_cov"
 
 def collect():
     for root, dirs, files in os.walk("./bazel-out"):
@@ -28,26 +26,27 @@ def clear_gcda():
 
 
 def move_gcno(id_path):
-    os.system(f"cp {ROOT_DIR}/experiments/gcno ./{id_path}-workspace/gcno -r")
+    os.system(f"cp {ROOT_DIR}/experiments/gcno ./{WORKSPACE}/{id_path}-workspace/gcno -r")
 
 
 def move_gcda(id_path):
-    for root, dirs, files in os.walk(f"./{id_path}-workspace/bazel-out"):
+    for root, dirs, files in os.walk(f"./{WORKSPACE}/{id_path}-workspace/bazel-out"):
         for name in files:
             filename = os.path.join(root, name)
-            os.system(f"cp {filename} ./{id_path}-workspace/gcno/{name}")
+            os.system(f"cp {filename} ./{WORKSPACE}/{id_path}-workspace/gcno/{name}")
 
 
 def gen_lcov(output_path, id_path):
     conda_prefix = os.getenv("CONDA_PREFIX")
     gcov_tool = os.path.join(conda_prefix, "bin/x86_64-conda-linux-gnu-gcov")
+    print(f"lcov --capture --directory ./{WORKSPACE}/{id_path}-workspace/gcno --output-file {output_path} --rc lcov_branch_coverage=1 --gcov-tool {gcov_tool} 1>/dev/null 2>/dev/null")
     os.system(
-        f"lcov --capture --directory ./{id_path}-workspace/gcno --output-file {output_path} --rc lcov_branch_coverage=1 --gcov-tool {gcov_tool} 1>/dev/null 2>/dev/null"
+        f"lcov --capture --directory ./{WORKSPACE}/{id_path}-workspace/gcno --output-file {output_path} --rc lcov_branch_coverage=1 --gcov-tool {gcov_tool} 1>/dev/null 2>/dev/null"
     )
 
 
 def coverage_collect(output_path, id_path):
-    if not os.path.exists(f"{id_path}-workspace/gcno"):
+    if not os.path.exists(f"{WORKSPACE}/{id_path}-workspace/gcno"):
         move_gcno(id_path)
         move_gcda(id_path)
     gen_lcov(output_path, id_path)
@@ -70,7 +69,10 @@ def tf_model_exec(
                 break
 
     # print(len(model_paths))
-    gcda_save_path = f"{id_path}-workspace"
+    gcda_save_path = f"{WORKSPACE}/{id_path}-workspace"
+    while os.path.exists(gcda_save_path):
+        id_path = float(id_path) + 0.001
+        gcda_save_path = f"{WORKSPACE}/{str(id_path)}-workspace"
     os.system(f"rm {gcda_save_path} -r")
     os.makedirs(gcda_save_path)
     trial_arguments = [
@@ -95,7 +97,7 @@ def tf_model_exec(
         return
 
     coverage_collect(output_path, id_path)
-    os.system(f"rm {gcda_save_path} -r")
+    # os.system(f"rm {gcda_save_path} -r")
     # else:
     # cov_file = ''
     # os.system(f'cp {cov_file} {profraw_path}')
