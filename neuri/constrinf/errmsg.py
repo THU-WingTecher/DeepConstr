@@ -227,7 +227,7 @@ def map_error_messages_to_clusters_dynamic(raw_error_messages, threshold=0.5):
                         found = True
                         break
                 except : 
-                    TRAIN_LOG.error(f"Error in comparing {err_msg} and {_cls[0]}")
+                    TRAIN_LOG.warnning(f"Error in comparing {err_msg} and {_cls[0]}, may be two strings are empty")
                     continue 
             if not found :
                 clusters.append([err_msg])

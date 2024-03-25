@@ -397,7 +397,7 @@ class TrainingLoop:
         :return: Boolean indicating whether a satisfactory rule was found.
         """
         # Log the tried rules and their outcomes
-        TRAIN_LOG.debug(f"Solving: {target.get_core_msg()}Tried rules:\n{SPLITTER.join(map(str, synthesizer.tried))}")
+        TRAIN_LOG.debug(f"Solved: {target.get_core_msg()}Tried rules:\n{SPLITTER.join(map(str, synthesizer.tried))}")
         
         if highest_prev["overall_score"] == 0:
             # No improvement found
@@ -498,13 +498,6 @@ unsolved_err_msgs : {unsolved_msgs}
             """
         )  
         self.inferencer.finalize()
-
-    def load_constr_target_map_from_record(self, record) :
-        """load constr target map from record"""
-        constr_target_map = {}
-        # for constr in self.get_constrs_from_rules(record) :
-        #     constr_target_map.update({constr["target"] : (constr["scores"], Constraint(constr["txt"], constr["cot"], constr["target"], record["args"]["name"], record["args"]["dtype"]))})
-        return constr_target_map
     
     def update_pass_rate(self, record, pass_rate = None) :
         if pass_rate is None :
@@ -562,7 +555,6 @@ unsolved_err_msgs : {unsolved_msgs}
                     save_record(op_record, record_path)
                 else :
                     TRAIN_LOG.warning(f"Failed to train {most_frequents[0].get_core_msg()}")
-                    break
         
         self.save_only_acc(op_record, record_path)
         # if not self.is_retrainable(op_record) :
@@ -574,14 +566,17 @@ unsolved_err_msgs : {unsolved_msgs}
             self.pop_constr_from_record(constr.txt, op_record)
             targets = self.reproduce_errs(op_record, constr.target)
             if targets :
+                TRAIN_LOG.info(f"Reproduced {constr.target.get_core_msg()} after popped {constr.txt}")
                 succeed = self.train(op_record, targets, [], mode="f1", seeds = [(scores, constr)])
                 if succeed :
                     save_record(op_record, record_path)
                 else :
                     break
             else :
-                TRAIN_LOG.warning(f"Failed to reproduce {constr.target.get_core_msg()} with {constr.txt}")
-                pass # unreproducable means the popped constraint are not solving the error message
+                # unreproducable means the popped constraint are not solving the error message, it may solved by others, unretrainable
+                self.handle_solved_rule(constr, scores, op_record, []) 
+                constr_tar_dict = {r[0]['target']['msg']:r[0]['txt'] for r in op_record['rules']}
+                TRAIN_LOG.warning(f"Failed to reproduce {constr.target.get_core_msg()} after popped {constr.txt}{SPLITTER}constrs : {formatted_dict(constr_tar_dict)}")
 
     def reproduce_errs(self, record, target : ErrorMessage) :
         targets = []
