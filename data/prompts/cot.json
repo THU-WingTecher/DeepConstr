@@ -4,15 +4,15 @@
       "cot": "Based on given values, Error is triggered because all input tensors don't have same dimension. It expects to have same dimension among all tensors. Let's see what the args were. It seems dimensions of input1, input2, and target are not same, so input.dim, input2.dim, target.dim should be corrected. Therefore, Left : input.dim. Op : ==, and Right : input2.dim or target.dim"
     },
     "The size of tensor a (4) must match the size of tensor b (7) at non-singleton dimension 0": {
-      "answers": "a.dim == b.dim and a.shape == b.shape",
-      "cot": "Based on given values, Error is triggered because the two tensors are not inconistent. It expects to have same dimension among all tensors. Let's see what the args were. It seems dimensions and shape of a, and b are which should be corrected. Therefore, Left : a.dim, a.shape Op : ==, and Right : b.dim, b.shape"
+      "answers": "{arg1_name}.dim == {arg2_name}.dim and {arg_name}.shape == {arg2_name}.shape",
+      "cot": "Based on given values, Error is triggered because the two tensors are not inconistent. It expects to have same dimension among all tensors. Let's see what the args were. It seems dimensions and shape of a, and b are which should be corrected. Therefore, Left : {arg_name}.dim, {arg_name}.shape Op : ==, and Right : b.dim, b.shape"
     },
     "Can not squeeze dim, expected a dimension of 1, got 8 name:": {
-      "answers": "all(axis[i] < len(input.shape) and input.shape[axis[i]] == 1 for i in range(len(axis)))",
+      "answers": "all({arg1_name}[i] < len({arg2_name}.shape) and {arg2_name}.shape[{arg1_name}[i]] == 1 for i in range(len({arg1_name})))",
       "cot": "The error is due to an invalid squeeze dimension. What the args were? The function is trying to squeeze on dimension 8 of the input tensor, but the corresponding values are not 1. Squeezing a dimension is only valid if the size of that dimension is 1. Therefore, each axis[i] in axis should be a valid dimension (i.e., < input.rank), Op : <, and Right : input.rank. Also, the size of that dimension in the input tensor should be 1. So, input[axis[i]].dim should be 1, Op : ==, and Right : 1."
     },
     "Dimension out of range (expected to be in range of [-2, 1], but got 7)": {
-      "answers": "dim >= -len(input.shape) and dim < len(input.shape); all(d >= -len(input.shape) and d < len(input.shape) for d in dim)",
+      "answers": "{arg2_name} >= -len({arg1_name}.shape) and {arg2_name} < len({arg1_name}.shape); all(d >= -len({arg1_name}.shape) and d < len({arg1_name}.shape) for d in {arg2_name})",
       "cot": "The error occurs because the dimension provided is out of the valid range. Let's see what the args were. It related with arg_name 'dim=7', which is out of this range. To prevent this error in the future and generate constraints that do not trigger it, we need to ensure that the \"dim\" value is always within the valid range for the given tensor. If we denote the shape of the tensor as n, the valid range for the dimension would be [-n, n-1].The constraint for the 'dim' parameter can be expressed as:"
     },
     "Exception encountered when calling layer 'max_pooling1d_28' (type MaxPooling1D).  Stride must be > 0, but got 0": {
@@ -20,43 +20,39 @@
       "cot": "The error is caused because the stride value for the layer \"max_pooling1d_28\" is not as expected. What the args were? The layer expects a stride value greater than 0, but found a stride value of 0. Therefore, Left : strides which is the stride value should be corrected. It says that cannot be 0, so Op : !=, and Right : 0. Also, it should be greater than 0, so Op : >, and Right : 0."
     },
     "Expected 2 to 3 dimensions, but got 1-dimensional tensor for argument 1 'self' (while checking arguments for adaptive_avg_pool1d)": {
-      "answers": "example_key.ndims() == 2 or example_key.ndims() == 3;example_key.ndims() != 1",
+      "answers": "{arg1_name}.ndims() == 2 or {arg1_name}.ndims() == 3;{arg1_name}.ndims() != 1",
       "cot": "Error is triggered because of 1-dimensional tensor. it expects to have 2 or 3 dimentions. Let's see what the args were. It seems example_key has 1 dimension, and is the problem. so the number of dimensions of example_key should be corrected, which is example_key.ndims(). Therefore, Left : example_key.ndims(). It says that expected 2 to 3, so Op : ==, and Right : 2 or 3. Also, It implies that dimension cannot be 1, so Op : !=, and Right : 1."
     },
     "Expected out of dtypeFloat but found Int": {
-      "answers": "dtype(out) == dtype(input)",
+      "answers": "dtype(out) == dtype({arg1_name})",
       "cot": "The error is due to the mismatch in the data types of the 'out' tensor and the expected output data type. The 'out' tensor is of type int32, but the function expects a float data type. Therefore, the data type of the 'out' tensor should be float. So, Left : out.dtype, Op : ==, Right : dtype(input)"
     },
     "Incompatible matrix sizes for triangular_solve: each A matrix is 8 by 8 but each b matrix is 7 by 2": {
-      "answers": "A[-1] == b[-2]",
+      "answers": "{arg1_name}[-1] == {arg2_name}[-2]",
       "cot": "The error is triggered because incompatible matrix sizes with A and b. Let's see the what's args were.7,2 is the last two dimensions of b. in matrix calculation, last dimension of first matrix and first dimention of second matrix should be same, therefore, Left : A[-1], op : ==, right : b[-2]"
     },
     "Input 0 of layer \"max_pooling1d_20\" is incompatible with the layer: expected ndim=3, found ndim=2. Full shape received: (0, 0)": {
-      "answers": "len(inputs) == 3",
+      "answers": "len({arg_name}) == 3",
       "cot": "Error is caused because the input dimension to the layer \"max_pooling1d_20\" is not as expected. The layer expects an input with 3 dimensions but found input with 2 dimensions. Therefore, Left : len(inputs) which is the number of dimensions of inputs should be corrected. It says that cannot be 2, so Op : !=, and Right : 2. Also, it should be 3, so Op : ==, and Right : 3."
     },
     "Invalid reduction dimension 3 for input with 3 dimension(s) [Op:Mean] name: not defined": {
-      "answers": "(axis < input.rank);(i< input.rank for i in axis)",
+      "answers": "({arg2_name} < {arg1_name}.rank);(i< {arg1_name}.rank for i in {arg2_name})",
       "cot": "The error is due to an invalid reduction dimension. What the args were? The function is trying to reduce on dimension 3, but the input tensor only has 3 dimensions, indexed from 0. So, the maximum valid dimension for reduction would be 2. Therefore, Left : axis, which is the reduction dimension should be corrected. It says that cannot be 3 for input with 3 dimensions, so Op : !=, and Right : 3. Also, it should be less than 3, so Op : <, and Right : 3."
     },
     "Shapes of b and x, b and a are inconsistent: [4,9] vs. [7,2,7], [7,2,7] vs. [0,0]": {
-      "answers": "len(b) == len(x);len(b) == len(a);all(b.shape[i]==a.shape[i] for i in range(b.rank));all(x.shape[i]==a.shape[i] for i in range(x.rank))",
-      "cot": "The error is caused because the shapes of b and x, and x and a are inconsistent. Let's see what the args were. It seems shape of a, x, and b are not same. so, len(a), a.shape, len(b), and b.shape should be corrected. It says should be same with b and x. so Op : ==, and Right : len(x), x.shape, len(b), and b.shape"
+      "answers": "len({arg1_name}) == len({arg2_name});len({arg1_name}) == len({arg3_name});all({arg1_name}.shape[i]=={arg3_name}.shape[i] for i in range({arg1_name}.rank));all({arg2_name}.shape[i]=={arg3_name}.shape[i] for i in range({arg2_name}.rank))",
+      "cot": "The error is caused because the shapes of b and x, and x and a are inconsistent. Let's see what the args were. It seems shape of a, x, and b are not same. so, len(a), {arg_name}.shape, len(b), and b.shape should be corrected. It says should be same with b and x. so Op : ==, and Right : len(x), x.shape, len(b), and b.shape"
     },
     "The `pool_size` argument must be a tuple of 1 integers. Received: 0 including {0} that does not satisfy the requirement `> 0`.": {
       "answers": "pool_size > 0; all(p>0 for p in pool_size)",
       "cot": "The error indicates that the 'pool_size' argument is not satisfying the requirement of being a tuple of 1 integer which is greater than 0. The received 'pool_size' is 0, so it needs to be corrected. Therefore, Left: pool_size, Op: '>', and Right: 0."
     },
     "The size of tensor a (7) must match the size of tensor b (0) at non-singleton dimension 5": {
-      "answers": "all(q.shape[i] == x.shape[i] or q.shape[i] == 1 or x.shape[i] == 1 for i in range(-1, -min(len(q.shape), len(x.shape))-1, -1))",
+      "answers": "all({arg1_name}.shape[i] == {arg2_name}.shape[i] or {arg1_name}.shape[i] == 1 or {arg2_name}.shape[i] == 1 for i in range(-1, -min(len({arg1_name}.shape), len({arg2_name}.shape))-1, -1))",
       "cot": "Error is triggered because size of tensors at non-singleton dimension 5 doesn't match. What the args were? the two tensors matching problem at non-singleton dimension looks like broadcasting request. Broadcasting in tensor operations requires that the trailing dimensions of the tensors are either 1 or the same. We start from the last dimension because broadcasting aligns dimensions from the end. Therefore, we can revise the constraints as follows:"
     },
-    "Trying to create example_key with negative dimension": {
-      "answers": "all(x[i] >= 0 for i in range(len(example_key));",
-      "cot": "Error is triggered because of negative dimension with example_key. it expects to have not negative dimension. Let's see what the args were. It seems example_key has negative value at each dimension. It does not inform us which dimension to correct, so <symbol> or all(<symbol>) should be corrected, which is example_key or all(example_key). Therefore, Left : example_key or all(example_key). It implies that negative values are problem., so Op : >=, and Right : 0."
-    },
     "Trying to resize storage that is not resizable": {
-      "answers": "out.rank==input.rank and all(out.shape[i]==input.shape[i] for i in range(out.rank))",
+      "answers": "{arg1_name}.rank=={arg2_name}.rank and all({arg1_name}.shape[i]=={arg2_name}.shape[i] for i in range({arg1_name}.rank))",
       "cot": "Error is triggered because of we are trying to resize storageLet's see what the args were. I guess the storage indicates 'out' tensor. so, it means that 'out' tensor shape should be matched with the operation results. in this operation, the result shape is input.shape. Therefore, left : out.shape, out.rank op : == right : input.shape, input.rank"
     },
     "Value for attr ''T'' of float is not in the list of allowed values: half, int16, int32, int64, uint8, uint16, uint32, uint64": {
@@ -80,11 +76,11 @@
       "cot": "Error is triggered because of wrong padding size Let's see what the args were. The input tensor rank is 3 and error message says 3. So, I guess length of padding size should be matched with input size. Therefore, left : len(padding) op : == right : input.rank, 3 "
     },
     "input have non-zero size for non-batch dimensions, but input has sizes [0, 0, 1, 0] with dimension 3 being empty": {
-      "answers": "all(input[i]!=0 for i in range(1,len(input.shape)))",
+      "answers": "all({arg_name}[i]!=0 for i in range(1,len({arg_name}.shape)))",
       "cot": "Error is triggered because of zero size for non-batch dimensions, Let's see what the args were. There are zero on non-batch dimensions. Commonly, the first dimension is batch dimension. Therefore, Left : input[i], i in (1,len(input.shape)). op : !=, right : 0."
     },
     "mat1 and mat2 shapes cannot be multiplied (0x18 and 0x0)": {
-      "answers": "in_features==input[-1];out_features == input[-1]",
+      "answers": "in_features=={arg_name}[-1];out_features == {arg_name}[-1]",
       "cot": "Error is triggered because of unmatching shapes with (0x18 and 0x0). What the args were? it expects to have matching shapes maybe like (0*18 and 18*0). Let's see what the args were. It seems input has (0,0,2,26,18) shape, and out_features and in_features are 0. since we expect to have something like (0*18 and 18*0) from (0*18 and 0*0), one of arguments that had zero value should be corrected, which are in_features, or out_features. Therefore, Left : in_features or out_featurres. we expect Left(18*0) to match with (0*18). it seems the last value of input should be matched, which is input[-1], so Op : ==, Right : input[-1]."
     },
     "object of type 'int' has no len()": {
@@ -92,7 +88,7 @@
       "cot": "What the args were? Error is triggered because the 'int' of object don't have len(), which only list can have. So the type of object should be changed from 'int' to 'list'. Let's see what the args were. The type of 'strides' and 'window_shape' are 'int', but we don't know which one should be changed. Therefore, Left : dtype(strides) or dtype(window_shape). Op : == Right : list"
     },
     "required broadcastable shapes name:": {
-      "answers": "all(q.shape[i] == x.shape[i] or q.shape[i] == 1 or x.shape[i] == 1 for i in range(-1, -min(len(q.shape), len(x.shape))-1, -1))",
+      "answers": "all({arg_name1}.shape[i] == {arg_name2}.shape[i] or {arg_name1}.shape[i] == 1 or {arg_name2}.shape[i] == 1 for i in range(-1, -min(len({arg_name1}.shape), len({arg_name2}.shape))-1, -1))",
       "cot": "The error is due to the shapes of ''q'' and ''x'' not being broadcastable. What the args were? Broadcasting in tensor operations requires that the trailing dimensions of the tensors are either 1 or the same. So, the constraint should be that for each dimension starting from the last, the size of the dimension in ''q'' should be equal to the size of the dimension in ''x'' or one of them should be 1. We start from the last dimension because broadcasting aligns dimensions from the end. Therefore, we can revise the constraints as follows:"
     },
     "result type Double can't be cast to the desired output type Int ": {
