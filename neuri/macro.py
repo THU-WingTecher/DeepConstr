@@ -16,6 +16,10 @@ def onnx2external_data_dir(onnx_file):
 python experiments/evaluate_apis.py \
 exp.save_dir=exp mgen.record_path=$(pwd)/data/records/torch/ mgen.pass_rate=0.05 model.type=torch backend.type=torchjit fuzz.time=10m exp.parallel=4 mgen.noise=0.8
 """
+""" API TEST
+python experiments/evaluate_apis.py \
+exp.save_dir=gen_test mgen.record_path=/artifact/records/tf/ mgen.pass_rate=0.05 model.type=tensorflow backend.type=xla fuzz.time=1m exp.parallel=1 mgen.noise=0.8
+"""
 
 """ FUZZING 
 python neuri/cli/fuzz.py fuzz.time=24h mgen.record_path=data/records/torch fuzz.root=bugs/torchcomp-constrinf-fuzz-0221 filter.type=\[\'nan\',\'dup\',\'inf\'\] backend.type=torchcomp model.type=torch fuzz.save_test=bugs/torchcomp-constrinf-fuzz-0221_record debug.viz=true hydra.verbose=fuzz fuzz.resume=false mgen.method=constrinf mgen.max_nodes=3 mgen.pass_rate=0.6
@@ -32,4 +36,8 @@ python neuri/materialize/torch/program.py /artifact/exp/ torchcomp
 
 """train
 PYTHONPATH=/artifact/neuri/:/artifact/:$PYTHONPATH python neuri/cli/train.py train.record_path=data/records/torch backend.type=torchcomp model.type=torch hydra.verbose=train train.resume=false train.parallel=10 train.eval_asset=500
+
+tf
+
+PYTHONPATH=/artifact/neuri/:/artifact/:$PYTHONPATH python neuri/cli/train.py train.record_path=data/records/tf backend.type=xla model.type=tensorflow hydra.verbose=train train.resume=false train.parallel=10 train.eval_asset=500 temp.start=0 temp.end=50 train.list=/artifact/data/tf_overall_apis.json
 """

@@ -463,8 +463,8 @@ class TrainingLoop:
         )
     def runs(self) :
         n_func = 0
-        trained_func_index = self.cfg["temp"]["start"]
-        end_index = self.cfg["temp"]["end"]
+        trained_func_index = self.cfg["temp"]["start"] if self.cfg["temp"]["start"] is not None else 0
+        end_index = self.cfg["temp"]["end"] if self.cfg["temp"]["end"] is not None else len(self.train_list)
         TRAIN_LOG.info(f"Start training from {trained_func_index} to {end_index}")
         # while True :
         while n_func < end_index :
