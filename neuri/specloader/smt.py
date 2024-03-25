@@ -162,7 +162,9 @@ def gen_noise(arg_name, arg_type, args_length, noise_prob):
         pass 
     return noises
 
-def handle_int_sort(model, z3_instance):
+def handle_int_sort(model, z3_instance, is_length=False):
+    if is_length :
+        return clip_unbound_val(z3_instance.as_long(), max = MAX_ARR_LEN, min = 0)
     return clip_unbound_val(z3_instance.as_long())
 
 def handle_real_sort(model, z3_instance):
@@ -181,7 +183,7 @@ def handle_abs_tensor(model, z3_instance, arg_name, args_types, args_values, arg
     wrapper = args_types[arg_name].z3()(arg_name)
     dtype = wrapper.evaluate(model, z3_instance, attr="dtype")
     rank = wrapper.evaluate(model, z3_instance, attr="rank")
-    rank = random_gen_arr_len() if rank is None else handle_int_sort(model, rank)
+    rank = random_gen_arr_len() if rank is None else handle_int_sort(model, rank, is_length=True)
     if ret_len : 
         args_lengths[arg_name] = rank
         return 
