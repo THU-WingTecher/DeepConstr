@@ -25,4 +25,59 @@ args:
   - false
 name: torch.Tensor.nanquantile
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: "The error is caused because the interpolation value provided is not one\
+      \ of the expected options. The expected options for the interpolation parameter\
+      \ are 'linear', 'lower', 'higher', 'midpoint', or 'nearest', but the provided\
+      \ value is 'VACz'. \n\nTo prevent this error in the future and generate constraints\
+      \ that do not trigger it, we need to ensure that the interpolation value is\
+      \ always one of the expected options. We can express this constraint as:"
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        interpolation: str
+        keepdim: bool
+        q: tensor
+        self: tensor
+      msg: quantile() interpolation must be one of linear, lower, higher, midpoint
+        or nearest, but got bsRo
+      package: torch
+    txt: interpolation in ['linear', 'lower', 'higher', 'midpoint', 'nearest']
+  - f1_score: 96.43201542912246
+    overall_score: 100
+    precision: 100.0
+    recall: 93.10986964618249
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        interpolation: str
+        keepdim: bool
+        q: tensor
+        self: tensor
+      msg: 'Too large tensor shape: shape = [9, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: not keepdim
+  - f1_score: 64.9441340782123
+    overall_score: 49.5
+    precision: 93.0
+    recall: 49.892703862660944
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        interpolation: str
+        keepdim: bool
+        q: tensor
+        self: tensor
+      msg: quantile() q must be a scalar or 1D tensor
+      package: torch
+    txt: (q.dim() == 1)
+  - f1_score: 98.4251968503937
+    overall_score: 100
+    precision: 100.0
+    recall: 96.89922480620154

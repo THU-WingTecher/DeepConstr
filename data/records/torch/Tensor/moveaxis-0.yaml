@@ -17,8 +17,76 @@ args:
   - true
 name: torch.Tensor.moveaxis
 package: torch
-pass_rate: 0.0
+pass_rate: 74.8
 rules:
+- - cot: 'The error is triggered because the tensor `self` has negative dimensions,
+      which is not allowed. To prevent this error, the dimensions of `self` should
+      be non-negative. Therefore, the constraint is:'
+    length: 1
+    target:
+      choosen_dtype:
+        destination: list[int]
+        self: tensor
+        source: list[int]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(dim >= 0 for dim in self.shape)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        destination: list[int]
+        self: tensor
+        source: list[int]
+      msg: 'movedim: repeated dim in `source` ([-1, -1, -1, -1, -3])'
+      package: torch
+    txt: source[i] != source[j]
+  - f1_score: 39.3719806763285
+    overall_score: 31.68599033816425
+    precision: 32.66533066132264
+    recall: 49.544072948328264
+- - cot: "The error is caused because the tensor shape is too large. Therefore, the\
+      \ constraint should limit the number of dimensions and the size of each dimension\
+      \ of the tensor. \n\nThe number of dimensions can be calculated as `len(self.shape)`.\
+      \ The size of each dimension can be calculated as `self.shape[i]` where `i`\
+      \ is the index of the dimension.\n\nTo ensure that the tensor shape is not too\
+      \ large, we can set the maximum number of dimensions and the maximum size of\
+      \ each dimension. For example, we can set the maximum number of dimensions to\
+      \ 8 and the maximum size of each dimension to 10. \n\nThe constraints can be\
+      \ formulated as follows:"
+    length: 1
+    target:
+      choosen_dtype:
+        destination: list[int]
+        self: tensor
+        source: list[int]
+      msg: 'Too large tensor shape: shape = [4, 8, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: len(self.shape) <= 8 and all(size <= 10 for size in self.shape)
+  - f1_score: 68.25938566552901
+    overall_score: 46.129692832764505
+    precision: 100.0
+    recall: 51.813471502590666
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        destination: list[int]
+        self: tensor
+        source: list[int]
+      msg: Dimension out of range (expected to be in range of [-8, 7], but got 9)
+      package: torch
+    txt: (all(s >= -len(self.shape) and s < len(self.shape) for s in source) and all(d
+      >= -len(self.shape) and d < len(self.shape) for d in destination)) and (all(d
+      >= -8 and d <= 7 for d in destination))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
 - - cot: Error is triggered because the number of dimensions in the source list and
       destination list are not the same. The source list should contain the same number
       of dimensions as the destination list. To prevent this error, we can add a constraint
@@ -34,23 +102,7 @@ rules:
         9, -1, 9, 3, 4, 9, 9] dims)'
       package: torch
     txt: len(source) == len(destination)
-  - f1_score: 85.91065292096219
-    overall_score: 100
+  - f1_score: 78.86435331230284
+    overall_score: 51.43217665615142
     precision: 100.0
-    recall: 75.3012048192771
-- - cot: synthesized
-    length: 2
-    target:
-      choosen_dtype:
-        destination: list[int]
-        self: tensor
-        source: list[int]
-      msg: Dimension out of range (expected to be in range of [-8, 7], but got 9)
-      package: torch
-    txt: (all(s >= -len(self.shape) and s < len(self.shape) for s in source) and all(d
-      >= -len(self.shape) and d < len(self.shape) for d in destination)) and (all(d
-      >= -8 and d <= 7 for d in destination))
-  - f1_score: 88.18181818181819
-    overall_score: 50.0
-    precision: 97.0
-    recall: 80.83333333333333
+    recall: 65.10416666666666

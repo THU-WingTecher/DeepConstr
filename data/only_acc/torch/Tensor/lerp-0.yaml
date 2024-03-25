@@ -34,20 +34,6 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 51.3874614594039
-- - cot: divided
-    length: 1
-    target:
-      choosen_dtype:
-        end: tensor
-        self: tensor
-        weight: int
-      msg: '"lerp_kernel_scalar" not implemented for ''Int'''
-      package: torch
-    txt: end.dtype in [torch.float16, torch.float32, torch.float64]
-  - f1_score: 100.0
-    overall_score: 100
-    precision: 100.0
-    recall: 100.0
 - - cot: ''
     length: 1
     target:
@@ -58,6 +44,20 @@ rules:
       msg: expected dtype float for `end` but got dtype int
       package: torch
     txt: dtype(end) == dtype(self)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        end: tensor
+        self: tensor
+        weight: int
+      msg: '"lerp_kernel_scalar" not implemented for ''Int'''
+      package: torch
+    txt: end.dtype in [torch.float16, torch.float32, torch.float64]
   - f1_score: 100.0
     overall_score: 100
     precision: 100.0

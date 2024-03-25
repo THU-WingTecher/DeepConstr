@@ -1,0 +1,76 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - vec
+  required:
+  - true
+  - true
+name: torch.Tensor.mv
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: 'The error is triggered because the dimensions of the matrix and the vector
+      are not compatible for matrix-vector multiplication. Let''s analyze the runtime
+      information:
+
+      - The shape of the matrix (self) is [9, 9, 9, 9, 9, 9, 9].
+
+      - The shape of the vector (vec) is [9, 8, 1, 6, 8, 1, 8, 8, 8].
+
+
+      In matrix-vector multiplication, the number of columns in the matrix should
+      be equal to the length of the vector. Therefore, we need to ensure that the
+      last dimension of the matrix is equal to the length of the vector.
+
+
+      To prevent the error, we can add a condition that checks if the last dimension
+      of the matrix is equal to the length of the vector:'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        vec: tensor
+      msg: vector + matrix @ vector expected, got 1, 4, 5
+      package: torch
+    txt: self.shape[-1] == vec.shape[-1]
+  - f1_score: 68.70007262164125
+    overall_score: 50.3
+    precision: 94.6
+    recall: 53.93386545039909
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        self: tensor
+        vec: tensor
+      msg: 'Too large tensor shape: shape = [9, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: ((self.shape == vec.shape) and (len(vec.shape) <= 2)) and (len(vec.shape)
+      == 1)
+  - f1_score: 67.56756756756758
+    overall_score: 100
+    precision: 100.0
+    recall: 51.02040816326531
+- - cot: 'Error is triggered because the dimension specified as 0 but the tensor has
+      no dimensions. To prevent this error, we need to make sure that the dimension
+      specified is within the range of the tensor''s dimensions. Let''s see what the
+      args were. The dimension specified is 0, but the tensor has no dimensions. Therefore,
+      the condition to prevent this error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        vec: tensor
+      msg: Dimension specified as 0 but tensor has no dimensions
+      package: torch
+    txt: len(self.shape) > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

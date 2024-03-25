@@ -1,0 +1,64 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - source
+  - destination
+  required:
+  - true
+  - true
+  - true
+name: torch.Tensor.movedim
+package: torch
+pass_rate: 94.8
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        destination: int
+        self: tensor
+        source: int
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 37)
+      package: torch
+    txt: source >= -len(self.shape) and source < len(self.shape) and destination >=
+      -len(self.shape) and destination < len(self.shape)
+  - f1_score: 94.49449449449448
+    overall_score: 50.199999999999996
+    precision: 94.39999999999999
+    recall: 94.58917835671342
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        destination: int
+        self: tensor
+        source: int
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: destination >= 0
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        destination: int
+        self: tensor
+        source: int
+      msg: 'Too large tensor shape: shape = [9, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: self.dim() == destination and self.size(source) == self.size(destination)
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0

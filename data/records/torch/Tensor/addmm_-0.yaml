@@ -25,7 +25,7 @@ args:
   - false
 name: torch.Tensor.addmm_
 package: torch
-pass_rate: 1.0
+pass_rate: 0.0
 rules:
 - - cot: ''
     length: 1
@@ -60,8 +60,8 @@ rules:
     overall_score: 44.76836158192091
     precision: 92.80000000000001
     recall: 50.65502183406113
-- - cot: ''
-    length: 1
+- - cot: synthesized
+    length: 2
     target:
       choosen_dtype:
         alpha: int
@@ -69,13 +69,13 @@ rules:
         mat1: tensor
         mat2: tensor
         self: tensor
-      msg: mat1 and mat2 shapes cannot be multiplied (5x3 and 9x9)
+      msg: mat1 must be a matrix, got 4-D tensor
       package: torch
-    txt: mat1.shape[1] == mat2.shape[0]
-  - f1_score: 68.58710562414267
-    overall_score: 46.29355281207133
+    txt: (mat1.ndim == 2) and (mat2.ndim() == 2)
+  - f1_score: 100.0
+    overall_score: 100
     precision: 100.0
-    recall: 52.19206680584551
+    recall: 100.0
 - - cot: 'Error occurred because self and mat2 have different data types. self has
       Int dtype and mat2 has Float dtype. To prevent the error, we need to make sure
       that self and mat2 have the same dtype. Therefore, the constraint should be
@@ -95,8 +95,12 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 100.0
-- - cot: synthesized
-    length: 2
+- - cot: 'The error is caused because the shapes of mat1 and mat2 are inconsistent.
+      Let''s see what the arguments were. It seems mat1 has a shape of (8, 5) and
+      mat2 has a shape of (3, 2). To prevent this error, the number of columns in
+      mat1 should be equal to the number of rows in mat2. Therefore, the condition
+      to prevent the error is:'
+    length: 1
     target:
       choosen_dtype:
         alpha: int
@@ -104,9 +108,9 @@ rules:
         mat1: tensor
         mat2: tensor
         self: tensor
-      msg: mat1 must be a matrix, got 4-D tensor
+      msg: mat1 and mat2 shapes cannot be multiplied (3x4 and 8x5)
       package: torch
-    txt: (mat1.ndim == 2) and (mat2.ndim() == 2)
+    txt: mat1.shape[1] == mat2.shape[0]
   - f1_score: 100.0
     overall_score: 100
     precision: 100.0

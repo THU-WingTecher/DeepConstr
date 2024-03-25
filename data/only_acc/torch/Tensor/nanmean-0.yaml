@@ -21,9 +21,9 @@ args:
   - false
 name: torch.Tensor.nanmean
 package: torch
-pass_rate: 99.2
+pass_rate: 100
 rules:
-- - cot: ''
+- - cot: divided
     length: 1
     target:
       choosen_dtype:
@@ -34,8 +34,8 @@ rules:
       msg: 'nanmean(): expected input to have floating point or complex dtype but
         got Int'
       package: torch
-    txt: self.dtype in [torch.float32, torch.float64, torch.complex64, torch.complex128]
-  - f1_score: 100.0
+    txt: self.dtype == torch.float64
+  - f1_score: 67.34006734006734
     overall_score: 100
     precision: 100.0
-    recall: 100.0
+    recall: 50.76142131979695

@@ -1,0 +1,100 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - List[int]
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - source
+  - destination
+  required:
+  - true
+  - true
+  - true
+name: torch.Tensor.moveaxis
+package: torch
+pass_rate: 28.857715430861724
+rules:
+- - cot: Error is triggered because the number of dimensions in the source list and
+      destination list are not the same. The source list should contain the same number
+      of dimensions as the destination list. To prevent this error, we can add a constraint
+      that checks if the lengths of the source and destination lists are equal.
+    length: 1
+    target:
+      choosen_dtype:
+        destination: list[int]
+        self: tensor
+        source: list[int]
+      msg: 'movedim: Invalid source or destination dims: source ([-2, -4, -3, -3,
+        -3, -3, -3] dims) should contain the same number of dims as destination ([-3,
+        9, -1, 9, 3, 4, 9, 9] dims)'
+      package: torch
+    txt: len(source) == len(destination)
+  - f1_score: 85.91065292096219
+    overall_score: 100
+    precision: 100.0
+    recall: 75.3012048192771
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        destination: list[int]
+        self: tensor
+        source: list[int]
+      msg: Dimension out of range (expected to be in range of [-8, 7], but got 9)
+      package: torch
+    txt: (all(s >= -len(self.shape) and s < len(self.shape) for s in source) and all(d
+      >= -len(self.shape) and d < len(self.shape) for d in destination)) and (all(d
+      >= -8 and d <= 7 for d in destination))
+  - f1_score: 88.18181818181819
+    overall_score: 50.0
+    precision: 97.0
+    recall: 80.83333333333333
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        destination: list[int]
+        self: tensor
+        source: list[int]
+      msg: 'Too large tensor shape: shape = [5, 8, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: (len(self.shape) <= 8) and (len(destination) == len(source) == len(self.shape))
+  - f1_score: 71.73601147776183
+    overall_score: 100
+    precision: 100.0
+    recall: 55.92841163310962
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        destination: list[int]
+        self: tensor
+        source: list[int]
+      msg: 'movedim: repeated dim in `source` ([-1, -1, -1, -1, -3])'
+      package: torch
+    txt: source[i] != source[j]
+  - f1_score: 36.54320987654321
+    overall_score: 17.799999999999997
+    precision: 29.599999999999998
+    recall: 47.74193548387097
+- - cot: 'The error is triggered because the tensor `self` has negative dimensions,
+      which is not allowed. To prevent this error, the dimensions of `self` should
+      be non-negative. Therefore, the constraint is:'
+    length: 1
+    target:
+      choosen_dtype:
+        destination: list[int]
+        self: tensor
+        source: list[int]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(dim >= 0 for dim in self.shape)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

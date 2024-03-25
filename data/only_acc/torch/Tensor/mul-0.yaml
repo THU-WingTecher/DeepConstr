@@ -26,7 +26,20 @@ rules:
         dimension 3
       package: torch
     txt: self.dim == other.dim and self.shape == other.shape
-  - f1_score: 94.16195856873824
-    overall_score: 59.08097928436912
+  - f1_score: 94.07337723424271
+    overall_score: 100
     precision: 100.0
-    recall: 88.9679715302491
+    recall: 88.80994671403198
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: 'Too large tensor shape: shape = [4, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: (self.shape[0] == other.shape[0]) and (self.shape[i] == 1)
+  - f1_score: 66.71114076050699
+    overall_score: 100
+    precision: 100.0
+    recall: 50.050050050050054

@@ -13,4 +13,31 @@ args:
   - true
 name: torch.Tensor.mul_
 package: torch
-pass_rate: 0
+pass_rate: 0.2
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self) == dtype(other)
+  - f1_score: 98.13542688910698
+    overall_score: 61.06771344455349
+    precision: 100.0
+    recall: 96.33911368015414
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: 'Too large tensor shape: shape = [8, 9, 8, 8, 8, 8, 8, 8, 8]'
+      package: torch
+    txt: self.shape[8] <= 9
+  - f1_score: 67.93478260869566
+    overall_score: 45.96739130434783
+    precision: 100.0
+    recall: 51.440329218106996

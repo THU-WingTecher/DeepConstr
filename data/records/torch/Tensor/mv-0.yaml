@@ -13,4 +13,41 @@ args:
   - true
 name: torch.Tensor.mv
 package: torch
-pass_rate: 0
+pass_rate: 4.3999999999999995
+rules:
+- - cot: 'Error is triggered because the dimension specified as 0 but the tensor has
+      no dimensions. To prevent this error, we need to make sure that the dimension
+      specified is within the range of the tensor''s dimensions. Let''s see what the
+      args were. The dimension specified is 0, but the tensor has no dimensions. Therefore,
+      the condition to prevent this error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        vec: tensor
+      msg: Dimension specified as 0 but tensor has no dimensions
+      package: torch
+    txt: len(self.shape) > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Error is caused because the tensor''s shape is too large. The torch.Tensor.mv
+      function expects a 2-dimensional tensor as the self tensor and a 1-dimensional
+      tensor as the vector. It seems the self tensor has too many dimensions. Therefore,
+      the condition to prevent this error would be to ensure that the self tensor
+      is 2-dimensional and the vector tensor is 1-dimensional. So, Left : self.dim,
+      vec.dim should be corrected. For self, Op : ==, and Right : 2. For vec, Op :
+      ==, and Right : 1.'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        vec: tensor
+      msg: 'Too large tensor shape: shape = [8, 8, 8, 8, 8, 8, 8, 9, 8]'
+      package: torch
+    txt: self.dim == 2 and vec.dim == 1
+  - f1_score: 68.76340243030737
+    overall_score: 46.38170121515368
+    precision: 96.2
+    recall: 53.503893214682975

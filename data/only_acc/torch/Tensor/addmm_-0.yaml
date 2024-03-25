@@ -27,75 +27,8 @@ name: torch.Tensor.addmm_
 package: torch
 pass_rate: 0.0
 rules:
-- - cot: 'Error is triggered because mat1 is expected to be a matrix, but it is a
-      4-D tensor. To prevent this error, we need to ensure that mat1 is a 2-D tensor.
-      Therefore, the constraint can be formulated as:'
-    target:
-      choosen_dtype:
-        alpha: int
-        beta: int
-        mat1: tensor
-        mat2: tensor
-        self: tensor
-      msg: mat1 must be a matrix, got 4-D tensor
-      package: torch
-    txt: mat1.ndim == 2
-  - f1_score: 95.43147208121827
-    overall_score: 100
-    precision: 100.0
-    recall: 91.2621359223301
-- - cot: 'The error is caused because the self and mat2 tensors have different data
-      types. To prevent this error, the data types of self and mat2 should be the
-      same. Therefore, the condition to prevent the error is:'
-    target:
-      choosen_dtype:
-        alpha: int
-        beta: int
-        mat1: tensor
-        mat2: tensor
-        self: tensor
-      msg: self and mat2 must have the same dtype, but got Int and Float
-      package: torch
-    txt: self.dtype == mat2.dtype
-  - f1_score: 93.57798165137613
-    overall_score: 48.0
-    precision: 90.0
-    recall: 97.45222929936305
 - - cot: ''
-    target:
-      choosen_dtype:
-        alpha: int
-        beta: int
-        mat1: tensor
-        mat2: tensor
-        self: tensor
-      msg: mat1 and mat2 shapes cannot be multiplied (6x5 and 1x4)
-      package: torch
-    txt: mat1.shape[1] == mat2.shape[0]
-  - f1_score: 66.66666666666667
-    overall_score: 100
-    precision: 100.0
-    recall: 50.0
-- - cot: 'Based on the given runtime information, the error occurs because the size
-      of the input tensor [4] does not match the size of the output tensor [2, 3].
-      To prevent this error, we need to ensure that the sizes of the input tensor
-      and the output tensor match. Therefore, the constraint can be formulated as:'
-    target:
-      choosen_dtype:
-        alpha: int
-        beta: int
-        mat1: tensor
-        mat2: tensor
-        self: tensor
-      msg: 'Bad in-place call: input tensor size [4] and output tensor size [2, 3]
-        should match'
-      package: torch
-    txt: self.size() == mat2.size()
-  - f1_score: 66.66666666666667
-    overall_score: 100
-    precision: 100.0
-    recall: 50.0
-- - cot: ''
+    length: 1
     target:
       choosen_dtype:
         alpha: int
@@ -106,6 +39,74 @@ rules:
       msg: mat1 and mat2 must have the same dtype
       package: torch
     txt: mat1.dtype == mat2.dtype
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat1: tensor
+        mat2: tensor
+        self: tensor
+      msg: 'Bad in-place call: input tensor size [9, 8, 7, 6, 6, 6, 8] and output
+        tensor size [2, 2] should match'
+      package: torch
+    txt: self.dim == mat1.dim
+  - f1_score: 65.53672316384181
+    overall_score: 44.76836158192091
+    precision: 92.80000000000001
+    recall: 50.65502183406113
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat1: tensor
+        mat2: tensor
+        self: tensor
+      msg: mat1 and mat2 shapes cannot be multiplied (5x3 and 9x9)
+      package: torch
+    txt: mat1.shape[1] == mat2.shape[0]
+  - f1_score: 68.58710562414267
+    overall_score: 46.29355281207133
+    precision: 100.0
+    recall: 52.19206680584551
+- - cot: 'Error occurred because self and mat2 have different data types. self has
+      Int dtype and mat2 has Float dtype. To prevent the error, we need to make sure
+      that self and mat2 have the same dtype. Therefore, the constraint should be
+      formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat1: tensor
+        mat2: tensor
+        self: tensor
+      msg: self and mat2 must have the same dtype, but got Float and Int
+      package: torch
+    txt: self.dtype == mat2.dtype
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat1: tensor
+        mat2: tensor
+        self: tensor
+      msg: mat1 must be a matrix, got 4-D tensor
+      package: torch
+    txt: (mat1.ndim == 2) and (mat2.ndim() == 2)
   - f1_score: 100.0
     overall_score: 100
     precision: 100.0

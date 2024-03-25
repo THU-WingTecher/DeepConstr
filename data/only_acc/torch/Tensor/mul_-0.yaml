@@ -1,0 +1,58 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.Tensor.mul_
+package: torch
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (6) must match the size of tensor b (2) at non-singleton
+        dimension 4
+      package: torch
+    txt: ((other.shape == self.shape) and (self.shape[i] == 1)) and (self.dim() ==
+      other.dim())
+  - f1_score: 90.33423667570008
+    overall_score: 100
+    precision: 100.0
+    recall: 82.37232289950576
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: 'Too large tensor shape: shape = [8, 9, 8, 8, 8, 8, 8, 8, 8]'
+      package: torch
+    txt: self.shape[8] <= 9
+  - f1_score: 67.70480704129993
+    overall_score: 100
+    precision: 100.0
+    recall: 51.17707267144319
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: (dtype(self) == int32) and (dtype(self) == dtype(other))
+  - f1_score: 76.33587786259541
+    overall_score: 100
+    precision: 100.0
+    recall: 61.72839506172839

@@ -17,4 +17,20 @@ args:
   - true
 name: torch.Tensor.movedim
 package: torch
-pass_rate: 0
+pass_rate: 95.39999999999999
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        destination: int
+        self: tensor
+        source: int
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 37)
+      package: torch
+    txt: source >= -len(self.shape) and source < len(self.shape) and destination >=
+      -len(self.shape) and destination < len(self.shape)
+  - f1_score: 89.84962406015039
+    overall_score: 56.924812030075195
+    precision: 95.6
+    recall: 84.7517730496454
