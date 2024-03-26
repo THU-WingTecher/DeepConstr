@@ -25,7 +25,12 @@ class Synthesizer:
         self.non_FN : List[Tuple[Dict[str, float], Constraint]] = []  # For storing the best constraints found so far
         self.tried : List[z3.ExprRef] = []
         self.mode : Literal["acc", "f1"] = 'f1'
+        self.errs_of_FP_cases = {}
+        self.FN_err_instances = []
     
+    def set_target(self, target) :
+        self.target = target
+
     def set_mode(self, mode : Literal["acc", "f1"]) : 
         assert mode in ["acc", "f1"], f"mode should be either 'acc' or 'f1', but got {mode}"
         self.mode = mode 
@@ -46,16 +51,25 @@ class Synthesizer:
         for seed in seeds :
             self.saved_state.append(seed)
 
+    def get_varied_errs_from_evaluator(self, evaluator) :
+        self.errs_of_FP_cases = evaluator.errs_of_FP_cases
+
+    def get_errs_of_FP_cases(self) :
+        clusters = list(self.errs_of_FP_cases.values())
+        sorted(clusters, key=lambda x : len(x), reverse=True)
+        return clusters[0] if clusters else []
+
     def evaluate(self, constraint : Constraint, skim : bool = False) -> Dict[str, Any]:
         # Placeholder: Calculate F1, precision, and recall for the given constraint
         scores = {}
-        evaluator = Evaluator(self.target, constraint, self.record, self.executor, self.cfg)
+        evaluator = Evaluator(self.target, constraint, self.record, self.executor, self.cfg, self.errs_of_FP_cases)
         TRAIN_LOG.info(f"Evaluating [[{constraint.txt}]] ::: Z3 [[{constraint.z3expr}]]")
         # if self.goal_is_acc() :
         #     evaluator.get_precision(num_of_check=self.cfg['simple_eval_asset'] if skim else self.cfg['eval_asset'])
         #     scores["precision"] = evaluator.precision
         # else :
         evaluator.get_f1(num_of_check=self.cfg['simple_eval_asset'] if skim else self.cfg['eval_asset'])
+        self.get_varied_errs_from_evaluator(evaluator)
         scores["precision"] = evaluator.precision
         scores["recall"] = evaluator.recall
         scores["f1_score"] = evaluator.f1_score

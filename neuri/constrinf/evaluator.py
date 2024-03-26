@@ -14,7 +14,8 @@ class Evaluator() :
                  constr : Constraint,
                  record : Dict[str, Any],
                  executor : Executor,
-                 cfg : Dict[str, Any] = None
+                 cfg : Dict[str, Any] = None,
+                 FP_container = []
                  ) :
         
         self.target = target 
@@ -32,7 +33,7 @@ class Evaluator() :
         self.tries = 0
         self.latest_errmsgs = ''
         self.container = {}
-        self.errmsgs_of_FP_cases = []
+        self.errs_of_FP_cases = FP_container
         self.precision = 0
         self.recall = 0
         self.f1_score = 0
@@ -42,6 +43,14 @@ class Evaluator() :
         # target args's type is same ?
         return is_similar(msg1, msg2, threshold=self.cfg['str_sim_threshold'])
 
+    def save_err_cases(self, container, msgs) :
+        for msg in msgs :
+            if msg :
+                if msg.get_core_msg() in container.keys() : 
+                    container[msg.get_core_msg()].append(msg)
+                else :
+                    container[msg.get_core_msg()] = [msg]
+    
     def assess_TP(self, num_of_check=20) :
         # self.prompter.collect_control(FP=True, FN=False)
         res = self.evaluate(self.constr, num_of_check=num_of_check)
@@ -49,9 +58,8 @@ class Evaluator() :
             return self.handle_unable_to_gen()
         else :
             solved, unsolved = res
-        if self.gen_interfered : 
-            return 0
-        TP_ratio = solved/(solved + unsolved)
+        self.save_err_cases(self.errs_of_FP_cases, unsolved)
+        TP_ratio = len(solved)/(len(solved) + len(unsolved))
         return TP_ratio
     def handle_unable_to_gen(self) :
         TRAIN_LOG.info(f"Unable to generate")
@@ -65,7 +73,7 @@ class Evaluator() :
         if res is False : 
             return self.handle_unable_to_gen()
         solved, unsolved = res
-        FN_ratio = solved/(solved + unsolved)
+        FN_ratio = len(solved)/(len(solved) + len(unsolved))
         return FN_ratio
     def cal_recall(self, FN, TP) :
         if TP == 0 : return 0 
@@ -98,8 +106,8 @@ class Evaluator() :
 
 
     def evaluate(self, constr : Constraint, num_of_check : int =10) : 
-        solved = 0
-        unsolved = 0
+        solved_instances = []
+        unsolved_instances = []
         ungen = 0
         target_cluster = None
         raw_err_msgs = [self.target.get_core_msg()]
@@ -114,6 +122,7 @@ class Evaluator() :
                 continue
             success, error_instance = result
             msg_key = error_instance.get_core_msg()
+            assert msg_key is not None
             error_messages[msg_key] = error_instance
             raw_err_msgs.append(msg_key)
         if len(raw_err_msgs) == 1 : # not added any result(= all result is None)
@@ -125,13 +134,17 @@ class Evaluator() :
                     target_cluster = key 
                     break
             if target_cluster is not None : break
+        raw_err_msgs.remove(self.target.get_core_msg())
+        for msg in raw_err_msgs : 
+            if (msg in dynamic_cluster_mapping[target_cluster]) and (msg != NOERR_MSG) :
+                unsolved_instances.append(error_messages[msg])
+            else :
+                solved_instances.append(error_messages[msg])
 
-        unsolved = sum([1 for msg in raw_err_msgs if (msg in dynamic_cluster_mapping[target_cluster]) and (msg != NOERR_MSG)]) - 1 # we add a target message to the cluster when init.
-        solved += sum([1 for msg in raw_err_msgs if (msg not in dynamic_cluster_mapping[target_cluster]) or (msg == NOERR_MSG)])
         if TRAIN_LOG.getEffectiveLevel()  <= logging.DEBUG:
             sorted_cluster_mapping = dict(sorted(dynamic_cluster_mapping.items(), key=lambda item: len(item[1]), reverse=True))
             distributions = {messages[0] : len(messages) for _, messages in sorted_cluster_mapping.items()}
             TRAIN_LOG.debug(f"[{constr.txt}] Current error distribution :\n{formatted_dict(distributions)}")
 
-        TRAIN_LOG.info(f"[{constr.txt}] Solved: {solved}, Unsolved: {unsolved}, Unable to generate: {ungen}")
-        return solved, unsolved
+        TRAIN_LOG.info(f"[{constr.txt}] Solved: {len(solved_instances)}, Unsolved: {len(unsolved_instances)}, Unable to generate: {ungen}")
+        return solved_instances, unsolved_instances

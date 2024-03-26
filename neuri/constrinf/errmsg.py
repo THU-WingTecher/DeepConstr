@@ -9,6 +9,13 @@ from neuri.abstract.dtype import materalize_dtypes
 from neuri.constrinf.util import formatted_dict
 from neuri.logger import TRAIN_LOG
 
+def delete_after(msg, chr, include=False) : 
+    if chr not in msg :
+        return msg
+    end = msg.index(chr) if include else msg.index(chr)-1  # Find the start of the JSON object
+    res = msg[:end]
+    return res
+
 class ErrorMessage:
     def __init__(self, msg: str, traceback_msg : str, values, choosen_dtype, package : Literal["torch", "tensorflow"] = "torch"):
         """
@@ -88,17 +95,12 @@ class ErrorMessage:
         msg = delete_btw(msg, '{', '}')
         msg = delete_btw(msg, '<', '>')
         msg = msg.replace('\t',' ').replace('  ',' ')
+        msg = delete_after(msg, '\n')
         return msg.strip()
-    def delete_after(self, msg, chr, include=False) : 
-        if chr not in msg :
-            return msg
-        end = msg.index(chr) if include else msg.index(chr)-1  # Find the start of the JSON object
-        res = msg[:end]
-        return res
 
     def get_core_msg(self) -> str :
         msg = self.msg
-        if self.msg == "no error" :
+        if msg == "no error" :
             return msg
         first_pos = msg.find("Error:")
         if self.package == 'tensorflow' :
@@ -203,6 +205,8 @@ from sklearn.metrics import silhouette_score
 #                     "shape should consistence matrix, but we got nothing but you"
 # ]
 # dummy_strings = DUMMY_STR * dummy_data_count
+
+
 def map_error_messages_to_clusters_dynamic(raw_error_messages, threshold=0.5):
     """
     Maps each error message to a cluster based on structural characteristics using TF-IDF and dynamically

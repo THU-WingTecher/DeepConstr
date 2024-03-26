@@ -401,7 +401,7 @@ class TrainingLoop:
         :return: Boolean indicating whether a satisfactory rule was found.
         """
         # Log the tried rules and their outcomes
-        TRAIN_LOG.debug(f"Solved: {target.get_core_msg()}Tried rules:\n{SPLITTER.join(map(str, synthesizer.tried))}")
+        TRAIN_LOG.debug(f"Error-Solved: {target.get_core_msg()}Tried rules:\n{SPLITTER.join(map(str, synthesizer.tried))}")
         
         if highest_prev["overall_score"] == 0:
             # No improvement found
@@ -558,7 +558,8 @@ unsolved_err_msgs : {unsolved_msgs}
                 if succeed :
                     save_record(op_record, record_path)
                 else :
-                    TRAIN_LOG.warning(f"Failed to train {most_frequents[0].get_core_msg()}")
+                    TRAIN_LOG.error(f"Failed to train {most_frequents[0].get_core_msg()}")
+                    return
         
         self.save_only_acc(op_record, record_path)
         # if not self.is_retrainable(op_record) :
@@ -683,7 +684,10 @@ unsolved_err_msgs : {unsolved_msgs}
                     self.inferencer.change_to_gpt4()
                     tolerance = 2 # for 4, give self.cfg["train"]['tolerance']-2 chance
             
-            context, prompts = prompter.gen(targets, func_name=record["name"], prev_answer=prev_answer)
+            context, prompts = prompter.gen(targets, 
+                                            func_name=record["name"], 
+                                            synthesizer=synthesizer,
+                                            prev_answer=prev_answer)
             
             raw_infered = self.inferencer.inference(prompts, context) 
             tolerance += 1
@@ -698,6 +702,9 @@ unsolved_err_msgs : {unsolved_msgs}
                 result = None
                 
             solved, tolerance, highest_prev, prev_answer = self.update_tolerance_and_history(result, tolerance, highest_prev, prev_answer)
+            
+            if synthesizer.get_errs_of_FP_cases() :
+                targets.insert(0, synthesizer.get_errs_of_FP_cases()[0])
         return self.finalize_training_session(targets[0] if targets else prompter.Q_history[-1],
                                               highest_prev, orig_record, constr_list, synthesizer, prev_answer
                                               )

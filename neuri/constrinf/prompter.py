@@ -71,12 +71,11 @@ Q : try to make constraints {correct_discription} so that it can make the whole 
         examples = '\n'.join([self.dynamic_template(errmsg, self.err_db[errmsg]['cot'], self.err_db[errmsg]['answers']) for errmsg in sorted_li])
         return examples
     
-    def question(self, targets : List[ErrorMessage], func_name) :
+    def question(self, targets : List[ErrorMessage], synthesizer, func_name) :
         target_str = "Q : Based on the given runtime information, formulate constraint that prevent the error.\n" 
         new = None
         while targets and new is None :
-            idx = random.randint(0, len(targets)-1)
-            new = targets.pop(idx)
+            new = targets.pop(0)
             if new.get_core_msg() not in self.msg_pool :
                 self.msg_pool.add(new.get_core_msg())
                 break
@@ -86,6 +85,7 @@ Q : try to make constraints {correct_discription} so that it can make the whole 
         if new is None :
             new = self.Q_history.pop(0)
         self.Q_history.append(new)
+        synthesizer.set_target(new)
         target_str+= f"""({func_name}({formatted_dict(new.get_values_map(), sep="=", split=", ")}) -> {new.get_core_msg()}"""
         target_str+= "\nWrap the final formula with ```.\nAnswers :"
         return target_str
@@ -96,7 +96,7 @@ Q : try to make constraints {correct_discription} so that it can make the whole 
         introduce = "avoid same answer with your prev answer : "
         return introduce + '```' + ans_history + '```'
     
-    def gen(self, err_msgs : List[ErrorMessage], func_name, prev_answer : Optional[Constraint]=None, ans_history : Optional[str]=None) :
+    def gen(self, err_msgs : List[ErrorMessage], func_name, synthesizer, prev_answer : Optional[Constraint]=None) :
         prompts = ""
         history = ""
         contexts = ""
@@ -112,7 +112,7 @@ Q : try to make constraints {correct_discription} so that it can make the whole 
             contexts = '\n'.join([task_introduce, 
                                 # grammar, 
                                 examples])
-            prompts = self.question(err_msgs, func_name)
+            prompts = self.question(err_msgs, synthesizer, func_name)
         else : 
             contexts = '\n'.join([task_introduce, 
                                 # grammar, 
