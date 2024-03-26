@@ -302,7 +302,8 @@ def process_len(
                 noises.append(len_noise)
     
     solver.add(constrs)
-    solver = push_and_pop_noise(noises, solver)
+    solver.add(noises)
+    # solver = push_and_pop_noise(noises, solver)
     # Solving 
     if not is_solver_solvable(solver) :
         if SMT_LOG.getEffectiveLevel() <= logging.DEBUG:
@@ -350,12 +351,12 @@ def process_model(solver, noises, args_types : Dict[str, Any]) :
 
     args_lengths = {}
     args_values = {}
-
+    solver.add(noises)
+    # solver = push_and_pop_noise(noises, solver)
     if not is_solver_solvable(solver):
         if SMT_LOG.getEffectiveLevel() <= logging.DEBUG:
             SMT_LOG.debug(f"Solver is not solvable with {solver.assertions()}")
         return None
-    solver = push_and_pop_noise(noises, solver)
     model = solver.model()
     if SMT_LOG.getEffectiveLevel() <= logging.DEBUG:
         SMT_LOG.debug(f"MODEL ---> {model}")
