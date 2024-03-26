@@ -25,4 +25,81 @@ args:
   - false
 name: tf.raw_ops.MatMul
 package: tensorflow
-pass_rate: 0
+pass_rate: 32.666666666666664
+rules:
+- - cot: 'The error is triggered because the matrix sizes of a and b are incompatible
+      for matrix multiplication. The runtime information shows that a is of size [3,
+      7] and b is of size [8, 8]. In matrix multiplication, the number of columns
+      in the first matrix should be equal to the number of rows in the second matrix.
+
+
+      Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        b: tensor
+        name: str
+        transpose_a: bool
+        transpose_b: bool
+      msg: '{{function_node __wrapped__MatMul_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Matrix size-incompatible: In[0]: [9,4], In[1]: [7,5] [Op:MatMul] name: LbVO'
+      package: tensorflow
+    txt: a[-1] == b[-2]
+  - f1_score: 48.92086330935252
+    overall_score: 36.460431654676256
+    precision: 34.0
+    recall: 87.17948717948718
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        b: tensor
+        name: str
+        transpose_a: bool
+        transpose_b: bool
+      msg: 'cannot compute MatMul as input #1(zero-based) was expected to be a int32
+        tensor but is a float tensor [Op:MatMul] name: Dmip'
+      package: tensorflow
+    txt: dtype(b) == dtype(a)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        b: tensor
+        name: str
+        transpose_a: bool
+        transpose_b: bool
+      msg: '{{function_node __wrapped__MatMul_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        In[0] and In[1] ndims must be == 2: 0 [Op:MatMul] name: Gpva'
+      package: tensorflow
+    txt: b.ndim == 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        b: tensor
+        name: str
+        transpose_a: bool
+        transpose_b: bool
+      msg: '{{function_node __wrapped__MatMul_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        In[0] and In[1] has different ndims: [7,7,7,7,7,7] vs. [8,5,9,4,5,5,5] [Op:MatMul]
+        name: ZpRz'
+      package: tensorflow
+    txt: a.rank == b.rank
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

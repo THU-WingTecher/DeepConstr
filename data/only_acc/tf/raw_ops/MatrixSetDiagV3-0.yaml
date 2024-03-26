@@ -110,6 +110,28 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 100.0
+- - cot: The error is occurring because the 'lower_diag_index' is out of range. It
+      should be between -3 and 3. Here, 'k' denotes the diagonal indices. In the given
+      scenario, 'k' is an empty tensor which is resulting in an out of bound index.
+      Therefore, the values in 'k' tensor should be corrected to fall within the range
+      -3 to 3.
+    length: 1
+    target:
+      choosen_dtype:
+        align: str
+        diagonal: tensor
+        input: tensor
+        k: tensor
+        name: str
+      msg: '{{function_node __wrapped__MatrixSetDiagV3_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        lower_diag_index is out of bound: 749634 It must be between -8 and 8 [Op:MatrixSetDiagV3]
+        name: FCvL'
+      package: tensorflow
+    txt: -3 <= k[i] <= 3
+  - f1_score: 28.999999999999993
+    overall_score: 12.666666666666666
+    precision: 19.333333333333332
+    recall: 57.99999999999999
 - - cot: synthesized
     length: 2
     target:
@@ -124,7 +146,7 @@ rules:
         name: xVmQ'
       package: tensorflow
     txt: ((len(k) == 2)) or (k.dim == 0)
-  - f1_score: 67.64374295377677
-    overall_score: 39.82187147688838
+  - f1_score: 67.79661016949153
+    overall_score: 100
     precision: 100.0
-    recall: 51.107325383304946
+    recall: 51.28205128205129

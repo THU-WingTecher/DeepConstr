@@ -23,45 +23,40 @@ name: tf.raw_ops.DepthToSpace
 package: tensorflow
 pass_rate: 100
 rules:
-- - cot: 'The error tells us that the depth dimension of the input tensor, which is
-      9, should be divisible by 4. Here, the ''block_size'' is 2 and it''s squared
-      (2*2) equals to 4. Therefore, Left : input.shape[-1], which is the depth dimension
-      of the input tensor, should be corrected. It says that should be divisible by
-      the ''block_size'' squared, so Op : %, and Right : block_size * block_size.'
-    length: 1
+- - cot: synthesized
+    length: 2
     target:
       choosen_dtype:
         block_size: int
         data_format: str
         input: tensor
         name: str
-      msg: '{{function_node __wrapped__DepthToSpace_device_/job:localhost/replica:0/task:0/device:CPU:0}}
-        Input depth dimension 7 should be divisible by: 4 [Op:DepthToSpace] name:
-        NkLT'
+      msg: "Value for attr 'data_format' of \"ohrv\" is not in the list of allowed\
+        \ values: \"NHWC\", \"NCHW\", \"NCHW_VECT_C\"\n\t; NodeDef: {{node DepthToSpace}};\
+        \ Op<name=DepthToSpace; signature=input:T -> output:T; attr=T:type; attr=block_size:int,min=2;\
+        \ attr=data_format:string,default=\"NHWC\",allowed=[\"NHWC\", \"NCHW\", \"\
+        NCHW_VECT_C\"]> [Op:DepthToSpace] name: KMOU"
       package: tensorflow
-    txt: input.shape[-1] % (block_size * block_size) == 0
-  - f1_score: 100.0
+    txt: (data_format in ["NHWC", "NCHW", "NCHW_VECT_C"]) and (block_size >= 2)
+  - f1_score: 99.66777408637873
     overall_score: 100
     precision: 100.0
-    recall: 100.0
-- - cot: "The error is triggered because the input tensor rank is 3 instead of 4.\
-      \ The DepthToSpace operation requires the input tensor to have a rank of 4.\
-      \ \n\nTherefore, the constraint to prevent the error is:"
-    length: 1
+    recall: 99.33774834437087
+- - cot: synthesized
+    length: 2
     target:
       choosen_dtype:
         block_size: int
         data_format: str
         input: tensor
         name: str
-      msg: '{{function_node __wrapped__DepthToSpace_device_/job:localhost/replica:0/task:0/device:CPU:0}}
-        Input rank should be: 4 instead of: 3 [Op:DepthToSpace] name: gcev'
+      msg: negative dimensions are not allowed
       package: tensorflow
-    txt: input.rank == 4
-  - f1_score: 100.0
+    txt: (block_size > 0) and (all(input.shape[i] > 0 for i in range(input.rank)))
+  - f1_score: 75.18796992481204
     overall_score: 100
     precision: 100.0
-    recall: 100.0
+    recall: 60.24096385542168
 - - cot: "The error message indicates that the DepthToSpace operation could not find\
       \ a suitable device to run on. To prevent this error, we need to ensure that\
       \ the data type (T) and data format (data_format) provided are compatible with\
@@ -103,28 +98,9 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 100.0
-- - cot: synthesized
-    length: 2
-    target:
-      choosen_dtype:
-        block_size: int
-        data_format: str
-        input: tensor
-        name: str
-      msg: negative dimensions are not allowed
-      package: tensorflow
-    txt: (block_size > 0) and (all(input.shape[i] > 0 for i in range(input.rank)))
-  - f1_score: 75.18796992481204
-    overall_score: 100
-    precision: 100.0
-    recall: 60.24096385542168
-- - cot: 'Based on the given runtime information, the error occurs because the value
-      provided for the ''block_size'' attribute is 1, which is less than the minimum
-      value of 2. To prevent this error, the value of ''block_size'' should be corrected
-      to be at least 2.
-
-
-      The constraint that prevents the error is:'
+- - cot: "The error is triggered because the input tensor rank is 3 instead of 4.\
+      \ The DepthToSpace operation requires the input tensor to have a rank of 4.\
+      \ \n\nTherefore, the constraint to prevent the error is:"
     length: 1
     target:
       choosen_dtype:
@@ -132,13 +108,31 @@ rules:
         data_format: str
         input: tensor
         name: str
-      msg: "Value for attr 'block_size' of 1 must be at least minimum 2\n\t; NodeDef:\
-        \ {{node DepthToSpace}}; Op<name=DepthToSpace; signature=input:T -> output:T;\
-        \ attr=T:type; attr=block_size:int,min=2; attr=data_format:string,default=\"\
-        NHWC\",allowed=[\"NHWC\", \"NCHW\", \"NCHW_VECT_C\"]> [Op:DepthToSpace] name:\
-        \ HVYc"
+      msg: '{{function_node __wrapped__DepthToSpace_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Input rank should be: 4 instead of: 3 [Op:DepthToSpace] name: gcev'
       package: tensorflow
-    txt: block_size >= 2
+    txt: input.rank == 4
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error tells us that the depth dimension of the input tensor, which is
+      9, should be divisible by 4. Here, the ''block_size'' is 2 and it''s squared
+      (2*2) equals to 4. Therefore, Left : input.shape[-1], which is the depth dimension
+      of the input tensor, should be corrected. It says that should be divisible by
+      the ''block_size'' squared, so Op : %, and Right : block_size * block_size.'
+    length: 1
+    target:
+      choosen_dtype:
+        block_size: int
+        data_format: str
+        input: tensor
+        name: str
+      msg: '{{function_node __wrapped__DepthToSpace_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Input depth dimension 7 should be divisible by: 4 [Op:DepthToSpace] name:
+        NkLT'
+      package: tensorflow
+    txt: input.shape[-1] % (block_size * block_size) == 0
   - f1_score: 100.0
     overall_score: 100
     precision: 100.0

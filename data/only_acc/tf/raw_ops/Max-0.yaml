@@ -21,7 +21,7 @@ args:
   - false
 name: tf.raw_ops.Max
 package: tensorflow
-pass_rate: 0.6666666666666667
+pass_rate: 1.6666666666666667
 rules:
 - - cot: divided
     length: 1
@@ -43,9 +43,29 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 100.0
-- - cot: 'The error is due to negative dimensions in the ''axis'' which is not allowed.
-      Therefore, all elements in ''axis'' should be non-negative. So, Op : >=, and
-      Right : 0.'
+- - cot: 'The error is due to an invalid reduction dimension. The function is trying
+      to reduce on dimension 734662, but the input tensor only has 6 dimensions, indexed
+      from 0. So, the maximum valid dimension for reduction would be 5. Therefore,
+      the condition to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: tensor
+        input: tensor
+        keep_dims: bool
+        name: str
+      msg: '{{function_node __wrapped__Max_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Invalid reduction dimension (734662 for input with 6 dimension(s) [Op:Max]
+        name: BSMh'
+      package: tensorflow
+    txt: (i < input.rank for i in axis)
+  - f1_score: 48.768472906403936
+    overall_score: 19.5
+    precision: 33.0
+    recall: 93.39622641509435
+- - cot: 'The error is caused by the negative dimension in the axis argument. To prevent
+      the error, the dimension in the axis argument should be non-negative. Therefore,
+      the constraint is:'
     length: 1
     target:
       choosen_dtype:
@@ -55,8 +75,8 @@ rules:
         name: str
       msg: negative dimensions are not allowed
       package: tensorflow
-    txt: all(i >= 0 for i in axis)
-  - f1_score: 81.30081300813009
-    overall_score: 52.650406504065046
+    txt: all(axis[i] >= 0 for i in range(len(axis)))
+  - f1_score: 74.53416149068322
+    overall_score: 100
     precision: 100.0
-    recall: 68.4931506849315
+    recall: 59.4059405940594

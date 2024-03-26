@@ -17,5 +17,21 @@ args:
   - false
 name: torch.Tensor.clamp
 package: torch
-pass_rate: 74.8
-rules: []
+pass_rate: 80.5
+rules:
+- - cot: "The error is caused because the given tensor has negative dimensions, which\
+      \ is not allowed. To prevent this error, we need to ensure that all dimensions\
+      \ of the tensor are non-negative. \n\nWrap the final constraint formula with"
+    length: 1
+    target:
+      choosen_dtype:
+        max: int
+        min: int
+        self: tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(dim >= 0 for dim in self.shape)
+  - f1_score: 85.28784648187634
+    overall_score: 100
+    precision: 100.0
+    recall: 74.34944237918216

@@ -21,4 +21,50 @@ args:
   - true
 name: tf.raw_ops.SelectV2
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'Error is triggered because the function is trying to perform a SelectV2
+      operation on a float tensor as the condition input, instead of a bool tensor
+      as expected. The condition input should be a bool tensor, so the condition tensor
+      dtype should be corrected. Therefore, the constraint should be:'
+    length: 1
+    target:
+      choosen_dtype:
+        condition: tensor
+        e: tensor
+        name: str
+        t: tensor
+      msg: 'cannot compute SelectV2 as input #0(zero-based) was expected to be a bool
+        tensor but is a float tensor [Op:SelectV2] name: bqyi'
+      package: tensorflow
+    txt: dtype(condition) == bool
+  - f1_score: 99.09182643794148
+    overall_score: 52.1
+    precision: 98.2
+    recall: 100.0
+- - cot: 'The error is due to the shapes of ''condition'', ''t'', and ''e'' not being
+      broadcastable. Broadcasting in tensor operations requires that the trailing
+      dimensions of the tensors are either 1 or the same. So, the constraint should
+      be that for each dimension starting from the last, the size of the dimension
+      in ''condition'' should be equal to the size of the dimension in ''t'' or ''e'',
+      or one of them should be 1. We start from the last dimension because broadcasting
+      aligns dimensions from the end. Therefore, we can formulate the constraint as
+      follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        condition: tensor
+        e: tensor
+        name: str
+        t: tensor
+      msg: '{{function_node __wrapped__SelectV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        condition [6,9,9,9,9,9,9], then [2,8,5,9,8,8,8], and else [3,4,7,4,4,4,4]
+        must be broadcastable [Op:SelectV2] name: lGPX'
+      package: tensorflow
+    txt: all(condition.shape[i] == t.shape[i] or condition.shape[i] == e.shape[i]
+      or t.shape[i] == 1 or e.shape[i] == 1 for i in range(-1, -min(len(condition.shape),
+      len(t.shape), len(e.shape))-1, -1))
+  - f1_score: 51.23010130246019
+    overall_score: 20.7
+    precision: 35.4
+    recall: 92.67015706806282

@@ -33,7 +33,7 @@ args:
   - false
 name: tf.raw_ops.MatrixDiagV3
 package: tensorflow
-pass_rate: 0.0
+pass_rate: 100
 rules:
 - - cot: 'The error is due to an invalid value for the ''align'' attribute. The value
       provided is "oiwc", which is not in the allowed values: "LEFT_RIGHT", "RIGHT_LEFT",
@@ -176,3 +176,22 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 95.74468085106382
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        align: str
+        diagonal: tensor
+        k: tensor
+        name: str
+        num_cols: tensor
+        num_rows: tensor
+        padding_value: tensor
+      msg: '{{function_node __wrapped__MatrixDiagV3_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        The number of rows is too small. [Op:MatrixDiagV3] name: OvMB'
+      package: tensorflow
+    txt: (num_rows.dim >= 6) or (num_rows.dim >= diagonal.dim)
+  - f1_score: 92.30769230769229
+    overall_score: 100
+    precision: 100.0
+    recall: 85.71428571428571
