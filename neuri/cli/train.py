@@ -11,7 +11,7 @@ import yaml
 from neuri.constrinf import _process_record
 from neuri.constrinf.constr import Constraint, convert_constr_to_executable, convert_dtypes_to_z3s
 from neuri.constrinf.errmsg import ErrorMessage, is_similar, map_error_messages_to_clusters_dynamic
-from neuri.constrinf.executor import Executor
+from neuri.constrinf.executor import Executor, is_normal_error
 from neuri.constrinf.inferencer import Inferencer
 import hydra
 from omegaconf import DictConfig
@@ -256,6 +256,10 @@ class TrainingLoop:
                     name = file.split(".")[0].split("-")[0]
                     full_name = ".".join(os.path.join(root, file).replace('/','.').split('-')[0].split('.')[2:])
                     if full_name in train_list :
+                        # with open(os.path.join(root, file), "r") as f:
+                        #     record = yaml.safe_load(f)
+                            # if record.get("error", None) is not None or len(record.get("rules", [])) > 0 :
+                            #     continue
                         record_paths.append(os.path.join(root, file))
         record_paths = sorted(record_paths, key=sort_key)
         return sorted(record_paths, key=sort_key)
@@ -284,7 +288,7 @@ class TrainingLoop:
                                         )
         instance_mapping = {}
         for result in results:
-            if result is None :
+            if not is_normal_error(result) :
                 continue
             success, error_instance = result
             if success:
@@ -415,7 +419,7 @@ class TrainingLoop:
                 best_rule = synthesizer.non_FP[0][1]
             else:
                 # Fallback to the best seed rule if the precision threshold is met
-                if synthesizer.seeds[0][0]["precision"] < self.cfg["train"]['precision_threshold']:
+                if len(synthesizer.seeds) < 1 or synthesizer.seeds[0][0]["precision"] < self.cfg["train"]['precision_threshold']:
                     TRAIN_LOG.info(f"Best rule({synthesizer.seeds[0][0]['precision']}) does not meet the precision threshold({self.cfg['train']['precision_threshold']}).")
                     return False
                 best_rule = synthesizer.seeds[0][1]
@@ -682,7 +686,7 @@ unsolved_err_msgs : {unsolved_msgs}
             context, prompts = prompter.gen(targets, func_name=record["name"], prev_answer=prev_answer)
             
             raw_infered = self.inferencer.inference(prompts, context) 
-            infer_times += 1
+            tolerance += 1
 
             new_rules = self.parse_and_generate_rules(raw_infered, 
                                                       targets[0] if targets else prompter.Q_history[-1], 

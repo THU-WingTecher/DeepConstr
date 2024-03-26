@@ -5,7 +5,7 @@ from logger import TRAIN_LOG
 import copy
 from neuri.constrinf.constr import Constraint, convert_dtypes_to_z3s
 from neuri.constrinf.errmsg import ErrorMessage, is_similar, map_error_messages_to_clusters_dynamic
-from neuri.constrinf.executor import NOERR_MSG, Executor
+from neuri.constrinf.executor import NOERR_MSG, Executor, is_normal_error
 from neuri.constrinf.util import formatted_dict
 
 class Evaluator() :
@@ -109,13 +109,13 @@ class Evaluator() :
         results = self.execute(record=self.record, constraints=temp_constrs, ntimes=num_of_check)
         
         for result in results :
-            if result is None :
-                ungen+=1
-            else:
-                success, error_instance = result
-                msg_key = error_instance.get_core_msg()
-                error_messages[msg_key] = error_instance
-                raw_err_msgs.append(msg_key)
+            if not is_normal_error(result) :
+                ungen+=1 
+                continue
+            success, error_instance = result
+            msg_key = error_instance.get_core_msg()
+            error_messages[msg_key] = error_instance
+            raw_err_msgs.append(msg_key)
         if len(raw_err_msgs) == 1 : # not added any result(= all result is None)
             return False
         dynamic_cluster_mapping = map_error_messages_to_clusters_dynamic(raw_err_msgs, self.cfg["str_sim_threshold"])

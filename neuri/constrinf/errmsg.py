@@ -230,7 +230,8 @@ def map_error_messages_to_clusters_dynamic(raw_error_messages, threshold=0.5):
                     TRAIN_LOG.warning(f"Error in comparing {err_msg} and {_cls[0]}, may be two strings are empty")
                     continue 
             if not found :
-                clusters.append([err_msg])
+                if err_msg :
+                    clusters.append([err_msg])
         else :
             clusters.append([err_msg])
     return {i: cls for i, cls in enumerate(clusters)}

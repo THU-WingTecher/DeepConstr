@@ -26,6 +26,10 @@ def clear_global_constraints() :
     global _gloabl_constraints
     _gloabl_constraints = []
 
+def is_normal_error(result) :
+    _, error_instance = result
+    return not isinstance(error_instance.error_type, (InternalError, TimeoutError))
+
 def worker(model, record, noise=0.8, allow_zero_length_rate=0.1, allow_zero_rate=0.1, num_of_try=30):
     chosen_dtype = {}
     concretized_values = {}
@@ -72,7 +76,6 @@ def worker(model, record, noise=0.8, allow_zero_length_rate=0.1, allow_zero_rate
         return True, ErrorMessage(NOERR_MSG, "", concretized_values, chosen_dtype, package=model.package)  # Assuming execution success
     except Exception as e:
         error_instance = ErrorMessage(e, traceback.format_exc(), concretized_values, chosen_dtype, package=model.package)
-        assert isinstance(error_instance, ErrorMessage)
         return False, error_instance  # Return error state and message
 
 def worker_wrapper(worker_fn, return_dict, index, *args, **kwargs):
@@ -133,40 +136,4 @@ class Executor:
                 return_dict[processes.index(p)] = [False, err_instance]
         
         results = [return_dict[i] for i in range(len(return_dict))]
-        return results
-    def _parallel_execute(self, ntimes, *args, **kwargs) -> Optional[List[Tuple[bool, ErrorMessage]]]:
-        """
-        ctypes pickling problem.
-        To support parallel execution, 
-        Constr is converted to executable(Callable)
-        dtypes are converted to z3 types
-        Executes the given operation (opinstance) multiple times in parallel using multicore processing.
-        Classifies the program result (success or error) and deals with error messages along with argument values.
-        
-        Args:
-        - opinstance: The operation instance to be executed.
-        - ntimes: The number of times to execute the operation.
-        
-        Returns:
-        A tuple (success_rate: float, error_messages: dict) where success_rate is the ratio of successful executions
-        and error_messages is a dictionary mapping error messages to their corresponding argument values.
-        """
-        results = []
-        num_of_task_per_process = ntimes // self.parallel
-        with concurrent.futures.ProcessPoolExecutor(max_workers=self.parallel) as executor:
-            # Generate a list of future tasks
-            worker_fn = functools.partial(worker, self.model, *args, **kwargs)
-            futures = [executor.submit(worker_fn) for _ in range(ntimes)]
-        for future in concurrent.futures.as_completed(futures):
-            try:
-                result = future.result(timeout=num_of_task_per_process*2)
-                results.append(result)
-            except TimeoutError:
-                err_instance = ErrorMessage(TimeoutError(), traceback.format_exc(), {}, {})
-                MGEN_LOG.error(f"TIMEOUT error in execute: {e}")
-                results.append([False, err_instance])
-            except Exception as e:
-                err_instance = ErrorMessage(InternalError(), traceback.format_exc(), {}, {})
-                MGEN_LOG.error(f"Error in execute: {e}, maybe child process core dumped")
-                results.append([False, err_instance])
         return results

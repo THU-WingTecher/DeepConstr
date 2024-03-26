@@ -95,12 +95,12 @@ def pos_max_constraints(z3obj, len_var, include_zero) :
         return z3.And([
             z3.And(z3obj[i]<=MAX_VALUE, z3obj[i] >= 0) for i in range(length)
         ])
-        return z3.ForAll([i], z3.Implies(z3.And(i>=0, i<=len_var), z3.And(z3obj[i]<=MAX_VALUE, z3obj[i] >= 0)))
+        # return z3.ForAll([i], z3.Implies(z3.And(i>=0, i<=len_var), z3.And(z3obj[i]<=MAX_VALUE, z3obj[i] >= 0)))
     else :
         return z3.And([
             z3.And(z3obj[i]<=MAX_VALUE, z3obj[i] > 0) for i in range(length)
         ])
-        return z3.ForAll([i], z3.Implies(z3.And(i>=0, i<=len_var), z3.And(z3obj[i]<=MAX_VALUE, z3obj[i] > 0)))
+        # return z3.ForAll([i], z3.Implies(z3.And(i>=0, i<=len_var), z3.And(z3obj[i]<=MAX_VALUE, z3obj[i] > 0)))
     
 def min_max_constraints(z3obj, len_var) : 
     if isinstance(len_var, int) :

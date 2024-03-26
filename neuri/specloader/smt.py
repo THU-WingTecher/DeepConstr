@@ -434,20 +434,14 @@ def _gen_val(
 
 def is_solver_solvable(solver: z3.Solver) -> bool:
     res = False
-    if solver.check() == z3.unknown :
-        solver.set("timeout", 100000)
+    # if solver.check() == z3.unknown :
+    #     solver.set("timeout", 100000)
     res = solver.check() == z3.sat
     return res 
 
-def solve(solver : z3.Solver, 
-          args_types : Dict[str, Any]) -> \
-                    Tuple[Dict[str, Any], Dict[str, Optional[int]]] : 
-    
-    args_values, args_lengths = process_model(solver, args_types)
-    return args_values, args_lengths
-
 def random_gen_arr_len() -> int :
     return random.randint(0, MAX_ARR_LEN)
+
 def _random_gen(datatype):
     """
     Randomly generate a value based on the given datatype.
