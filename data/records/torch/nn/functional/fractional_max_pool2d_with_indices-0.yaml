@@ -29,4 +29,5 @@ args:
   - false
 name: torch.nn.functional.fractional_max_pool2d_with_indices
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules: []

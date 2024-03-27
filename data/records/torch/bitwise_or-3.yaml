@@ -17,4 +17,20 @@ args:
   - true
 name: torch.bitwise_or
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (0) must match the size of tensor b (9) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.shape[3] == other.shape[3]
+  - f1_score: 75.00000000000001
+    overall_score: 100
+    precision: 100.0
+    recall: 60.00000000000001

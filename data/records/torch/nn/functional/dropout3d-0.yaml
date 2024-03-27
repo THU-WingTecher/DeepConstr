@@ -21,4 +21,50 @@ args:
   - false
 name: torch.nn.functional.dropout3d
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        inplace: bool
+        input: tensor
+        p: float
+        training: bool
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(input)==torch.float32
+  - f1_score: 66.74082313681869
+    overall_score: 100
+    precision: 100.0
+    recall: 50.08347245409015
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        inplace: bool
+        input: tensor
+        p: float
+        training: bool
+      msg: Feature dropout requires at least 2 dimensions in the input
+      package: torch
+    txt: input.dim >= 2
+  - f1_score: 66.96428571428572
+    overall_score: 100
+    precision: 100.0
+    recall: 50.335570469798654
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        inplace: bool
+        input: tensor
+        p: float
+        training: bool
+      msg: dropout probability has to be between 0 and 1, but got -1.0
+      package: torch
+    txt: 0 <= p and p <= 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

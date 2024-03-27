@@ -17,4 +17,41 @@ args:
   - true
 name: tf.raw_ops.BroadcastArgs
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        s0: tensor
+        s1: tensor
+      msg: "Value for attr 'T' of float is not in the list of allowed values: int32,\
+        \ int64\n\t; NodeDef: {{node BroadcastArgs}}; Op<name=BroadcastArgs; signature=s0:T,\
+        \ s1:T -> r0:T; attr=T:type,default=DT_INT32,allowed=[DT_INT32, DT_INT64]>\
+        \ [Op:BroadcastArgs] name: shCp"
+      package: tensorflow
+    txt: dtype(s0) in ["int32", "int64"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the error arises because the function
+      is trying to perform an operation on an int32 tensor and a float tensor. However,
+      both tensors in the generated arguments must have the same data type. The ''s0''
+      tensor is of type int32, but the ''s1'' tensor is of type float. Therefore,
+      the condition that prevents the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        s0: tensor
+        s1: tensor
+      msg: 'cannot compute BroadcastArgs as input #1(zero-based) was expected to be
+        a int32 tensor but is a float tensor [Op:BroadcastArgs] name: AWFj'
+      package: tensorflow
+    txt: dtype(s1) == dtype(s0)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

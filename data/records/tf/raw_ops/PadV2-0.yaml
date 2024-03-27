@@ -21,4 +21,25 @@ args:
   - true
 name: tf.raw_ops.PadV2
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'The error is triggered because the attribute ''paddings'' is expected to
+      have a data type of int32 or int64, but it is provided as a float32. Therefore,
+      the condition that prevents the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        constant_values: tensor
+        input: tensor
+        name: str
+        paddings: tensor
+      msg: "Value for attr 'Tpaddings' of float is not in the list of allowed values:\
+        \ int32, int64\n\t; NodeDef: {{node PadV2}}; Op<name=PadV2; signature=input:T,\
+        \ paddings:Tpaddings, constant_values:T -> output:T; attr=T:type; attr=Tpaddings:type,default=DT_INT32,allowed=[DT_INT32,\
+        \ DT_INT64]> [Op:PadV2] name: AArx"
+      package: tensorflow
+    txt: dtype(paddings) in ["int32", "int64"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

@@ -21,4 +21,40 @@ args:
   - true
 name: tf.raw_ops.ClipByValue
 package: tensorflow
-pass_rate: 0
+pass_rate: 22.0
+rules:
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        clip_value_max: tensor
+        clip_value_min: tensor
+        name: str
+        t: tensor
+      msg: 'cannot compute ClipByValue as input #2(zero-based) was expected to be
+        a float tensor but is a int32 tensor [Op:ClipByValue] name: jYbp'
+      package: tensorflow
+    txt: (((dtype(clip_value_min) == dtype(t)) or (dtype(t) == float)) and (dtype(clip_value_max)==dtype(t)))
+      and (dtype(clip_value_min) == dtype(t))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        clip_value_max: tensor
+        clip_value_min: tensor
+        name: str
+        t: tensor
+      msg: '{{function_node __wrapped__ClipByValue_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        clip_value_min and clip_value_max must be either of the same shape as input,
+        or a scalar. input shape: [6,1,9,8,1,2,9]clip_value_min shape: [7,8,2,9,8,7,7]clip_value_max
+        shape: [4,9,9,9,9,9,9] [Op:ClipByValue] name: krkH'
+      package: tensorflow
+    txt: clip_value_min.shape == clip_value_max.shape == t.shape
+  - f1_score: 37.55102040816327
+    overall_score: 30.775510204081634
+    precision: 23.115577889447238
+    recall: 100.0

@@ -21,4 +21,54 @@ args:
   - false
 name: torch.nn.functional.feature_alpha_dropout
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: "The error is triggered because the result type Float cannot be cast to Int.\
+      \ The input tensor is of type Int32, but the dropout operation requires Float\
+      \ type. Therefore, the dtype of input tensor should be Float. \n\nLeft : dtype(input),\
+      \ op : ==, Right : Float"
+    length: 1
+    target:
+      choosen_dtype:
+        inplace: bool
+        input: tensor
+        p: float
+        training: bool
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(input) == Float
+  - f1_score: 66.96428571428572
+    overall_score: 100
+    precision: 100.0
+    recall: 50.335570469798654
+- - cot: 'In order to prevent the error, the input tensor must have at least 2 dimensions.
+      Therefore, the condition to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        inplace: bool
+        input: tensor
+        p: float
+        training: bool
+      msg: Feature dropout requires at least 2 dimensions in the input
+      package: torch
+    txt: input.dim >= 2
+  - f1_score: 66.815144766147
+    overall_score: 100
+    precision: 100.0
+    recall: 50.16722408026756
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        inplace: bool
+        input: tensor
+        p: float
+        training: bool
+      msg: dropout probability has to be between 0 and 1, but got 3.0
+      package: torch
+    txt: 0 <= p and p <= 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

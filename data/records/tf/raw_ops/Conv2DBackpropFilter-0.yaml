@@ -45,4 +45,107 @@ args:
   - false
 name: tf.raw_ops.Conv2DBackpropFilter
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter_sizes: int
+        input: tensor
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+        use_cudnn_on_gpu: bool
+      msg: "Value for attr 'padding' of \"YnpA\" is not in the list of allowed values:\
+        \ \"SAME\", \"VALID\", \"EXPLICIT\"\n\t; NodeDef: {{node Conv2DBackpropFilter}};\
+        \ Op<name=Conv2DBackpropFilter; signature=input:T, filter_sizes:int32, out_backprop:T\
+        \ -> output:T; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16, DT_FLOAT, DT_DOUBLE];\
+        \ attr=strides:list(int); attr=use_cudnn_on_gpu:bool,default=true; attr=padding:string,allowed=[\"\
+        SAME\", \"VALID\", \"EXPLICIT\"]; attr=explicit_paddings:list(int),default=[];\
+        \ attr=data_format:string,default=\"NHWC\",allowed=[\"NHWC\", \"NCHW\"]; attr=dilations:list(int),default=[1,\
+        \ 1, 1, 1]> [Op:Conv2DBackpropFilter] name: FOzq"
+      package: tensorflow
+    txt: (padding in ["SAME", "VALID", "EXPLICIT"]) and (data_format in ["NHWC", "NCHW"])
+  - f1_score: 99.49748743718592
+    overall_score: 51.0
+    precision: 99.0
+    recall: 100.0
+- - cot: 'The error is triggered because the sliding window strides field does not
+      specify 4 dimensions. Let''s see what the args were. strides was an empty list.
+      To specify 4 dimensions, strides should have a length of 4. Therefore, the Left
+      : len(strides) should be corrected to 4. Ops : ''=='', Right : 4.'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter_sizes: int
+        input: tensor
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+        use_cudnn_on_gpu: bool
+      msg: '{{function_node __wrapped__Conv2DBackpropFilter_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Sliding window strides field must specify 4 dimensions [Op:Conv2DBackpropFilter]
+        name: HLBJ'
+      package: tensorflow
+    txt: len(strides) == 4
+  - f1_score: 79.52286282306162
+    overall_score: 100
+    precision: 100.0
+    recall: 66.006600660066
+- - cot: The error is triggered because the data_format parameter is set to NCHW,
+      but the Conv2DCustomBackpropFilterOp only supports NHWC. To prevent the error,
+      the data_format parameter should be changed to NHWC.
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter_sizes: int
+        input: tensor
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+        use_cudnn_on_gpu: bool
+      msg: '{{function_node __wrapped__Conv2DBackpropFilter_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Conv2DCustomBackpropFilterOp only supports NHWC. [Op:Conv2DBackpropFilter]
+        name: osXZ'
+      package: tensorflow
+    txt: data_format == "NHWC"
+  - f1_score: 96.38554216867469
+    overall_score: 100
+    precision: 100.0
+    recall: 93.02325581395348
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter_sizes: int
+        input: tensor
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+        use_cudnn_on_gpu: bool
+      msg: '{{function_node __wrapped__Conv2DBackpropFilter_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Current implementation does not yet support strides in the batch and depth
+        dimensions. [Op:Conv2DBackpropFilter] name: sYUY'
+      package: tensorflow
+    txt: (strides[0] == 1) and (strides[3] == 1)
+  - f1_score: 95.01187648456057
+    overall_score: 100
+    precision: 100.0
+    recall: 90.49773755656109

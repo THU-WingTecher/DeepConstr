@@ -1,0 +1,69 @@
+args:
+  dtype:
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  is_pos:
+  - false
+  - false
+  name:
+  - input
+  - name
+  required:
+  - true
+  - false
+name: tf.raw_ops.Cholesky
+package: tensorflow
+pass_rate: 93.5
+rules:
+- - cot: 'The error is triggered because the input matrix is not square. To prevent
+      the error, the number of rows and columns of the input matrix should be the
+      same. Therefore, the constraint is:'
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        name: str
+      msg: '{{function_node __wrapped__Cholesky_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Input matrix must be square. [Op:Cholesky] name: VJXU'
+      package: tensorflow
+    txt: input.shape[0] == input.shape[1]
+  - f1_score: 67.91171477079797
+    overall_score: 100
+    precision: 100.0
+    recall: 51.41388174807199
+- - cot: 'Based on the given runtime information, the error occurs because the input
+      tensor has a rank of 0, which is not allowed for the Cholesky operation. To
+      prevent the error, the input tensor must have a rank greater than or equal to
+      2.
+
+
+      Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        name: str
+      msg: '{{function_node __wrapped__Cholesky_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Input tensor 0 must have rank >= 2, got 0 [Op:Cholesky] name: OAqr'
+      package: tensorflow
+    txt: rank(input) >= 2
+  - f1_score: 98.52216748768473
+    overall_score: 100
+    precision: 100.0
+    recall: 97.0873786407767
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        name: str
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: double,\
+        \ float, half, complex64, complex128\n\t; NodeDef: {{node Cholesky}}; Op<name=Cholesky;\
+        \ signature=input:T -> output:T; attr=T:type,allowed=[DT_DOUBLE, DT_FLOAT,\
+        \ DT_HALF, DT_COMPLEX64, DT_COMPLEX128]> [Op:Cholesky] name: qtuq"
+      package: tensorflow
+    txt: dtype(input) in ["double", "float", "half", "complex64", "complex128"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

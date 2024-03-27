@@ -33,4 +33,42 @@ args:
   - false
 name: torch.nn.functional.embedding
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        input: tensor
+        max_norm: float
+        norm_type: float
+        padding_idx: None
+        scale_grad_by_freq: bool
+        sparse: bool
+        weight: tensor
+      msg: 'Expected 2-dimensional tensor, but got 4-dimensional tensor for argument
+        #1 ''self'' (while checking arguments for embedding_renorm_)'
+      package: torch
+    txt: (input.ndim() == 2) and (weight.ndims() == 2)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        input: tensor
+        max_norm: float
+        norm_type: float
+        padding_idx: int
+        scale_grad_by_freq: bool
+        sparse: bool
+        weight: tensor
+      msg: Padding_idx must be within num_embeddings
+      package: torch
+    txt: (padding_idx >= 0) and (padding_idx < weight.size(0))
+  - f1_score: 72.02881152460985
+    overall_score: 100
+    precision: 100.0
+    recall: 56.28517823639775

@@ -21,4 +21,56 @@ args:
   - false
 name: torch.nn.functional.dropout2d
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        inplace: bool
+        input: tensor
+        p: float
+        training: bool
+      msg: Feature dropout requires at least 2 dimensions in the input
+      package: torch
+    txt: input.dim >= 2
+  - f1_score: 66.88963210702342
+    overall_score: 100
+    precision: 100.0
+    recall: 50.25125628140703
+- - cot: The error occurs because the function torch.nn.functional.dropout2d is trying
+      to cast a Float result into an Int, which isn't possible due to the loss of
+      precision. The input tensor has an integer data type. Therefore, the input tensor
+      should have a float data type to match with the output of the dropout2d function.
+    length: 1
+    target:
+      choosen_dtype:
+        inplace: bool
+        input: tensor
+        p: float
+        training: bool
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(input)==torch.float
+  - f1_score: 66.74082313681869
+    overall_score: 100
+    precision: 100.0
+    recall: 50.08347245409015
+- - cot: "The error is due to the invalid 'p' value. The 'p' value represents the\
+      \ dropout probability and it is currently set to 6.0, which is outside the valid\
+      \ range of 0 to 1. To prevent this error, the 'p' value should be constrained\
+      \ to fall between 0 and 1. \n\nTherefore, the constraint can be formulated as:"
+    length: 1
+    target:
+      choosen_dtype:
+        inplace: bool
+        input: tensor
+        p: float
+        training: bool
+      msg: dropout probability has to be between 0 and 1, but got 7.0
+      package: torch
+    txt: 0 <= p <= 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

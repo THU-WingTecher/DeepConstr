@@ -21,4 +21,23 @@ args:
   - true
 name: tf.raw_ops.Slice
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        begin: list[int]
+        input: tensor
+        name: str
+        size: list[int]
+      msg: "Value for attr 'Index' of float is not in the list of allowed values:\
+        \ int32, int64\n\t; NodeDef: {{node Slice}}; Op<name=Slice; signature=input:T,\
+        \ begin:Index, size:Index -> output:T; attr=T:type; attr=Index:type,allowed=[DT_INT32,\
+        \ DT_INT64]> [Op:Slice]"
+      package: tensorflow
+    txt: len(begin) == 2
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0

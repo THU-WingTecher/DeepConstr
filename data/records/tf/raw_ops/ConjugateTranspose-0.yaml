@@ -17,4 +17,40 @@ args:
   - true
 name: tf.raw_ops.ConjugateTranspose
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        perm: tensor
+        x: tensor
+      msg: "Value for attr 'Tperm' of float is not in the list of allowed values:\
+        \ int32, int64\n\t; NodeDef: {{node ConjugateTranspose}}; Op<name=ConjugateTranspose;\
+        \ signature=x:T, perm:Tperm -> y:T; attr=T:type; attr=Tperm:type,default=DT_INT32,allowed=[DT_INT32,\
+        \ DT_INT64]> [Op:ConjugateTranspose] name: oaky"
+      package: tensorflow
+    txt: dtype(perm) in ["int32", "int64"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is triggered because the perm tensor has a shape that is not rank
+      1. The perm tensor should be a 1-dimensional tensor to specify the permutation
+      order. However, the perm tensor has a shape of [4, 4, 4, 2, 1, 4]. Therefore,
+      the Left : perm.shape.rank should be corrected to 1. Ops : ''=='', Right : 1.'
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        perm: tensor
+        x: tensor
+      msg: '{{function_node __wrapped__ConjugateTranspose_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        perm must be rank 1, got shape [] [Op:ConjugateTranspose] name: NxIp'
+      package: tensorflow
+    txt: perm.shape.rank == 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

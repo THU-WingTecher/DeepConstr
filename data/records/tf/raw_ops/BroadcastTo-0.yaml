@@ -17,4 +17,54 @@ args:
   - true
 name: tf.raw_ops.BroadcastTo
 package: tensorflow
-pass_rate: 0
+pass_rate: 76.0
+rules:
+- - cot: 'The error is caused by the presence of negative dimensions in the shape
+      parameter which is not valid. The function tf.raw_ops.BroadcastTo is expecting
+      all dimensions to be greater than or equal to 0. Therefore, for each dimension
+      specified in the shape parameter, it should be greater than or equal to 0. Left
+      : shape[i], Op : ''>='', Right : 0 for each i in shape.'
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        name: str
+        shape: list[int]
+      msg: '{{function_node __wrapped__BroadcastTo_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Dimension -4 must be >= 0 [Op:BroadcastTo]'
+      package: tensorflow
+    txt: all(i >= 0 for i in shape)
+  - f1_score: 94.58128078817732
+    overall_score: 59.29064039408866
+    precision: 96.0
+    recall: 93.20388349514562
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        input: tensor
+        name: str
+        shape: list[int]
+      msg: '{{function_node __wrapped__BroadcastTo_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [3,3] vs. [9,89,10,16] [Op:BroadcastTo]'
+      package: tensorflow
+    txt: (input.shape[i] == 1) or (input.rank == len(shape))
+  - f1_score: 71.30124777183599
+    overall_score: 100
+    precision: 100.0
+    recall: 55.401662049861486
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        name: str
+        shape: list[int]
+      msg: '{{function_node __wrapped__BroadcastTo_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Rank of input (7) must be no greater than rank of output shape (0). [Op:BroadcastTo]'
+      package: tensorflow
+    txt: input.rank <= shape.rank
+  - f1_score: 69.93006993006993
+    overall_score: 46.96503496503497
+    precision: 100.0
+    recall: 53.76344086021506

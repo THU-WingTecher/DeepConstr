@@ -1,0 +1,49 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - lambd
+  required:
+  - true
+  - false
+name: torch.Tensor.hardshrink
+package: torch
+pass_rate: 100
+rules:
+- - cot: The error is due to the input tensor `self` having a data type of 'Int'.
+      The function `torch.Tensor.hardshrink` is not implemented for tensors with data
+      type 'Int'. To prevent the error, the input tensor `self` should have a data
+      type that is supported by the `hardshrink` function.
+    length: 1
+    target:
+      choosen_dtype:
+        lambd: int
+        self: tensor
+      msg: '"hardshrink_cpu" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype != torch.int32
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: The error is due to the data type of the input tensor. The function `torch.Tensor.hardshrink`
+      is not implemented for tensors of data type 'Long'. Therefore, to prevent the
+      error, the data type of the input tensor should be changed to a supported data
+      type.
+    length: 1
+    target:
+      choosen_dtype:
+        lambd: int
+        self: tensor
+      msg: '"hardshrink_cpu" not implemented for ''Long'''
+      package: torch
+    txt: self.dtype in [torch.float32, torch.float64]
+  - f1_score: 99.00990099009901
+    overall_score: 100
+    precision: 100.0
+    recall: 98.0392156862745

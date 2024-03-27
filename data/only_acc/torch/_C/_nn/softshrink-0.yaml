@@ -1,0 +1,47 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - lambd
+  required:
+  - true
+  - false
+name: torch._C._nn.softshrink
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'The error occurs because the value of the parameter ''lambd'' is -1, which
+      is less than 0. To prevent this error in the future and generate constraints
+      that do not trigger it, we need to ensure that the value of ''lambd'' is always
+      greater than or equal to 0. The constraint for the ''lambd'' parameter can be
+      expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        lambd: int
+        self: tensor
+      msg: lambda must be greater or equal to 0, but found to be -1.
+      package: torch
+    txt: lambd >= 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        lambd: int
+        self: tensor
+      msg: '"softshrink_cpu" not implemented for ''Int'''
+      package: torch
+    txt: dtype(self) == float
+  - f1_score: 97.71986970684038
+    overall_score: 100
+    precision: 100.0
+    recall: 95.54140127388536

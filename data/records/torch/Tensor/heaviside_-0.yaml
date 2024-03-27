@@ -13,4 +13,36 @@ args:
   - true
 name: torch.Tensor.heaviside_
 package: torch
-pass_rate: 0
+pass_rate: 1.3333333333333335
+rules:
+- - cot: The error is due to the tensors `self` and `values` having different data
+      types. The function `torch.Tensor.heaviside_` does not support tensors with
+      different data types. Therefore, the constraint should be that the data types
+      of `self` and `values` should be the same.
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        values: tensor
+      msg: heaviside is not yet implemented for tensors with different dtypes.
+      package: torch
+    txt: self.dtype == values.dtype
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        self: tensor
+        values: tensor
+      msg: output with shape [8, 2, 9, 8, 5, 8] doesn't match the broadcast shape
+        [1, 8, 2, 9, 8, 5, 8]
+      package: torch
+    txt: ((self.shape == values.shape) and (self.shape[i] == 1)) or (self.dim() ==
+      values.dim())
+  - f1_score: 95.23809523809523
+    overall_score: 51.61904761904761
+    precision: 100.0
+    recall: 90.9090909090909

@@ -17,4 +17,24 @@ args:
   - true
 name: torch.gt
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'The error is triggered because we are trying to resize a storage that is
+      not resizable. In the torch.gt function, the ''out'' tensor is being resized,
+      but it isn''t resizable. The ''out'' tensor should have the same shape as the
+      ''self'' tensor for the operation to be successful. Therefore, the ''out'' tensor''s
+      shape and rank must be equal to the ''self'' tensor''s shape and rank. So, Left
+      : out.shape, out.rank and Op : == Right : self.shape, self.rank'
+    length: 1
+    target:
+      choosen_dtype:
+        other: int
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(self.rank))
+  - f1_score: 84.6262341325811
+    overall_score: 54.31311706629055
+    precision: 100.0
+    recall: 73.34963325183375

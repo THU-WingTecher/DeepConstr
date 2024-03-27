@@ -29,4 +29,64 @@ args:
   - false
 name: torch.nn.functional.kl_div
 package: torch
-pass_rate: 0
+pass_rate: 94.66666666666667
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        input: tensor
+        log_target: bool
+        reduce: bool
+        reduction: str
+        size_average: None
+        target: tensor
+      msg: The size of tensor a (6) must match the size of tensor b (7) at non-singleton
+        dimension 2
+      package: torch
+    txt: (input.size(4) == target.size(4)) or (input.shape[2] == target.shape[2])
+  - f1_score: 75.47169811320754
+    overall_score: 100
+    precision: 100.0
+    recall: 60.60606060606061
+- - cot: The error is due to an invalid value for the "reduction" argument. The provided
+      value is "lgwa", which is not a valid option for "reduction". The valid options
+      for "reduction" are "mean", "sum", and "none". Therefore, the value of "reduction"
+      should be corrected to be one of the valid options.
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        log_target: bool
+        reduce: None
+        reduction: str
+        size_average: None
+        target: tensor
+      msg: LJSZ is not a valid value for reduction
+      package: torch
+    txt: reduction in ["mean", "sum", "none"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: "The error is caused by the presence of input tensor with integer data type\
+      \ (Tensor<i32>) in the function kl_div. The function only supports input tensors\
+      \ with floating-point data type. To prevent the error, the input tensor should\
+      \ be converted to a floating-point data type (Tensor<f32>). \n\nWrap the final\
+      \ formula with"
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        log_target: bool
+        reduce: bool
+        reduction: str
+        size_average: bool
+        target: tensor
+      msg: 'kl_div: Integral inputs not supported.'
+      package: torch
+    txt: input.dtype == torch.float32
+  - f1_score: 98.64864864864865
+    overall_score: 51.66666666666667
+    precision: 97.33333333333334
+    recall: 100.0

@@ -13,4 +13,51 @@ args:
   - false
 name: tf.raw_ops.Cholesky
 package: tensorflow
-pass_rate: 0
+pass_rate: 2.5
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        name: str
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: double,\
+        \ float, half, complex64, complex128\n\t; NodeDef: {{node Cholesky}}; Op<name=Cholesky;\
+        \ signature=input:T -> output:T; attr=T:type,allowed=[DT_DOUBLE, DT_FLOAT,\
+        \ DT_HALF, DT_COMPLEX64, DT_COMPLEX128]> [Op:Cholesky] name: qtuq"
+      package: tensorflow
+    txt: dtype(input) in ["double", "float", "half", "complex64", "complex128"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error arises because the input tensor must have a rank greater than
+      or equal to 2, but the given tensor has a rank of 0. Therefore, the constraint
+      that prevents the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        name: str
+      msg: '{{function_node __wrapped__Cholesky_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Input tensor 0 must have rank >= 2, got 0 [Op:Cholesky] name: EvtN'
+      package: tensorflow
+    txt: rank(input) >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        name: str
+      msg: '{{function_node __wrapped__Cholesky_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Input matrix must be square. [Op:Cholesky] name: TPdt'
+      package: tensorflow
+    txt: input.shape[0] == input.shape[1]
+  - f1_score: 89.42307692307692
+    overall_score: 56.71153846153846
+    precision: 93.0
+    recall: 86.1111111111111

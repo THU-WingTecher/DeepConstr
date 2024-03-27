@@ -17,4 +17,5 @@ args:
   - false
 name: tf.raw_ops.Bucketize
 package: tensorflow
-pass_rate: 0
+pass_rate: 93.5
+rules: []

@@ -1,0 +1,68 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - lambd
+  - out
+  required:
+  - true
+  - false
+  - true
+name: torch.hardshrink
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'The error message indicates that there is an attempt to resize the ''out''
+      tensor, which is not resizable. To prevent this error, we need to ensure that
+      the shape and rank of the ''out'' tensor match the shape and rank of the operation
+      results. In this case, the result shape is the same as the shape of the ''self''
+      tensor, which is [3, 7, 8, 5, 9, 2, 5]. Therefore, the constraint to prevent
+      the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        lambd: int
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 73.71007371007371
+    overall_score: 100
+    precision: 100.0
+    recall: 58.36575875486382
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        lambd: int
+        out: tensor
+        self: tensor
+      msg: Found dtype Int but expected Float
+      package: torch
+    txt: dtype(out) == dtype(self)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        lambd: int
+        out: tensor
+        self: tensor
+      msg: '"hardshrink_cpu" not implemented for ''Int'''
+      package: torch
+    txt: out.dtype == torch.float
+  - f1_score: 96.15384615384615
+    overall_score: 100
+    precision: 100.0
+    recall: 92.59259259259258

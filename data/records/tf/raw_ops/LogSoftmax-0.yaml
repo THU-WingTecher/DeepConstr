@@ -13,4 +13,38 @@ args:
   - false
 name: tf.raw_ops.LogSoftmax
 package: tensorflow
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'The error occurs because the data type of the input tensor ''logits'' is
+      int32, which is not one of the allowed values: half, bfloat16, float, double.
+      To prevent the error, the data type of the input tensor ''logits'' should be
+      changed to one of the allowed types.'
+    length: 1
+    target:
+      choosen_dtype:
+        logits: tensor
+        name: str
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: half,\
+        \ bfloat16, float, double\n\t; NodeDef: {{node LogSoftmax}}; Op<name=LogSoftmax;\
+        \ signature=logits:T -> logsoftmax:T; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16,\
+        \ DT_FLOAT, DT_DOUBLE]> [Op:LogSoftmax] name: joPs"
+      package: tensorflow
+    txt: dtype(logits) in ["half", "bfloat16", "float", "double"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        logits: tensor
+        name: str
+      msg: '{{function_node __wrapped__LogSoftmax_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        logits must have >= 1 dimension, got [] [Op:LogSoftmax] name: FsTm'
+      package: tensorflow
+    txt: len(logits) >= 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

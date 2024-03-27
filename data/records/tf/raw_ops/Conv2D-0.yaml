@@ -41,4 +41,106 @@ args:
   - false
 name: tf.raw_ops.Conv2D
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: "The error is due to an incorrect value for the 'padding' attribute. The\
+      \ provided value is \"aHpH\", which is not in the allowed values: \"SAME\",\
+      \ \"VALID\", \"EXPLICIT\". Therefore, the 'padding' attribute should be corrected\
+      \ to be either \"SAME\", \"VALID\", or \"EXPLICIT\". \n\nConstraint:"
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter: tensor
+        input: tensor
+        name: str
+        padding: str
+        strides: list[int]
+        use_cudnn_on_gpu: bool
+      msg: "Value for attr 'padding' of \"muUF\" is not in the list of allowed values:\
+        \ \"SAME\", \"VALID\", \"EXPLICIT\"\n\t; NodeDef: {{node Conv2D}}; Op<name=Conv2D;\
+        \ signature=input:T, filter:T -> output:T; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16,\
+        \ DT_FLOAT, DT_DOUBLE, DT_INT32]; attr=strides:list(int); attr=use_cudnn_on_gpu:bool,default=true;\
+        \ attr=padding:string,allowed=[\"SAME\", \"VALID\", \"EXPLICIT\"]; attr=explicit_paddings:list(int),default=[];\
+        \ attr=data_format:string,default=\"NHWC\",allowed=[\"NHWC\", \"NCHW\"]; attr=dilations:list(int),default=[1,\
+        \ 1, 1, 1]> [Op:Conv2D] name: IzQV"
+      package: tensorflow
+    txt: padding in ["SAME", "VALID", "EXPLICIT"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is due to the incorrect value for the ''data_format'' attribute.
+      The value provided is ''KaNR'' which is not in the allowed values: "NHWC", "NCHW".
+      Therefore, the ''data_format'' should be corrected to either "NHWC" or "NCHW".
+      Op: Conv2D, and Right : ["NHWC", "NCHW"].'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter: tensor
+        input: tensor
+        name: str
+        padding: str
+        strides: list[int]
+        use_cudnn_on_gpu: bool
+      msg: "Value for attr 'data_format' of \"ARTO\" is not in the list of allowed\
+        \ values: \"NHWC\", \"NCHW\"\n\t; NodeDef: {{node Conv2D}}; Op<name=Conv2D;\
+        \ signature=input:T, filter:T -> output:T; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16,\
+        \ DT_FLOAT, DT_DOUBLE, DT_INT32]; attr=strides:list(int); attr=use_cudnn_on_gpu:bool,default=true;\
+        \ attr=padding:string,allowed=[\"SAME\", \"VALID\", \"EXPLICIT\"]; attr=explicit_paddings:list(int),default=[];\
+        \ attr=data_format:string,default=\"NHWC\",allowed=[\"NHWC\", \"NCHW\"]; attr=dilations:list(int),default=[1,\
+        \ 1, 1, 1]> [Op:Conv2D] name: NKsd"
+      package: tensorflow
+    txt: data_format in ["NHWC", "NCHW"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter: tensor
+        input: tensor
+        name: str
+        padding: str
+        strides: list[int]
+        use_cudnn_on_gpu: bool
+      msg: '{{function_node __wrapped__Conv2D_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Sliding window dilations field must specify 4 dimensions [Op:Conv2D] name:
+        mcsR'
+      package: tensorflow
+    txt: (dilations.dim == 4) and (strides.dim == 4)
+  - f1_score: 96.15384615384615
+    overall_score: 100
+    precision: 100.0
+    recall: 92.59259259259258
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter: tensor
+        input: tensor
+        name: str
+        padding: str
+        strides: list[int]
+        use_cudnn_on_gpu: bool
+      msg: 'cannot compute Conv2D as input #1(zero-based) was expected to be a int32
+        tensor but is a float tensor [Op:Conv2D] name: zdZI'
+      package: tensorflow
+    txt: (dtype(input) == int32) and (dtype(filter) == dtype(input))
+  - f1_score: 67.82006920415225
+    overall_score: 100
+    precision: 100.0
+    recall: 51.30890052356021
