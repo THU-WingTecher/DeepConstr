@@ -60,6 +60,10 @@ def transform_record_for_saving(record: Record) -> dict:
             transformed[key] = value
     return transformed
 
+def get_completed_list(path = "/artifact/experiments/results/completed.json") : 
+    with open(path, "r") as f:
+        return json.load(f)
+
 def save_record(record: dict, path: str) -> None:
     """
     Save a given record dictionary to a YAML file, ensuring that the dictionary is
@@ -250,16 +254,19 @@ class TrainingLoop:
                 train_list = json.load(f)
         
         root_path = self.cfg["train"]["record_path"] 
+        completed_list = get_completed_list()
         for root, _, files in os.walk(root_path):
             for file in files:
                 if file.endswith(".yaml"):
                     name = file.split(".")[0].split("-")[0]
                     full_name = ".".join(os.path.join(root, file).replace('/','.').split('-')[0].split('.')[2:])
-                    if full_name in train_list :
-                        # with open(os.path.join(root, file), "r") as f:
-                        #     record = yaml.safe_load(f)
-                            # if record.get("error", None) is not None or len(record.get("rules", [])) > 0 :
-                            #     continue
+                    if full_name in train_list and full_name not in completed_list :
+                        with open(os.path.join(root, file), "r") as f:
+                            record = yaml.safe_load(f)
+                            if record.get("error", None) is not None or len(record.get("rules", [])) > 0 :
+                                continue
+                            if record.get("pass_rate", 0) >= 15 :
+                                continue
                         record_paths.append(os.path.join(root, file))
         record_paths = sorted(record_paths, key=sort_key)
         return sorted(record_paths, key=sort_key)
@@ -550,16 +557,18 @@ unsolved_err_msgs : {unsolved_msgs}
             if self.extra_exit_check(pass_rate, sorted_err_instances, constr_list) :
                 break
             while sorted_err_instances :
+                if all(self.is_triaged_err_msg(err[0], constr_list) for err in sorted_err_instances) :
+                    TRAIN_LOG.warning(f"ALL err messages has been triaged.")
+                    break
                 most_frequents = sorted_err_instances.pop(0)
-                if self.is_triaged_err_msg(most_frequents[0], constr_list) :
-                    TRAIN_LOG.warning(f"err message {most_frequents[0].get_core_msg()} is already triaged.")
-                    continue
                 succeed = self.train(op_record, most_frequents, constr_list, mode="acc")
                 if succeed :
                     save_record(op_record, record_path)
                 else :
                     TRAIN_LOG.error(f"Failed to train {most_frequents[0].get_core_msg()}")
                     return
+                pass_rate, sorted_err_instances = self.get_pass_rate_and_err_msgs(op_record, self.cfg["train"]["eval_asset"])
+                self.update_pass_rate(op_record, pass_rate)
         
         self.save_only_acc(op_record, record_path)
         # if not self.is_retrainable(op_record) :

@@ -176,12 +176,13 @@ def summarize_final_bf(aggregated_df):
 
     # Formatting the table to mark the largest value in each row with an asterisk
     for idx in range(final_bf_summary.shape[0]):
-        max_value = final_bf_summary.iloc[idx].max()
+        # max_value = final_bf_summary.iloc[idx].max()
+        # print(final_bf_summary.iloc[idx])
         max_column = final_bf_summary.iloc[idx].idxmax()
         if max_column == 'constrinf' :
-            completed_data.append(final_bf_summary.iloc[idx]._name.replace(".models, ''"))
+            completed_data.append(final_bf_summary.iloc[idx]._name.replace(".models", ''))
             cnt+=1
-        final_bf_summary.loc[idx] = final_bf_summary.iloc[idx].apply(lambda x: f"*{x}" if x == max_value else x)
+        # final_bf_summary.loc[idx] = final_bf_summary.iloc[idx].apply(lambda x: f"*{x}" if x == max_value else x)
 
     all_data = final_bf_summary.shape[0]
     revise_complete_data("/artifact/experiments/results/completed.json", completed_data)

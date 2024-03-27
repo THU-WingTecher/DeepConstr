@@ -147,10 +147,17 @@ def sentence_similarity(sentence1, sentence2):
     return cosine_similarity(vector1, vector2)[0, 0]
   
 def is_similar(sen1, sen2, threshold=0.5) :
-    return sentence_similarity(mask_numbers(sen1), mask_numbers(sen2)) >= threshold
+    return sentence_similarity(masking(sen1), masking(sen2)) >= threshold
+
+def masking(sentence, mask_char="#"):
+    return mask_numbers(mask_strings(sentence, mask_char), mask_char)
 
 def mask_numbers(sentence, mask_char="#"):
     return re.sub(r'-?\d+', mask_char, sentence)
+
+def mask_strings(sentence, mask_char="#"):
+    masked = re.sub(r'"[^"]*"', f'"{mask_char}"', sentence)
+    return masked
 
 def sort_sentences_by_similarity(target_sentence, sentence_list):
     vectorizer = TfidfVectorizer()

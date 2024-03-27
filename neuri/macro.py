@@ -39,5 +39,5 @@ PYTHONPATH=/artifact/neuri/:/artifact/:$PYTHONPATH python neuri/cli/train.py tra
 
 tf
 
-PYTHONPATH=/artifact/neuri/:/artifact/:$PYTHONPATH python neuri/cli/train.py train.record_path=data/records/tf backend.type=xla model.type=tensorflow hydra.verbose=train train.resume=false train.parallel=10 train.eval_asset=500 temp.start=0 temp.end=50 train.list=/artifact/data/tf_overall_apis.json
+PYTHONPATH=/artifact/neuri/:/artifact/:$PYTHONPATH python neuri/cli/train.py train.record_path=data/records/tf backend.type=xla model.type=tensorflow hydra.verbose=train train.resume=false train.parallel=1 train.eval_asset=200 temp.start=0 temp.end=50 train.list=/artifact/data/tf_overall_apis.json
 """
