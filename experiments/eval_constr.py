@@ -24,6 +24,8 @@ MAX_FAC = 1.02
 
 plt.rc("text", usetex=True)
 plt.rc("text.latex", preamble=r"\usepackage{xfrac}")
+colors = ['green', 'pink']
+plt.rcParams['text.usetex'] = True
 # Define the path where to search for YAML file
 
 def load_data(path) :
@@ -105,11 +107,9 @@ def get_constr_stats(data_list):
     constr_recall = []
     for data in data_list:
         for rule in data["rules"]:
-            if "synthesized" == rule[0]["cot"]:
+            if "synthesized" == rule[0]["cot"] or "divided" == rule[0]["cot"]:
                 constr_stats["synthesized"] += 1
-            elif "divided" == rule[0]["cot"]:
-                constr_stats["divided"] += 1
-            else:
+            else :
                 constr_stats["other"] += 1
             constr_len.append(rule[0].get("length", 1))
             constr_f1.append(rule[1]["f1_score"])
@@ -118,13 +118,46 @@ def get_constr_stats(data_list):
     return constr_stats, constr_len, constr_operator, constr_f1, constr_prec, constr_recall
 
 # -> visualize distribution of length of cosntr, f1_ prec_ recall of constr, pie chart of constr type
-def get_num_of_constr_with_pass_rate(data_list) :
+def viz_num_of_constr_with_pass_rate(data_list, name, path = "/artifact/results/") :
     pass_rate_num_of_constr = []
     for data in data_list:
         pass_rate_num_of_constr.append(
             (data["pass_rate"], len(data["rules"]))
         )
-    return pass_rate_num_of_constr
+
+    pass_rate, num_of_constraints = zip(*pass_rate_num_of_constr)
+
+    # Convert to numpy arrays for easier manipulation
+    pass_rate = np.array(pass_rate)
+    plt.figure()
+    num_of_constraints = np.array(num_of_constraints)
+    z2 = np.polyfit(num_of_constraints, pass_rate, 2)
+    p2 = np.poly1d(z2)
+
+    # Generating points for the trend line
+    trend_line_x = np.linspace(min(num_of_constraints), max(num_of_constraints), 100)
+    trend_line_y = p2(trend_line_x)
+    # Re-plotting the scatter and the improved trend line
+    plt.scatter(num_of_constraints, pass_rate, alpha=0.8, edgecolors='black', linewidth=0.6, s=80, c='blue', marker='x')
+    plt.plot(trend_line_x, trend_line_y, "r-", label='\\textit{Trend Line}')
+
+    # Adjusting y-axis to not display negative values
+    plt.ylim(bottom=0)
+
+    # Adding professional plot enhancements with no negative y-axis values
+    plt.title('\\textit{Relationship between Pass Rate and Number of Constraints}', fontsize=16, fontweight='bold')
+    plt.xlabel('\\textit{Number of Constraints}', fontsize=14)
+    plt.ylabel('\\textit{Pass Rate(\%)}', fontsize=14)
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+    plt.legend(fontsize=12)
+
+    plt.grid(True, which='both', linestyle='--', linewidth=0.5)
+    plt.minorticks_on()
+
+    # Show the adjusted plot
+    plt.savefig(path + f"num_constr_passrate-{name}.pdf")
+    plt.savefig(path + f"num_constr_passrate-{name}.png")
 
 def viz_gen_way_of_constrs(constr_stats):
     print(constr_stats)
@@ -135,29 +168,37 @@ def viz_constr_len(constr_len : List[int]):
     plt.hist(constr_len, bins=range(1, max(constr_len) + 1))
     plt.show()
 
-colors = ['green', 'pink']
-plt.rcParams['text.usetex'] = True
-def viz_constr_f1(constr_f1 : List[float], constr_prec, acc_f1, acc_prec , path = "/results/"):
+def viz_constr_f1(constr_f1 : List[float], constr_prec, acc_f1, acc_prec , path = "/artifact/results/", name = "PyTorch"):
     plt.figure(figsize=(10, 5))
     # PyTorch
     plt.subplot(1, 2, 1)
     plt.scatter(acc_f1, acc_prec, c=colors[1], label=r'\textsc{DeepConstr$^{s}$}', alpha=0.6, edgecolors='w', linewidths=0.5)
     plt.scatter(constr_f1, constr_prec, c=colors[0], label=r'\textsc{DeepConstr}', alpha=0.6, edgecolors='w', linewidths=0.5)
-    plt.title('\\textit{PyTorch}')
+    if name == "torch" :
+        plt.title('\\textit{PyTorch}')
+    else :
+        plt.title('\\textit{TensorFlow}')
     plt.xlabel('\\textit{Soundness}')
     plt.ylabel('\\textit{Completeness}')
     plt.legend()
-    plt.savefig(path + f"dist-time.png")
+    plt.savefig(path + f"dist-time-{name}.pdf")
+    plt.savefig(path + f"dist-time-{name}.png")
 if __name__ == "__main__" : 
-    path = "/artifact/data/records/torch"
-    acc_path = "/artifact/data/only_acc/torch"
-    save_path = "/artifact/results/"
-    data_list = load_data(path)
-    acc_data_list = load_data(acc_path)
-    constr_stats, constr_len, constr_operator, constr_f1, constr_prec, constr_recall = get_constr_stats(data_list)
-    acc_constr_stats, acc_constr_len, acc_constr_operator, acc_constr_f1, acc_constr_prec, acc_constr_recall = get_constr_stats(acc_data_list)
-    print("all")
-    viz_gen_way_of_constrs(constr_stats)
-    print("only_acc")
-    viz_gen_way_of_constrs(acc_constr_stats)
-    viz_constr_f1(constr_recall, constr_prec, acc_constr_recall, acc_constr_prec, save_path)
+    record_dir = "/artifact/data/"
+    frameworks = ["torch", "tf"]
+    kinds = ["records", "only_acc"]
+    for framework in frameworks:
+        data = []
+        path = os.path.join(record_dir, "records", framework)
+        acc_path = os.path.join(record_dir, "only_acc", framework)
+        data_list = load_data(path)
+        acc_data_list = load_data(acc_path)
+        constr_stats, constr_len, constr_operator, constr_f1, constr_prec, constr_recall = get_constr_stats(data_list)
+        acc_constr_stats, acc_constr_len, acc_constr_operator, acc_constr_f1, acc_constr_prec, acc_constr_recall = get_constr_stats(acc_data_list)
+        print("all")
+        viz_gen_way_of_constrs(constr_stats)
+        print("only_acc")
+        viz_gen_way_of_constrs(acc_constr_stats)
+        # viz_constr_f1(constr_recall, constr_prec, acc_constr_recall, acc_constr_prec, name=framework)
+        viz_num_of_constr_with_pass_rate(data_list, name=framework)
+        # print(pass_rate_num_of_constr)

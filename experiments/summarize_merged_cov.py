@@ -1,6 +1,9 @@
 import os
 import pickle
 import pandas as pd
+import json
+import datetime
+
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
 def parse_directory_name(dirname):
@@ -141,6 +144,19 @@ def aggregate_summarized_data(processed_data):
     aggregated_df = pd.DataFrame(aggregated_data)
     return aggregated_df
 
+def revise_complete_data(save_dir, api_names):
+    with open(save_dir, 'r') as file:
+        data = json.load(file)
+    
+    for name in api_names :
+        if name in data : 
+            pass 
+        else :
+            data.append(name) 
+    
+    with open(save_dir, 'w') as file:
+        json.dump(data, file)
+
 def summarize_final_bf(aggregated_df):
     """
     Summarizes the final_bf values and formats the table to highlight the largest value in each row.
@@ -151,32 +167,43 @@ def summarize_final_bf(aggregated_df):
     Returns:
     - str: A string representation of the summarized table.
     """
+    completed_data = []
+
     cnt = 0
     # Extracting and reshaping the final_bf values
     final_bf_summary = aggregated_df.pivot_table(index='API', columns='Column', values='Final BF', aggfunc='max')
+    model_cnt = aggregated_df.pivot_table(index='API', columns='Column', values='Model Count', aggfunc='max')
 
     # Formatting the table to mark the largest value in each row with an asterisk
-    for idx, row in final_bf_summary.iterrows():
-        max_value = row.max()
-        max_column = row.idxmax()  # Identifying the column name of the max value
-
+    for idx in range(final_bf_summary.shape[0]):
+        max_value = final_bf_summary.iloc[idx].max()
+        max_column = final_bf_summary.iloc[idx].idxmax()
         if max_column == 'constrinf' :
+            completed_data.append(final_bf_summary.iloc[idx]._name.replace(".models, ''"))
             cnt+=1
-        final_bf_summary.loc[idx] = row.apply(lambda x: f"*{x}" if x == max_value else x)
+        final_bf_summary.loc[idx] = final_bf_summary.iloc[idx].apply(lambda x: f"*{x}" if x == max_value else x)
 
     all_data = final_bf_summary.shape[0]
+    revise_complete_data("/artifact/experiments/results/completed.json", completed_data)
     print("Total APIs with constrinf as the largest final BF: ", cnt)
     print(f"Increase ratio of constrinf as the largest final BF: {cnt/all_data}")
-    return final_bf_summary
+    return pd.concat([final_bf_summary, model_cnt], axis=1), completed_data 
+
+def save_data(final_bf, completed_data, save_dir="/artifact/experiments/results"):
+    save_path = os.path.join(save_dir, datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + ".csv")
+    complete_data_path = os.path.join(save_dir, "completed.json")
+    final_bf.to_csv(save_path)
+    revise_complete_data(complete_data_path, completed_data)
 
 if __name__ == "__main__":
     import sys
     if len(sys.argv) > 1:
         root_dir = sys.argv[1]
     else:
-        root_dir = '/artifact/exp_sin/'
+        root_dir = '/artifact/exp_first/'
     api_coverage_data = traverse_and_classify(root_dir)
     processed_data = process_pickle_files(api_coverage_data)
     aggregated_df = aggregate_summarized_data(processed_data)
-    final_bf_summary = summarize_final_bf(aggregated_df)
+    final_bf_summary, completed_data = summarize_final_bf(aggregated_df)
+    save_data(final_bf_summary, completed_data, "/artifact/experiments/results")
     print(final_bf_summary)

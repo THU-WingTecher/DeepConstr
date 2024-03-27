@@ -8,11 +8,12 @@ import threading
 import multiprocessing
 from experiments.evaluate_models import model_exec, batched
 from experiments.evaluate_tf_models import tf_model_exec, clear_gcda
+from neuri.logger import DTEST_LOG
 # Load the JSON file
 
-BASELINES = ["symbolic-cinit"] #["symbolic-cinit", "neuri", "constrinf"]
-FIXED_FUNC = "tf.cos" #"torch.sin"
-cov_parallel = 1
+BASELINES = ["symbolic-cinit", "neuri", "constrinf", "constrinf_2"]
+FIXED_FUNC = "torch.sin" #"torch.sin"
+cov_parallel = 8
 
 def activate_conda_environment(env_name):
     """
@@ -206,11 +207,15 @@ def run(api_name, baseline, config, max_retries=100):
     if config['model']['type'] == "tensorflow":
         if baseline == "constrinf":
             RECORD = config["mgen"]["record_path"]
+        elif baseline == "constrinf_2":
+            RECORD = config["mgen"]["record_path"].replace("records", "only_acc")
         else:
             RECORD = os.path.join(os.getcwd(), "data", "tf_records")
     elif config['model']['type'] == "torch":
         if baseline == "constrinf":
             RECORD = config["mgen"]["record_path"]
+        elif baseline == "constrinf_2":
+            RECORD = config["mgen"]["record_path"].replace("records", "only_acc")
         else:
             RECORD = os.path.join(os.getcwd(), "data", "torch_records")
     # Construct the command to run fuzz.py
@@ -221,7 +226,7 @@ def run(api_name, baseline, config, max_retries=100):
                    f"fuzz.save_test={save_path} " \
                    f"model.type={config['model']['type']} backend.type={config['backend']['type']} filter.type=\"[nan,dup,inf]\" " \
                    f"debug.viz=true hydra.verbose=fuzz fuzz.resume=false " \
-                   f"mgen.method={baseline} mgen.max_nodes={max_nodes} mgen.test_pool=\"{test_pool}\""
+                   f"mgen.method={baseline.split('_')[0]} mgen.max_nodes={max_nodes} mgen.test_pool=\"{test_pool}\""
 
     print(f"Running {api_name} with baseline {baseline}")
     execute_command(fuzz_command)
@@ -275,8 +280,8 @@ def main(cfg) :
     totally, cfg['exp']['parallel'] * cov_parallel * len(BASELINES) process will be craeted
     """
     print(f" Will run {cfg['exp']['parallel'] * cov_parallel * len(BASELINES)} process in parallel")
-    # api_names = load_api_names_from_data(cfg["mgen"]["record_path"], cfg["mgen"]["pass_rate"])
-    api_names = load_api_names_from_json("/artifact/tests/test.json")
+    api_names = load_api_names_from_data(cfg["mgen"]["record_path"], cfg["mgen"]["pass_rate"])
+    # api_names = load_api_names_from_json("/artifact/tests/test.json")
     print(f"Will run {len(api_names)} apis in total")
     parallel_eval(api_names, BASELINES, cfg)
 
