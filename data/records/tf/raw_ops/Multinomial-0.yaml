@@ -25,4 +25,26 @@ args:
   - false
 name: tf.raw_ops.Multinomial
 package: tensorflow
-pass_rate: 0
+pass_rate: 3.0
+rules:
+- - cot: "Based on the given runtime information, the error arises because the function\
+      \ is trying to perform the Multinomial operation on a float tensor and an int32\
+      \ tensor. However, both tensors in the arguments must have the same data type.\
+      \ \n\nTo prevent this error, the data type of the second input tensor (num_samples)\
+      \ should be converted to int32. \n\nThe constraint that prevents the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        logits: tensor
+        name: str
+        num_samples: tensor
+        seed: int
+        seed2: int
+      msg: 'cannot compute Multinomial as input #1(zero-based) was expected to be
+        a int32 tensor but is a float tensor [Op:Multinomial] name: OrpD'
+      package: tensorflow
+    txt: dtype(num_samples) == int32
+  - f1_score: 98.28009828009829
+    overall_score: 100
+    precision: 100.0
+    recall: 96.61835748792271

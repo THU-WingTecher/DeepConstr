@@ -1,0 +1,277 @@
+args:
+  dtype:
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - list[int]
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  - list[int]
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - data_format
+  - grad
+  - ksize
+  - name
+  - orig_input
+  - orig_output
+  - padding
+  - strides
+  required:
+  - false
+  - true
+  - true
+  - false
+  - true
+  - true
+  - true
+  - true
+name: tf.raw_ops.MaxPool3DGrad
+package: tensorflow
+pass_rate: 0.0
+rules:
+- - cot: 'Based on the given runtime information, the error is due to incorrect value
+      for ''data_format'' from args. The value provided is ''wAFA'' which is not in
+      the allowed values: "NDHWC", "NCDHW". Therefore, dtype(data_format) should be
+      corrected to be either "NDHWC" or "NCDHW", which is ["NDHWC", "NCDHW"].'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        grad: tensor
+        ksize: list[int]
+        name: str
+        orig_input: tensor
+        orig_output: tensor
+        padding: str
+        strides: list[int]
+      msg: "Value for attr 'data_format' of \"wAVI\" is not in the list of allowed\
+        \ values: \"NDHWC\", \"NCDHW\"\n\t; NodeDef: {{node MaxPool3DGrad}}; Op<name=MaxPool3DGrad;\
+        \ signature=orig_input:TInput, orig_output:TInput, grad:T -> output:T; attr=ksize:list(int),min=5;\
+        \ attr=strides:list(int),min=5; attr=padding:string,allowed=[\"SAME\", \"\
+        VALID\"]; attr=data_format:string,default=\"NDHWC\",allowed=[\"NDHWC\", \"\
+        NCDHW\"]; attr=T:type,default=DT_FLOAT,allowed=[DT_HALF, DT_BFLOAT16, DT_FLOAT];\
+        \ attr=TInput:type,default=DT_FLOAT,allowed=[DT_HALF, DT_BFLOAT16, DT_FLOAT]>\
+        \ [Op:MaxPool3DGrad] name: qHLk"
+      package: tensorflow
+    txt: data_format in ["NDHWC", "NCDHW"]
+  - f1_score: 98.28009828009829
+    overall_score: 100
+    precision: 100.0
+    recall: 96.61835748792271
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        data_format: str
+        grad: tensor
+        ksize: list[int]
+        name: str
+        orig_input: tensor
+        orig_output: tensor
+        padding: str
+        strides: list[int]
+      msg: "Length for attr 'ksize' of 0 must be at least minimum 5\n\t; NodeDef:\
+        \ {{node MaxPool3DGrad}}; Op<name=MaxPool3DGrad; signature=orig_input:TInput,\
+        \ orig_output:TInput, grad:T -> output:T; attr=ksize:list(int),min=5; attr=strides:list(int),min=5;\
+        \ attr=padding:string,allowed=[\"SAME\", \"VALID\"]; attr=data_format:string,default=\"\
+        NDHWC\",allowed=[\"NDHWC\", \"NCDHW\"]; attr=T:type,default=DT_FLOAT,allowed=[DT_HALF,\
+        \ DT_BFLOAT16, DT_FLOAT]; attr=TInput:type,default=DT_FLOAT,allowed=[DT_HALF,\
+        \ DT_BFLOAT16, DT_FLOAT]> [Op:MaxPool3DGrad] name: IQWY"
+      package: tensorflow
+    txt: (ksize.dim >= 1) and (len(strides) == 5)
+  - f1_score: 86.95652173913044
+    overall_score: 100
+    precision: 100.0
+    recall: 76.92307692307692
+- - cot: 'The error is due to incorrect values for ''padding'' from args. For ''padding'',
+      the value provided is "aqPo" which is not in the allowed values: "SAME", "VALID".
+      Therefore, dtype(padding) should be corrected to be either "SAME" or "VALID",
+      which is ["SAME", "VALID"]. Op : in, and Right : ["SAME", "VALID"].'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        grad: tensor
+        ksize: list[int]
+        name: str
+        orig_input: tensor
+        orig_output: tensor
+        padding: str
+        strides: list[int]
+      msg: "Value for attr 'padding' of \"mhqt\" is not in the list of allowed values:\
+        \ \"SAME\", \"VALID\"\n\t; NodeDef: {{node MaxPool3DGrad}}; Op<name=MaxPool3DGrad;\
+        \ signature=orig_input:TInput, orig_output:TInput, grad:T -> output:T; attr=ksize:list(int),min=5;\
+        \ attr=strides:list(int),min=5; attr=padding:string,allowed=[\"SAME\", \"\
+        VALID\"]; attr=data_format:string,default=\"NDHWC\",allowed=[\"NDHWC\", \"\
+        NCDHW\"]; attr=T:type,default=DT_FLOAT,allowed=[DT_HALF, DT_BFLOAT16, DT_FLOAT];\
+        \ attr=TInput:type,default=DT_FLOAT,allowed=[DT_HALF, DT_BFLOAT16, DT_FLOAT]>\
+        \ [Op:MaxPool3DGrad] name: RGUU"
+      package: tensorflow
+    txt: padding in ["SAME", "VALID"]
+  - f1_score: 98.52216748768473
+    overall_score: 100
+    precision: 100.0
+    recall: 97.0873786407767
+- - cot: "Based on the given runtime information, the error occurs because the attribute\
+      \ 'orig_input' is provided as int32, but it is expected to be one of the allowed\
+      \ types: half, bfloat16, or float32. \n\nTo prevent the error, the 'orig_input'\
+      \ tensor should be converted to one of the allowed types. \n\nThe constraint\
+      \ that prevents the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        grad: tensor
+        ksize: list[int]
+        name: str
+        orig_input: tensor
+        orig_output: tensor
+        padding: str
+        strides: list[int]
+      msg: "Value for attr 'TInput' of int32 is not in the list of allowed values:\
+        \ half, bfloat16, float\n\t; NodeDef: {{node MaxPool3DGrad}}; Op<name=MaxPool3DGrad;\
+        \ signature=orig_input:TInput, orig_output:TInput, grad:T -> output:T; attr=ksize:list(int),min=5;\
+        \ attr=strides:list(int),min=5; attr=padding:string,allowed=[\"SAME\", \"\
+        VALID\"]; attr=data_format:string,default=\"NDHWC\",allowed=[\"NDHWC\", \"\
+        NCDHW\"]; attr=T:type,default=DT_FLOAT,allowed=[DT_HALF, DT_BFLOAT16, DT_FLOAT];\
+        \ attr=TInput:type,default=DT_FLOAT,allowed=[DT_HALF, DT_BFLOAT16, DT_FLOAT]>\
+        \ [Op:MaxPool3DGrad] name: YxdK"
+      package: tensorflow
+    txt: dtype(orig_input) in ["half", "bfloat16", "float32"]
+  - f1_score: 99.49748743718592
+    overall_score: 52.5
+    precision: 99.0
+    recall: 100.0
+- - cot: 'The error is triggered because the ksize argument is not specifying 5 dimensions.
+      The given ksize has 9 dimensions. Therefore, the Left : ksize.dim should be
+      corrected to 5. Ops : ''=='', Right : 5.'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        grad: tensor
+        ksize: list[int]
+        name: str
+        orig_input: tensor
+        orig_output: tensor
+        padding: str
+        strides: list[int]
+      msg: '{{function_node __wrapped__MaxPool3DGrad_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Sliding window ksize field must specify 5 dimensions [Op:MaxPool3DGrad] name:
+        gWKm'
+      package: tensorflow
+    txt: ksize.dim == 5
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: The error is triggered because the data_format is set to NCDHW, but the Default
+      MaxPooling3dGradOp only supports NDHWC on device type CPU. To prevent this error,
+      the data_format should be changed to NDHWC.
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        grad: tensor
+        ksize: list[int]
+        name: str
+        orig_input: tensor
+        orig_output: tensor
+        padding: str
+        strides: list[int]
+      msg: '{{function_node __wrapped__MaxPool3DGrad_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Default MaxPooling3dGradOp only supports NDHWC on device type CPU [Op:MaxPool3DGrad]
+        name: EbxV'
+      package: tensorflow
+    txt: data_format == NDHWC
+  - f1_score: 92.67139479905437
+    overall_score: 100
+    precision: 100.0
+    recall: 86.34361233480176
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        data_format: str
+        grad: tensor
+        ksize: list[int]
+        name: str
+        orig_input: tensor
+        orig_output: tensor
+        padding: str
+        strides: list[int]
+      msg: "Could not find device for node: {{node MaxPool3DGrad}} = MaxPool3DGrad[T=DT_FLOAT,\
+        \ TInput=DT_BFLOAT16, data_format=\"NCDHW\", ksize=[1, 6, 7, 6, -4, 6, 6,\
+        \ 6, 6], padding=\"SAME\", strides=[-3, 8, 4, 5, 0]]\nAll kernels registered\
+        \ for op MaxPool3DGrad:\n  device='XLA_CPU_JIT'; TInput in [DT_FLOAT, DT_BFLOAT16,\
+        \ DT_HALF]; T in [DT_FLOAT, DT_BFLOAT16, DT_HALF]\n  device='XLA_GPU_JIT';\
+        \ TInput in [DT_FLOAT, DT_BFLOAT16, DT_HALF]; T in [DT_FLOAT, DT_BFLOAT16,\
+        \ DT_HALF]\n  device='CPU'; T in [DT_BFLOAT16]; TInput in [DT_BFLOAT16]\n\
+        \  device='CPU'; T in [DT_FLOAT]; TInput in [DT_FLOAT]\n  device='GPU'; T\
+        \ in [DT_BFLOAT16]; TInput in [DT_BFLOAT16]\n  device='GPU'; T in [DT_HALF];\
+        \ TInput in [DT_HALF]\n  device='GPU'; T in [DT_FLOAT]; TInput in [DT_FLOAT]\n\
+        \ [Op:MaxPool3DGrad] name: RExZ"
+      package: tensorflow
+    txt: (strides[0] > 0) or (all(x > 0 for x in ksize))
+  - f1_score: 68.54515378360949
+    overall_score: 49.97715736040609
+    precision: 96.95431472081218
+    recall: 53.0118391951082
+- - cot: 'Based on the given runtime information, the error occurs because the function
+      is trying to perform an operation on a float tensor and an int32 tensor. However,
+      both tensors in the generated arguments must have the same data type. Therefore,
+      the constraint that needs to be formulated in order to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        grad: tensor
+        ksize: list[int]
+        name: str
+        orig_input: tensor
+        orig_output: tensor
+        padding: str
+        strides: list[int]
+      msg: 'cannot compute MaxPool3DGrad as input #1(zero-based) was expected to be
+        a float tensor but is a int32 tensor [Op:MaxPool3DGrad] name: XaOg'
+      package: tensorflow
+    txt: dtype(grad) == dtype(orig_output)
+  - f1_score: 67.39926739926742
+    overall_score: 100
+    precision: 100.0
+    recall: 50.82872928176796
+- - cot: The error is triggered because pooling is not supported on the batch dimension.
+      The function is trying to perform pooling on the batch dimension, but it is
+      not allowed. To prevent the error, the pooling operation should be performed
+      on one of the spatial dimensions (height, width, or depth) instead of the batch
+      dimension.
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        grad: tensor
+        ksize: list[int]
+        name: str
+        orig_input: tensor
+        orig_output: tensor
+        padding: str
+        strides: list[int]
+      msg: '{{function_node __wrapped__MaxPool3DGrad_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Pooling is not yet supported on the batch dimension. [Op:MaxPool3DGrad] name:
+        vOZP'
+      package: tensorflow
+    txt: data_format != NDHWC or strides[0] != 1
+  - f1_score: 22.332506203473944
+    overall_score: 10.03125
+    precision: 14.0625
+    recall: 54.21686746987952

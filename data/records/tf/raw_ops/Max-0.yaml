@@ -21,7 +21,7 @@ args:
   - false
 name: tf.raw_ops.Max
 package: tensorflow
-pass_rate: 0.6666666666666667
+pass_rate: 1.5
 rules:
 - - cot: divided
     length: 1

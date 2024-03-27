@@ -17,8 +17,64 @@ args:
   - false
 name: tf.raw_ops.AdjustHue
 package: tensorflow
-pass_rate: 0.0
+pass_rate: 25.0
 rules:
+- - cot: Based on the given runtime information, the error occurs because the input
+      tensor has 7 dimensions, but the function `tf.raw_ops.AdjustHue` only supports
+      up to 6 dimensions for the `images` argument. Therefore, the constraint should
+      be that the rank of the `images` tensor should be less than or equal to 6.
+    length: 1
+    target:
+      choosen_dtype:
+        delta: float
+        images: tensor
+        name: str
+      msg: "Could not find device for node: {{node AdjustHue}} = AdjustHue[T=DT_HALF]\n\
+        All kernels registered for op AdjustHue:\n  device='XLA_CPU_JIT'; T in [DT_FLOAT,\
+        \ DT_HALF]\n  device='XLA_GPU_JIT'; T in [DT_FLOAT, DT_HALF]\n  device='CPU';\
+        \ T in [DT_FLOAT]\n  device='GPU'; T in [DT_HALF]\n  device='GPU'; T in [DT_FLOAT]\n\
+        \ [Op:AdjustHue] name: kyZZ"
+      package: tensorflow
+    txt: images.rank <= 6
+  - f1_score: 39.56834532374101
+    overall_score: 31.784172661870507
+    precision: 27.500000000000004
+    recall: 70.51282051282051
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        delta: float
+        images: tensor
+        name: str
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: half,\
+        \ float\n\t; NodeDef: {{node AdjustHue}}; Op<name=AdjustHue; signature=images:T,\
+        \ delta:float -> output:T; attr=T:type,default=DT_FLOAT,allowed=[DT_HALF,\
+        \ DT_FLOAT]> [Op:AdjustHue] name: AXjk"
+      package: tensorflow
+    txt: dtype(images) in ["half", "float32"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: "The error is triggered because the input tensor has 2 channels instead of\
+      \ the required 3 channels. \n\nTo prevent this error, the number of channels\
+      \ in the input tensor should be equal to 3. \n\nTherefore, the constraint is:"
+    length: 1
+    target:
+      choosen_dtype:
+        delta: float
+        images: tensor
+        name: str
+      msg: '{{function_node __wrapped__AdjustHue_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        input must have 3 channels but instead has 7 channels. [Op:AdjustHue] name:
+        GCbo'
+      package: tensorflow
+    txt: images.shape[-1] == 3
+  - f1_score: 68.14310051107324
+    overall_score: 46.07155025553662
+    precision: 100.0
+    recall: 51.67958656330749
 - - cot: 'The error occurs because the input tensor must be at least 3-dimensional,
       but the shape of the input tensor is [4, 4]. To prevent the error, the shape
       of the input tensor should have at least 3 dimensions. Therefore, the constraint

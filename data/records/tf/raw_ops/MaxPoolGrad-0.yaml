@@ -41,4 +41,35 @@ args:
   - true
 name: tf.raw_ops.MaxPoolGrad
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'The error is due to an incorrect value for ''data_format'' from args. For
+      ''data_format'', the value provided is ''XSXx'' which is not in the allowed
+      values: "NHWC", "NCHW". Therefore, ''data_format'' should be corrected to be
+      either "NHWC" or "NCHW". Op : MaxPoolGrad, and Right : ["NHWC", "NCHW"].'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        explicit_paddings: list[int]
+        grad: tensor
+        ksize: list[int]
+        name: str
+        orig_input: tensor
+        orig_output: tensor
+        padding: str
+        strides: list[int]
+      msg: "Value for attr 'data_format' of \"rUtT\" is not in the list of allowed\
+        \ values: \"NHWC\", \"NCHW\"\n\t; NodeDef: {{node MaxPoolGrad}}; Op<name=MaxPoolGrad;\
+        \ signature=orig_input:T, orig_output:T, grad:T -> output:T; attr=ksize:list(int),min=4;\
+        \ attr=strides:list(int),min=4; attr=padding:string,allowed=[\"SAME\", \"\
+        VALID\", \"EXPLICIT\"]; attr=explicit_paddings:list(int),default=[]; attr=data_format:string,default=\"\
+        NHWC\",allowed=[\"NHWC\", \"NCHW\"]; attr=T:type,default=DT_FLOAT,allowed=[DT_FLOAT,\
+        \ DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16, DT_INT8, DT_INT64, DT_BFLOAT16,\
+        \ DT_UINT16, DT_HALF, DT_UINT32, DT_UINT64]> [Op:MaxPoolGrad] name: lRjw"
+      package: tensorflow
+    txt: data_format in ["NHWC", "NCHW"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

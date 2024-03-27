@@ -1,0 +1,81 @@
+args:
+  dtype:
+  - bool
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - incompatible_shape_error
+  - name
+  - x
+  - y
+  required:
+  - false
+  - false
+  - true
+  - true
+name: tf.raw_ops.Equal
+package: tensorflow
+pass_rate: 99.5
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        incompatible_shape_error: bool
+        name: str
+        x: tensor
+        y: tensor
+      msg: '{{function_node __wrapped__Equal_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [9,9,9,9,9,9,9] vs. [7,6,8,8,6,1,6] [Op:Equal] name:
+        EcXv'
+      package: tensorflow
+    txt: ((x.shape[i] == 1) and (x.shape == y.shape)) and (all(x.shape[i] == y.shape[i]
+      or x.shape[i] == 1 or y.shape[i] == 1 for i in range(-1, -min(len(x.shape),
+      len(y.shape))-1, -1)))
+  - f1_score: 80.32128514056225
+    overall_score: 100
+    precision: 100.0
+    recall: 67.11409395973155
+- - cot: "The error is triggered because the function `tf.raw_ops.Equal` is expecting\
+      \ the input `x` to be an int32 tensor, but it is provided with a float tensor.\
+      \ \n\nTo prevent this error, the data type of the two tensors `x` and `y` should\
+      \ be the same. Therefore, we can formulate the constraint as follows:"
+    length: 1
+    target:
+      choosen_dtype:
+        incompatible_shape_error: bool
+        name: str
+        x: tensor
+        y: tensor
+      msg: 'cannot compute Equal as input #1(zero-based) was expected to be a float
+        tensor but is a int32 tensor [Op:Equal] name: FqjC'
+      package: tensorflow
+    txt: dtype(x) == dtype(y)
+  - f1_score: 94.33962264150942
+    overall_score: 100
+    precision: 100.0
+    recall: 89.28571428571428
+- - cot: 'The error is caused because the shape of tensor x contains negative dimensions,
+      which is not allowed. To prevent the error, the shape of tensor x should only
+      contain non-negative dimensions. Therefore, the constraint can be formulated
+      as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        incompatible_shape_error: bool
+        name: str
+        x: tensor
+        y: tensor
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(dim >= 0 for dim in x.shape)
+  - f1_score: 69.08462867012089
+    overall_score: 100
+    precision: 100.0
+    recall: 52.770448548812666

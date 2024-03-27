@@ -25,4 +25,84 @@ args:
   - true
 name: tf.raw_ops.BatchMatMulV2
 package: tensorflow
-pass_rate: 0
+pass_rate: 53.768844221105525
+rules:
+- - cot: 'Error is triggered because the function is trying to perform a BatchMatMulV2
+      operation on a float tensor and an int32 tensor. However, both tensors in generated
+      args must have the same data type. Let''s see what the args were. the ''x''
+      tensor is float32, but the ''y'' tensor is of type int32. Therefore, Left :
+      dtype(y), which is the type of tensor y, should be corrected. It says that should
+      be equal to the datatype of tensor x, so Op : ==, and Right : dtype(x).'
+    length: 1
+    target:
+      choosen_dtype:
+        adj_x: bool
+        adj_y: bool
+        name: str
+        x: tensor
+        y: tensor
+      msg: 'cannot compute BatchMatMulV2 as input #1(zero-based) was expected to be
+        a int32 tensor but is a float tensor [Op:BatchMatMulV2] name: tLxK'
+      package: tensorflow
+    txt: dtype(y)==dtype(x)
+  - f1_score: 99.75062344139653
+    overall_score: 61.875311720698264
+    precision: 100.0
+    recall: 99.50248756218907
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        adj_x: bool
+        adj_y: bool
+        name: str
+        x: tensor
+        y: tensor
+      msg: '{{function_node __wrapped__BatchMatMulV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        In[0] ndims must be >= 2: 0 [Op:BatchMatMulV2] name: poUX'
+      package: tensorflow
+    txt: (y.dim >= 2) and (x.dim >= 2)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'In order to prevent the error, the batch dimensions of the input tensors
+      `x` and `y` must be compatible. Let''s see what the args were. The batch dimensions
+      of `x` are `[4, 9, 9, 9, 9, 9, 9]` and the batch dimensions of `y` are `[7,
+      9, 1, 2, 6, 5, 9]`. To be compatible, the batch dimensions must be the same
+      for all dimensions except the last one. Therefore, the condition should be:'
+    length: 1
+    target:
+      choosen_dtype:
+        adj_x: bool
+        adj_y: bool
+        name: str
+        x: tensor
+        y: tensor
+      msg: '{{function_node __wrapped__BatchMatMulV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        In[0] and In[1] must have compatible batch dimensions: [6,1,9,8,5,1,1] vs.
+        [6,2,2,2,2,2,2] [Op:BatchMatMulV2] name: WkzH'
+      package: tensorflow
+    txt: len(x) == len(y) and all(x.shape[i] == y.shape[i] for i in range(len(x)-1))
+  - f1_score: 99.25558312655089
+    overall_score: 61.627791563275444
+    precision: 100.0
+    recall: 98.52216748768474
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        adj_x: bool
+        adj_y: bool
+        name: str
+        x: tensor
+        y: tensor
+      msg: '{{function_node __wrapped__BatchMatMulV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Matrix size-incompatible: In[0]: [4,6], In[1]: [4,7] [Op:BatchMatMulV2] name:
+        TzhP'
+      package: tensorflow
+    txt: x[-1] == y[-2]
+  - f1_score: 59.64111606679805
+    overall_score: 41.820558033399024
+    precision: 57.78894472361809
+    recall: 61.61594513501929

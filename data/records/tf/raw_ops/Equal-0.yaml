@@ -21,4 +21,58 @@ args:
   - true
 name: tf.raw_ops.Equal
 package: tensorflow
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'The error is caused because the shape of tensor x contains negative dimensions,
+      which is not allowed. To prevent the error, the shape of tensor x should only
+      contain non-negative dimensions. Therefore, the constraint can be formulated
+      as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        incompatible_shape_error: bool
+        name: str
+        x: tensor
+        y: tensor
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(dim >= 0 for dim in x.shape)
+  - f1_score: 69.38053097345133
+    overall_score: 46.690265486725664
+    precision: 98.0
+    recall: 53.6986301369863
+- - cot: 'Based on the given runtime information, the error occurs because the function
+      tf.raw_ops.Equal is trying to perform an operation on a int32 tensor and a float
+      tensor. However, both tensors in the generated args must have the same data
+      type. Therefore, the constraint that prevents the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        incompatible_shape_error: bool
+        name: str
+        x: tensor
+        y: tensor
+      msg: 'cannot compute Equal as input #1(zero-based) was expected to be a int32
+        tensor but is a float tensor [Op:Equal] name: iIEk'
+      package: tensorflow
+    txt: dtype(y)==dtype(x)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        incompatible_shape_error: bool
+        name: str
+        x: tensor
+        y: tensor
+      msg: '{{function_node __wrapped__Equal_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [4,8,8,8,8,8,8] vs. [9,9,9,8,8,9] [Op:Equal] name: oOyE'
+      package: tensorflow
+    txt: (x.shape[i] == 1) and (all(x.shape[i] == y.shape[i] for i in range(x.rank)))
+  - f1_score: 78.57142857142857
+    overall_score: 51.285714285714285
+    precision: 93.5
+    recall: 67.7536231884058

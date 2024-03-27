@@ -37,4 +37,74 @@ args:
   - true
 name: tf.raw_ops.MaxPool3DGradGrad
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'The error is due to an incorrect value for the ''data_format'' attribute.
+      The provided value is ''YZZZ'', which is not one of the allowed values: "NDHWC",
+      "NCDHW". Therefore, the constraint to prevent this error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        grad: tensor
+        ksize: list[int]
+        name: str
+        orig_input: tensor
+        orig_output: tensor
+        padding: str
+        strides: list[int]
+      msg: "Value for attr 'data_format' of \"jmnn\" is not in the list of allowed\
+        \ values: \"NDHWC\", \"NCDHW\"\n\t; NodeDef: {{node MaxPool3DGradGrad}}; Op<name=MaxPool3DGradGrad;\
+        \ signature=orig_input:T, orig_output:T, grad:T -> output:T; attr=ksize:list(int),min=5;\
+        \ attr=strides:list(int),min=5; attr=padding:string,allowed=[\"SAME\", \"\
+        VALID\"]; attr=data_format:string,default=\"NDHWC\",allowed=[\"NDHWC\", \"\
+        NCDHW\"]; attr=T:type,allowed=[DT_FLOAT, DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16,\
+        \ DT_INT8, DT_INT64, DT_BFLOAT16, DT_UINT16, DT_HALF, DT_UINT32, DT_UINT64]>\
+        \ [Op:MaxPool3DGradGrad] name: GdCs"
+      package: tensorflow
+    txt: data_format in ["NDHWC", "NCDHW"]
+  - f1_score: 98.76543209876544
+    overall_score: 100
+    precision: 100.0
+    recall: 97.56097560975611
+- - cot: 'Value for attr ''padding'' of "KvlC" is not in the list of allowed values:
+      "SAME", "VALID"
+
+
+      The error is due to an incorrect value for the ''padding'' attribute from the
+      arguments. The value provided is "KvlC", which is not in the allowed values:
+      "SAME", "VALID".
+
+
+      Therefore, the value for ''padding'' should be corrected to either "SAME" or
+      "VALID", which is ["SAME", "VALID"].
+
+
+      Op: tf.raw_ops.MaxPool3DGradGrad
+
+      Right: ["SAME", "VALID"]'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        grad: tensor
+        ksize: list[int]
+        name: str
+        orig_input: tensor
+        orig_output: tensor
+        padding: str
+        strides: list[int]
+      msg: "Value for attr 'padding' of \"KvlC\" is not in the list of allowed values:\
+        \ \"SAME\", \"VALID\"\n\t; NodeDef: {{node MaxPool3DGradGrad}}; Op<name=MaxPool3DGradGrad;\
+        \ signature=orig_input:T, orig_output:T, grad:T -> output:T; attr=ksize:list(int),min=5;\
+        \ attr=strides:list(int),min=5; attr=padding:string,allowed=[\"SAME\", \"\
+        VALID\"]; attr=data_format:string,default=\"NDHWC\",allowed=[\"NDHWC\", \"\
+        NCDHW\"]; attr=T:type,allowed=[DT_FLOAT, DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16,\
+        \ DT_INT8, DT_INT64, DT_BFLOAT16, DT_UINT16, DT_HALF, DT_UINT32, DT_UINT64]>\
+        \ [Op:MaxPool3DGradGrad] name: RMsg"
+      package: tensorflow
+    txt: padding in ["SAME", "VALID"]
+  - f1_score: 66.77796327212019
+    overall_score: 100
+    precision: 100.0
+    recall: 50.125313283208015

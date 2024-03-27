@@ -1,0 +1,102 @@
+args:
+  dtype:
+  - int32,int64
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - bool
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - axis
+  - input
+  - keep_dims
+  - name
+  required:
+  - true
+  - true
+  - false
+  - false
+name: tf.raw_ops.Any
+package: tensorflow
+pass_rate: 4.0
+rules:
+- - cot: 'Value for attr ''Tidx'' of float is not in the list of allowed values: int32,
+      int64. The error is triggered because the attribute ''axis'' is provided as
+      float32, but it is expected to be one of int32 or int64. Therefore, the constraint
+      that prevents the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: tensor
+        input: tensor
+        keep_dims: bool
+        name: str
+      msg: "Value for attr 'Tidx' of float is not in the list of allowed values: int32,\
+        \ int64\n\t; NodeDef: {{node Any}}; Op<name=Any; signature=input:bool, reduction_indices:Tidx\
+        \ -> output:bool; attr=keep_dims:bool,default=false; attr=Tidx:type,default=DT_INT32,allowed=[DT_INT32,\
+        \ DT_INT64]> [Op:Any] name: coID"
+      package: tensorflow
+    txt: dtype(axis) in ["int32", "int64"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the error arises because the function
+      is trying to perform the "Any" operation on a float tensor instead of a bool
+      tensor. To prevent this error, the input tensor should be of type bool. Therefore,
+      the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: tensor
+        input: tensor
+        keep_dims: bool
+        name: str
+      msg: 'cannot compute Any as input #0(zero-based) was expected to be a bool tensor
+        but is a float tensor [Op:Any] name: DpNH'
+      package: tensorflow
+    txt: dtype(input) == bool
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: The error is triggered because the reduction dimension (-202405) is not valid
+      for the input tensor with 6 dimensions. To prevent this error, the reduction
+      dimension should be less than the number of dimensions in the input tensor.
+    length: 1
+    target:
+      choosen_dtype:
+        axis: tensor
+        input: tensor
+        keep_dims: bool
+        name: str
+      msg: '{{function_node __wrapped__Any_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Invalid reduction dimension (-763087 for input with 5 dimension(s) [Op:Any]
+        name: oCMu'
+      package: tensorflow
+    txt: (i < input.rank for i in axis)
+  - f1_score: 43.44569288389513
+    overall_score: 17.5
+    precision: 28.999999999999996
+    recall: 86.56716417910448
+- - cot: 'The error is caused because negative dimensions are not allowed in the `axis`
+      argument. Looking at the `axis` argument, it contains multiple negative values
+      which are not allowed. Therefore, all elements of the `axis` should be non-negative.
+      Op : >=, Right : 0.'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: tensor
+        input: tensor
+        keep_dims: bool
+        name: str
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in axis)
+  - f1_score: 82.3045267489712
+    overall_score: 100
+    precision: 100.0
+    recall: 69.93006993006993

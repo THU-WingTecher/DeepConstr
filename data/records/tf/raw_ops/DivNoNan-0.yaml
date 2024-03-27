@@ -17,4 +17,78 @@ args:
   - true
 name: tf.raw_ops.DivNoNan
 package: tensorflow
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: "The error is due to negative dimensions in the shape of the input tensors.\
+      \ In the given runtime information, the shape of tensor x is [4, -1, -1, -1,\
+      \ -1, -1, -1]. To prevent this error, all dimensions of the input tensors should\
+      \ have non-negative values. \n\nThe constraint to prevent the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(dim >= 0 for dim in x.shape) and all(dim >= 0 for dim in y.shape)
+  - f1_score: 93.8388625592417
+    overall_score: 58.91943127962085
+    precision: 100.0
+    recall: 88.39285714285715
+- - cot: 'Based on the given runtime information, the error arises because the function
+      is trying to perform a division operation on a complex128 tensor and a float
+      tensor. However, both tensors must have the same data type. Let''s see what
+      the args were. The ''x'' tensor is complex128, but the ''y'' tensor is of type
+      float32. Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: 'cannot compute DivNoNan as input #1(zero-based) was expected to be a half
+        tensor but is a float tensor [Op:DivNoNan] name: jNGm'
+      package: tensorflow
+    txt: dtype(y) == dtype(x)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: "Value for attr 'T' of int64 is not in the list of allowed values: half,\
+        \ float, bfloat16, double, complex64, complex128\n\t; NodeDef: {{node DivNoNan}};\
+        \ Op<name=DivNoNan; signature=x:T, y:T -> z:T; attr=T:type,allowed=[DT_HALF,\
+        \ DT_FLOAT, DT_BFLOAT16, DT_DOUBLE, DT_COMPLEX64, DT_COMPLEX128]> [Op:DivNoNan]\
+        \ name: Fmxq"
+      package: tensorflow
+    txt: dtype(y) in ["half", "float", "bfloat16", "double", "complex64", "complex128"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is triggered because the shapes of x and y are incompatible. The
+      shape of x is [3,8,8,8,8,8,8] and the shape of y is [9,7,5,8,8,8,8]. To prevent
+      this error, the shapes of x and y should be compatible, which means they should
+      have the same dimensions. The constraint to ensure this is:'
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: '{{function_node __wrapped__DivNoNan_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [3,4,9,8,2,9,8] vs. [8,8,8,8,8,8,8] [Op:DivNoNan] name:
+        aSqQ'
+      package: tensorflow
+    txt: x.shape == y.shape
+  - f1_score: 92.16589861751153
+    overall_score: 58.082949308755765
+    precision: 100.0
+    recall: 85.47008547008548

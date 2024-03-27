@@ -29,4 +29,114 @@ args:
   - true
 name: tf.raw_ops.MaxPool3D
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'The error is due to an incorrect value for ''data_format'' from the args.
+      For ''data_format'', the value provided is "UShg" which is not in the allowed
+      values: "NDHWC", "NCDHW". Therefore, the correct constraint to prevent the error
+      is:'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        input: tensor
+        ksize: list[int]
+        name: str
+        padding: str
+        strides: list[int]
+      msg: "Value for attr 'data_format' of \"Xpbl\" is not in the list of allowed\
+        \ values: \"NDHWC\", \"NCDHW\"\n\t; NodeDef: {{node MaxPool3D}}; Op<name=MaxPool3D;\
+        \ signature=input:T -> output:T; attr=ksize:list(int),min=5; attr=strides:list(int),min=5;\
+        \ attr=padding:string,allowed=[\"SAME\", \"VALID\"]; attr=data_format:string,default=\"\
+        NDHWC\",allowed=[\"NDHWC\", \"NCDHW\"]; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16,\
+        \ DT_FLOAT]> [Op:MaxPool3D] name: BMrA"
+      package: tensorflow
+    txt: data_format in ["NDHWC", "NCDHW"]
+  - f1_score: 98.28009828009829
+    overall_score: 100
+    precision: 100.0
+    recall: 96.61835748792271
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        input: tensor
+        ksize: list[int]
+        name: str
+        padding: str
+        strides: list[int]
+      msg: "Value for attr 'padding' of \"NWxf\" is not in the list of allowed values:\
+        \ \"SAME\", \"VALID\"\n\t; NodeDef: {{node MaxPool3D}}; Op<name=MaxPool3D;\
+        \ signature=input:T -> output:T; attr=ksize:list(int),min=5; attr=strides:list(int),min=5;\
+        \ attr=padding:string,allowed=[\"SAME\", \"VALID\"]; attr=data_format:string,default=\"\
+        NDHWC\",allowed=[\"NDHWC\", \"NCDHW\"]; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16,\
+        \ DT_FLOAT]> [Op:MaxPool3D] name: xLlm"
+      package: tensorflow
+    txt: padding in ["SAME", "VALID"]
+  - f1_score: 66.88963210702342
+    overall_score: 100
+    precision: 100.0
+    recall: 50.25125628140703
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        data_format: str
+        input: tensor
+        ksize: list[int]
+        name: str
+        padding: str
+        strides: list[int]
+      msg: "Length for attr 'ksize' of 0 must be at least minimum 5\n\t; NodeDef:\
+        \ {{node MaxPool3D}}; Op<name=MaxPool3D; signature=input:T -> output:T; attr=ksize:list(int),min=5;\
+        \ attr=strides:list(int),min=5; attr=padding:string,allowed=[\"SAME\", \"\
+        VALID\"]; attr=data_format:string,default=\"NDHWC\",allowed=[\"NDHWC\", \"\
+        NCDHW\"]; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16, DT_FLOAT]> [Op:MaxPool3D]\
+        \ name: Fgkt"
+      package: tensorflow
+    txt: (len(ksize) >= 1) and (len(strides) >= 1)
+  - f1_score: 72.75192046995028
+    overall_score: 30.249999999999996
+    precision: 57.49999999999999
+    recall: 99.0159901599016
+- - cot: The error is triggered because the data format is set to NCDHW, but the default
+      Pooling3DOp only supports NDHWC format on CPU. To prevent this error, the data
+      format should be changed to NDHWC.
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        input: tensor
+        ksize: list[int]
+        name: str
+        padding: str
+        strides: list[int]
+      msg: '{{function_node __wrapped__MaxPool3D_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Default Pooling3DOp only supports NDHWC on device type CPU [Op:MaxPool3D]
+        name: ljMu'
+      package: tensorflow
+    txt: data_format == "NDHWC"
+  - f1_score: 83.68200836820084
+    overall_score: 100
+    precision: 100.0
+    recall: 71.94244604316546
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        data_format: str
+        input: tensor
+        ksize: list[int]
+        name: str
+        padding: str
+        strides: list[int]
+      msg: '{{function_node __wrapped__MaxPool3D_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Sliding window ksize field must specify 5 dimensions [Op:MaxPool3D] name:
+        aMPR'
+      package: tensorflow
+    txt: (ksize.rank == 5) and (strides.rank == 5)
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0

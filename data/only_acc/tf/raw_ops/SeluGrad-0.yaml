@@ -1,0 +1,98 @@
+args:
+  dtype:
+  - float16,bfloat16,float32,float64
+  - str
+  - float16,bfloat16,float32,float64
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - gradients
+  - name
+  - outputs
+  required:
+  - true
+  - false
+  - true
+name: tf.raw_ops.SeluGrad
+package: tensorflow
+pass_rate: 91.66666666666666
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        gradients: tensor
+        name: str
+        outputs: tensor
+      msg: '{{function_node __wrapped__SeluGrad_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Inputs to operation SeluGrad of type SeluGrad must have the same size and
+        shape.  Input 0: [2,9,9,0,1,5,2] != input 1: [4,7,7,7,7,7,7] [Op:SeluGrad]
+        name: snKW'
+      package: tensorflow
+    txt: ((all(gradients.shape[i]==outputs.shape[i] for i in range(len(gradients.shape))))
+      or (all(gradients.shape[i] == outputs.shape[i] or gradients.shape[i] == 1 or
+      outputs.shape[i] == 1 for i in range(-1, -min(len(gradients.shape), len(outputs.shape))-1,
+      -1)))) and (gradients.dim == outputs.dim)
+  - f1_score: 94.63722397476342
+    overall_score: 100
+    precision: 100.0
+    recall: 89.82035928143713
+- - cot: "Based on the given runtime information, the error occurs because the attribute\
+      \ 'gradients' is of type int32, which is not one of the allowed types (half,\
+      \ bfloat16, float, double) for attribute 'T' in tf.raw_ops.SeluGrad.\n\nTo prevent\
+      \ this error, the 'gradients' tensor should be of one of the allowed types.\
+      \ \n\nOp : tf.raw_ops.SeluGrad\nLeft : dtype(gradients)\nRight : [half, bfloat16,\
+      \ float, double]\n\nFinal formula:"
+    length: 1
+    target:
+      choosen_dtype:
+        gradients: tensor
+        name: str
+        outputs: tensor
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: half,\
+        \ bfloat16, float, double\n\t; NodeDef: {{node SeluGrad}}; Op<name=SeluGrad;\
+        \ signature=gradients:T, outputs:T -> backprops:T; attr=T:type,allowed=[DT_HALF,\
+        \ DT_BFLOAT16, DT_FLOAT, DT_DOUBLE]> [Op:SeluGrad] name: KjFU"
+      package: tensorflow
+    txt: dtype(gradients) in [half, bfloat16, float, double]
+  - f1_score: 99.83361064891847
+    overall_score: 100
+    precision: 100.0
+    recall: 99.66777408637874
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        gradients: tensor
+        name: str
+        outputs: tensor
+      msg: 'cannot compute SeluGrad as input #1(zero-based) was expected to be a float
+        tensor but is a int32 tensor [Op:SeluGrad] name: tJes'
+      package: tensorflow
+    txt: dtype(outputs) == dtype(gradients)
+  - f1_score: 99.66777408637873
+    overall_score: 100
+    precision: 100.0
+    recall: 99.33774834437087
+- - cot: 'The error is caused because the output tensor has negative dimensions, which
+      is not allowed. To prevent this error, we need to ensure that all dimensions
+      of the output tensor are non-negative.
+
+
+      Wrap the final formula with'
+    length: 1
+    target:
+      choosen_dtype:
+        gradients: tensor
+        name: str
+        outputs: tensor
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(outputs.shape[i] >= 0 for i in range(outputs.rank))
+  - f1_score: 84.69241773962804
+    overall_score: 100
+    precision: 100.0
+    recall: 73.44913151364764

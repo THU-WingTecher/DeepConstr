@@ -1,0 +1,49 @@
+args:
+  dtype:
+  - bfloat16,float16,float32,float64,int32,int64,complex64,complex128
+  - str
+  is_pos:
+  - false
+  - false
+  name:
+  - input
+  - name
+  required:
+  - true
+  - false
+name: tf.raw_ops.DiagPart
+package: tensorflow
+pass_rate: 100
+rules:
+- - cot: 'The error is caused by dimensions 0 and 1 not matching in the input tensor.
+      To prevent this error, the dimensions of the input tensor should be such that
+      dimensions 0 and 1 are the same. Therefore, the constraint would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        name: str
+      msg: '{{function_node __wrapped__DiagPart_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Invalid shape [3,3,7,3]: dimensions 0 and 2 do not match. [Op:DiagPart] name:
+        VNcg'
+      package: tensorflow
+    txt: input.shape[0] == input.shape[1]
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        name: str
+      msg: '{{function_node __wrapped__DiagPart_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        The rank of the tensor should be                                          even
+        and positive, got shape [2,2,2] [Op:DiagPart] name: TqDO'
+      package: tensorflow
+    txt: input.rank % 2 == 0
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0

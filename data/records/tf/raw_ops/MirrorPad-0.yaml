@@ -21,4 +21,41 @@ args:
   - true
 name: tf.raw_ops.MirrorPad
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        mode: str
+        name: str
+        paddings: list[int]
+      msg: "Value for attr 'mode' of \"LBBd\" is not in the list of allowed values:\
+        \ \"REFLECT\", \"SYMMETRIC\"\n\t; NodeDef: {{node MirrorPad}}; Op<name=MirrorPad;\
+        \ signature=input:T, paddings:Tpaddings -> output:T; attr=T:type; attr=Tpaddings:type,default=DT_INT32,allowed=[DT_INT32,\
+        \ DT_INT64]; attr=mode:string,allowed=[\"REFLECT\", \"SYMMETRIC\"]> [Op:MirrorPad]"
+      package: tensorflow
+    txt: mode in ["REFLECT", "SYMMETRIC"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: The error is caused by the input tensor having a rank of 7, while the function
+      tf.raw_ops.MirrorPad only accepts input tensors of ranks 0 to 5. To prevent
+      this error, the input tensor rank should be less than or equal to 5.
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        mode: str
+        name: str
+        paddings: list[int]
+      msg: '{{function_node __wrapped__MirrorPad_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        inputs rank not in [0,5]: 7 [Op:MirrorPad]'
+      package: tensorflow
+    txt: len(input.shape) <= 5
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

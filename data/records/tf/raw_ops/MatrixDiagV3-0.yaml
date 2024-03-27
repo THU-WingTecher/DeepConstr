@@ -127,13 +127,8 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 97.40259740259741
-- - cot: "Based on the given runtime information, the error message states that the\
-      \ \"num_cols\" argument must be a scalar. However, in the provided runtime information,\
-      \ the \"num_cols\" argument is a tensor with shape [5, 3, 3, 3, 3, 3]. \n\n\
-      To prevent this error, the \"num_cols\" argument should be a scalar, meaning\
-      \ it should not have any dimensions. \n\nThe constraint to prevent this error\
-      \ can be formulated as:"
-    length: 1
+- - cot: synthesized
+    length: 3
     target:
       choosen_dtype:
         align: str
@@ -144,13 +139,14 @@ rules:
         num_rows: tensor
         padding_value: tensor
       msg: '{{function_node __wrapped__MatrixDiagV3_device_/job:localhost/replica:0/task:0/device:CPU:0}}
-        num_cols must be a scalar [Op:MatrixDiagV3] name: hVKk'
+        The number of rows is too small. [Op:MatrixDiagV3] name: SZeG'
       package: tensorflow
-    txt: num_cols.dim == 0
-  - f1_score: 98.40142095914742
+    txt: ((diagonal.shape[0] >= num_cols[0]) or (num_rows.dim == 0)) or (num_rows.dim
+      >= diagonal.dim)
+  - f1_score: 66.66666666666667
     overall_score: 100
     precision: 100.0
-    recall: 96.85314685314685
+    recall: 50.0
 - - cot: 'Based on the given runtime information, the error arises because the function
       expects the `padding_value` to be a scalar but it is a tensor with shape `[3,
       9, 2, 5, 9, 9]`.
@@ -172,7 +168,7 @@ rules:
         padding_value must be a scalar [Op:MatrixDiagV3] name: sNuc'
       package: tensorflow
     txt: padding_value.shape.rank == 0
-  - f1_score: 97.82608695652173
+  - f1_score: 100.0
     overall_score: 100
     precision: 100.0
-    recall: 95.74468085106382
+    recall: 100.0

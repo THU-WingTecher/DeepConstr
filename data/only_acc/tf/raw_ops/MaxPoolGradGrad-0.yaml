@@ -1,0 +1,190 @@
+args:
+  dtype:
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - list[int]
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  - list[int]
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - data_format
+  - grad
+  - ksize
+  - name
+  - orig_input
+  - orig_output
+  - padding
+  - strides
+  required:
+  - false
+  - true
+  - true
+  - false
+  - true
+  - true
+  - true
+  - true
+name: tf.raw_ops.MaxPoolGradGrad
+package: tensorflow
+pass_rate: 0.0
+rules:
+- - cot: 'The error is triggered because the value provided for the ''data_format''
+      attribute is "ejFk", which is not in the allowed values: "NHWC", "NCHW". Therefore,
+      the ''data_format'' attribute should be corrected to be either "NHWC" or "NCHW",
+      which is ["NHWC", "NCHW"]. Op : in, and Right : ["NHWC", "NCHW"].'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        grad: tensor
+        ksize: list[int]
+        name: str
+        orig_input: tensor
+        orig_output: tensor
+        padding: str
+        strides: list[int]
+      msg: "Value for attr 'data_format' of \"tsAe\" is not in the list of allowed\
+        \ values: \"NHWC\", \"NCHW\"\n\t; NodeDef: {{node MaxPoolGradGrad}}; Op<name=MaxPoolGradGrad;\
+        \ signature=orig_input:T, orig_output:T, grad:T -> output:T; attr=ksize:list(int),min=4;\
+        \ attr=strides:list(int),min=4; attr=padding:string,allowed=[\"SAME\", \"\
+        VALID\"]; attr=data_format:string,default=\"NHWC\",allowed=[\"NHWC\", \"NCHW\"\
+        ]; attr=T:type,allowed=[DT_FLOAT, DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16,\
+        \ DT_INT8, DT_INT64, DT_BFLOAT16, DT_UINT16, DT_HALF, DT_UINT32, DT_UINT64]>\
+        \ [Op:MaxPoolGradGrad] name: IHbO"
+      package: tensorflow
+    txt: data_format in ["NHWC", "NCHW"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        data_format: str
+        grad: tensor
+        ksize: list[int]
+        name: str
+        orig_input: tensor
+        orig_output: tensor
+        padding: str
+        strides: list[int]
+      msg: "Length for attr 'strides' of 0 must be at least minimum 4\n\t; NodeDef:\
+        \ {{node MaxPoolGradGrad}}; Op<name=MaxPoolGradGrad; signature=orig_input:T,\
+        \ orig_output:T, grad:T -> output:T; attr=ksize:list(int),min=4; attr=strides:list(int),min=4;\
+        \ attr=padding:string,allowed=[\"SAME\", \"VALID\"]; attr=data_format:string,default=\"\
+        NHWC\",allowed=[\"NHWC\", \"NCHW\"]; attr=T:type,allowed=[DT_FLOAT, DT_DOUBLE,\
+        \ DT_INT32, DT_UINT8, DT_INT16, DT_INT8, DT_INT64, DT_BFLOAT16, DT_UINT16,\
+        \ DT_HALF, DT_UINT32, DT_UINT64]> [Op:MaxPoolGradGrad] name: eahY"
+      package: tensorflow
+    txt: (len(strides) >= 7) and (len(ksize) >= 1)
+  - f1_score: 99.75062344139653
+    overall_score: 100
+    precision: 100.0
+    recall: 99.50248756218907
+- - cot: 'The error is triggered because the value for the ''padding'' attribute is
+      "xJVv", which is not in the allowed values: "SAME", "VALID". Therefore, the
+      value for ''padding'' should be corrected to either "SAME" or "VALID", which
+      is ["SAME", "VALID"].'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        grad: tensor
+        ksize: list[int]
+        name: str
+        orig_input: tensor
+        orig_output: tensor
+        padding: str
+        strides: list[int]
+      msg: "Value for attr 'padding' of \"Onkw\" is not in the list of allowed values:\
+        \ \"SAME\", \"VALID\"\n\t; NodeDef: {{node MaxPoolGradGrad}}; Op<name=MaxPoolGradGrad;\
+        \ signature=orig_input:T, orig_output:T, grad:T -> output:T; attr=ksize:list(int),min=4;\
+        \ attr=strides:list(int),min=4; attr=padding:string,allowed=[\"SAME\", \"\
+        VALID\"]; attr=data_format:string,default=\"NHWC\",allowed=[\"NHWC\", \"NCHW\"\
+        ]; attr=T:type,allowed=[DT_FLOAT, DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16,\
+        \ DT_INT8, DT_INT64, DT_BFLOAT16, DT_UINT16, DT_HALF, DT_UINT32, DT_UINT64]>\
+        \ [Op:MaxPoolGradGrad] name: sotK"
+      package: tensorflow
+    txt: padding in ["SAME", "VALID"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is triggered because the `ksize` parameter of `MaxPoolGradGrad`
+      does not specify 4 dimensions. Let''s see what the args were. `ksize` was a
+      tensor of shape `[6, 9, 9, 9, 9, 9, 9, 9, 9]`. To specify 4 dimensions, the
+      shape of `ksize` should be `[batch, height, width, channels]`. Therefore, the
+      condition to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        grad: tensor
+        ksize: list[int]
+        name: str
+        orig_input: tensor
+        orig_output: tensor
+        padding: str
+        strides: list[int]
+      msg: '{{function_node __wrapped__MaxPoolGradGrad_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Sliding window ksize field must specify 4 dimensions [Op:MaxPoolGradGrad]
+        name: peoO'
+      package: tensorflow
+    txt: ksize.dim == 4
+  - f1_score: 43.92156862745099
+    overall_score: 31.14070351758794
+    precision: 56.28140703517588
+    recall: 36.01286173633441
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        grad: tensor
+        ksize: list[int]
+        name: str
+        orig_input: tensor
+        orig_output: tensor
+        padding: str
+        strides: list[int]
+      msg: '{{function_node __wrapped__MaxPoolGradGrad_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Default MaxPoolingGradGradOp only supports NHWC on device type CPU [Op:MaxPoolGradGrad]
+        name: SVcs'
+      package: tensorflow
+    txt: data_format == "NHWC"
+  - f1_score: 96.07843137254902
+    overall_score: 100
+    precision: 100.0
+    recall: 92.45283018867923
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        data_format: str
+        grad: tensor
+        ksize: list[int]
+        name: str
+        orig_input: tensor
+        orig_output: tensor
+        padding: str
+        strides: list[int]
+      msg: 'cannot compute MaxPoolGradGrad as input #1(zero-based) was expected to
+        be a float tensor but is a int32 tensor [Op:MaxPoolGradGrad] name: nDmO'
+      package: tensorflow
+    txt: (dtype(grad)==dtype(orig_output)) and (dtype(grad) == dtype(orig_input))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

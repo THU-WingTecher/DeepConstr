@@ -1,0 +1,101 @@
+args:
+  dtype:
+  - bool
+  - bool
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - adj_x
+  - adj_y
+  - name
+  - x
+  - y
+  required:
+  - false
+  - false
+  - false
+  - true
+  - true
+name: tf.raw_ops.BatchMatMulV2
+package: tensorflow
+pass_rate: 47.73869346733669
+rules:
+- - cot: The constraint to prevent the error is that the last dimension of the first
+      matrix (A) must be equal to the second-to-last dimension of the second matrix
+      (b).
+    length: 1
+    target:
+      choosen_dtype:
+        adj_x: bool
+        adj_y: bool
+        name: str
+        x: tensor
+        y: tensor
+      msg: '{{function_node __wrapped__BatchMatMulV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Matrix size-incompatible: In[0]: [1,1], In[1]: [7,7,7] [Op:BatchMatMulV2]
+        name: rLLt'
+      package: tensorflow
+    txt: x.shape[1] == y.shape[-2]
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        adj_x: bool
+        adj_y: bool
+        name: str
+        x: tensor
+        y: tensor
+      msg: '{{function_node __wrapped__BatchMatMulV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        In[0] and In[1] must have compatible batch dimensions: [3,5,3,8] vs. [9,8,9,9,9,9]
+        [Op:BatchMatMulV2] name: WnGG'
+      package: tensorflow
+    txt: all(x.shape[i] == y.shape[i] for i in range(len(x)))
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        adj_x: bool
+        adj_y: bool
+        name: str
+        x: tensor
+        y: tensor
+      msg: '{{function_node __wrapped__BatchMatMulV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        In[0] ndims must be >= 2: 0 [Op:BatchMatMulV2] name: poUX'
+      package: tensorflow
+    txt: (y.dim >= 2) and (x.dim >= 2)
+  - f1_score: 97.56097560975608
+    overall_score: 100
+    precision: 100.0
+    recall: 95.23809523809523
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        adj_x: bool
+        adj_y: bool
+        name: str
+        x: tensor
+        y: tensor
+      msg: 'cannot compute BatchMatMulV2 as input #1(zero-based) was expected to be
+        a float tensor but is a int32 tensor [Op:BatchMatMulV2] name: YKET'
+      package: tensorflow
+    txt: (dtype(x) == int32) and (dtype(y) == int32)
+  - f1_score: 67.68189509306261
+    overall_score: 100
+    precision: 100.0
+    recall: 51.150895140664964

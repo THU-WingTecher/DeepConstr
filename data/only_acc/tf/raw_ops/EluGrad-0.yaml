@@ -1,0 +1,79 @@
+args:
+  dtype:
+  - float16,bfloat16,float32,float64
+  - str
+  - float16,bfloat16,float32,float64
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - gradients
+  - name
+  - outputs
+  required:
+  - true
+  - false
+  - true
+name: tf.raw_ops.EluGrad
+package: tensorflow
+pass_rate: 11.0
+rules:
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      size and shape of two inputs to the EluGrad operation are not the same. The
+      size of the first input is [1, 1], while the size of the second input is [3,
+      3, 3, 3].
+
+
+      To prevent this error, the size and shape of the two inputs should be the same.
+      Therefore, the constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        gradients: tensor
+        name: str
+        outputs: tensor
+      msg: '{{function_node __wrapped__EluGrad_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Inputs to operation EluGrad of type EluGrad must have the same size and shape.  Input
+        0: [8,8,8,8] != input 1: [7,3,6,8,3] [Op:EluGrad] name: ytfo'
+      package: tensorflow
+    txt: gradients.shape == outputs.shape
+  - f1_score: 29.26829268292683
+    overall_score: 12.0
+    precision: 18.0
+    recall: 78.26086956521739
+- - cot: "Based on the given runtime information, the error arises because the attribute\
+      \ 'gradients' is specified as int32, but it is expected to be one of half, bfloat16,\
+      \ float, double. The tensor 'gradients' is provided as int32, which is not compatible.\
+      \ \n\nSo, the condition that prevents the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        gradients: tensor
+        name: str
+        outputs: tensor
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: half,\
+        \ bfloat16, float, double\n\t; NodeDef: {{node EluGrad}}; Op<name=EluGrad;\
+        \ signature=gradients:T, outputs:T -> backprops:T; attr=T:type,allowed=[DT_HALF,\
+        \ DT_BFLOAT16, DT_FLOAT, DT_DOUBLE]> [Op:EluGrad] name: SLIq"
+      package: tensorflow
+    txt: dtype(gradients) in ["half", "bfloat16", "float", "double"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        gradients: tensor
+        name: str
+        outputs: tensor
+      msg: 'cannot compute EluGrad as input #1(zero-based) was expected to be a float
+        tensor but is a int32 tensor [Op:EluGrad] name: PJwy'
+      package: tensorflow
+    txt: (dtype(gradients) == float32) and (dtype(gradients) == dtype(outputs))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

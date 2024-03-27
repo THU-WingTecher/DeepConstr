@@ -29,4 +29,117 @@ args:
   - true
 name: tf.raw_ops.AvgPool
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        ksize: list[int]
+        name: str
+        padding: str
+        strides: list[int]
+        value: tensor
+      msg: "Value for attr 'padding' of \"MfxM\" is not in the list of allowed values:\
+        \ \"SAME\", \"VALID\"\n\t; NodeDef: {{node AvgPool}}; Op<name=AvgPool; signature=value:T\
+        \ -> output:T; attr=ksize:list(int),min=4; attr=strides:list(int),min=4; attr=padding:string,allowed=[\"\
+        SAME\", \"VALID\"]; attr=data_format:string,default=\"NHWC\",allowed=[\"NHWC\"\
+        , \"NCHW\"]; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16, DT_FLOAT, DT_DOUBLE]>\
+        \ [Op:AvgPool] name: JwKM"
+      package: tensorflow
+    txt: padding in ["SAME", "VALID"]
+  - f1_score: 98.52216748768473
+    overall_score: 100
+    precision: 100.0
+    recall: 97.0873786407767
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        data_format: str
+        ksize: list[int]
+        name: str
+        padding: str
+        strides: list[int]
+        value: tensor
+      msg: "Length for attr 'ksize' of 0 must be at least minimum 4\n\t; NodeDef:\
+        \ {{node AvgPool}}; Op<name=AvgPool; signature=value:T -> output:T; attr=ksize:list(int),min=4;\
+        \ attr=strides:list(int),min=4; attr=padding:string,allowed=[\"SAME\", \"\
+        VALID\"]; attr=data_format:string,default=\"NHWC\",allowed=[\"NHWC\", \"NCHW\"\
+        ]; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16, DT_FLOAT, DT_DOUBLE]> [Op:AvgPool]\
+        \ name: fJdW"
+      package: tensorflow
+    txt: (len(ksize) >= 1) and (len(strides) >= 1)
+  - f1_score: 97.6510067114094
+    overall_score: 50.0
+    precision: 97.0
+    recall: 98.3108108108108
+- - cot: 'Based on the given runtime information, the error is due to an incorrect
+      value for ''data_format'' from args. The value provided is ''ochS'' which is
+      not in the allowed values: "NHWC", "NCHW". Therefore, the constraint to prevent
+      the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        ksize: list[int]
+        name: str
+        padding: str
+        strides: list[int]
+        value: tensor
+      msg: "Value for attr 'data_format' of \"fHLx\" is not in the list of allowed\
+        \ values: \"NHWC\", \"NCHW\"\n\t; NodeDef: {{node AvgPool}}; Op<name=AvgPool;\
+        \ signature=value:T -> output:T; attr=ksize:list(int),min=4; attr=strides:list(int),min=4;\
+        \ attr=padding:string,allowed=[\"SAME\", \"VALID\"]; attr=data_format:string,default=\"\
+        NHWC\",allowed=[\"NHWC\", \"NCHW\"]; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16,\
+        \ DT_FLOAT, DT_DOUBLE]> [Op:AvgPool] name: mjZh"
+      package: tensorflow
+    txt: data_format in ["NHWC", "NCHW"]
+  - f1_score: 99.00990099009901
+    overall_score: 100
+    precision: 100.0
+    recall: 98.0392156862745
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        ksize: list[int]
+        name: str
+        padding: str
+        strides: list[int]
+        value: tensor
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: half,\
+        \ bfloat16, float, double\n\t; NodeDef: {{node AvgPool}}; Op<name=AvgPool;\
+        \ signature=value:T -> output:T; attr=ksize:list(int),min=4; attr=strides:list(int),min=4;\
+        \ attr=padding:string,allowed=[\"SAME\", \"VALID\"]; attr=data_format:string,default=\"\
+        NHWC\",allowed=[\"NHWC\", \"NCHW\"]; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16,\
+        \ DT_FLOAT, DT_DOUBLE]> [Op:AvgPool] name: InNi"
+      package: tensorflow
+    txt: dtype(value) in ["half", "bfloat16", "float", "double"]
+  - f1_score: 90.70294784580497
+    overall_score: 100
+    precision: 100.0
+    recall: 82.9875518672199
+- - cot: The error is triggered because the data_format is set to NCHW, but the AvgPool
+      operation only supports NHWC data format on the CPU device. To prevent the error,
+      the data_format should be changed to NHWC.
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        ksize: list[int]
+        name: str
+        padding: str
+        strides: list[int]
+        value: tensor
+      msg: '{{function_node __wrapped__AvgPool_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Default AvgPoolingOp only supports NHWC on device type CPU [Op:AvgPool] name:
+        JCyq'
+      package: tensorflow
+    txt: data_format == "NHWC"
+  - f1_score: 84.38818565400844
+    overall_score: 100
+    precision: 100.0
+    recall: 72.99270072992701

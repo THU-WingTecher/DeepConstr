@@ -17,4 +17,39 @@ args:
   - false
 name: tf.raw_ops.ExpandDims
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: The error is due to the incorrect value for the 'axis' attribute. The attribute
+      'axis' is expected to be one of int32 or int64, but the provided value is float.
+      Therefore, the 'axis' attribute should be corrected to be of type int32 or int64.
+    length: 1
+    target:
+      choosen_dtype:
+        axis: tensor
+        input: tensor
+        name: str
+      msg: "Value for attr 'Tdim' of float is not in the list of allowed values: int32,\
+        \ int64\n\t; NodeDef: {{node ExpandDims}}; Op<name=ExpandDims; signature=input:T,\
+        \ dim:Tdim -> output:T; attr=T:type; attr=Tdim:type,default=DT_INT32,allowed=[DT_INT32,\
+        \ DT_INT64]> [Op:ExpandDims] name: dZHo"
+      package: tensorflow
+    txt: dtype(axis) in ["int32", "int64"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        axis: tensor
+        input: tensor
+        name: str
+      msg: '{{function_node __wrapped__ExpandDims_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        ''dim'' must be a tensor with a single value [Op:ExpandDims] name: eqiH'
+      package: tensorflow
+    txt: (axis.shape[0] == 1) and (axis.dim == 1)
+  - f1_score: 81.79959100204499
+    overall_score: 100
+    precision: 100.0
+    recall: 69.20415224913495

@@ -17,4 +17,37 @@ args:
   - true
 name: tf.raw_ops.MulNoNan
 package: tensorflow
-pass_rate: 0
+pass_rate: 12.5
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: '{{function_node __wrapped__MulNoNan_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [3,6,7,8,8,9,8] vs. [8,5,9,5,5,5,5] [Op:MulNoNan] name:
+        Etvj'
+      package: tensorflow
+    txt: (all(x.shape[i] == y.shape[i] for i in range(x.rank))) or (x.shape[i] ==
+      1)
+  - f1_score: 95.23809523809523
+    overall_score: 100
+    precision: 100.0
+    recall: 90.9090909090909
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: 'cannot compute MulNoNan as input #1(zero-based) was expected to be a float
+        tensor but is a int32 tensor [Op:MulNoNan] name: Aeqc'
+      package: tensorflow
+    txt: (dtype(y) == float) and (dtype(y) == dtype(x))
+  - f1_score: 96.61835748792271
+    overall_score: 100
+    precision: 100.0
+    recall: 93.45794392523365

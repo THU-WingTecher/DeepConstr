@@ -21,4 +21,63 @@ args:
   - false
 name: tf.raw_ops.Any
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.5
+rules:
+- - cot: 'Value for attr ''Tidx'' of float is not in the list of allowed values: int32,
+      int64. The error is triggered because the attribute ''axis'' is provided as
+      float32, but it is expected to be one of int32 or int64. Therefore, the constraint
+      that prevents the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: tensor
+        input: tensor
+        keep_dims: bool
+        name: str
+      msg: "Value for attr 'Tidx' of float is not in the list of allowed values: int32,\
+        \ int64\n\t; NodeDef: {{node Any}}; Op<name=Any; signature=input:bool, reduction_indices:Tidx\
+        \ -> output:bool; attr=keep_dims:bool,default=false; attr=Tidx:type,default=DT_INT32,allowed=[DT_INT32,\
+        \ DT_INT64]> [Op:Any] name: coID"
+      package: tensorflow
+    txt: dtype(axis) in ["int32", "int64"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the error arises because the function
+      is trying to perform the "Any" operation on a float tensor instead of a bool
+      tensor. To prevent this error, the input tensor should be of type bool. Therefore,
+      the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: tensor
+        input: tensor
+        keep_dims: bool
+        name: str
+      msg: 'cannot compute Any as input #0(zero-based) was expected to be a bool tensor
+        but is a float tensor [Op:Any] name: DpNH'
+      package: tensorflow
+    txt: dtype(input) == bool
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: The error is due to negative dimensions provided in the 'axis' argument in
+      tf.raw_ops.Any function. Negative dimensions are not allowed. So, the values
+      in 'axis' need to be non-negative. Therefore, every value in the 'axis' list
+      should be greater than or equal to zero.
+    length: 1
+    target:
+      choosen_dtype:
+        axis: tensor
+        input: tensor
+        keep_dims: bool
+        name: str
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in axis)
+  - f1_score: 81.4663951120163
+    overall_score: 52.73319755600815
+    precision: 100.0
+    recall: 68.72852233676976

@@ -21,4 +21,58 @@ args:
   - true
 name: tf.raw_ops.Betainc
 package: tensorflow
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        a: tensor
+        b: tensor
+        name: str
+        x: tensor
+      msg: 'cannot compute Betainc as input #2(zero-based) was expected to be a float
+        tensor but is a int32 tensor [Op:Betainc] name: GGlo'
+      package: tensorflow
+    txt: (dtype(b) == dtype(a)) and (dtype(x) == dtype(a))
+  - f1_score: 78.33103719740208
+    overall_score: 51.16551859870104
+    precision: 90.9090909090909
+    recall: 68.81051175656985
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        a: tensor
+        b: tensor
+        name: str
+        x: tensor
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: float,\
+        \ double\n\t; NodeDef: {{node Betainc}}; Op<name=Betainc; signature=a:T, b:T,\
+        \ x:T -> z:T; attr=T:type,allowed=[DT_FLOAT, DT_DOUBLE]> [Op:Betainc] name:\
+        \ VBEu"
+      package: tensorflow
+    txt: ((dtype(x) in ["float", "double"]) and (dtype(b) in ["float32", "float64"]))
+      and (dtype(a) in ["float", "double"])
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        a: tensor
+        b: tensor
+        name: str
+        x: tensor
+      msg: '{{function_node __wrapped__Betainc_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Shapes of a and b are inconsistent: [9,9] vs. [1,9,9,9] [Op:Betainc] name:
+        elxH'
+      package: tensorflow
+    txt: (((len(b) == len(x)) and (all(b.shape[i] == x.shape[i] for i in range(b.rank))))
+      and (len(a) == len(b))) and (a.shape == b.shape)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

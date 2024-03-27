@@ -1,0 +1,83 @@
+args:
+  dtype:
+  - int32,int64
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - bool
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - axis
+  - input
+  - keep_dims
+  - name
+  required:
+  - false
+  - true
+  - false
+  - false
+name: tf.raw_ops.Mean
+package: tensorflow
+pass_rate: 5.5
+rules:
+- - cot: 'Based on the given runtime information, the error arises because the attribute
+      ''Tidx'' is expected to be one of int32 or int64, but it is provided as float.
+      The tensor ''axis'' is provided as float32, which is not compatible. So, the
+      following constraint should be added to prevent the error:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: tensor
+        input: tensor
+        keep_dims: bool
+        name: str
+      msg: "Value for attr 'Tidx' of float is not in the list of allowed values: int32,\
+        \ int64\n\t; NodeDef: {{node Mean}}; Op<name=Mean; signature=input:T, reduction_indices:Tidx\
+        \ -> output:T; attr=keep_dims:bool,default=false; attr=T:type,allowed=[DT_FLOAT,\
+        \ DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16, 10440210506161272279, DT_UINT16,\
+        \ DT_COMPLEX128, DT_HALF, DT_UINT32, DT_UINT64]; attr=Tidx:type,default=DT_INT32,allowed=[DT_INT32,\
+        \ DT_INT64]> [Op:Mean] name: NUjZ"
+      package: tensorflow
+    txt: dtype(axis) in ["int32", "int64"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        axis: tensor
+        input: tensor
+        keep_dims: bool
+        name: str
+      msg: '{{function_node __wrapped__Mean_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Invalid reduction dimension (717220 for input with 7 dimension(s) [Op:Mean]
+        name: yKYV'
+      package: tensorflow
+    txt: (i < input.rank for i in axis)
+  - f1_score: 70.51282051282051
+    overall_score: 30.500000000000004
+    precision: 55.00000000000001
+    recall: 98.21428571428571
+- - cot: The error is due to the presence of negative dimensions in the 'axis' argument.
+      Negative dimensions are not allowed in the 'axis' argument of tf.raw_ops.Mean.
+      Therefore, the constraint to prevent the error is that all dimensions in the
+      'axis' argument should be positive.
+    length: 1
+    target:
+      choosen_dtype:
+        axis: tensor
+        input: tensor
+        keep_dims: bool
+        name: str
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(dim >= 0 for dim in axis)
+  - f1_score: 86.97571743929359
+    overall_score: 52.25
+    precision: 98.5
+    recall: 77.86561264822134

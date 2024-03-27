@@ -41,4 +41,193 @@ args:
   - true
 name: tf.raw_ops.DepthwiseConv2dNativeBackpropInput
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'The error is due to an incorrect value for the ''padding'' attribute. The
+      value provided is ''Vavb'', which is not in the allowed values: "SAME", "VALID",
+      "EXPLICIT". Therefore, the ''padding'' attribute should be corrected to be either
+      "SAME", "VALID", or "EXPLICIT", which is ["SAME", "VALID", "EXPLICIT"].'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter: tensor
+        input_sizes: tensor
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+      msg: "Value for attr 'padding' of \"eTQx\" is not in the list of allowed values:\
+        \ \"SAME\", \"VALID\", \"EXPLICIT\"\n\t; NodeDef: {{node DepthwiseConv2dNativeBackpropInput}};\
+        \ Op<name=DepthwiseConv2dNativeBackpropInput; signature=input_sizes:int32,\
+        \ filter:T, out_backprop:T -> output:T; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16,\
+        \ DT_FLOAT, DT_DOUBLE]; attr=strides:list(int); attr=padding:string,allowed=[\"\
+        SAME\", \"VALID\", \"EXPLICIT\"]; attr=explicit_paddings:list(int),default=[];\
+        \ attr=data_format:string,default=\"NHWC\",allowed=[\"NHWC\", \"NCHW\"]; attr=dilations:list(int),default=[1,\
+        \ 1, 1, 1]> [Op:DepthwiseConv2dNativeBackpropInput] name: AIjH"
+      package: tensorflow
+    txt: padding in ["SAME", "VALID", "EXPLICIT"]
+  - f1_score: 98.52216748768473
+    overall_score: 100
+    precision: 100.0
+    recall: 97.0873786407767
+- - cot: 'Based on the given runtime information, the error arises because the attribute
+      ''filter'' is of type int32, but it is expected to be one of half, bfloat16,
+      float, double. The tensor ''filter'' is provided as int32, which is not compatible.
+      Therefore, the constraint to prevent the error is:
+
+
+      `dtype(filter) in ["half", "bfloat16", "float", "double"]`
+
+
+      The final formula is:'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter: tensor
+        input_sizes: tensor
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: half,\
+        \ bfloat16, float, double\n\t; NodeDef: {{node DepthwiseConv2dNativeBackpropInput}};\
+        \ Op<name=DepthwiseConv2dNativeBackpropInput; signature=input_sizes:int32,\
+        \ filter:T, out_backprop:T -> output:T; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16,\
+        \ DT_FLOAT, DT_DOUBLE]; attr=strides:list(int); attr=padding:string,allowed=[\"\
+        SAME\", \"VALID\", \"EXPLICIT\"]; attr=explicit_paddings:list(int),default=[];\
+        \ attr=data_format:string,default=\"NHWC\",allowed=[\"NHWC\", \"NCHW\"]; attr=dilations:list(int),default=[1,\
+        \ 1, 1, 1]> [Op:DepthwiseConv2dNativeBackpropInput] name: OXkN"
+      package: tensorflow
+    txt: dtype(filter) in ["half", "bfloat16", "float", "double"]
+  - f1_score: 79.52286282306162
+    overall_score: 100
+    precision: 100.0
+    recall: 66.006600660066
+- - cot: 'The error is due to an incorrect value for ''data_format'' from the args.
+      The value provided is "lUPu" which is not in the allowed values: "NHWC", "NCHW".
+      Therefore, the ''data_format'' should be corrected to be either "NHWC" or "NCHW",
+      which is ["NHWC", "NCHW"]. Op: DepthwiseConv2dNativeBackpropInput, and Right
+      : ["NHWC", "NCHW"].'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter: tensor
+        input_sizes: tensor
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+      msg: "Value for attr 'data_format' of \"lUPu\" is not in the list of allowed\
+        \ values: \"NHWC\", \"NCHW\"\n\t; NodeDef: {{node DepthwiseConv2dNativeBackpropInput}};\
+        \ Op<name=DepthwiseConv2dNativeBackpropInput; signature=input_sizes:int32,\
+        \ filter:T, out_backprop:T -> output:T; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16,\
+        \ DT_FLOAT, DT_DOUBLE]; attr=strides:list(int); attr=padding:string,allowed=[\"\
+        SAME\", \"VALID\", \"EXPLICIT\"]; attr=explicit_paddings:list(int),default=[];\
+        \ attr=data_format:string,default=\"NHWC\",allowed=[\"NHWC\", \"NCHW\"]; attr=dilations:list(int),default=[1,\
+        \ 1, 1, 1]> [Op:DepthwiseConv2dNativeBackpropInput] name: AaEh"
+      package: tensorflow
+    txt: data_format in ["NHWC", "NCHW"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter: tensor
+        input_sizes: tensor
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+      msg: 'cannot compute DepthwiseConv2dNativeBackpropInput as input #0(zero-based)
+        was expected to be a int32 tensor but is a float tensor [Op:DepthwiseConv2dNativeBackpropInput]
+        name: XEAO'
+      package: tensorflow
+    txt: (((dtype(input_sizes) == int32) or (dtype(input_sizes) == dtype(filter)))
+      and (dtype(out_backprop) == dtype(filter))) and (dtype(input_sizes) == int32)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is triggered because the sliding window strides field does not
+      specify 4 dimensions. Based on the given runtime information, the strides tensor
+      should have 4 dimensions. Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter: tensor
+        input_sizes: tensor
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+      msg: '{{function_node __wrapped__DepthwiseConv2dNativeBackpropInput_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Sliding window strides field must specify 4 dimensions [Op:DepthwiseConv2dNativeBackpropInput]
+        name: PHpv'
+      package: tensorflow
+    txt: strides.dim == 4
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter: tensor
+        input_sizes: tensor
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+      msg: '{{function_node __wrapped__DepthwiseConv2dNativeBackpropInput_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Current implementation only supports equal length strides in the row and column
+        dimensions. [Op:DepthwiseConv2dNativeBackpropInput] name: EqDS'
+      package: tensorflow
+    txt: (strides[2] == strides[3]) and (strides[0] == strides[1])
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter: tensor
+        input_sizes: tensor
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+      msg: '{{function_node __wrapped__DepthwiseConv2dNativeBackpropInput_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Current implementation does not yet support strides in the batch and depth
+        dimensions. [Op:DepthwiseConv2dNativeBackpropInput] name: uBQQ'
+      package: tensorflow
+    txt: strides[1] == 1
+  - f1_score: 99.73045822102425
+    overall_score: 100
+    precision: 100.0
+    recall: 99.46236559139786

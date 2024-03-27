@@ -21,4 +21,46 @@ args:
   - false
 name: tf.raw_ops.Mean
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.5
+rules:
+- - cot: 'Based on the given runtime information, the error arises because the attribute
+      ''Tidx'' is expected to be one of int32 or int64, but it is provided as float.
+      The tensor ''axis'' is provided as float32, which is not compatible. So, the
+      following constraint should be added to prevent the error:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: tensor
+        input: tensor
+        keep_dims: bool
+        name: str
+      msg: "Value for attr 'Tidx' of float is not in the list of allowed values: int32,\
+        \ int64\n\t; NodeDef: {{node Mean}}; Op<name=Mean; signature=input:T, reduction_indices:Tidx\
+        \ -> output:T; attr=keep_dims:bool,default=false; attr=T:type,allowed=[DT_FLOAT,\
+        \ DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16, 10440210506161272279, DT_UINT16,\
+        \ DT_COMPLEX128, DT_HALF, DT_UINT32, DT_UINT64]; attr=Tidx:type,default=DT_INT32,allowed=[DT_INT32,\
+        \ DT_INT64]> [Op:Mean] name: NUjZ"
+      package: tensorflow
+    txt: dtype(axis) in ["int32", "int64"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is due to passing negative values to ''axis'' from args. Negative
+      dimensions are not allowed in the ''axis'' argument of the function tf.raw_ops.Mean.
+      Therefore, all the values in ''axis'' should be non-negative. The condition
+      that makes the error disappear is:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: tensor
+        input: tensor
+        keep_dims: bool
+        name: str
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(value >= 0 for value in axis)
+  - f1_score: 87.52735229759301
+    overall_score: 55.763676148796506
+    precision: 100.0
+    recall: 77.82101167315176

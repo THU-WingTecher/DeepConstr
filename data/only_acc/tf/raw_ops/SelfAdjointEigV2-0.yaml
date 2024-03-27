@@ -1,0 +1,99 @@
+args:
+  dtype:
+  - bool
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - compute_v
+  - input
+  - name
+  required:
+  - false
+  - true
+  - false
+name: tf.raw_ops.SelfAdjointEigV2
+package: tensorflow
+pass_rate: 8.0
+rules:
+- - cot: 'The error is triggered because the input matrix is not square. The input
+      tensor has dimensions [3, 7, 6, 4, 3], where the first and fourth dimensions
+      should be equal to each other to ensure a square matrix. Therefore, the constraint
+      to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        compute_v: bool
+        input: tensor
+        name: str
+      msg: '{{function_node __wrapped__SelfAdjointEigV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Input matrix must be square. [Op:SelfAdjointEigV2] name: oEWU'
+      package: tensorflow
+    txt: input.shape[0] == input.shape[3]
+  - f1_score: 69.04487917146145
+    overall_score: 100
+    precision: 100.0
+    recall: 52.72407732864676
+- - cot: The error is caused because the input tensor must have a rank greater than
+      or equal to 2, but it has a rank of 0. To prevent this error, the input tensor
+      should have a rank greater than or equal to 2.
+    length: 1
+    target:
+      choosen_dtype:
+        compute_v: bool
+        input: tensor
+        name: str
+      msg: '{{function_node __wrapped__SelfAdjointEigV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Input tensor 0 must have rank >= 2, got 0 [Op:SelfAdjointEigV2] name: TTyl'
+      package: tensorflow
+    txt: input.rank >= 2
+  - f1_score: 98.19967266775778
+    overall_score: 100
+    precision: 100.0
+    recall: 96.46302250803859
+- - cot: "The error occurs because the attribute 'T' is expected to be one of the\
+      \ allowed types: double, float, half, complex64, complex128. However, the input\
+      \ tensor has a data type of int32, which is not compatible. \n\nTo prevent the\
+      \ error, the data type of the input tensor should be corrected to match one\
+      \ of the allowed types. \n\nThe constraint can be formulated as:"
+    length: 1
+    target:
+      choosen_dtype:
+        compute_v: bool
+        input: tensor
+        name: str
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: double,\
+        \ float, half, complex64, complex128\n\t; NodeDef: {{node SelfAdjointEigV2}};\
+        \ Op<name=SelfAdjointEigV2; signature=input:T -> e:T, v:T; attr=compute_v:bool,default=true;\
+        \ attr=T:type,allowed=[DT_DOUBLE, DT_FLOAT, DT_HALF, DT_COMPLEX64, DT_COMPLEX128]>\
+        \ [Op:SelfAdjointEigV2] name: rSRU"
+      package: tensorflow
+    txt: dtype(input) in [double, float, half, complex64, complex128]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        compute_v: bool
+        input: tensor
+        name: str
+      msg: "Could not find device for node: {{node SelfAdjointEigV2}} = SelfAdjointEigV2[T=DT_HALF,\
+        \ compute_v=false]\nAll kernels registered for op SelfAdjointEigV2:\n  device='XLA_CPU_JIT';\
+        \ T in [DT_FLOAT, DT_DOUBLE, DT_COMPLEX64, DT_COMPLEX128, DT_HALF]\n  device='XLA_GPU_JIT';\
+        \ T in [DT_FLOAT, DT_DOUBLE, DT_COMPLEX64, DT_COMPLEX128, DT_HALF]\n  device='GPU';\
+        \ T in [DT_COMPLEX128]\n  device='GPU'; T in [DT_COMPLEX64]\n  device='GPU';\
+        \ T in [DT_DOUBLE]\n  device='GPU'; T in [DT_FLOAT]\n  device='CPU'; T in\
+        \ [DT_FLOAT]\n  device='CPU'; T in [DT_DOUBLE]\n  device='CPU'; T in [DT_COMPLEX64]\n\
+        \  device='CPU'; T in [DT_COMPLEX128]\n [Op:SelfAdjointEigV2] name: PKgf"
+      package: tensorflow
+    txt: input.dtype in [tf.float32, tf.float64]
+  - f1_score: 98.6842105263158
+    overall_score: 100
+    precision: 100.0
+    recall: 97.40259740259741

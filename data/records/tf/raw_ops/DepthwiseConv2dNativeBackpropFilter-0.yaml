@@ -41,4 +41,98 @@ args:
   - true
 name: tf.raw_ops.DepthwiseConv2dNativeBackpropFilter
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'The error is due to an incorrect value for the ''padding'' attribute from
+      args. The value provided is "eRiW", which is not in the allowed values: "SAME",
+      "VALID", "EXPLICIT". Therefore, the value for ''padding'' should be corrected
+      to be one of the allowed values: "SAME", "VALID", "EXPLICIT". The constraint
+      can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter_sizes: tensor
+        input: tensor
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+      msg: "Value for attr 'padding' of \"WsEW\" is not in the list of allowed values:\
+        \ \"SAME\", \"VALID\", \"EXPLICIT\"\n\t; NodeDef: {{node DepthwiseConv2dNativeBackpropFilter}};\
+        \ Op<name=DepthwiseConv2dNativeBackpropFilter; signature=input:T, filter_sizes:int32,\
+        \ out_backprop:T -> output:T; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16, DT_FLOAT,\
+        \ DT_DOUBLE]; attr=strides:list(int); attr=padding:string,allowed=[\"SAME\"\
+        , \"VALID\", \"EXPLICIT\"]; attr=explicit_paddings:list(int),default=[]; attr=data_format:string,default=\"\
+        NHWC\",allowed=[\"NHWC\", \"NCHW\"]; attr=dilations:list(int),default=[1,\
+        \ 1, 1, 1]> [Op:DepthwiseConv2dNativeBackpropFilter] name: lIXw"
+      package: tensorflow
+    txt: padding in ["SAME", "VALID", "EXPLICIT"]
+  - f1_score: 97.799511002445
+    overall_score: 100
+    precision: 100.0
+    recall: 95.69377990430623
+- - cot: 'Based on the given runtime information, the error is due to an incorrect
+      value for the ''data_format'' attribute. The provided value is "UrOP", which
+      is not in the allowed values: "NHWC", "NCHW". Therefore, the ''data_format''
+      attribute should be corrected to be either "NHWC" or "NCHW", which is ["NHWC",
+      "NCHW"].'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter_sizes: tensor
+        input: tensor
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+      msg: "Value for attr 'data_format' of \"HEvQ\" is not in the list of allowed\
+        \ values: \"NHWC\", \"NCHW\"\n\t; NodeDef: {{node DepthwiseConv2dNativeBackpropFilter}};\
+        \ Op<name=DepthwiseConv2dNativeBackpropFilter; signature=input:T, filter_sizes:int32,\
+        \ out_backprop:T -> output:T; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16, DT_FLOAT,\
+        \ DT_DOUBLE]; attr=strides:list(int); attr=padding:string,allowed=[\"SAME\"\
+        , \"VALID\", \"EXPLICIT\"]; attr=explicit_paddings:list(int),default=[]; attr=data_format:string,default=\"\
+        NHWC\",allowed=[\"NHWC\", \"NCHW\"]; attr=dilations:list(int),default=[1,\
+        \ 1, 1, 1]> [Op:DepthwiseConv2dNativeBackpropFilter] name: hOBT"
+      package: tensorflow
+    txt: data_format in ["NHWC", "NCHW"]
+  - f1_score: 99.25558312655089
+    overall_score: 100
+    precision: 100.0
+    recall: 98.52216748768474
+- - cot: "Based on the given runtime information, the error arises because the attribute\
+      \ 'T' is expected to be one of the allowed types: half, bfloat16, float, double.\
+      \ However, the type provided is int32, which is not compatible. \n\nTo prevent\
+      \ this error, the dtype of the 'input' tensor should be corrected to match one\
+      \ of the allowed types."
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter_sizes: tensor
+        input: tensor
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: half,\
+        \ bfloat16, float, double\n\t; NodeDef: {{node DepthwiseConv2dNativeBackpropFilter}};\
+        \ Op<name=DepthwiseConv2dNativeBackpropFilter; signature=input:T, filter_sizes:int32,\
+        \ out_backprop:T -> output:T; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16, DT_FLOAT,\
+        \ DT_DOUBLE]; attr=strides:list(int); attr=padding:string,allowed=[\"SAME\"\
+        , \"VALID\", \"EXPLICIT\"]; attr=explicit_paddings:list(int),default=[]; attr=data_format:string,default=\"\
+        NHWC\",allowed=[\"NHWC\", \"NCHW\"]; attr=dilations:list(int),default=[1,\
+        \ 1, 1, 1]> [Op:DepthwiseConv2dNativeBackpropFilter] name: qNij"
+      package: tensorflow
+    txt: dtype(input) in ["half", "bfloat16", "float", "double"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

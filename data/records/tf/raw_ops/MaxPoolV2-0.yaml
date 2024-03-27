@@ -29,4 +29,57 @@ args:
   - true
 name: tf.raw_ops.MaxPoolV2
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: "The error is caused because the value for the 'data_format' attribute is\
+      \ set to \"aJZM\", which is not in the list of allowed values: \"NHWC\", \"\
+      NCHW\", \"NCHW_VECT_C\". To prevent the error, the value of 'data_format' should\
+      \ be one of the allowed values. \n\nThe constraint to prevent the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        input: tensor
+        ksize: int
+        name: str
+        padding: str
+        strides: int
+      msg: "Value for attr 'data_format' of \"CnTb\" is not in the list of allowed\
+        \ values: \"NHWC\", \"NCHW\", \"NCHW_VECT_C\"\n\t; NodeDef: {{node MaxPoolV2}};\
+        \ Op<name=MaxPoolV2; signature=input:T, ksize:int32, strides:int32 -> output:T;\
+        \ attr=T:type,default=DT_FLOAT,allowed=[DT_HALF, DT_BFLOAT16, DT_FLOAT, DT_DOUBLE,\
+        \ DT_INT32, DT_INT64, DT_UINT8, DT_INT16, DT_INT8, DT_UINT16, DT_QINT8]; attr=padding:string,allowed=[\"\
+        SAME\", \"VALID\"]; attr=data_format:string,default=\"NHWC\",allowed=[\"NHWC\"\
+        , \"NCHW\", \"NCHW_VECT_C\"]> [Op:MaxPoolV2] name: PFUK"
+      package: tensorflow
+    txt: data_format in ["NHWC", "NCHW", "NCHW_VECT_C"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is due to an incorrect value for ''padding'' from args. For ''padding'',
+      the value provided is "WfUD" which is not in the allowed values: "SAME", "VALID".
+      Therefore, the value of ''padding'' should be corrected to be either "SAME"
+      or "VALID", which is ["SAME", "VALID"].'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        input: tensor
+        ksize: int
+        name: str
+        padding: str
+        strides: int
+      msg: "Value for attr 'padding' of \"cUkl\" is not in the list of allowed values:\
+        \ \"SAME\", \"VALID\"\n\t; NodeDef: {{node MaxPoolV2}}; Op<name=MaxPoolV2;\
+        \ signature=input:T, ksize:int32, strides:int32 -> output:T; attr=T:type,default=DT_FLOAT,allowed=[DT_HALF,\
+        \ DT_BFLOAT16, DT_FLOAT, DT_DOUBLE, DT_INT32, DT_INT64, DT_UINT8, DT_INT16,\
+        \ DT_INT8, DT_UINT16, DT_QINT8]; attr=padding:string,allowed=[\"SAME\", \"\
+        VALID\"]; attr=data_format:string,default=\"NHWC\",allowed=[\"NHWC\", \"NCHW\"\
+        , \"NCHW_VECT_C\"]> [Op:MaxPoolV2] name: TyOF"
+      package: tensorflow
+    txt: padding in ["SAME", "VALID"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

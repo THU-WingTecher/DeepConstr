@@ -17,4 +17,43 @@ args:
   - true
 name: tf.raw_ops.BiasAddGrad
 package: tensorflow
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: "The error is triggered because the input tensor `out_backprop` is not at\
+      \ least 2D. To prevent this error, the input tensor `out_backprop` should have\
+      \ at least 2 dimensions. \n\nThe constraint to prevent the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        name: str
+        out_backprop: tensor
+      msg: '{{function_node __wrapped__BiasAddGrad_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Input tensor must be at least 2D: [] [Op:BiasAddGrad] name: hfwz'
+      package: tensorflow
+    txt: out_backprop.dim >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the error arises because the value
+      of ''data_format'' attribute is "wEYu", which is not in the allowed values:
+      "NHWC", "NCHW". Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        name: str
+        out_backprop: tensor
+      msg: "Value for attr 'data_format' of \"llJq\" is not in the list of allowed\
+        \ values: \"NHWC\", \"NCHW\"\n\t; NodeDef: {{node BiasAddGrad}}; Op<name=BiasAddGrad;\
+        \ signature=out_backprop:T -> output:T; attr=T:type,allowed=[DT_FLOAT, DT_DOUBLE,\
+        \ DT_INT32, DT_UINT8, DT_INT16, 10440210506161272279, DT_UINT16, DT_COMPLEX128,\
+        \ DT_HALF, DT_UINT32, DT_UINT64]; attr=data_format:string,default=\"NHWC\"\
+        ,allowed=[\"NHWC\", \"NCHW\"]> [Op:BiasAddGrad] name: oOGq"
+      package: tensorflow
+    txt: data_format in ["NHWC", "NCHW"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

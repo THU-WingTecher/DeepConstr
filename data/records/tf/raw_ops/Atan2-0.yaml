@@ -17,4 +17,58 @@ args:
   - true
 name: tf.raw_ops.Atan2
 package: tensorflow
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'Based on the given runtime information, the error occurs because the function
+      expects the input tensor at index 1 to be a half tensor, but it is actually
+      a double tensor. To prevent this error, we need to ensure that the data types
+      of both input tensors are the same.
+
+
+      The constraint can be formulated as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: 'cannot compute Atan2 as input #1(zero-based) was expected to be a half
+        tensor but is a double tensor [Op:Atan2] name: OSnm'
+      package: tensorflow
+    txt: dtype(y) == dtype(x)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: bfloat16,\
+        \ half, float, double\n\t; NodeDef: {{node Atan2}}; Op<name=Atan2; signature=y:T,\
+        \ x:T -> z:T; attr=T:type,allowed=[DT_BFLOAT16, DT_HALF, DT_FLOAT, DT_DOUBLE]>\
+        \ [Op:Atan2] name: CsAX"
+      package: tensorflow
+    txt: dtype(y) in ["bfloat16", "half", "float", "double"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: '{{function_node __wrapped__Atan2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [8,4,8,4,4] vs. [3,3,3,3,3,3] [Op:Atan2] name: YXpP'
+      package: tensorflow
+    txt: x.shape[1] == 7
+  - f1_score: 96.44670050761422
+    overall_score: 60.22335025380711
+    precision: 95.0
+    recall: 97.9381443298969

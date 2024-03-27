@@ -17,43 +17,8 @@ args:
   - true
 name: tf.raw_ops.RsqrtGrad
 package: tensorflow
-pass_rate: 18.0
+pass_rate: 6.666666666666667
 rules:
-- - cot: The error is triggered because the number of elements in the two input tensors
-      (`dy` and `y`) does not match. The `dy` tensor has 25 elements, while the `y`
-      tensor has 36 elements. To prevent this error, the number of elements in both
-      tensors should be the same.
-    length: 1
-    target:
-      choosen_dtype:
-        dy: tensor
-        name: str
-        y: tensor
-      msg: '{{function_node __wrapped__RsqrtGrad_device_/job:localhost/replica:0/task:0/device:CPU:0}}
-        The two arguments to a cwise op must have same number of elements, got 210000
-        and 2401 [Op:RsqrtGrad] name: RaIn'
-      package: tensorflow
-    txt: (size(dy) == size(y))
-  - f1_score: 35.07109004739336
-    overall_score: 14.1
-    precision: 22.2
-    recall: 83.45864661654136
-- - cot: 'Based on the given runtime information, the constraint that prevents the
-      error is:'
-    length: 1
-    target:
-      choosen_dtype:
-        dy: tensor
-        name: str
-        y: tensor
-      msg: 'cannot compute RsqrtGrad as input #1(zero-based) was expected to be a
-        float tensor but is a int32 tensor [Op:RsqrtGrad] name: oxfN'
-      package: tensorflow
-    txt: dtype(dy) == dtype(y)
-  - f1_score: 68.30601092896175
-    overall_score: 100
-    precision: 100.0
-    recall: 51.867219917012456
 - - cot: divided
     length: 1
     target:
@@ -68,6 +33,22 @@ rules:
         \ name: trDP"
       package: tensorflow
     txt: dtype(y) in ["bfloat16", "half", "float", "double", "complex64", "complex128"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dy: tensor
+        name: str
+        y: tensor
+      msg: 'cannot compute RsqrtGrad as input #1(zero-based) was expected to be a
+        float tensor but is a int32 tensor [Op:RsqrtGrad] name: oxfN'
+      package: tensorflow
+    txt: dtype(dy) == dtype(y)
   - f1_score: 100.0
     overall_score: 100
     precision: 100.0

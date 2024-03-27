@@ -1,0 +1,55 @@
+args:
+  dtype:
+  - str
+  - bfloat16,float16,float32,float64
+  is_pos:
+  - false
+  - false
+  name:
+  - name
+  - x
+  required:
+  - false
+  - true
+name: tf.raw_ops.BesselI1e
+package: tensorflow
+pass_rate: 97.5
+rules:
+- - cot: "Based on the given runtime information, the error arises because the attribute\
+      \ 'T' of the input tensor 'x' is expected to be one of 'bfloat16, half, float,\
+      \ double', but it is provided as int32. \n\nTo prevent this error, the dtype\
+      \ of the input tensor 'x' should be one of 'bfloat16, half, float, double'."
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: bfloat16,\
+        \ half, float, double\n\t; NodeDef: {{node BesselI1e}}; Op<name=BesselI1e;\
+        \ signature=x:T -> y:T; attr=T:type,allowed=[DT_BFLOAT16, DT_HALF, DT_FLOAT,\
+        \ DT_DOUBLE]> [Op:BesselI1e] name: CooW"
+      package: tensorflow
+    txt: dtype(x) in ["bfloat16", "half", "float", "double"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+      msg: "Could not find device for node: {{node BesselI1e}} = BesselI1e[T=DT_BFLOAT16]\n\
+        All kernels registered for op BesselI1e:\n  device='XLA_CPU_JIT'; T in [DT_FLOAT,\
+        \ DT_DOUBLE, DT_BFLOAT16, DT_HALF]\n  device='XLA_GPU_JIT'; T in [DT_FLOAT,\
+        \ DT_DOUBLE, DT_BFLOAT16, DT_HALF]\n  device='GPU'; T in [DT_DOUBLE]\n  device='GPU';\
+        \ T in [DT_FLOAT]\n  device='GPU'; T in [DT_HALF]\n  device='CPU'; T in [DT_DOUBLE]\n\
+        \  device='CPU'; T in [DT_FLOAT]\n  device='CPU'; T in [DT_HALF]\n [Op:BesselI1e]\
+        \ name: CKEK"
+      package: tensorflow
+    txt: x.ndims() == 3
+  - f1_score: 66.21392190152802
+    overall_score: 51.75
+    precision: 97.5
+    recall: 50.12853470437019

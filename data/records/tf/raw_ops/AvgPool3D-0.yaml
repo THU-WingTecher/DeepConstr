@@ -29,4 +29,160 @@ args:
   - true
 name: tf.raw_ops.AvgPool3D
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        input: tensor
+        ksize: list[int]
+        name: str
+        padding: str
+        strides: list[int]
+      msg: "Value for attr 'padding' of \"BjVK\" is not in the list of allowed values:\
+        \ \"SAME\", \"VALID\"\n\t; NodeDef: {{node AvgPool3D}}; Op<name=AvgPool3D;\
+        \ signature=input:T -> output:T; attr=ksize:list(int),min=5; attr=strides:list(int),min=5;\
+        \ attr=padding:string,allowed=[\"SAME\", \"VALID\"]; attr=data_format:string,default=\"\
+        NDHWC\",allowed=[\"NDHWC\", \"NCDHW\"]; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16,\
+        \ DT_FLOAT, DT_DOUBLE]> [Op:AvgPool3D] name: VxjF"
+      package: tensorflow
+    txt: padding in ["SAME", "VALID"]
+  - f1_score: 99.25558312655089
+    overall_score: 100
+    precision: 100.0
+    recall: 98.52216748768474
+- - cot: 'Based on the given runtime information, the error is due to an incorrect
+      value for the attribute ''data_format''. The value provided is "LWNd", which
+      is not in the allowed values: "NDHWC", "NCDHW". Therefore, the constraint to
+      prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        input: tensor
+        ksize: list[int]
+        name: str
+        padding: str
+        strides: list[int]
+      msg: "Value for attr 'data_format' of \"LWNd\" is not in the list of allowed\
+        \ values: \"NDHWC\", \"NCDHW\"\n\t; NodeDef: {{node AvgPool3D}}; Op<name=AvgPool3D;\
+        \ signature=input:T -> output:T; attr=ksize:list(int),min=5; attr=strides:list(int),min=5;\
+        \ attr=padding:string,allowed=[\"SAME\", \"VALID\"]; attr=data_format:string,default=\"\
+        NDHWC\",allowed=[\"NDHWC\", \"NCDHW\"]; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16,\
+        \ DT_FLOAT, DT_DOUBLE]> [Op:AvgPool3D] name: mXSW"
+      package: tensorflow
+    txt: data_format in ["NDHWC", "NCDHW"]
+  - f1_score: 67.79661016949153
+    overall_score: 100
+    precision: 100.0
+    recall: 51.28205128205129
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        data_format: str
+        input: tensor
+        ksize: list[int]
+        name: str
+        padding: str
+        strides: list[int]
+      msg: "Length for attr 'strides' of 0 must be at least minimum 5\n\t; NodeDef:\
+        \ {{node AvgPool3D}}; Op<name=AvgPool3D; signature=input:T -> output:T; attr=ksize:list(int),min=5;\
+        \ attr=strides:list(int),min=5; attr=padding:string,allowed=[\"SAME\", \"\
+        VALID\"]; attr=data_format:string,default=\"NDHWC\",allowed=[\"NDHWC\", \"\
+        NCDHW\"]; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16, DT_FLOAT, DT_DOUBLE]>\
+        \ [Op:AvgPool3D] name: WqeZ"
+      package: tensorflow
+    txt: (len(strides) > 0) or (len(ksize) == len(input.shape))
+  - f1_score: 52.60482846251588
+    overall_score: 19.5
+    precision: 36.0
+    recall: 97.64150943396226
+- - cot: The error is triggered because the data format is set to NCDHW, but the Default
+      Pooling3DOp only supports NDHWC on the CPU device type. To prevent the error,
+      the data format should be changed to NDHWC.
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        input: tensor
+        ksize: list[int]
+        name: str
+        padding: str
+        strides: list[int]
+      msg: '{{function_node __wrapped__AvgPool3D_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Default Pooling3DOp only supports NDHWC on device type CPU [Op:AvgPool3D]
+        name: wTRS'
+      package: tensorflow
+    txt: data_format == "NDHWC"
+  - f1_score: 77.22007722007723
+    overall_score: 100
+    precision: 100.0
+    recall: 62.8930817610063
+- - cot: The error arises because the 'T' attribute of the input tensor is int32,
+      but it is expected to be one of half, bfloat16, float, double. The input tensor
+      is provided as int32, which is not compatible. The dtype of the input should
+      be corrected to match one of the allowed types.
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        input: tensor
+        ksize: list[int]
+        name: str
+        padding: str
+        strides: list[int]
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: half,\
+        \ bfloat16, float, double\n\t; NodeDef: {{node AvgPool3D}}; Op<name=AvgPool3D;\
+        \ signature=input:T -> output:T; attr=ksize:list(int),min=5; attr=strides:list(int),min=5;\
+        \ attr=padding:string,allowed=[\"SAME\", \"VALID\"]; attr=data_format:string,default=\"\
+        NDHWC\",allowed=[\"NDHWC\", \"NCDHW\"]; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16,\
+        \ DT_FLOAT, DT_DOUBLE]> [Op:AvgPool3D] name: sVNO"
+      package: tensorflow
+    txt: dtype(input) in ["half", "bfloat16", "float", "double"]
+  - f1_score: 82.4742268041237
+    overall_score: 100
+    precision: 100.0
+    recall: 70.17543859649122
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        data_format: str
+        input: tensor
+        ksize: list[int]
+        name: str
+        padding: str
+        strides: list[int]
+      msg: '{{function_node __wrapped__AvgPool3D_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Sliding window ksize field must specify 5 dimensions [Op:AvgPool3D] name:
+        VfBs'
+      package: tensorflow
+    txt: (ksize.dim == 5) and (strides.dim == 5)
+  - f1_score: 66.77796327212019
+    overall_score: 100
+    precision: 100.0
+    recall: 50.125313283208015
+- - cot: 'The error is triggered because the `ksize` argument in `AvgPool3D` has negative
+      dimensions. To prevent the error, the `ksize` argument should have non-negative
+      dimensions. Therefore, the condition that prevents the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        input: tensor
+        ksize: list[int]
+        name: str
+        padding: str
+        strides: list[int]
+      msg: '{{function_node __wrapped__AvgPool3D_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Sliding window ksize field must have non-negative dimensions [Op:AvgPool3D]
+        name: UOcw'
+      package: tensorflow
+    txt: all(i >= 0 for i in ksize)
+  - f1_score: 79.58361513805981
+    overall_score: 37.87179487179487
+    precision: 69.74358974358974
+    recall: 92.65637303570817

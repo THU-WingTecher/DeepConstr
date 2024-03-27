@@ -25,15 +25,16 @@ args:
   - false
 name: tf.raw_ops.MatMul
 package: tensorflow
-pass_rate: 32.666666666666664
+pass_rate: 35.5
 rules:
-- - cot: 'The error is triggered because the matrix sizes of a and b are incompatible
-      for matrix multiplication. The runtime information shows that a is of size [3,
-      7] and b is of size [8, 8]. In matrix multiplication, the number of columns
+- - cot: 'The error is triggered because the matrix sizes are incompatible for the
+      matrix multiplication. The input matrix A has dimensions [3, 4] and the input
+      matrix B has dimensions [4, 8]. In matrix multiplication, the number of columns
       in the first matrix should be equal to the number of rows in the second matrix.
 
 
-      Therefore, the constraint to prevent the error is:'
+      To prevent this error, the number of columns in A should be equal to the number
+      of rows in B. Therefore, the constraint can be formulated as:'
     length: 1
     target:
       choosen_dtype:
@@ -43,13 +44,13 @@ rules:
         transpose_a: bool
         transpose_b: bool
       msg: '{{function_node __wrapped__MatMul_device_/job:localhost/replica:0/task:0/device:CPU:0}}
-        Matrix size-incompatible: In[0]: [9,4], In[1]: [7,5] [Op:MatMul] name: LbVO'
+        Matrix size-incompatible: In[0]: [3,7], In[1]: [1,4] [Op:MatMul] name: kpto'
       package: tensorflow
-    txt: a[-1] == b[-2]
-  - f1_score: 48.92086330935252
-    overall_score: 36.460431654676256
-    precision: 34.0
-    recall: 87.17948717948718
+    txt: a.shape[1] == b.shape[0]
+  - f1_score: 50.34965034965035
+    overall_score: 37.17482517482517
+    precision: 36.0
+    recall: 83.72093023255813
 - - cot: 'Based on the given runtime information, the constraint that prevents the
       error is:'
     length: 1

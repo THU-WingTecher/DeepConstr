@@ -21,30 +21,8 @@ args:
   - true
 name: tf.raw_ops.Select
 package: tensorflow
-pass_rate: 0.0
+pass_rate: 24.0
 rules:
-- - cot: 'Based on the given runtime information, the error arises because the function
-      is trying to perform a Select operation with a condition tensor of type float32
-      instead of bool. To prevent this error, the condition tensor should be of type
-      bool.
-
-
-      The constraint that prevents the error is:'
-    length: 1
-    target:
-      choosen_dtype:
-        condition: tensor
-        name: str
-        x: tensor
-        y: tensor
-      msg: 'cannot compute Select as input #0(zero-based) was expected to be a bool
-        tensor but is a float tensor [Op:Select] name: zalm'
-      package: tensorflow
-    txt: dtype(condition) == bool
-  - f1_score: 98.88776541961576
-    overall_score: 51.9
-    precision: 97.8
-    recall: 100.0
 - - cot: "The error is triggered because the size and shape of input tensors are not\
       \ the same. To prevent this error, we need to ensure that the size and shape\
       \ of the tensors are the same. \n\nThe constraint that prevents the error is:"
@@ -60,7 +38,23 @@ rules:
         0: [9,9,9,9] != input 1: [6,6,6,6,6,6,6] [Op:Select] name: pxJo'
       package: tensorflow
     txt: condition.shape == x.shape and condition.shape == y.shape
-  - f1_score: 46.03886397608371
-    overall_score: 18.4
-    precision: 30.8
-    recall: 91.12426035502959
+  - f1_score: 38.29422731318968
+    overall_score: 31.14711365659484
+    precision: 25.418060200668897
+    recall: 77.60909524133706
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        condition: tensor
+        name: str
+        x: tensor
+        y: tensor
+      msg: 'cannot compute Select as input #0(zero-based) was expected to be a bool
+        tensor but is a float tensor [Op:Select] name: LGCF'
+      package: tensorflow
+    txt: (condition.dtype == bool) and (dtype(y) == dtype(x))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

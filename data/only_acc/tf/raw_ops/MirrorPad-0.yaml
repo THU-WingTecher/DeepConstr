@@ -1,0 +1,81 @@
+args:
+  dtype:
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  - str
+  - list[int]
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - mode
+  - name
+  - paddings
+  required:
+  - true
+  - true
+  - false
+  - true
+name: tf.raw_ops.MirrorPad
+package: tensorflow
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        mode: str
+        name: str
+        paddings: list[int]
+      msg: "Value for attr 'mode' of \"LBBd\" is not in the list of allowed values:\
+        \ \"REFLECT\", \"SYMMETRIC\"\n\t; NodeDef: {{node MirrorPad}}; Op<name=MirrorPad;\
+        \ signature=input:T, paddings:Tpaddings -> output:T; attr=T:type; attr=Tpaddings:type,default=DT_INT32,allowed=[DT_INT32,\
+        \ DT_INT64]; attr=mode:string,allowed=[\"REFLECT\", \"SYMMETRIC\"]> [Op:MirrorPad]"
+      package: tensorflow
+    txt: mode in ["REFLECT", "SYMMETRIC"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is triggered because the paddings argument is not a matrix with
+      2 columns. Let''s see what the args were. The paddings tensor had no dimensions,
+      which means it was a scalar. To be a matrix with 2 columns, it should have a
+      dimension of 2. Therefore, the condition to prevent the error would be: Left
+      : paddings.dim, op : ==, Right : 2.'
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        mode: str
+        name: str
+        paddings: list[int]
+      msg: '{{function_node __wrapped__MirrorPad_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        paddings must be a matrix with 2 columns: [0] [Op:MirrorPad]'
+      package: tensorflow
+    txt: paddings.dim == 2
+  - f1_score: 18.43971631205674
+    overall_score: 9.5
+    precision: 13.0
+    recall: 31.70731707317073
+- - cot: 'The error is due to the input tensor having a rank of 7, which is not within
+      the valid range of [0,5] for the MirrorPad operation. Therefore, the constraint
+      to prevent this error would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        mode: str
+        name: str
+        paddings: list[int]
+      msg: '{{function_node __wrapped__MirrorPad_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        inputs rank not in [0,5]: 6 [Op:MirrorPad]'
+      package: tensorflow
+    txt: (input.rank in [0, 5])
+  - f1_score: 72.46376811594203
+    overall_score: 100
+    precision: 100.0
+    recall: 56.81818181818182

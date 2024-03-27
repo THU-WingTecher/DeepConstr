@@ -37,4 +37,205 @@ args:
   - true
 name: tf.raw_ops.DepthwiseConv2dNative
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter: tensor
+        input: tensor
+        name: str
+        padding: str
+        strides: list[int]
+      msg: "Value for attr 'data_format' of \"dTHh\" is not in the list of allowed\
+        \ values: \"NHWC\", \"NCHW\"\n\t; NodeDef: {{node DepthwiseConv2dNative}};\
+        \ Op<name=DepthwiseConv2dNative; signature=input:T, filter:T -> output:T;\
+        \ attr=T:type,allowed=[DT_HALF, DT_BFLOAT16, DT_FLOAT, DT_DOUBLE]; attr=strides:list(int);\
+        \ attr=padding:string,allowed=[\"SAME\", \"VALID\", \"EXPLICIT\"]; attr=explicit_paddings:list(int),default=[];\
+        \ attr=data_format:string,default=\"NHWC\",allowed=[\"NHWC\", \"NCHW\"]; attr=dilations:list(int),default=[1,\
+        \ 1, 1, 1]> [Op:DepthwiseConv2dNative] name: mxoH"
+      package: tensorflow
+    txt: data_format in ["NHWC", "NCHW"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is triggered because the value provided for the ''padding'' attribute
+      is "ZPcQ", which is not in the allowed values: "SAME", "VALID", "EXPLICIT".
+      Therefore, the value of ''padding'' should be corrected to be either "SAME",
+      "VALID", or "EXPLICIT", which is ["SAME", "VALID", "EXPLICIT"]. Op : DepthwiseConv2dNative,
+      and Right : ["SAME", "VALID", "EXPLICIT"].'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter: tensor
+        input: tensor
+        name: str
+        padding: str
+        strides: list[int]
+      msg: "Value for attr 'padding' of \"BLKk\" is not in the list of allowed values:\
+        \ \"SAME\", \"VALID\", \"EXPLICIT\"\n\t; NodeDef: {{node DepthwiseConv2dNative}};\
+        \ Op<name=DepthwiseConv2dNative; signature=input:T, filter:T -> output:T;\
+        \ attr=T:type,allowed=[DT_HALF, DT_BFLOAT16, DT_FLOAT, DT_DOUBLE]; attr=strides:list(int);\
+        \ attr=padding:string,allowed=[\"SAME\", \"VALID\", \"EXPLICIT\"]; attr=explicit_paddings:list(int),default=[];\
+        \ attr=data_format:string,default=\"NHWC\",allowed=[\"NHWC\", \"NCHW\"]; attr=dilations:list(int),default=[1,\
+        \ 1, 1, 1]> [Op:DepthwiseConv2dNative] name: uXog"
+      package: tensorflow
+    txt: padding in ["SAME", "VALID", "EXPLICIT"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: "Based on the given runtime information, the error arises because the attribute\
+      \ 'input' has a dtype of int32, but it is expected to be one of the allowed\
+      \ types: half, bfloat16, float, double. \n\nTherefore, the constraint to prevent\
+      \ the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter: tensor
+        input: tensor
+        name: str
+        padding: str
+        strides: list[int]
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: half,\
+        \ bfloat16, float, double\n\t; NodeDef: {{node DepthwiseConv2dNative}}; Op<name=DepthwiseConv2dNative;\
+        \ signature=input:T, filter:T -> output:T; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16,\
+        \ DT_FLOAT, DT_DOUBLE]; attr=strides:list(int); attr=padding:string,allowed=[\"\
+        SAME\", \"VALID\", \"EXPLICIT\"]; attr=explicit_paddings:list(int),default=[];\
+        \ attr=data_format:string,default=\"NHWC\",allowed=[\"NHWC\", \"NCHW\"]; attr=dilations:list(int),default=[1,\
+        \ 1, 1, 1]> [Op:DepthwiseConv2dNative] name: rPoZ"
+      package: tensorflow
+    txt: dtype(input) in ["half", "bfloat16", "float", "double"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the error arises because the function
+      is trying to perform a DepthwiseConv2dNative operation on a bfloat16 tensor
+      and a float tensor. However, both tensors must have the same data type.
+
+
+      To prevent the error, the data type of the input tensor should be changed to
+      bfloat16. Therefore, the condition that should be added is:'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter: tensor
+        input: tensor
+        name: str
+        padding: str
+        strides: list[int]
+      msg: 'cannot compute DepthwiseConv2dNative as input #1(zero-based) was expected
+        to be a bfloat16 tensor but is a float tensor [Op:DepthwiseConv2dNative] name:
+        fdTA'
+      package: tensorflow
+    txt: dtype(input) == dtype(filter)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is triggered because the sliding window strides field does not
+      specify 4 dimensions. Let''s see what the args were. The strides argument is
+      a list of 3 values. To fix the error, the strides argument should be modified
+      to include a fourth dimension. Therefore, the constraint would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter: tensor
+        input: tensor
+        name: str
+        padding: str
+        strides: list[int]
+      msg: '{{function_node __wrapped__DepthwiseConv2dNative_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Sliding window strides field must specify 4 dimensions [Op:DepthwiseConv2dNative]
+        name: MlyP'
+      package: tensorflow
+    txt: len(strides) == 4
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter: tensor
+        input: tensor
+        name: str
+        padding: str
+        strides: list[int]
+      msg: '{{function_node __wrapped__DepthwiseConv2dNative_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Current implementation only supports equal length strides in the row and column
+        dimensions. [Op:DepthwiseConv2dNative] name: npTn'
+      package: tensorflow
+    txt: ((strides[0] == strides[2]) and (strides[0] == strides[1])) and (strides[2]
+      == strides[3])
+  - f1_score: 98.03921568627452
+    overall_score: 100
+    precision: 100.0
+    recall: 96.15384615384615
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter: tensor
+        input: tensor
+        name: str
+        padding: str
+        strides: list[int]
+      msg: '{{function_node __wrapped__DepthwiseConv2dNative_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Current implementation does not yet support strides in the batch and depth
+        dimensions. [Op:DepthwiseConv2dNative] name: dEmL'
+      package: tensorflow
+    txt: strides[0] == 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is triggered because the input tensor has 7 dimensions, but the
+      function expects a 4-dimensional input tensor. To prevent the error, the input
+      tensor should be reshaped to have exactly 4 dimensions. Therefore, the constraint
+      should be:'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter: tensor
+        input: tensor
+        name: str
+        padding: str
+        strides: list[int]
+      msg: '{{function_node __wrapped__DepthwiseConv2dNative_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        input must be 4-dimensional[7,9,9,9,9,9,9] [Op:DepthwiseConv2dNative] name:
+        TAKx'
+      package: tensorflow
+    txt: (len(input.shape) == 4)
+  - f1_score: 83.17460317460316
+    overall_score: 100
+    precision: 100.0
+    recall: 71.19565217391303

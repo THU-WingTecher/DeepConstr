@@ -1,0 +1,123 @@
+args:
+  dtype:
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - bias
+  - data_format
+  - name
+  - value
+  required:
+  - true
+  - false
+  - false
+  - true
+name: tf.raw_ops.BiasAdd
+package: tensorflow
+pass_rate: 11.5
+rules:
+- - cot: Based on the given runtime information, the error is caused by an incorrect
+      value for the 'data_format' attribute. The provided value is "duqB", which is
+      not in the allowed values of "NHWC" or "NCHW". To prevent this error, the 'data_format'
+      attribute should be corrected to be either "NHWC" or "NCHW".
+    length: 1
+    target:
+      choosen_dtype:
+        bias: tensor
+        data_format: str
+        name: str
+        value: tensor
+      msg: "Value for attr 'data_format' of \"pZaa\" is not in the list of allowed\
+        \ values: \"NHWC\", \"NCHW\"\n\t; NodeDef: {{node BiasAdd}}; Op<name=BiasAdd;\
+        \ signature=value:T, bias:T -> output:T; attr=T:type,allowed=[DT_FLOAT, DT_DOUBLE,\
+        \ DT_INT32, DT_UINT8, DT_INT16, 10440210506161272279, DT_UINT16, DT_COMPLEX128,\
+        \ DT_HALF, DT_UINT32, DT_UINT64]; attr=data_format:string,default=\"NHWC\"\
+        ,allowed=[\"NHWC\", \"NCHW\"]> [Op:BiasAdd] name: zgOS"
+      package: tensorflow
+    txt: '"data_format" in ["NHWC", "NCHW"]'
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      bias tensor has more than 1 dimension. To prevent the error, the bias tensor
+      must be a 1D tensor. Therefore, the constraint is:'
+    length: 1
+    target:
+      choosen_dtype:
+        bias: tensor
+        data_format: str
+        name: str
+        value: tensor
+      msg: '{{function_node __wrapped__BiasAdd_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Biases must be 1D: [3,9,5,8,2,4] [Op:BiasAdd] name: JZdO'
+      package: tensorflow
+    txt: bias.dim == 1
+  - f1_score: 91.74311926605505
+    overall_score: 100
+    precision: 100.0
+    recall: 84.74576271186442
+- - cot: The error is triggered because the input tensor value of tf.raw_ops.BiasAdd
+      is empty and it must be at least 2D. To prevent the error, the input tensor
+      value should have a minimum of 2 dimensions.
+    length: 1
+    target:
+      choosen_dtype:
+        bias: tensor
+        data_format: str
+        name: str
+        value: tensor
+      msg: '{{function_node __wrapped__BiasAdd_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Input tensor must be at least 2D: [] [Op:BiasAdd] name: fhKM'
+      package: tensorflow
+    txt: value.dim >= 2
+  - f1_score: 96.15384615384615
+    overall_score: 100
+    precision: 100.0
+    recall: 92.59259259259258
+- - cot: synthesized
+    length: 5
+    target:
+      choosen_dtype:
+        bias: tensor
+        data_format: str
+        name: str
+        value: tensor
+      msg: 'cannot compute BiasAdd as input #1(zero-based) was expected to be a float
+        tensor but is a int32 tensor [Op:BiasAdd] name: eQhW'
+      package: tensorflow
+    txt: ((dtype(bias) == int32) or (dtype(bias) == dtype(value))) and (((dtype(bias)
+      == float32) or (dtype(bias) == int32)) and (dtype(bias) == float))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: "Based on the given runtime information, the error is triggered because the\
+      \ number of biases provided does not match the last dimension of the input tensor.\
+      \ The input tensor has a shape of [7, 8], and the biases tensor has a shape\
+      \ of [3]. \n\nTo prevent the error, the number of biases provided should match\
+      \ the last dimension of the input tensor. Therefore, the constraint can be formulated\
+      \ as:"
+    length: 1
+    target:
+      choosen_dtype:
+        bias: tensor
+        data_format: str
+        name: str
+        value: tensor
+      msg: '{{function_node __wrapped__BiasAdd_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Must provide as many biases as the last dimension of the input tensor: [3]
+        vs. [6,9,1,7,7,7,7] [Op:BiasAdd] name: bYvh'
+      package: tensorflow
+    txt: len(bias) == value.shape[-1]
+  - f1_score: 17.355371900826448
+    overall_score: 8.25
+    precision: 10.5
+    recall: 50.0

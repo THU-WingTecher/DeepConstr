@@ -17,7 +17,7 @@ args:
   - true
 name: tf.raw_ops.AdjustSaturation
 package: tensorflow
-pass_rate: 0.0
+pass_rate: 5.5
 rules:
 - - cot: 'Based on the given runtime information, the error occurs because the input
       tensor "images" has shape [0, 0], which is not at least 3-D as required by the

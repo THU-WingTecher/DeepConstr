@@ -1,0 +1,41 @@
+args:
+  dtype:
+  - list[int]
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - bool
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - axis
+  - input
+  - keep_dims
+  - name
+  required:
+  - false
+  - true
+  - false
+  - false
+name: tf.raw_ops.Min
+package: tensorflow
+pass_rate: 93.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        axis: list[int]
+        input: tensor
+        keep_dims: bool
+        name: str
+      msg: '{{function_node __wrapped__Min_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Invalid reduction dimension (7 for input with 2 dimension(s) [Op:Min]'
+      package: tensorflow
+    txt: (2 < len(input.shape))
+  - f1_score: 65.7243816254417
+    overall_score: 49.5
+    precision: 93.0
+    recall: 50.81967213114754

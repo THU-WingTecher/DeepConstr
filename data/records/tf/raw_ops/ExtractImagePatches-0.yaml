@@ -29,4 +29,31 @@ args:
   - true
 name: tf.raw_ops.ExtractImagePatches
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'Based on the given error message, the error is due to an incorrect value
+      for the ''padding'' attribute. The value provided is "kmOQ" which is not in
+      the allowed values: "SAME", "VALID". Therefore, the ''padding'' attribute should
+      be corrected to be either "SAME" or "VALID", which is ["SAME", "VALID"].'
+    length: 1
+    target:
+      choosen_dtype:
+        images: tensor
+        ksizes: list[int]
+        name: str
+        padding: str
+        rates: list[int]
+        strides: list[int]
+      msg: "Value for attr 'padding' of \"owGz\" is not in the list of allowed values:\
+        \ \"SAME\", \"VALID\"\n\t; NodeDef: {{node ExtractImagePatches}}; Op<name=ExtractImagePatches;\
+        \ signature=images:T -> patches:T; attr=ksizes:list(int),min=4; attr=strides:list(int),min=4;\
+        \ attr=rates:list(int),min=4; attr=T:type,allowed=[DT_BFLOAT16, DT_HALF, DT_FLOAT,\
+        \ DT_DOUBLE, DT_INT8, 13426711389993069653, DT_UINT32, DT_UINT64, DT_COMPLEX64,\
+        \ DT_COMPLEX128, DT_BOOL]; attr=padding:string,allowed=[\"SAME\", \"VALID\"\
+        ]> [Op:ExtractImagePatches] name: cBnx"
+      package: tensorflow
+    txt: padding in ["SAME", "VALID"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
