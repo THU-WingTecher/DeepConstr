@@ -12,8 +12,8 @@ from neuri.logger import DTEST_LOG
 # Load the JSON file
 
 BASELINES = ["symbolic-cinit", "neuri", "constrinf", "constrinf_2"]
-FIXED_FUNC = "torch.sin" #"torch.sin"
-cov_parallel = 8
+FIXED_FUNC = "tf.cos"#"torch.sin"
+cov_parallel = 16
 
 def activate_conda_environment(env_name):
     """

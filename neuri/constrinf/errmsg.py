@@ -42,7 +42,8 @@ class ErrorMessage:
     def dump(self) :
         return {
             "msg" : self.msg,
-            "choosen_dtype" : {name : dtype.dump() for name, dtype in self.chooen_dtype.items()},
+            "choosen_dtype" : {name : dtype.dump() for name, dtype in self.chooen_dtype.items() \
+                               if dtype is not None},
             "package" : self.package
         }
     @staticmethod

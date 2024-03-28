@@ -406,7 +406,7 @@ def _gen_val(
     ## activate constrs
     constrs = [constr(z3objs={
                         name : abs.z3()(name)
-                        for name, abs in args_types.items()
+                        for name, abs in args_types.items() if abs is not None
                     }) for constr in constrs]
     names = extract_names_from_constrs(constraints)
     solver = z3.Solver()

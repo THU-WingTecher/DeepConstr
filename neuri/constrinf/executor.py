@@ -121,6 +121,7 @@ class Executor:
         return_dict = manager.dict()
         worker_fn = functools.partial(worker, self.model, *args, **kwargs)
         processes = []
+        results = []
         tasks_per_process = max(ntimes // self.parallel, 1)  # Ensure at least one task per process
         for i in range(self.parallel):
             start_index = i * tasks_per_process
@@ -145,6 +146,9 @@ class Executor:
                 # err_instance = ErrorMessage(TimeoutError(), "Process exceeded timeout.", {}, {})
                 # MGEN_LOG.error(f"TIMEOUT error in execute: Process exceeded timeout.")
                 # return_dict[processes.index(p)] = [False, err_instance]
-        
-        results = [return_dict[i] for i in range(len(return_dict))]
+        for i in range(len(return_dict)) :
+            if return_dict.get(i, None) is None :
+                pass 
+            else :
+                results.append(return_dict[i])
         return results
