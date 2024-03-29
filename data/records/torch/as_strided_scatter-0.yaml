@@ -25,4 +25,39 @@ args:
   - false
 name: torch.as_strided_scatter
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        size: list[int]
+        src: tensor
+        storage_offset: None
+        stride: list[int]
+      msg: expected src to have a size equal to the slice of self. src size = [7,
+        9, 9, 9, 9, 9, 9], slice size = []
+      package: torch
+    txt: self.size() == src.size()
+  - f1_score: 24.102564102564102
+    overall_score: 10.833333333333334
+    precision: 15.666666666666668
+    recall: 52.222222222222214
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        size: list[int]
+        src: tensor
+        storage_offset: None
+        stride: list[int]
+      msg: expected src to have a size equal to the slice of self. src size = [1,
+        1, 1], slice size = []
+      package: torch
+    txt: self.dim() == src.dim() - 1
+  - f1_score: 23.132530120481928
+    overall_score: 11.0
+    precision: 16.0
+    recall: 41.73913043478261

@@ -13,4 +13,36 @@ args:
   - true
 name: torch.asinh
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: ((dtype(self) == Float) and (dtype(out) == dtype(self))) or (dtype(out) ==
+      torch.float32)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: '`out` is a tensor with shape [1, 9, 9, 9, 9, 9, 9] and `self` is a tensor
+      with shape [8, 9, 8, 8, 7, 7, 5]. The error message suggests that the storage
+      of `out` is not resizable. To prevent this error, the shape of `out` should
+      match the shape of the result of the `torch.asinh` operation, which is the shape
+      of `self`. Therefore, the constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 75.47169811320754
+    overall_score: 49.73584905660377
+    precision: 100.0
+    recall: 60.60606060606061

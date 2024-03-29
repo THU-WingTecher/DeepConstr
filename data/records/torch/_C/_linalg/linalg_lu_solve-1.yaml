@@ -29,4 +29,152 @@ args:
   - true
 name: torch._C._linalg.linalg_lu_solve
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'The error is triggered because the "pivots" tensor should be of scalar type
+      torch.int32. To prevent the error, the "pivots" tensor should have the correct
+      data type. Therefore, the constraint is:'
+    length: 1
+    target:
+      choosen_dtype:
+        B: tensor
+        LU: tensor
+        adjoint: bool
+        left: bool
+        out: tensor
+        pivots: tensor
+      msg: 'linalg.lu_solve: pivots should be a Tensor of scalar type torch.int32'
+      package: torch
+    txt: pivots.dtype == torch.int32
+  - f1_score: 97.40259740259741
+    overall_score: 100
+    precision: 100.0
+    recall: 94.9367088607595
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        B: tensor
+        LU: tensor
+        adjoint: bool
+        left: bool
+        out: tensor
+        pivots: tensor
+      msg: 'linalg.lu_solve: Incompatible shapes of A and B for the equation AX =
+        B (9x9 and 4x4)'
+      package: torch
+    txt: (all(B.shape[i] == out.shape[i] for i in range(B.rank))) or (LU.shape[-2]
+      == LU.shape[-1])
+  - f1_score: 80.53691275167786
+    overall_score: 100
+    precision: 100.0
+    recall: 67.41573033707866
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        B: tensor
+        LU: tensor
+        adjoint: bool
+        left: bool
+        out: tensor
+        pivots: tensor
+      msg: 'torch.linalg.lu_solve: The input tensor A must have at least 2 dimensions.'
+      package: torch
+    txt: (B.dim >= 2) and (LU.dim() >= 2)
+  - f1_score: 96.46302250803858
+    overall_score: 100
+    precision: 100.0
+    recall: 93.16770186335404
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        B: tensor
+        LU: tensor
+        adjoint: bool
+        left: bool
+        out: tensor
+        pivots: tensor
+      msg: 'linalg.lu_solve: Incompatible shapes of A and B for the equation XA =
+        B (8x8 and 4x4)'
+      package: torch
+    txt: (len(B) == len(LU)) and (all(B.shape[i] == LU.shape[i] for i in range(B.rank)))
+  - f1_score: 80.65395095367847
+    overall_score: 100
+    precision: 100.0
+    recall: 67.57990867579909
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        B: tensor
+        LU: tensor
+        adjoint: bool
+        left: bool
+        out: tensor
+        pivots: tensor
+      msg: 'linalg.lu_solve: Number of pivots per batch should be same as the dimension
+        of the matrix'
+      package: torch
+    txt: pivots.shape[1] == LU.shape[0]
+  - f1_score: 72.50384024577573
+    overall_score: 100
+    precision: 100.0
+    recall: 56.867469879518076
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        B: tensor
+        LU: tensor
+        adjoint: bool
+        left: bool
+        out: tensor
+        pivots: tensor
+      msg: Dimension specified as -1 but tensor has no dimensions
+      package: torch
+    txt: not out.ndim == 0
+  - f1_score: 37.30210366514855
+    overall_score: 20.768595041322314
+    precision: 35.53719008264463
+    recall: 39.251483340940204
+- - cot: "The error message indicates that the dimension specified as -1 but the tensor\
+      \ has no dimensions. This suggests that the tensor 'pivots' has no dimensions\
+      \ while the function torch._C._linalg.linalg_lu_solve is expecting it to have\
+      \ dimensions. Therefore, 'pivots' tensor should have dimensions. \n\nSo, the\
+      \ condition to make the error disappear is:"
+    length: 1
+    target:
+      choosen_dtype:
+        B: tensor
+        LU: tensor
+        adjoint: bool
+        left: bool
+        out: tensor
+        pivots: tensor
+      msg: Dimension specified as -1 but tensor has no dimensions
+      package: torch
+    txt: pivots.dim()>0
+  - f1_score: 82.75862068965517
+    overall_score: 100
+    precision: 100.0
+    recall: 70.58823529411764
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        B: tensor
+        LU: tensor
+        adjoint: bool
+        left: bool
+        out: tensor
+        pivots: tensor
+      msg: 'linalg.lu_solve: Number of pivots per batch should be same as the dimension
+        of the matrix'
+      package: torch
+    txt: B.shape[-1] == pivots.shape[0]
+  - f1_score: 82.81126233167711
+    overall_score: 50.46835443037975
+    precision: 94.9367088607595
+    recall: 73.4323783576689

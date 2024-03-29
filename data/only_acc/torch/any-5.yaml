@@ -1,0 +1,46 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - out
+  required:
+  - true
+  - true
+name: torch.any
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'Error is triggered because the output tensor is expected to be a bool tensor,
+      but it is a float tensor. We can prevent this error by adding a constraint that
+      the output tensor must be a bool tensor. Therefore, the constraint can be formulated
+      as:'
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: 'any only supports bool tensor for result, got: Float'
+      package: torch
+    txt: out.dtype == bool
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.shape[2] > 0) and (out.rank==self.rank)
+  - f1_score: 66.815144766147
+    overall_score: 100
+    precision: 100.0
+    recall: 50.16722408026756

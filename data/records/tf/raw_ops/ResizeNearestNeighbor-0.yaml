@@ -25,4 +25,66 @@ args:
   - true
 name: tf.raw_ops.ResizeNearestNeighbor
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        align_corners: bool
+        half_pixel_centers: bool
+        images: tensor
+        name: str
+        size: tensor
+      msg: 'cannot compute ResizeNearestNeighbor as input #1(zero-based) was expected
+        to be a int32 tensor but is a float tensor [Op:ResizeNearestNeighbor] name:
+        nmqW'
+      package: tensorflow
+    txt: (dtype(images) == int32) and (dtype(size) == int32)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: "Based on the given runtime information, the error occurs because the input\
+      \ tensor \"images\" is not 4-dimensional [1, 1]. \n\nTo prevent the error, the\
+      \ input tensor \"images\" should be 4-dimensional."
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        half_pixel_centers: bool
+        images: tensor
+        name: str
+        size: tensor
+      msg: '{{function_node __wrapped__ResizeNearestNeighbor_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        input must be 4-dimensional[] [Op:ResizeNearestNeighbor] name: WJaK'
+      package: tensorflow
+    txt: images.shape.rank == 4
+  - f1_score: 88.49557522123894
+    overall_score: 100
+    precision: 100.0
+    recall: 79.36507936507937
+- - cot: 'Based on the given runtime information, the error arises because the shape
+      tensor `size` is not 1-dimensional. The function `tf.raw_ops.ResizeNearestNeighbor`
+      expects `size` to be a 1-dimensional tensor, but in this case, it has a shape
+      of `[3, 3, 3, 3, 3]`, which means it has 5 dimensions.
+
+
+      Therefore, the constraint to prevent this error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        half_pixel_centers: bool
+        images: tensor
+        name: str
+        size: tensor
+      msg: '{{function_node __wrapped__ResizeNearestNeighbor_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        shape_t must be 1-dimensional[9,2,8,5,3,2,9] [Op:ResizeNearestNeighbor] name:
+        qqXC'
+      package: tensorflow
+    txt: size.ndim == 1
+  - f1_score: 88.23529411764706
+    overall_score: 100
+    precision: 100.0
+    recall: 78.94736842105263

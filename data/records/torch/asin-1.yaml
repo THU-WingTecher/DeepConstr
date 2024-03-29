@@ -13,4 +13,31 @@ args:
   - true
 name: torch.asin
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(out)==torch.float32
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank==self.rank) and (out.shape == self.shape)
+  - f1_score: 94.04388714733541
+    overall_score: 53.021943573667706
+    precision: 100.0
+    recall: 88.75739644970415

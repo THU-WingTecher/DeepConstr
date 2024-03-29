@@ -1,0 +1,35 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.fmax
+package: torch
+pass_rate: 100
+rules:
+- - cot: "The error message indicates that the size of tensor a (3) does not match\
+      \ the size of tensor b (5) at non-singleton dimension 5. To prevent this error,\
+      \ we need to ensure that the size of the tensors at non-singleton dimension\
+      \ 5 match. \n\nBased on the given runtime information, we can formulate the\
+      \ following constraint:"
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (6) must match the size of tensor b (7) at non-singleton
+        dimension 3
+      package: torch
+    txt: self.shape[4] == other.shape[4]
+  - f1_score: 77.12082262210798
+    overall_score: 100
+    precision: 100.0
+    recall: 62.76150627615063

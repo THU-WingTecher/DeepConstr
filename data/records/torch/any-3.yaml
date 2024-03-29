@@ -21,4 +21,23 @@ args:
   - true
 name: torch.any
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'Error is triggered because the output tensor "out" is expected to be a boolean
+      tensor, but it is a float tensor instead. To prevent this error, we can add
+      a constraint to ensure that the output tensor is a boolean tensor. Therefore,
+      the updated constraint would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        keepdim: bool
+        out: tensor
+        self: tensor
+      msg: 'any only supports bool tensor for result, got: Float'
+      package: torch
+    txt: out.dtype == bool
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

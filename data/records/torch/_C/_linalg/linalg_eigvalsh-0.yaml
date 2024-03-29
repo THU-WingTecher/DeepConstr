@@ -13,4 +13,18 @@ args:
   - false
 name: torch._C._linalg.linalg_eigvalsh
 package: torch
-pass_rate: 0
+pass_rate: 70.66666666666667
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        UPLO: str
+        self: tensor
+      msg: Expected UPLO argument to be 'L' or 'U', but got pGNG
+      package: torch
+    txt: UPLO in ['L', 'U']
+  - f1_score: 86.20689655172413
+    overall_score: 100
+    precision: 100.0
+    recall: 75.75757575757575

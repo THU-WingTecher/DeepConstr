@@ -17,4 +17,108 @@ args:
   - true
 name: torch._C._linalg.linalg_eigvalsh
 package: torch
-pass_rate: 0
+pass_rate: 77.33333333333333
+rules:
+- - cot: 'The error occurs because the ''out'' tensor datatype is half (float16),
+      but the function expects a float32 datatype. Therefore, the constraint should
+      ensure that the ''out'' tensor has the same datatype as the ''self'' tensor.
+      The constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        UPLO: str
+        out: tensor
+        self: tensor
+      msg: Expected out tensor to have dtype float, but got c10::Half instead
+      package: torch
+    txt: out.dtype == self.dtype
+  - f1_score: 99.82847341337909
+    overall_score: 61.91423670668954
+    precision: 100.0
+    recall: 99.65753424657534
+- - cot: "The error is caused by negative dimensions in the shape of the input tensors.\
+      \ To prevent this error, the dimensions of the input tensors should be non-negative.\
+      \ \n\nWrap the final formula with"
+    length: 1
+    target:
+      choosen_dtype:
+        UPLO: str
+        out: tensor
+        self: tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(dim >= 0 for dim in self.shape) and all(dim >= 0 for dim in out.shape)
+  - f1_score: 90.21739130434781
+    overall_score: 57.10869565217391
+    precision: 100.0
+    recall: 82.17821782178217
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        UPLO: str
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.shape == self.shape
+  - f1_score: 79.47019867549669
+    overall_score: 51.735099337748345
+    precision: 100.0
+    recall: 65.93406593406593
+- - cot: 'The error occurs because the value of the "UPLO" argument is not valid.
+      The expected values for the "UPLO" argument are ''L'' or ''U'', but the actual
+      value is ''jdZz''.
+
+
+      To prevent this error in the future and generate constraints that do not trigger
+      it, we need to ensure that the "UPLO" argument is always either ''L'' or ''U''.
+      The constraint for the "UPLO" parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        UPLO: str
+        out: tensor
+        self: tensor
+      msg: Expected UPLO argument to be 'L' or 'U', but got hjLj
+      package: torch
+    txt: UPLO == 'L' or UPLO == 'U'
+  - f1_score: 93.75
+    overall_score: 58.875
+    precision: 100.0
+    recall: 88.23529411764706
+- - cot: 'Based on the given runtime information, the error message states that the
+      input tensor `self` must have at least 2 dimensions. To prevent this error,
+      the constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        UPLO: str
+        out: tensor
+        self: tensor
+      msg: 'linalg.eigh: The input tensor A must have at least 2 dimensions.'
+      package: torch
+    txt: self.dim >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is caused because the input tensor `self` is not a batch of square
+      matrices. Let''s see the shape of `self`, it is [6, 1, 7, 4, 8, 3, 1]. The last
+      dimension of `self` should be the same as the second-to-last dimension, which
+      is the dimension representing the matrix size. So the constraint to prevent
+      this error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        UPLO: str
+        out: tensor
+        self: tensor
+      msg: 'linalg.eigh: A must be batches of square matrices, but they are 1 by 6
+        matrices'
+      package: torch
+    txt: self.shape[-1] == self.shape[-2]
+  - f1_score: 64.06820950060902
+    overall_score: 44.03410475030451
+    precision: 87.66666666666667
+    recall: 50.479846449136275

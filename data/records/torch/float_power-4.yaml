@@ -17,4 +17,35 @@ args:
   - true
 name: torch.float_power
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        exponent: tensor
+        out: tensor
+        self: int
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==exponent.rank and all(out.shape[i]==exponent.shape[i] for i in
+      range(out.rank))
+  - f1_score: 79.36507936507938
+    overall_score: 51.68253968253969
+    precision: 100.0
+    recall: 65.78947368421053
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        exponent: tensor
+        out: tensor
+        self: int
+      msg: the output given to float_power has dtype Float but the operation's result
+        requires dtype Double
+      package: torch
+    txt: dtype(out) == Double
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

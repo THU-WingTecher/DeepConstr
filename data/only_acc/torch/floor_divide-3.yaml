@@ -1,0 +1,66 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.floor_divide
+package: torch
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: int
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 74.90636704119851
+    overall_score: 100
+    precision: 100.0
+    recall: 59.88023952095809
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: int
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self) == int32
+  - f1_score: 67.41573033707866
+    overall_score: 100
+    precision: 100.0
+    recall: 50.847457627118644
+- - cot: 'The error is caused by the fact that the function is trying to divide by
+      zero, which is not allowed in mathematics. Therefore, the constraint that would
+      prevent this error is to ensure that the `other` argument is not zero. So, Left
+      : other, Op : !=, and Right : 0'
+    length: 1
+    target:
+      choosen_dtype:
+        other: int
+        out: tensor
+        self: tensor
+      msg: ZeroDivisionError
+      package: torch
+    txt: other != 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

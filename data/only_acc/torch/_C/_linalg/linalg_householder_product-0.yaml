@@ -1,0 +1,64 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - false
+  - false
+  name:
+  - input
+  - tau
+  required:
+  - true
+  - true
+name: torch._C._linalg.linalg_householder_product
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        tau: tensor
+      msg: 'torch.linalg.householder_product: input.shape[-1] must be greater than
+        or equal to tau.shape[-1]'
+      package: torch
+    txt: input.shape[-2] >= input.shape[-1]
+  - f1_score: 73.17073170731707
+    overall_score: 100
+    precision: 100.0
+    recall: 57.692307692307686
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        tau: tensor
+      msg: 'torch.linalg.householder_product: input must have at least 2 dimensions.'
+      package: torch
+    txt: input.dim >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the error is caused because the
+      dimension of tau should be one less than the dimension of the input tensor.
+      However, in this case, the dimension of tau (7) is the same as the dimension
+      of the input tensor (7).
+
+
+      Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        tau: tensor
+      msg: 'torch.linalg.householder_product: Expected tau to have one dimension less
+        than input, but got tau.ndim equal to 7 and input.ndim is equal to 7'
+      package: torch
+    txt: tau.ndim == input.ndim - 1
+  - f1_score: 43.13725490196079
+    overall_score: 30.500000000000004
+    precision: 55.00000000000001
+    recall: 35.483870967741936

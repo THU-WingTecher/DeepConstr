@@ -1,0 +1,36 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.floor_divide
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      size of tensor "self" (3) does not match the size of tensor "other" (5) at non-singleton
+      dimension 6.
+
+
+      To prevent this error, we can formulate the following constraint:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (8) at non-singleton
+        dimension 5
+      package: torch
+    txt: self.shape[6] == other.shape[6]
+  - f1_score: 76.33587786259541
+    overall_score: 100
+    precision: 100.0
+    recall: 61.72839506172839

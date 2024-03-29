@@ -13,4 +13,48 @@ args:
   - false
 name: torch._C._linalg.linalg_lu_factor
 package: torch
-pass_rate: 0
+pass_rate: 98.33333333333333
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        pivot: bool
+      msg: '"lu_cpu" not implemented for ''Int'''
+      package: torch
+    txt: dtype(A) != int32
+  - f1_score: 99.00990099009901
+    overall_score: 61.504950495049506
+    precision: 100.0
+    recall: 98.0392156862745
+- - cot: 'Error is triggered because the tensor A is expected to have 2 or more dimensions,
+      but it has size []. To prevent this error, we can add a constraint to check
+      if the tensor A has 2 or more dimensions. If not, the error can be avoided.
+      Therefore, the constraint is:'
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        pivot: bool
+      msg: 'torch.lu_factor: Expected tensor with 2 or more dimensions. Got size:
+        [] instead'
+      package: torch
+    txt: A.dim() >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        pivot: bool
+      msg: 'linalg.lu_factor: LU without pivoting is not implemented on the CPU'
+      package: torch
+    txt: pivot
+  - f1_score: 98.03921568627452
+    overall_score: 61.01960784313726
+    precision: 100.0
+    recall: 96.15384615384615

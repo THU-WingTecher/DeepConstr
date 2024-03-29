@@ -17,4 +17,52 @@ args:
   - true
 name: torch.float_power
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        exponent: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.shape == self.shape) and (out.rank == self.rank)
+  - f1_score: 80.957426085965
+    overall_score: 52.4787130429825
+    precision: 94.98327759197325
+    recall: 70.5408963330325
+- - cot: "The error is triggered because the size of tensor a (8) does not match the\
+      \ size of tensor b (9) at non-singleton dimension 2. To prevent this error,\
+      \ we need to ensure that the dimensions and shapes of the tensors are consistent.\
+      \ \n\nThe revised constraint is:"
+    length: 1
+    target:
+      choosen_dtype:
+        exponent: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (3) must match the size of tensor b (9) at non-singleton
+        dimension 1
+      package: torch
+    txt: exponent.dim == self.dim and exponent.shape == self.shape
+  - f1_score: 95.70957095709572
+    overall_score: 59.85478547854786
+    precision: 96.66666666666667
+    recall: 94.77124183006535
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        exponent: tensor
+        out: tensor
+        self: tensor
+      msg: the output given to float_power has dtype Float but the operation's result
+        requires dtype Double
+      package: torch
+    txt: dtype(out) == Double
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

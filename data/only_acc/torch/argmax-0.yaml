@@ -1,0 +1,49 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[int]
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - keepdim
+  required:
+  - true
+  - false
+  - false
+name: torch.argmax
+package: torch
+pass_rate: 83.66666666666667
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        keepdim: bool
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 100)
+      package: torch
+    txt: (dim < len(self.shape)) and (dim >= -4 and dim < 3)
+  - f1_score: 70.58823529411765
+    overall_score: 100
+    precision: 100.0
+    recall: 54.54545454545454
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        keepdim: bool
+        self: tensor
+      msg: 'argmax(): Expected reduction dim 0 to have non-zero size.'
+      package: torch
+    txt: self.shape[0] != 0
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0

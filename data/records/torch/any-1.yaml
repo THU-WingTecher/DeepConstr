@@ -17,4 +17,19 @@ args:
   - false
 name: torch.any
 package: torch
-pass_rate: 0
+pass_rate: 24.333333333333336
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        keepdim: bool
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 2)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 74.54289732770744
+    overall_score: 47.166666666666664
+    precision: 88.33333333333333
+    recall: 64.47688564476884

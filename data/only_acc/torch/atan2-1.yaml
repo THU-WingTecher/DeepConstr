@@ -1,0 +1,66 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.atan2
+package: torch
+pass_rate: 96.98996655518395
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (3) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.shape[5] == other.shape[0]
+  - f1_score: 75.00000000000001
+    overall_score: 100
+    precision: 100.0
+    recall: 60.00000000000001
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (((out.rank == self.rank) and (out.shape == self.shape)) and (out.shape ==
+      other.shape)) and (other.rank==out.rank and all(other.shape[i]==out.shape[i]
+      for i in range(other.rank)))
+  - f1_score: 78.84362680683311
+    overall_score: 100
+    precision: 100.0
+    recall: 65.0759219088937
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self)==dtype(other)
+  - f1_score: 65.30910419139805
+    overall_score: 51.0
+    precision: 96.0
+    recall: 49.48796014392472

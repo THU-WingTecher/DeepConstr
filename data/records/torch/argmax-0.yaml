@@ -17,4 +17,34 @@ args:
   - false
 name: torch.argmax
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        keepdim: bool
+        self: tensor
+      msg: 'argmax(): Expected reduction dim 0 to have non-zero size.'
+      package: torch
+    txt: self.shape[0] != 0
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        dim: int
+        keepdim: bool
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 100)
+      package: torch
+    txt: (((dim < len(self.shape)) and (dim >= -4 and dim < 3)) or (9 >= -len(self.shape)
+      and 9 < len(self.shape))) and (-1 <= dim < 0)
+  - f1_score: 90.97222222222221
+    overall_score: 51.48611111111111
+    precision: 87.33333333333333
+    recall: 94.92753623188406

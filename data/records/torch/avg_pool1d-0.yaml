@@ -29,4 +29,23 @@ args:
   - false
 name: torch.avg_pool1d
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        kernel_size: list[int]
+        padding: list[int]
+        self: tensor
+        stride: list[int]
+      msg: 'Expected 2 to 3 dimensions, but got 7-dimensional tensor for argument
+        #1 ''self'' (while checking arguments for avg_pool1d)'
+      package: torch
+    txt: self.ndims() == 3
+  - f1_score: 84.50704225352112
+    overall_score: 100
+    precision: 100.0
+    recall: 73.17073170731707

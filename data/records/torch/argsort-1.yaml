@@ -21,4 +21,25 @@ args:
   - false
 name: torch.argsort
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'The error occurs because the dimension provided is out of the valid range.
+      To prevent this error in the future and generate constraints that do not trigger
+      it, we need to ensure that the "dim" value is always within the valid range
+      for the given tensor. If we denote the shape of the tensor as n, the valid range
+      for the dimension would be [-n, n-1]. The constraint for the ''dim'' parameter
+      can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        descending: bool
+        dim: int
+        self: tensor
+        stable: bool
+      msg: Dimension out of range (expected to be in range of [-6, 5], but got 8)
+      package: torch
+    txt: dim >= -1 and dim < 0
+  - f1_score: 97.08404802744425
+    overall_score: 54.54202401372213
+    precision: 94.33333333333334
+    recall: 100.0

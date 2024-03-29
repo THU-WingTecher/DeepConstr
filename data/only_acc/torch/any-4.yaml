@@ -1,0 +1,76 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[List[int]]
+  - bool
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - keepdim
+  - out
+  required:
+  - true
+  - false
+  - false
+  - true
+name: torch.any
+package: torch
+pass_rate: 99.64285714285714
+rules:
+- - cot: 'Error is triggered because the output tensor is of type Float, but torch.any
+      only supports bool tensor for the result. The constraint to prevent this error
+      is to ensure that the output tensor is of type bool. Therefore, the formula
+      is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        keepdim: bool
+        out: tensor
+        self: tensor
+      msg: 'any only supports bool tensor for result, got: Float'
+      package: torch
+    txt: out.dtype == bool
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        keepdim: bool
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 67.49156355455568
+    overall_score: 100
+    precision: 100.0
+    recall: 50.93378607809848
+- - cot: The error occurs because the function `torch.any` is attempting to create
+      a tensor with a negative dimension, which is not allowed. In the output tensor
+      `out=Tensor<b>[1, 5, 3, 4, 8, 2, -4]`, the dimension -4 is not valid. Therefore,
+      all dimensions of the output tensor should be non-negative.
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        keepdim: bool
+        out: tensor
+        self: tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in out.shape)
+  - f1_score: 81.5873015873016
+    overall_score: 100
+    precision: 100.0
+    recall: 68.90080428954424

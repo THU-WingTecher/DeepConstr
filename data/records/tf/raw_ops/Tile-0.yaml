@@ -17,4 +17,48 @@ args:
   - false
 name: tf.raw_ops.Tile
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'Based on the given runtime information, the error arises because the attribute
+      ''multiples'' is expected to be one of int32 or int64, but it is provided as
+      float32. So, the condition that prevents the error is:
+
+
+      `dtype(multiples) in ["int32", "int64"]`
+
+
+      Wrap the final formula with'
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        multiples: tensor
+        name: str
+      msg: "Value for attr 'Tmultiples' of float is not in the list of allowed values:\
+        \ int32, int64\n\t; NodeDef: {{node Tile}}; Op<name=Tile; signature=input:T,\
+        \ multiples:Tmultiples -> output:T; attr=T:type; attr=Tmultiples:type,default=DT_INT32,allowed=[DT_INT32,\
+        \ DT_INT64]> [Op:Tile] name: FqtN"
+      package: tensorflow
+    txt: dtype(multiples) in ["int32", "int64"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is triggered because the shape of multiples is not 1-D. Let''s
+      see what the actual shape of multiples was. multiples had the shape [3, 7].
+      To prevent the error, the shape of multiples should be 1-D. Therefore, the constraint
+      is:'
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        multiples: tensor
+        name: str
+      msg: '{{function_node __wrapped__Tile_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Expected multiples to be 1-D, but got shape [3,9,4,9,9] [Op:Tile] name: XUTH'
+      package: tensorflow
+    txt: shape(multiples).dim == 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

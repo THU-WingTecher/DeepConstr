@@ -1,0 +1,70 @@
+args:
+  dtype:
+  - Tensor
+  is_pos:
+  - false
+  name:
+  - A
+  required:
+  - true
+name: torch._C._linalg.linalg_inv
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'The error is triggered because the input tensor A is not a batch of square
+      matrices. The last two dimensions of A should be the same, indicating that it
+      is a square matrix. To prevent this error, we need to ensure that the last two
+      dimensions of A have the same size. We can express this constraint as:'
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+      msg: 'linalg.inv: A must be batches of square matrices, but they are 9 by 8
+        matrices'
+      package: torch
+    txt: A[-2] == A[-1]
+  - f1_score: 68.1044267877412
+    overall_score: 100
+    precision: 100.0
+    recall: 51.63511187607573
+- - cot: 'The error is triggered because the input tensor A does not have at least
+      2 dimensions. To prevent this error, we can add a constraint that checks the
+      number of dimensions of tensor A. The constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+      msg: 'linalg.inv: The input tensor A must have at least 2 dimensions.'
+      package: torch
+    txt: A.dim >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        A: tensor
+      msg: 'linalg.inv: A must be batches of square matrices, but they are 5 by 8
+        matrices'
+      package: torch
+    txt: (A[-2] == A[-1]) and (all(A.shape[i] == A.shape[-2] for i in range(len(A.shape)
+      - 2)))
+  - f1_score: 68.64988558352402
+    overall_score: 100
+    precision: 100.0
+    recall: 52.264808362369344
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+      msg: 'linalg.inv: Expected a floating point or complex tensor as input. Got
+        Int'
+      package: torch
+    txt: dtype(A) in [float32, float64]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

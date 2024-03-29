@@ -1,0 +1,35 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - descending
+  required:
+  - true
+  - false
+  - false
+name: torch.argsort
+package: torch
+pass_rate: 87.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        descending: bool
+        dim: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 25)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 78.13822284908323
+    overall_score: 49.166666666666664
+    precision: 92.33333333333333
+    recall: 67.72616136919316

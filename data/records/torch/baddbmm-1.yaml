@@ -29,4 +29,42 @@ args:
   - true
 name: torch.baddbmm
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        batch1: tensor
+        batch2: tensor
+        beta: int
+        out: tensor
+        self: tensor
+      msg: 'expand(torch.FloatTensor{[3, 9, 9, 9, 9, 9, 9]}, size=[5, 5, 9]): the
+        number of sizes provided (3) must be greater or equal to the number of dimensions
+        in the tensor (7)'
+      package: torch
+    txt: batch1.shape[0] == self.shape[0]
+  - f1_score: 73.80073800738006
+    overall_score: 100
+    precision: 100.0
+    recall: 58.47953216374269
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        alpha: int
+        batch1: tensor
+        batch2: tensor
+        beta: int
+        out: tensor
+        self: tensor
+      msg: Dimension specified as 0 but tensor has no dimensions
+      package: torch
+    txt: (((len(self.shape) >= 2) or (len(batch2.shape) > 0)) and (batch1.dim() ==
+      2)) and (len(batch2.shape) > 0)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

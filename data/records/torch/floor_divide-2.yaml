@@ -17,4 +17,38 @@ args:
   - true
 name: torch.floor_divide
 package: torch
-pass_rate: 0
+pass_rate: 96.82539682539682
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank)))
+      and (out.rank==other.rank and all(out.shape[i]==other.shape[i] for i in range(out.rank)))
+  - f1_score: 74.90636704119851
+    overall_score: 43.453183520599254
+    precision: 100.0
+    recall: 59.88023952095809
+- - cot: 'Error is triggered because the size of tensor `self` (5) doesn''t match
+      the size of tensor `other` (9) at non-singleton dimension 1. To prevent this
+      error, we need to ensure that the sizes of the tensors at non-singleton dimension
+      1 are equal. Therefore, the constraint can be formulated as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (6) must match the size of tensor b (9) at non-singleton
+        dimension 1
+      package: torch
+    txt: self.shape[1] == other.shape[1]
+  - f1_score: 77.02182284980745
+    overall_score: 100
+    precision: 100.0
+    recall: 62.63048016701461

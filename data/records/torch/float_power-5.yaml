@@ -17,4 +17,42 @@ args:
   - true
 name: torch.float_power
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: "The error indicates that the 'out' tensor's shape does not match the expected\
+      \ result of the torch.float_power operation. The operation is trying to resize\
+      \ the 'out' tensor to match the shape of 'self' tensor, but the 'out' tensor\
+      \ is not resizable. In this case, the 'self' tensor has a shape of [1, 7, 7,\
+      \ 7] and 'out' tensor has a shape of [3, 6]. Therefore, the shapes of 'self'\
+      \ and 'out' must be the same for the operation to be successful. \n\nSo, the\
+      \ condition that makes the error disappear is:"
+    length: 1
+    target:
+      choosen_dtype:
+        exponent: int
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.shape == self.shape and out.rank == self.rank
+  - f1_score: 96.61835748792271
+    overall_score: 60.309178743961354
+    precision: 100.0
+    recall: 93.45794392523365
+- - cot: The error is triggered because the output tensor has dtype Float, but the
+      operation's result requires dtype Double. To prevent this error, the dtype of
+      the output tensor should be changed to Double.
+    length: 1
+    target:
+      choosen_dtype:
+        exponent: int
+        out: tensor
+        self: tensor
+      msg: the output given to float_power has dtype Float but the operation's result
+        requires dtype Double
+      package: torch
+    txt: dtype(out) == Double
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

@@ -1,0 +1,58 @@
+args:
+  dtype:
+  - Tensor
+  - bool
+  is_pos:
+  - false
+  - false
+  name:
+  - A
+  - pivot
+  required:
+  - true
+  - false
+name: torch._C._linalg.linalg_lu
+package: torch
+pass_rate: 100
+rules:
+- - cot: The error is triggered because LU without pivoting is not implemented on
+      the CPU. Therefore, the constraint to prevent the error is that the 'pivot'
+      argument should be set to True.
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        pivot: bool
+      msg: 'linalg.lu_factor: LU without pivoting is not implemented on the CPU'
+      package: torch
+    txt: pivot == True
+  - f1_score: 93.75
+    overall_score: 100
+    precision: 100.0
+    recall: 88.23529411764706
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        pivot: bool
+      msg: 'linalg.lu: Expected tensor with 2 or more dimensions. Got size: [] instead'
+      package: torch
+    txt: A.dim >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        pivot: bool
+      msg: '"lu_cpu" not implemented for ''Int'''
+      package: torch
+    txt: dtype(A) == float32
+  - f1_score: 97.87928221859706
+    overall_score: 100
+    precision: 100.0
+    recall: 95.84664536741214

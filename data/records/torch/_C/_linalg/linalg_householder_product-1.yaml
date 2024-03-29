@@ -17,4 +17,63 @@ args:
   - true
 name: torch._C._linalg.linalg_householder_product
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        out: tensor
+        tau: tensor
+      msg: 'torch.linalg.householder_product: input.shape[-2] must be greater than
+        or equal to input.shape[-1]'
+      package: torch
+    txt: input.shape[-2] >= input.shape[-1]
+  - f1_score: 74.81296758104737
+    overall_score: 100
+    precision: 100.0
+    recall: 59.76095617529881
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        out: tensor
+        tau: tensor
+      msg: 'torch.linalg.householder_product: input must have at least 2 dimensions.'
+      package: torch
+    txt: input.dim() >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        out: tensor
+        tau: tensor
+      msg: 'torch.linalg.householder_product: input.shape[-2] must be greater than
+        or equal to input.shape[-1]'
+      package: torch
+    txt: input.shape[-1] >= tau.shape[-1]
+  - f1_score: 72.35668789808918
+    overall_score: 50.333333333333336
+    precision: 94.66666666666667
+    recall: 58.55670103092784
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        input: tensor
+        out: tensor
+        tau: tensor
+      msg: Dimension specified as -1 but tensor has no dimensions
+      package: torch
+    txt: ((-1==len(input.shape)) and (len(tau) != 0)) or (len(tau.shape) >= 1)
+  - f1_score: 93.44262295081968
+    overall_score: 100
+    precision: 100.0
+    recall: 87.6923076923077

@@ -1,0 +1,31 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.atan2
+package: torch
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (6) must match the size of tensor b (7) at non-singleton
+        dimension 2
+      package: torch
+    txt: self.shape[4] == other.shape[4]
+  - f1_score: 76.72634271099744
+    overall_score: 100
+    precision: 100.0
+    recall: 62.24066390041494

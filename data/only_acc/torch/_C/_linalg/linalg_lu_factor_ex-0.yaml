@@ -1,0 +1,121 @@
+args:
+  dtype:
+  - Tensor
+  - bool
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - A
+  - pivot
+  - check_errors
+  required:
+  - true
+  - false
+  - false
+name: torch._C._linalg.linalg_lu_factor_ex
+package: torch
+pass_rate: 96.0
+rules:
+- - cot: 'The error is due to the use of the ''pivot'' argument set to ''False'' in
+      the ''torch._C._linalg.linalg_lu_factor_ex'' function. However, LU decomposition
+      without pivoting is not implemented on the CPU. Therefore, the ''pivot'' argument
+      should be set to ''True'' in order to avoid this error. The condition to prevent
+      this error would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        check_errors: bool
+        pivot: bool
+      msg: 'linalg.lu_factor: LU without pivoting is not implemented on the CPU'
+      package: torch
+    txt: pivot == True
+  - f1_score: 94.33962264150942
+    overall_score: 100
+    precision: 100.0
+    recall: 89.28571428571428
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        check_errors: bool
+        pivot: bool
+      msg: 'torch.lu_factor: Expected tensor with 2 or more dimensions. Got size:
+        [] instead'
+      package: torch
+    txt: A.dim() >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: The error is due to the fact that the function `torch._C._linalg.linalg_lu_factor_ex`
+      does not support the data type 'Int'. Therefore, to prevent the error, the input
+      tensor should have a data type other than 'Int'.
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        check_errors: bool
+        pivot: bool
+      msg: '"lu_cpu" not implemented for ''Int'''
+      package: torch
+    txt: A.dtype != torch.int
+  - f1_score: 98.6842105263158
+    overall_score: 100
+    precision: 100.0
+    recall: 97.40259740259741
+- - cot: 'The error is due to the fact that the ''lu_cpu'' operation is not implemented
+      for ''Long'' tensor types. Therefore, the tensor ''A'' passed to the function
+      torch._C._linalg.linalg_lu_factor_ex should not be of ''Long'' type. A possible
+      constraint to prevent this error could be:'
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        check_errors: bool
+        pivot: bool
+      msg: '"lu_cpu" not implemented for ''Long'''
+      package: torch
+    txt: A.dtype != torch.int64
+  - f1_score: 99.17355371900828
+    overall_score: 100
+    precision: 100.0
+    recall: 98.36065573770493
+- - cot: The error is due to the fact that the 'lu_cpu' implementation is not available
+      for the 'Bool' dtype. To prevent this error, the input tensor 'A' should have
+      a dtype other than 'Bool'.
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        check_errors: bool
+        pivot: bool
+      msg: '"lu_cpu" not implemented for ''Bool'''
+      package: torch
+    txt: A.dtype != torch.bool
+  - f1_score: 99.17355371900828
+    overall_score: 100
+    precision: 100.0
+    recall: 98.36065573770493
+- - cot: The function torch._C._linalg.linalg_lu_factor_ex expects a square matrix
+      as input, but the input tensor A is not a square matrix. The dimension of input
+      tensor A is [8, 1, 8, 8, 8, 8, 8]. A square matrix should have the same number
+      of rows and columns. Therefore, the error could be prevented if the number of
+      rows is equal to the number of columns.
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        check_errors: bool
+        pivot: bool
+      msg: '''complex32'''
+      package: torch
+    txt: A.shape[-2] == A.shape[-1]
+  - f1_score: 66.7420814479638
+    overall_score: 52.166666666666664
+    precision: 98.33333333333333
+    recall: 50.513698630136986

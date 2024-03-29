@@ -25,4 +25,56 @@ args:
   - false
 name: torch._C._linalg.linalg_lu_solve
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'Based on the given runtime information, to prevent the error, the constraint
+      for the `pivots` tensor should be formulated as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        B: tensor
+        LU: tensor
+        adjoint: bool
+        left: bool
+        pivots: tensor
+      msg: 'linalg.lu_solve: pivots should be a Tensor of scalar type torch.int32'
+      package: torch
+    txt: pivots.dtype == torch.int32
+  - f1_score: 97.71986970684038
+    overall_score: 100
+    precision: 100.0
+    recall: 95.54140127388536
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        B: tensor
+        LU: tensor
+        adjoint: bool
+        left: bool
+        pivots: tensor
+      msg: 'linalg.lu_solve: Incompatible shapes of A and B for the equation AX =
+        B (9x9 and 2x2)'
+      package: torch
+    txt: B.shape[-1] == LU.shape[-1]
+  - f1_score: 72.11538461538463
+    overall_score: 100
+    precision: 100.0
+    recall: 56.390977443609025
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        B: tensor
+        LU: tensor
+        adjoint: bool
+        left: bool
+        pivots: tensor
+      msg: 'linalg.lu_solve: The input tensor B must have at least 2 dimensions.'
+      package: torch
+    txt: (B.dim >= 2) and (LU.dim >= 2)
+  - f1_score: 96.61835748792271
+    overall_score: 100
+    precision: 100.0
+    recall: 93.45794392523365

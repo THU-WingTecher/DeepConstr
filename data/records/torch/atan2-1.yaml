@@ -17,4 +17,54 @@ args:
   - true
 name: torch.atan2
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: "The error is triggered because result type Float cannot be cast to the Int,\
+      \ which means the desired output type is inconsistent with the function's result\
+      \ type. Let's see the args. the dtype of out is int32, but the operation result\
+      \ is float32. Therefore, the dtype of out should be consistent with the operation\
+      \ result. \nLeft : dtype(out), op : ==, comparator : float32"
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(out) == float32
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (((out.rank == self.rank) and (out.shape == self.shape)) and (out.shape ==
+      other.shape)) and (other.rank==out.rank and all(other.shape[i]==out.shape[i]
+      for i in range(other.rank)))
+  - f1_score: 81.19079837618402
+    overall_score: 43.59539918809201
+    precision: 100.0
+    recall: 68.3371298405467
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (3) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.shape[5] == other.shape[0]
+  - f1_score: 75.00000000000001
+    overall_score: 100
+    precision: 100.0
+    recall: 60.00000000000001

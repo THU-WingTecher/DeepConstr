@@ -13,4 +13,31 @@ args:
   - true
 name: torch.atanh
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: ((dtype(out)==int32) or (dtype(self) == dtype(out))) and (out.dtype == torch.float32)
+  - f1_score: 93.26765188834156
+    overall_score: 58.63382594417078
+    precision: 94.66666666666667
+    recall: 91.9093851132686
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 75.47169811320754
+    overall_score: 49.73584905660377
+    precision: 100.0
+    recall: 60.60606060606061

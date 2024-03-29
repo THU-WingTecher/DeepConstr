@@ -25,4 +25,59 @@ args:
   - false
 name: torch.ormqr
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: The error is caused because the last dimension of tau (which is the last
+      dimension of input3 in this context) is not less than or equal to the last dimension
+      of input (which is the last dimension of input2 in this context). Therefore,
+      the condition to prevent this error would be that the size of the last dimension
+      of tau (input3) should be less than or equal to the size of the last dimension
+      of input (input2).
+    length: 1
+    target:
+      choosen_dtype:
+        input2: tensor
+        input3: tensor
+        left: bool
+        self: tensor
+        transpose: bool
+      msg: 'torch.ormqr: other.shape[-2] must be equal to input.shape[-2]'
+      package: torch
+    txt: input3.shape[-1] <= input2.shape[-1]
+  - f1_score: 69.84866123399301
+    overall_score: 100
+    precision: 100.0
+    recall: 53.66726296958855
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        input2: tensor
+        input3: tensor
+        left: bool
+        self: tensor
+        transpose: bool
+      msg: 'torch.ormqr: other must have at least 2 dimensions.'
+      package: torch
+    txt: (((input3.dim >= 2) or (len(input2.shape) >= 2)) and (self.dim >= 2)) and
+      (input3.dim >= 2)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        input2: tensor
+        input3: tensor
+        left: bool
+        self: tensor
+        transpose: bool
+      msg: Dimension specified as -1 but tensor has no dimensions
+      package: torch
+    txt: ((input3.ndim > 0) or (self.dim() != 0)) and (len(input2.shape) > 0)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

@@ -1,0 +1,112 @@
+args:
+  dtype:
+  - Tensor
+  - str
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - UPLO
+  - out
+  required:
+  - true
+  - false
+  - true
+name: torch._C._linalg.linalg_eigvalsh
+package: torch
+pass_rate: 95.63758389261746
+rules:
+- - cot: 'The error is caused because the input tensor `self` is not a batch of square
+      matrices. Let''s see the shape of `self`, it is [6, 1, 7, 4, 8, 3, 1]. The last
+      dimension of `self` should be the same as the second-to-last dimension, which
+      is the dimension representing the matrix size. So the constraint to prevent
+      this error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        UPLO: str
+        out: tensor
+        self: tensor
+      msg: 'linalg.eigh: A must be batches of square matrices, but they are 1 by 6
+        matrices'
+      package: torch
+    txt: self.shape[-1] == self.shape[-2]
+  - f1_score: 67.26457399103138
+    overall_score: 100
+    precision: 100.0
+    recall: 50.67567567567568
+- - cot: 'Based on the given runtime information, the error message states that the
+      input tensor `self` must have at least 2 dimensions. To prevent this error,
+      the constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        UPLO: str
+        out: tensor
+        self: tensor
+      msg: 'linalg.eigh: The input tensor A must have at least 2 dimensions.'
+      package: torch
+    txt: self.dim >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        UPLO: str
+        out: tensor
+        self: tensor
+      msg: Expected UPLO argument to be 'L' or 'U', but got BjLz
+      package: torch
+    txt: UPLO == 'U'
+  - f1_score: 95.08716323296355
+    overall_score: 100
+    precision: 100.0
+    recall: 90.6344410876133
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        UPLO: str
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 76.92307692307692
+    overall_score: 100
+    precision: 100.0
+    recall: 62.5
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        UPLO: str
+        out: tensor
+        self: tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(dim > 0 for dim in out.shape)
+  - f1_score: 88.64864864864866
+    overall_score: 100
+    precision: 100.0
+    recall: 79.6116504854369
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        UPLO: str
+        out: tensor
+        self: tensor
+      msg: Expected out tensor to have dtype float, but got c10::Half instead
+      package: torch
+    txt: dtype(out) == torch.float
+  - f1_score: 96.75849482923438
+    overall_score: 52.32659932659932
+    precision: 98.65319865319864
+    recall: 94.93519781718963

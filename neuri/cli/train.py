@@ -738,7 +738,8 @@ unsolved_err_msgs : {unsolved_msgs}
 @hydra.main(version_base=None, config_path="../config", config_name="main")
 def main(cfg: DictConfig):
     try :
-        TrainingLoop(cfg).runs()
+        trainer = TrainingLoop(cfg)
+        trainer.runs()
     except KeyboardInterrupt :
         raise ValueError(f"User requested to stop")
     except :

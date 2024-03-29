@@ -21,4 +21,40 @@ args:
   - false
 name: tf.raw_ops.TopKV2
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        input: tensor
+        k: tensor
+        name: str
+        sorted: bool
+      msg: 'cannot compute TopKV2 as input #1(zero-based) was expected to be a int32
+        tensor but is a float tensor [Op:TopKV2] name: twMd'
+      package: tensorflow
+    txt: (dtype(input)==dtype(k)) and (dtype(input) == int32)
+  - f1_score: 99.66777408637873
+    overall_score: 100
+    precision: 100.0
+    recall: 99.33774834437087
+- - cot: 'The error is triggered because k is not scalar. Let''s see what the args
+      were. k was the tensor of int32 with shape [7, 8, 7, 7]. To generate scalar,
+      it should not have any dimension. However, k had 4 dimensions. Therefore, the
+      condition to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        k: tensor
+        name: str
+        sorted: bool
+      msg: '{{function_node __wrapped__TopKV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        k must be scalar, got shape [7,7,8,8] [Op:TopKV2] name: CIsf'
+      package: tensorflow
+    txt: k.dim == 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
