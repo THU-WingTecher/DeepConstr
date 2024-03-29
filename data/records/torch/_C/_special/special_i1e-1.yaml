@@ -13,4 +13,34 @@ args:
   - true
 name: torch._C._special.special_i1e
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'The error is triggered because the output tensor''s dtype is Int, but the
+      function special_i1e is trying to return a Float. Therefore, the dtype of the
+      output tensor should be set as Float to prevent the error. Left : dtype(out),
+      Op : ==, and Right : float.'
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(out) == float
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.shape==self.shape) and (out.rank == self.rank)
+  - f1_score: 89.02077151335313
+    overall_score: 50.51038575667656
+    precision: 100.0
+    recall: 80.21390374331551

@@ -1,0 +1,267 @@
+args:
+  dtype:
+  - str
+  - list[int]
+  - float16,bfloat16,float32,float64
+  - int32,int64
+  - str
+  - float16,bfloat16,float32,float64
+  - str
+  - list[int]
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - data_format
+  - dilations
+  - filter
+  - input_sizes
+  - name
+  - out_backprop
+  - padding
+  - strides
+  required:
+  - false
+  - false
+  - true
+  - true
+  - false
+  - true
+  - true
+  - true
+name: tf.raw_ops.Conv3DBackpropInputV2
+package: tensorflow
+pass_rate: 0.0
+rules:
+- - cot: "The error is triggered because the length of the 'strides' attribute is\
+      \ not at least the minimum required length. According to the given runtime information,\
+      \ the length of 'strides' is 2, which is less than the required minimum length.\
+      \ \n\nTo prevent this error, the length of 'strides' should be at least the\
+      \ minimum required length. Let's denote the length of 'strides' as `len(strides)`.\
+      \ The minimum required length can be denoted as `min_length`.\n\nThe constraint\
+      \ can be formulated as follows:"
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        filter: tensor
+        input_sizes: tensor
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+      msg: "Length for attr 'strides' of 0 must be at least minimum 5\n\t; NodeDef:\
+        \ {{node Conv3DBackpropInputV2}}; Op<name=Conv3DBackpropInputV2; signature=input_sizes:Tshape,\
+        \ filter:T, out_backprop:T -> output:T; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16,\
+        \ DT_FLOAT, DT_DOUBLE]; attr=strides:list(int),min=5; attr=padding:string,allowed=[\"\
+        SAME\", \"VALID\"]; attr=data_format:string,default=\"NDHWC\",allowed=[\"\
+        NDHWC\", \"NCDHW\"]; attr=dilations:list(int),default=[1, 1, 1, 1, 1]; attr=Tshape:type,default=DT_INT32,allowed=[DT_INT32,\
+        \ DT_INT64]> [Op:Conv3DBackpropInputV2] name: Nlsi"
+      package: tensorflow
+    txt: len(strides) >= 2
+  - f1_score: 79.76190476190477
+    overall_score: 36.5
+    precision: 67.0
+    recall: 98.52941176470587
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        filter: tensor
+        input_sizes: tensor
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+      msg: "Value for attr 'data_format' of \"dgPt\" is not in the list of allowed\
+        \ values: \"NDHWC\", \"NCDHW\"\n\t; NodeDef: {{node Conv3DBackpropInputV2}};\
+        \ Op<name=Conv3DBackpropInputV2; signature=input_sizes:Tshape, filter:T, out_backprop:T\
+        \ -> output:T; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16, DT_FLOAT, DT_DOUBLE];\
+        \ attr=strides:list(int),min=5; attr=padding:string,allowed=[\"SAME\", \"\
+        VALID\"]; attr=data_format:string,default=\"NDHWC\",allowed=[\"NDHWC\", \"\
+        NCDHW\"]; attr=dilations:list(int),default=[1, 1, 1, 1, 1]; attr=Tshape:type,default=DT_INT32,allowed=[DT_INT32,\
+        \ DT_INT64]> [Op:Conv3DBackpropInputV2] name: MmZm"
+      package: tensorflow
+    txt: (data_format in ["NDHWC", "NCDHW"]) and (padding in ["SAME", "VALID"])
+  - f1_score: 84.61538461538461
+    overall_score: 51.0
+    precision: 99.0
+    recall: 73.88059701492537
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        filter: tensor
+        input_sizes: tensor
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+      msg: "Value for attr 'Tshape' of float is not in the list of allowed values:\
+        \ int32, int64\n\t; NodeDef: {{node Conv3DBackpropInputV2}}; Op<name=Conv3DBackpropInputV2;\
+        \ signature=input_sizes:Tshape, filter:T, out_backprop:T -> output:T; attr=T:type,allowed=[DT_HALF,\
+        \ DT_BFLOAT16, DT_FLOAT, DT_DOUBLE]; attr=strides:list(int),min=5; attr=padding:string,allowed=[\"\
+        SAME\", \"VALID\"]; attr=data_format:string,default=\"NDHWC\",allowed=[\"\
+        NDHWC\", \"NCDHW\"]; attr=dilations:list(int),default=[1, 1, 1, 1, 1]; attr=Tshape:type,default=DT_INT32,allowed=[DT_INT32,\
+        \ DT_INT64]> [Op:Conv3DBackpropInputV2] name: IVuO"
+      package: tensorflow
+    txt: (dtype(filter) in ["half", "bfloat16", "float", "double"]) and (dtype(input_sizes)
+      in ["int32", "int64"])
+  - f1_score: 98.28009828009829
+    overall_score: 100
+    precision: 100.0
+    recall: 96.61835748792271
+- - cot: Based on the given runtime information, to prevent the error, the data types
+      of the filter tensor and the out_backprop tensor should be the same.
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        filter: tensor
+        input_sizes: tensor
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+      msg: 'cannot compute Conv3DBackpropInputV2 as input #2(zero-based) was expected
+        to be a double tensor but is a float tensor [Op:Conv3DBackpropInputV2] name:
+        nFXt'
+      package: tensorflow
+    txt: dtype(filter) == dtype(out_backprop)
+  - f1_score: 99.75062344139653
+    overall_score: 100
+    precision: 100.0
+    recall: 99.50248756218907
+- - cot: The error is triggered because the data_format is set to NCDHW, but Conv3DBackpropInputOpV2
+      only supports NDHWC on the CPU. So, the constraint should be that the data_format
+      should be set to NDHWC.
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        filter: tensor
+        input_sizes: tensor
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+      msg: '{{function_node __wrapped__Conv3DBackpropInputV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Conv3DBackpropInputOpV2 only supports NDHWC on the CPU. [Op:Conv3DBackpropInputV2]
+        name: geFg'
+      package: tensorflow
+    txt: data_format == "NDHWC"
+  - f1_score: 99.00990099009901
+    overall_score: 100
+    precision: 100.0
+    recall: 98.0392156862745
+- - cot: The error is triggered because the dilations parameter does not specify 5
+      dimensions. The runtime information shows that the dilations parameter is an
+      empty list. To prevent the error, the dilations parameter should specify 5 dimensions.
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        filter: tensor
+        input_sizes: tensor
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+      msg: '{{function_node __wrapped__Conv3DBackpropInputV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Dilation rates field must specify 5 dimensions [Op:Conv3DBackpropInputV2]
+        name: nxDb'
+      package: tensorflow
+    txt: len(dilations) == 5
+  - f1_score: 98.52216748768473
+    overall_score: 100
+    precision: 100.0
+    recall: 97.0873786407767
+- - cot: synthesized
+    length: 5
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        filter: tensor
+        input_sizes: tensor
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+      msg: '{{function_node __wrapped__Conv3DBackpropInputV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Current implementation does not yet support dilation rates in the batch and
+        depth dimensions. [Op:Conv3DBackpropInputV2] name: apfe'
+      package: tensorflow
+    txt: (((dilations[0] == 1 and dilations[2] == 1) and ((dilations[0] == 1) and
+      (dilations[1] == 1))) and (dilations[4] == 1)) and ((dilations[0] == 1 and dilations[2]
+      == 1) and ((dilations[0] == 1) and (dilations[1] == 1)))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is caused because the function tf.raw_ops.Conv3DBackpropInputV2
+      does not support dilation rates larger than 1 on the current CPU implementation.
+      Looking at the arguments, the dilation rate was set to [1, 1, 1, -1, 1]. This
+      means that the fourth element in the dilations array is -1, which is not supported.
+      Therefore, the Left : dilations should be corrected. All elements of dilations
+      must be 1, so Op : ''=='', and Right : 1.'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        filter: tensor
+        input_sizes: tensor
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+      msg: '{{function_node __wrapped__Conv3DBackpropInputV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Current CPU implementation does not yet support dilation rates larger than
+        1. [Op:Conv3DBackpropInputV2] name: dZxj'
+      package: tensorflow
+    txt: all(i == 1 for i in dilations)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is triggered because the sliding window strides field does not
+      specify 5 dimensions. Let''s see what the args were. The strides parameter is
+      specified as [8, -2, 9, 9, 9, 9, 9, 9, 9], which has a length of 9. However,
+      it should have a length of 5 to match the number of dimensions in the input
+      and output tensors. Therefore, the Left : len(strides) should be corrected to
+      5. Ops : ''=='', Right : 5.'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        filter: tensor
+        input_sizes: tensor
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+      msg: '{{function_node __wrapped__Conv3DBackpropInputV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Sliding window strides field must specify 5 dimensions [Op:Conv3DBackpropInputV2]
+        name: geNh'
+      package: tensorflow
+    txt: len(strides) == 5
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0

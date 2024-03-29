@@ -37,4 +37,50 @@ args:
   - true
 name: torch.native_batch_norm
 package: torch
-pass_rate: 0
+pass_rate: 0.6711409395973155
+rules:
+- - cot: 'In order to prevent the error, the number of dimensions of the tensors should
+      be corrected. The error message indicates that the tensor should have 1 dimension,
+      but it actually has 7 dimensions. Therefore, the condition to prevent the error
+      would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        bias: tensor
+        eps: float
+        input: tensor
+        momentum: float
+        running_mean: tensor
+        running_var: tensor
+        training: bool
+        weight: tensor
+      msg: TensorAccessor expected 1 dims but tensor has 7
+      package: torch
+    txt: running_mean.ndims() == 1 and running_var.ndims() == 1 and weight.ndims()
+      == 1 and bias.ndims() == 1
+  - f1_score: 92.0
+    overall_score: 100
+    precision: 100.0
+    recall: 85.18518518518519
+- - cot: Error is triggered because the tensor has 7 dimensions, but it expects to
+      have 1 dimension. Let's see what the args were. The tensor input has 7 dimensions.
+      Therefore, the condition to prevent the error is that the number of dimensions
+      of input should be 1.
+    length: 1
+    target:
+      choosen_dtype:
+        bias: None
+        eps: float
+        input: tensor
+        momentum: float
+        running_mean: None
+        running_var: tensor
+        training: bool
+        weight: None
+      msg: TensorAccessor expected 1 dims but tensor has 7
+      package: torch
+    txt: input.ndims() == 1
+  - f1_score: 94.7867298578199
+    overall_score: 100
+    precision: 100.0
+    recall: 90.09009009009009

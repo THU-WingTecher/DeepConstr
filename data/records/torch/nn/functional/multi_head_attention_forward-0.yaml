@@ -105,4 +105,347 @@ args:
   - false
 name: torch.nn.functional.multi_head_attention_forward
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        add_zero_attn: bool
+        attn_mask: None
+        average_attn_weights: bool
+        bias_k: tensor
+        bias_v: None
+        dropout_p: float
+        embed_dim_to_check: int
+        in_proj_bias: None
+        in_proj_weight: tensor
+        is_causal: bool
+        k_proj_weight: None
+        key: tensor
+        key_padding_mask: None
+        need_weights: bool
+        num_heads: int
+        out_proj_bias: None
+        out_proj_weight: tensor
+        q_proj_weight: None
+        query: tensor
+        static_k: tensor
+        static_v: None
+        training: bool
+        use_separate_proj_weight: bool
+        v_proj_weight: tensor
+        value: tensor
+      msg: query should be unbatched 2D or batched 3D tensor but received 7-D query
+        tensor
+      package: torch
+    txt: query.dim() == 3
+  - f1_score: 96.5964343598055
+    overall_score: 100
+    precision: 100.0
+    recall: 93.41692789968651
+- - cot: 'The error is due to the mismatched dimensions of the `key` and `value` tensors.
+      The runtime information shows that the expected dimensions for `key` and `value`
+      are 3-D, but the actual dimensions are 7-D. To prevent this error, the dimensions
+      of `key` and `value` tensors should be corrected to match the expected 3-D shape.
+      Therefore, the constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        add_zero_attn: bool
+        attn_mask: None
+        average_attn_weights: bool
+        bias_k: tensor
+        bias_v: tensor
+        dropout_p: float
+        embed_dim_to_check: int
+        in_proj_bias: None
+        in_proj_weight: None
+        is_causal: bool
+        k_proj_weight: None
+        key: tensor
+        key_padding_mask: tensor
+        need_weights: bool
+        num_heads: int
+        out_proj_bias: tensor
+        out_proj_weight: tensor
+        q_proj_weight: tensor
+        query: tensor
+        static_k: tensor
+        static_v: tensor
+        training: bool
+        use_separate_proj_weight: bool
+        v_proj_weight: tensor
+        value: tensor
+      msg: For batched (3-D) `query`, expected `key` and `value` to be 3-D but found
+        7-D and 7-D tensors respectively
+      package: torch
+    txt: len(key.shape) == 3 and len(value.shape) == 3
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        add_zero_attn: bool
+        attn_mask: tensor
+        average_attn_weights: bool
+        bias_k: None
+        bias_v: tensor
+        dropout_p: float
+        embed_dim_to_check: int
+        in_proj_bias: tensor
+        in_proj_weight: None
+        is_causal: bool
+        k_proj_weight: None
+        key: tensor
+        key_padding_mask: tensor
+        need_weights: bool
+        num_heads: int
+        out_proj_bias: tensor
+        out_proj_weight: tensor
+        q_proj_weight: None
+        query: tensor
+        static_k: None
+        static_v: tensor
+        training: bool
+        use_separate_proj_weight: bool
+        v_proj_weight: None
+        value: tensor
+      msg: For batched (3-D) `query`, expected `key_padding_mask` to be `None` or
+        2-D but found 7-D tensor instead
+      package: torch
+    txt: (key_padding_mask.ndims() == 2) and (attn_mask.ndims() == 3)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        add_zero_attn: bool
+        attn_mask: tensor
+        average_attn_weights: bool
+        bias_k: tensor
+        bias_v: tensor
+        dropout_p: float
+        embed_dim_to_check: int
+        in_proj_bias: None
+        in_proj_weight: None
+        is_causal: bool
+        k_proj_weight: tensor
+        key: tensor
+        key_padding_mask: None
+        need_weights: bool
+        num_heads: int
+        out_proj_bias: None
+        out_proj_weight: tensor
+        q_proj_weight: tensor
+        query: tensor
+        static_k: tensor
+        static_v: None
+        training: bool
+        use_separate_proj_weight: bool
+        v_proj_weight: tensor
+        value: tensor
+      msg: For batched (3-D) `query`, expected `attn_mask` to be `None`, 2-D or 3-D
+        but found 7-D tensor instead
+      package: torch
+    txt: attn_mask.ndims() == 3
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: "The error occurs because the dimension of the query tensor is not equal\
+      \ to the expected embedding dimension. The query tensor has a shape of [8, 9,\
+      \ 2], but the expected embedding dimension is 7. To prevent this error in the\
+      \ future and generate constraints that do not trigger it, we need to ensure\
+      \ that the embedding dimension of the query tensor matches the expected value.\
+      \ \n\nThe constraint for the embedding dimension can be expressed as:"
+    length: 1
+    target:
+      choosen_dtype:
+        add_zero_attn: bool
+        attn_mask: None
+        average_attn_weights: bool
+        bias_k: None
+        bias_v: None
+        dropout_p: float
+        embed_dim_to_check: int
+        in_proj_bias: None
+        in_proj_weight: None
+        is_causal: bool
+        k_proj_weight: None
+        key: tensor
+        key_padding_mask: None
+        need_weights: bool
+        num_heads: int
+        out_proj_bias: tensor
+        out_proj_weight: tensor
+        q_proj_weight: None
+        query: tensor
+        static_k: tensor
+        static_v: tensor
+        training: bool
+        use_separate_proj_weight: bool
+        v_proj_weight: None
+        value: tensor
+      msg: was expecting embedding dimension of 7, but got 2
+      package: torch
+    txt: query.shape[-1] == embed_dim_to_check
+  - f1_score: 79.22705314009661
+    overall_score: 100
+    precision: 100.0
+    recall: 65.60000000000001
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        add_zero_attn: bool
+        attn_mask: None
+        average_attn_weights: bool
+        bias_k: None
+        bias_v: None
+        dropout_p: float
+        embed_dim_to_check: int
+        in_proj_bias: tensor
+        in_proj_weight: None
+        is_causal: bool
+        k_proj_weight: tensor
+        key: tensor
+        key_padding_mask: None
+        need_weights: bool
+        num_heads: int
+        out_proj_bias: tensor
+        out_proj_weight: tensor
+        q_proj_weight: None
+        query: tensor
+        static_k: None
+        static_v: None
+        training: bool
+        use_separate_proj_weight: bool
+        v_proj_weight: None
+        value: tensor
+      msg: embed_dim 7 not divisible by num_heads 3
+      package: torch
+    txt: (embed_dim_to_check % num_heads == 0) and (num_heads > 0)
+  - f1_score: 70.69271758436945
+    overall_score: 100
+    precision: 100.0
+    recall: 54.67032967032968
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        add_zero_attn: bool
+        attn_mask: None
+        average_attn_weights: bool
+        bias_k: tensor
+        bias_v: None
+        dropout_p: float
+        embed_dim_to_check: int
+        in_proj_bias: None
+        in_proj_weight: tensor
+        is_causal: bool
+        k_proj_weight: tensor
+        key: tensor
+        key_padding_mask: tensor
+        need_weights: bool
+        num_heads: int
+        out_proj_bias: None
+        out_proj_weight: tensor
+        q_proj_weight: tensor
+        query: tensor
+        static_k: tensor
+        static_v: tensor
+        training: bool
+        use_separate_proj_weight: bool
+        v_proj_weight: tensor
+        value: tensor
+      msg: For batched (3-D) `query`, expected `key_padding_mask` to be `None` or
+        2-D but found 7-D tensor instead
+      package: torch
+    txt: (key_padding_mask.ndims() == 2)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Error is triggered because the shape of the key tensor does not match the
+      shape of the value tensor. The expected shape for both tensors is torch.Size([1,
+      1, 2]) and torch.Size([1, 1, 1]) respectively. To prevent this error, the shapes
+      of both tensors should match. Therefore, the constraint is:'
+    length: 1
+    target:
+      choosen_dtype:
+        add_zero_attn: bool
+        attn_mask: None
+        average_attn_weights: bool
+        bias_k: tensor
+        bias_v: None
+        dropout_p: float
+        embed_dim_to_check: int
+        in_proj_bias: tensor
+        in_proj_weight: None
+        is_causal: bool
+        k_proj_weight: tensor
+        key: tensor
+        key_padding_mask: None
+        need_weights: bool
+        num_heads: int
+        out_proj_bias: tensor
+        out_proj_weight: tensor
+        q_proj_weight: None
+        query: tensor
+        static_k: None
+        static_v: None
+        training: bool
+        use_separate_proj_weight: bool
+        v_proj_weight: tensor
+        value: tensor
+      msg: key shape torch.Size([1, 1, 2]) does not match value shape torch.Size([1,
+        1, 1])
+      package: torch
+    txt: key.shape == value.shape
+  - f1_score: 72.08121827411168
+    overall_score: 100
+    precision: 100.0
+    recall: 56.34920634920635
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        add_zero_attn: bool
+        attn_mask: tensor
+        average_attn_weights: bool
+        bias_k: tensor
+        bias_v: None
+        dropout_p: float
+        embed_dim_to_check: int
+        in_proj_bias: tensor
+        in_proj_weight: None
+        is_causal: bool
+        k_proj_weight: None
+        key: tensor
+        key_padding_mask: None
+        need_weights: bool
+        num_heads: int
+        out_proj_bias: tensor
+        out_proj_weight: tensor
+        q_proj_weight: None
+        query: tensor
+        static_k: tensor
+        static_v: None
+        training: bool
+        use_separate_proj_weight: bool
+        v_proj_weight: tensor
+        value: tensor
+      msg: use_separate_proj_weight is True but q_proj_weight is None
+      package: torch
+    txt: use_separate_proj_weight == False
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

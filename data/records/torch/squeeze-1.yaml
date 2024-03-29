@@ -13,4 +13,34 @@ args:
   - true
 name: torch.squeeze
 package: torch
-pass_rate: 0
+pass_rate: 91.0
+rules:
+- - cot: The error is due to the presence of negative dimensions in the input tensor.
+      The dimensions provided for the `self` tensor are [-3, -3, -3], which is not
+      allowed. Therefore, a constraint should be added to ensure that all dimensions
+      of the `self` tensor are non-negative.
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(dim >= 0 for dim in self.shape)
+  - f1_score: 81.96721311475409
+    overall_score: 52.983606557377044
+    precision: 100.0
+    recall: 69.44444444444444
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 9)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 71.29987129987131
+    overall_score: 47.64993564993566
+    precision: 92.33333333333333
+    recall: 58.07127882599581

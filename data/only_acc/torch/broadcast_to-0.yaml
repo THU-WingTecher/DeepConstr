@@ -1,0 +1,65 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - size
+  required:
+  - true
+  - true
+name: torch.broadcast_to
+package: torch
+pass_rate: 99.66666666666667
+rules:
+- - cot: 'The error is triggered because the number of sizes provided (0) must be
+      greater or equal to the number of dimensions in the tensor (2). To prevent this
+      error, we can formulate the constraint as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        size: list[int]
+      msg: 'expand(torch.FloatTensor{[1, 1]}, size=[]): the number of sizes provided
+        (0) must be greater or equal to the number of dimensions in the tensor (2)'
+      package: torch
+    txt: len(size) >= self.dim
+  - f1_score: 69.12442396313365
+    overall_score: 100
+    precision: 100.0
+    recall: 52.816901408450704
+- - cot: 'Based on given values, Error is triggered because the size is negative and
+      it''s causing an integer overflow in the calculation of the total number of
+      elements. The size of the tensor should always be positive. Let''s see what
+      the args were. The size parameter should be a list of positive integers, so
+      size should be corrected. Therefore, Left : size. Op : >, and Right : 0'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        size: list[int]
+      msg: 'numel: integer multiplication overflow'
+      package: torch
+    txt: all(i > 0 for i in size)
+  - f1_score: 69.52491309385864
+    overall_score: 100
+    precision: 100.0
+    recall: 53.285968028419184
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        size: list[int]
+      msg: 'The expanded size of the tensor (9) must match the existing size (2) at
+        non-singleton dimension 8.  Target sizes: [3, 9, 9, 9, 9, 9, 9, 9, 9].  Tensor
+        sizes: [2]'
+      package: torch
+    txt: size[8] == self.size[8]
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0

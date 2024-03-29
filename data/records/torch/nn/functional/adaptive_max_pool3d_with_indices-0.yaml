@@ -17,4 +17,105 @@ args:
   - false
 name: torch.nn.functional.adaptive_max_pool3d_with_indices
 package: torch
-pass_rate: 0
+pass_rate: 97.6271186440678
+rules:
+- - cot: 'The error is due to the fact that the function "adaptive_max_pool3d_with_indices"
+      is not implemented for the data type ''Bool''. To prevent this error, the input
+      tensor should have a data type other than ''Bool''. Therefore, the condition
+      that prevents the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+        return_indices: bool
+      msg: '"adaptive_max_pool3d_cpu" not implemented for ''Bool'''
+      package: torch
+    txt: input.dtype != 'Bool'
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error message states that the function "adaptive_max_pool3d_with_indices"
+      is not implemented for the ''Int'' data type. Therefore, a constraint can be
+      formulated to prevent this error by ensuring that the input tensor has a data
+      type other than ''Int''.
+
+
+      Constraint:'
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+        return_indices: bool
+      msg: '"adaptive_max_pool3d_cpu" not implemented for ''Int'''
+      package: torch
+    txt: input.dtype != torch.int
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+        return_indices: bool
+      msg: 'adaptive_max_pool3d(): Expected input to have non-zero size for non-batch
+        dimensions, but input has sizes [7, 0, 9, 8, 9] with dimension 1 being empty'
+      package: torch
+    txt: (((input.shape[1]!=0)) and (input.size(2) != 0)) and (all(input[i] != 0 for
+      i in range(1, len(input.shape))))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: Based on the runtime information, the error is triggered because the output_size
+      argument contains a negative value (-4), which is not a valid dimension. To
+      prevent this error, the output_size argument should only contain positive values.
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+        return_indices: bool
+      msg: 'Trying to create tensor with negative dimension -4: [3, 7, 3, -4, 3]'
+      package: torch
+    txt: (output_size[i] > 0 for i in range(len(output_size)))
+  - f1_score: 98.84297520661156
+    overall_score: 61.42148760330578
+    precision: 100.0
+    recall: 97.7124183006536
+- - cot: "Error is triggered because the `output_size` argument must be a list of\
+      \ 3 integers, but it is currently an empty list. To prevent this error, the\
+      \ `output_size` argument should be a list of 3 integers. \n\nTherefore, the\
+      \ constraint to prevent the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+        return_indices: bool
+      msg: 'adaptive_max_pool3d(): internal error: output_size.size() must be 3'
+      package: torch
+    txt: len(output_size) == 3
+  - f1_score: 97.87928221859706
+    overall_score: 60.93964110929853
+    precision: 100.0
+    recall: 95.84664536741214
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+        return_indices: bool
+      msg: 'adaptive_max_pool3d(): Expected 4D or 5D tensor, but got: [1, 1]'
+      package: torch
+    txt: input.rank == 5
+  - f1_score: 93.75
+    overall_score: 100
+    precision: 100.0
+    recall: 88.23529411764706

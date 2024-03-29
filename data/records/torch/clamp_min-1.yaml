@@ -13,4 +13,25 @@ args:
   - true
 name: torch.clamp_min
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'Based on the given runtime information, the error occurs because the size
+      of tensor a (7) does not match the size of tensor b (6) at non-singleton dimension
+      2. To prevent this error, the dimensions and shape of the two tensors must be
+      consistent.
+
+
+      The constraint that prevents the error can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        min: tensor
+        self: tensor
+      msg: The size of tensor a (6) must match the size of tensor b (7) at non-singleton
+        dimension 3
+      package: torch
+    txt: self.dim == min.dim and self.shape == min.shape
+  - f1_score: 99.83361064891847
+    overall_score: 61.91680532445923
+    precision: 100.0
+    recall: 99.66777408637874

@@ -21,4 +21,35 @@ args:
   - false
 name: torch.gradient
 package: torch
-pass_rate: 0
+pass_rate: 40.666666666666664
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        edge_order: int
+        self: tensor
+        spacing: None
+      msg: torch.gradient only supports edge_order=1 and edge_order=2.
+      package: torch
+    txt: edge_order == 2
+  - f1_score: 99.33774834437087
+    overall_score: 100
+    precision: 100.0
+    recall: 98.68421052631578
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        edge_order: int
+        self: tensor
+        spacing: int
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 8)
+      package: torch
+    txt: dim >= -1 and dim < 1
+  - f1_score: 72.90400972053463
+    overall_score: 100
+    precision: 100.0
+    recall: 57.361376673040155

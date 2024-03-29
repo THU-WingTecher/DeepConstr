@@ -21,4 +21,72 @@ args:
   - true
 name: torch.narrow
 package: torch
-pass_rate: 0
+pass_rate: 76.66666666666667
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        self: tensor
+        start: int
+      msg: Dimension out of range (expected to be in range of [-5, 4], but got 9)
+      package: torch
+    txt: ((dim >= -len(self.shape) and dim < len(self.shape)) and (start >= -len(self.shape)
+      and start <= len(self.shape) - length)) and (dim < 4)
+  - f1_score: 68.38709677419355
+    overall_score: 45.166666666666664
+    precision: 88.33333333333333
+    recall: 55.78947368421052
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        self: tensor
+        start: int
+      msg: 'narrow(): length must be non-negative.'
+      package: torch
+    txt: length >= 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error occurs because the ''start'' value provided is out of the valid
+      range. The valid range for the ''start'' parameter depends on the shape of the
+      tensor. Let''s denote the shape of the tensor as n, the valid range for the
+      ''start'' parameter would be [-n+1, n-1]. Therefore, to prevent this error in
+      the future and generate constraints that do not trigger it, we need to ensure
+      that the ''start'' value is always within the valid range for the given tensor.
+      The constraint for the ''start'' parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        self: tensor
+        start: int
+      msg: start out of range (expected to be in range of [-1, 1], but got 7)
+      package: torch
+    txt: start >= -len(self.shape) + 1 and start < len(self.shape) - 1
+  - f1_score: 67.46987951807229
+    overall_score: 45.0
+    precision: 84.0
+    recall: 56.375838926174495
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        self: tensor
+        start: int
+      msg: start (6) + length (5) exceeds dimension size (9).
+      package: torch
+    txt: (start >= 0) or (start + length <= self.shape[dim])
+  - f1_score: 89.25318761384335
+    overall_score: 50.626593806921676
+    precision: 81.66666666666667
+    recall: 98.39357429718876

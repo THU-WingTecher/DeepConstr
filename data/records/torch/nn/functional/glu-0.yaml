@@ -13,4 +13,31 @@ args:
   - false
 name: torch.nn.functional.glu
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        input: tensor
+      msg: Dimension out of range (expected to be in range of [-5, 4], but got 81)
+      package: torch
+    txt: dim >= -len(input.shape)
+  - f1_score: 66.66666666666666
+    overall_score: 47.5
+    precision: 89.0
+    recall: 53.293413173652695
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        input: tensor
+      msg: Halving dimension must be even, but dimension 0 is size 1
+      package: torch
+    txt: input.dim() == 0
+  - f1_score: 75.18796992481204
+    overall_score: 100
+    precision: 100.0
+    recall: 60.24096385542168

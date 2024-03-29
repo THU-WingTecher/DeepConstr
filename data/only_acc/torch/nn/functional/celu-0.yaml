@@ -1,0 +1,52 @@
+args:
+  dtype:
+  - Tensor
+  - float
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - input
+  - alpha
+  - inplace
+  required:
+  - true
+  - false
+  - false
+name: torch.nn.functional.celu
+package: torch
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: float
+        inplace: bool
+        input: tensor
+      msg: 'ZeroDivisionError: alpha cannot be 0 for CELU'
+      package: torch
+    txt: alpha != 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: The error is due to the input tensor having data type 'Int', which is not
+      supported by the 'celu' function. To prevent the error, the input tensor should
+      have a data type that is supported by the 'celu' function, such as 'Float' or
+      'Double'.
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: float
+        inplace: bool
+        input: tensor
+      msg: '"elu_cpu" not implemented for ''Int'''
+      package: torch
+    txt: input.dtype in [torch.float32, torch.float64]
+  - f1_score: 97.87928221859706
+    overall_score: 100
+    precision: 100.0
+    recall: 95.84664536741214

@@ -25,4 +25,144 @@ args:
   - false
 name: torch.nn.functional.grid_sample
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'Based on the given runtime information, the error occurs because the input
+      tensor has negative dimensions. To prevent this error, a constraint can be formulated
+      as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        grid: tensor
+        input: tensor
+        mode: str
+        padding_mode: str
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(input.shape[i] > 0 for i in range(input.rank))
+  - f1_score: 74.81296758104737
+    overall_score: 49.40648379052369
+    precision: 100.0
+    recall: 59.76095617529881
+- - cot: "The error occurs because the last dimension of the grid tensor is expected\
+      \ to have a size of 5, but in the given runtime information, the size of the\
+      \ last dimension is 8. To prevent this error in the future and generate constraints\
+      \ that do not trigger it, we need to ensure that the size of the last dimension\
+      \ of the grid tensor is always 5. \n\nThe constraint for the last dimension\
+      \ of the grid tensor can be expressed as:"
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        grid: tensor
+        input: tensor
+        mode: str
+        padding_mode: str
+      msg: 'grid_sampler(): expected grid to have size -1 in last dimension, but got
+        grid with sizes [9]'
+      package: torch
+    txt: grid.shape[-1] == 5
+  - f1_score: 59.148936170212764
+    overall_score: 41.57446808510638
+    precision: 46.33333333333333
+    recall: 81.76470588235294
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        align_corners: bool
+        grid: tensor
+        input: tensor
+        mode: str
+        padding_mode: str
+      msg: Dimension specified as 0 but tensor has no dimensions
+      package: torch
+    txt: (len(input.shape) > 0) and (len(grid) > 0)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Error is triggered because the input tensor has no dimensions, but a dimension
+      is specified as 0 in the grid tensor. To prevent the error, we need to ensure
+      that the input tensor has at least one dimension. Let''s formulate the constraint:'
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        grid: tensor
+        input: tensor
+        mode: str
+        padding_mode: str
+      msg: Dimension specified as 0 but tensor has no dimensions
+      package: torch
+    txt: len(input) > 0
+  - f1_score: 62.70022883295194
+    overall_score: 25.833333333333332
+    precision: 45.666666666666664
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      grid and input tensors do not have the same batch size. The input tensor has
+      sizes [3, 1, 8, 1, 3, 5, 1] and the grid tensor has sizes [4, 5, 5, 5, 5, 5,
+      5]. To prevent this error, we can add a constraint to ensure that the batch
+      sizes of both tensors are the same. Therefore, the formula is:'
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        grid: tensor
+        input: tensor
+        mode: str
+        padding_mode: str
+      msg: 'grid_sampler(): expected grid and input to have same batch size, but got
+        input with sizes [8, 9, 2, 1, 8, 8, 8] and grid with sizes [5, 5, 5, 5, 5,
+        5, 5]'
+      package: torch
+    txt: input.shape[0] == grid.shape[0]
+  - f1_score: 76.54320987654322
+    overall_score: 50.27160493827161
+    precision: 62.0
+    recall: 100.0
+- - cot: 'The error is triggered because the padding_mode parameter is set to an invalid
+      value. The expected values for padding_mode are ''zeros'', ''border'', or ''reflection'',
+      but the actual value provided is ''VjSs''. To prevent this error, we need to
+      ensure that the padding_mode parameter is always set to a valid value. The constraint
+      for the padding_mode parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: None
+        grid: tensor
+        input: tensor
+        mode: str
+        padding_mode: str
+      msg: 'nn.functional.grid_sample(): expected padding_mode to be ''zeros'', ''border'',
+        or ''reflection'', but got: ''Dnwx'''
+      package: torch
+    txt: padding_mode in ['zeros', 'border', 'reflection']
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error occurs because the mode provided is not one of the valid options
+      (''bilinear'', ''nearest'', or ''bicubic''). Let''s see what the args were.
+      It related with arg_name ''mode=yaZL'', which is not a valid mode. To prevent
+      this error in the future and generate constraints that do not trigger it, we
+      need to ensure that the "mode" value is always one of the valid options. The
+      constraint for the ''mode'' parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        grid: tensor
+        input: tensor
+        mode: str
+        padding_mode: str
+      msg: 'nn.functional.grid_sample(): expected mode to be ''bilinear'', ''nearest''
+        or ''bicubic'', but got: ''VvZe'''
+      package: torch
+    txt: mode in ['bilinear', 'nearest', 'bicubic']
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

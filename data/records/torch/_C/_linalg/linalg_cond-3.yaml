@@ -17,4 +17,130 @@ args:
   - true
 name: torch._C._linalg.linalg_cond
 package: torch
-pass_rate: 0
+pass_rate: 91.18644067796609
+rules:
+- - cot: The error is due to the use of low precision dtypes. The function linalg_cond
+      does not support low precision dtypes, such as half (f16). To prevent this error,
+      the input tensor self should not have low precision dtypes.
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        p: str
+        self: tensor
+      msg: 'linalg.inv: Low precision dtypes not supported. Got Half'
+      package: torch
+    txt: not self.dtype in ['half']
+  - f1_score: 99.66777408637873
+    overall_score: 61.833887043189364
+    precision: 100.0
+    recall: 99.33774834437087
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        p: str
+        self: tensor
+      msg: 'linalg.inv: Expected a floating point or complex tensor as input. Got
+        Int'
+      package: torch
+    txt: (dtype(self) in [torch.float32, torch.float64] and dtype(out) in [torch.float32,
+      torch.float64]) and (dtype(self) == torch.float32)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        p: str
+        self: tensor
+      msg: 'linalg.cond: Expected result to be safely castable from Float dtype, but
+        got result with dtype Int'
+      package: torch
+    txt: dtype(out) == dtype(self)
+  - f1_score: 95.52715654952077
+    overall_score: 100
+    precision: 100.0
+    recall: 91.43730886850153
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        p: str
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
+  - f1_score: 68.20809248554913
+    overall_score: 46.104046242774565
+    precision: 98.33333333333333
+    recall: 52.21238938053098
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        p: str
+        self: tensor
+      msg: 'linalg.cond got an invalid norm type: inf'
+      package: torch
+    txt: p == "fro"
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        p: str
+        self: tensor
+      msg: 'linalg.cond got an invalid norm type: OTeF'
+      package: torch
+    txt: (p in [None, 'fro', 'inf', '-inf']) and (p in ['fro', 'nuc', 'inf', '1'])
+  - f1_score: 69.83471074380166
+    overall_score: 29.666666666666668
+    precision: 56.333333333333336
+    recall: 91.84782608695652
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        p: str
+        self: tensor
+      msg: 'linalg.cond(ord=fro): The input tensor A must have at least 2 dimensions.'
+      package: torch
+    txt: self.dim() >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is caused because the input matrices A are not square matrices.
+      From the runtime information, we can see that the shape of A is [3, 7], which
+      means it is a batch of matrices with size 3 by 7. To prevent this error, we
+      need to ensure that A is a batch of square matrices, i.e., the last two dimensions
+      of A should be the same.
+
+
+      The constraint to prevent this error can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        p: str
+        self: tensor
+      msg: 'linalg.cond(ord=fro): A must be batches of square matrices, but they are
+        8 by 2 matrices'
+      package: torch
+    txt: self[-1] == self[-2]
+  - f1_score: 92.81250000000001
+    overall_score: 58.40625000000001
+    precision: 100.0
+    recall: 86.58892128279884

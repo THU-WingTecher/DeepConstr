@@ -25,4 +25,122 @@ args:
   - true
 name: tf.raw_ops.GatherV2
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        axis: tensor
+        batch_dims: int
+        indices: tensor
+        name: str
+        params: tensor
+      msg: "Value for attr 'Tindices' of float is not in the list of allowed values:\
+        \ int16, int32, int64\n\t; NodeDef: {{node GatherV2}}; Op<name=GatherV2; signature=params:Tparams,\
+        \ indices:Tindices, axis:Taxis -> output:Tparams; attr=batch_dims:int,default=0;\
+        \ attr=Tparams:type; attr=Tindices:type,allowed=[DT_INT16, DT_INT32, DT_INT64];\
+        \ attr=Taxis:type,allowed=[DT_INT32, DT_INT64]> [Op:GatherV2] name: dmml"
+      package: tensorflow
+    txt: (dtype(indices) in ["int16", "int32", "int64"]) and (dtype(axis) in ["int32",
+      "int64"])
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is triggered because the `axis` parameter is not scalar. The `axis`
+      parameter should be a scalar value indicating the axis along which to gather
+      values. However, in this case, the `axis` tensor has dimensions [3, 3, 3, 3,
+      3, 3]. Therefore, the constraint to prevent this error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: tensor
+        batch_dims: int
+        indices: tensor
+        name: str
+        params: tensor
+      msg: '{{function_node __wrapped__GatherV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        axis must be scalar [Op:GatherV2] name: WGnU'
+      package: tensorflow
+    txt: axis.dim == 0
+  - f1_score: 93.45794392523364
+    overall_score: 100
+    precision: 100.0
+    recall: 87.71929824561403
+- - cot: 'The error is triggered because the shape of the indices tensor is not compatible
+      with the shape of the params tensor. Let''s see what the arguments were. The
+      params tensor has a shape of [8, 7, 7], which means it has a rank of 3. However,
+      the indices tensor has a shape of [8, 9], which means it has a rank of 2. To
+      prevent this error, the rank of the indices tensor should be at least as large
+      as the rank of the params tensor. Therefore, the condition to prevent the error
+      is:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: tensor
+        batch_dims: int
+        indices: tensor
+        name: str
+        params: tensor
+      msg: '{{function_node __wrapped__GatherV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Shape must be at least rank 471601 but is rank 7 [Op:GatherV2] name: wsjp'
+      package: tensorflow
+    txt: indices.rank >= params.rank
+  - f1_score: 95.57522123893806
+    overall_score: 100
+    precision: 100.0
+    recall: 91.52542372881356
+- - cot: The error message states that the "params" tensor must be at least 1 dimensional.
+      To prevent this error, we can add a constraint to ensure that the "params" tensor
+      has a rank of at least 1.
+    length: 1
+    target:
+      choosen_dtype:
+        axis: tensor
+        batch_dims: int
+        indices: tensor
+        name: str
+        params: tensor
+      msg: '{{function_node __wrapped__GatherV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        params must be at least 1 dimensional [Op:GatherV2] name: fTbe'
+      package: tensorflow
+    txt: params.rank >= 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        axis: tensor
+        batch_dims: int
+        indices: tensor
+        name: str
+        params: tensor
+      msg: '{{function_node __wrapped__GatherV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Shape must be at least rank 816441 but is rank 7 [Op:GatherV2] name: SEjw'
+      package: tensorflow
+    txt: (rank(indices) == rank(params)) or (rank(params)>=872201)
+  - f1_score: 20.78636959370904
+    overall_score: 7.632075471698113
+    precision: 12.264150943396226
+    recall: 68.12714776632302
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        axis: tensor
+        batch_dims: int
+        indices: tensor
+        name: str
+        params: tensor
+      msg: '{{function_node __wrapped__GatherV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Shape must be at least rank 315466 but is rank 7 [Op:GatherV2] name: vklT'
+      package: tensorflow
+    txt: (params.dim >= 7) or (rank(axis) >= 626871)
+  - f1_score: 19.795336352960913
+    overall_score: 7.597560975609756
+    precision: 12.195121951219512
+    recall: 52.53784505788068

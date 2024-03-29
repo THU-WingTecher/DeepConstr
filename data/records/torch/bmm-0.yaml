@@ -13,4 +13,18 @@ args:
   - true
 name: torch.bmm
 package: torch
-pass_rate: 0
+pass_rate: 0.6666666666666667
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        mat2: tensor
+        self: tensor
+      msg: batch2 must be a 3D tensor
+      package: torch
+    txt: (len(mat2.shape) == 3) and (self.dim() == 3)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

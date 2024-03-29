@@ -1,0 +1,92 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  is_pos:
+  - false
+  - false
+  name:
+  - input
+  - output_size
+  required:
+  - true
+  - true
+name: torch.nn.functional.adaptive_avg_pool2d
+package: torch
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+      msg: 'adaptive_avg_pool2d: output_size must be 2'
+      package: torch
+    txt: output_size.dim == 2
+  - f1_score: 89.15304606240713
+    overall_score: 100
+    precision: 100.0
+    recall: 80.42895442359249
+- - cot: 'The error occurs because the elements of the `output_size` parameter should
+      be greater than or equal to 0. In the given runtime information, the `output_size`
+      is [1, -4], which violates this constraint. To prevent this error in the future,
+      we need to ensure that all elements of `output_size` are greater than or equal
+      to 0. The constraint for the `output_size` parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+      msg: 'adaptive_avg_pool2d: elements of output_size must be greater than or equal
+        to 0 but received {1, -4}'
+      package: torch
+    txt: all(size >= 0 for size in output_size)
+  - f1_score: 96.61835748792271
+    overall_score: 100
+    precision: 100.0
+    recall: 93.45794392523365
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+      msg: 'adaptive_avg_pool2d(): Expected 3D or 4D tensor, but got [4, 7, 7, 7,
+        7]'
+      package: torch
+    txt: input.rank == 3
+  - f1_score: 74.25742574257426
+    overall_score: 100
+    precision: 100.0
+    recall: 59.055118110236215
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+      msg: 'adaptive_avg_pool2d(): Expected input to have non-zero size for non-batch
+        dimensions, but input has sizes [8, 9, 0] with dimension 2 being empty'
+      package: torch
+    txt: all(input[i]!=0 for i in range(1,len(input.shape)))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is due to the ''adaptive_avg_pool2d'' function not being implemented
+      for the input tensor with data type ''Int''. To prevent this error, the input
+      tensor should have a data type of ''Float''. Therefore, the data type of the
+      input tensor should be float. So, Left : dtype(input), Op : ==, Right : ''Float'''
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+      msg: '"adaptive_avg_pool2d" not implemented for ''Int'''
+      package: torch
+    txt: dtype(input) == 'Float'
+  - f1_score: 92.02453987730061
+    overall_score: 100
+    precision: 100.0
+    recall: 85.22727272727273

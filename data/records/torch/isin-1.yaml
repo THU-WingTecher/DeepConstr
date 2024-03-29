@@ -25,4 +25,44 @@ args:
   - true
 name: torch.isin
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'The error is triggered because we are trying to resize ''out'' tensor, which
+      is not resizable. The ''out'' tensor shape should match the result of the operation,
+      which in this case, the result shape is ''elements''.shape. Therefore, the condition
+      for preventing this error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        assume_unique: bool
+        elements: tensor
+        invert: bool
+        out: tensor
+        test_elements: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==elements.rank and all(out.shape[i]==elements.shape[i] for i in
+      range(out.rank))
+  - f1_score: 80.75370121130551
+    overall_score: 52.376850605652756
+    precision: 100.0
+    recall: 67.72009029345372
+- - cot: "The error is due to the mismatch in the data types of the 'out' tensor.\
+      \ The expected data type is bool, but the actual data type is float. To prevent\
+      \ this error, the 'out' tensor should have a data type of bool. \n\nThe constraint\
+      \ can be formulated as:"
+    length: 1
+    target:
+      choosen_dtype:
+        assume_unique: bool
+        elements: tensor
+        invert: bool
+        out: tensor
+        test_elements: tensor
+      msg: Expected out tensor to have dtype bool, but got float instead
+      package: torch
+    txt: dtype(out) == bool
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

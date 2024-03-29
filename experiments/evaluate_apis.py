@@ -1,6 +1,7 @@
 import json
 import subprocess
 import os
+from typing import Literal
 import hydra
 import concurrent.futures
 import subprocess
@@ -12,8 +13,8 @@ from neuri.logger import DTEST_LOG
 # Load the JSON file
 
 BASELINES = ["symbolic-cinit", "neuri", "constrinf", "constrinf_2"]
-FIXED_FUNC = "tf.cos"#"torch.sin"
-cov_parallel = 16
+FIXED_FUNC = None #"torch.sin"#"tf.cos"#"torch.sin"
+cov_parallel = 1
 
 def activate_conda_environment(env_name):
     """
@@ -24,7 +25,7 @@ def activate_conda_environment(env_name):
     activation_command = "source /opt/conda/etc/profile.d/conda.sh && conda activate " + env_name
     subprocess.run(activation_command, shell=True, executable='/bin/bash')
 
-def torch_batch_exec(batch, time2path, cov_save, model_type, backend_type, backend_target):
+def torch_batch_exec(batch, time2path, cov_save, model_type, backend_type, backend_target, *args, **kwargs):
     batch_paths = [time2path[time] for time in batch]
     profraw_path = os.path.join(cov_save, f"{max(batch)}.profraw")
     model_exec(
@@ -35,7 +36,7 @@ def torch_batch_exec(batch, time2path, cov_save, model_type, backend_type, backe
         profraw_path,
     )
 
-def tf_batch_exec(batch, time2path, cov_save, model_type, backend_type, backend_target):
+def tf_batch_exec(batch, time2path, cov_save, model_type, backend_type, backend_target, root_path):
     batch_paths = [time2path[time] for time in batch]
     profraw_path = os.path.join(cov_save, f"{max(batch)}.info")
     tf_model_exec(
@@ -44,10 +45,10 @@ def tf_batch_exec(batch, time2path, cov_save, model_type, backend_type, backend_
         backend_type,
         backend_target,
         profraw_path,
-        str(max(batch))
+        root_path.replace('/','.')
     )
 
-def collect_cov(root, model_type, backend_type, batch_size=100, backend_target="cpu", parallel=8):
+def parallel_collect_cov(root, model_type, backend_type, batch_size=100, backend_target="cpu", parallel=8):
     """
     Collects coverage data after fuzzing.
     
@@ -65,9 +66,11 @@ def collect_cov(root, model_type, backend_type, batch_size=100, backend_target="
             time2path[float(dir)] = os.path.join(root, dir)
 
     time_stamps = sorted(time2path.keys())
-    batches = [time_stamps[i:i + batch_size] for i in range(0, len(time_stamps), batch_size)]
-
-    print(f"=> Number of batches: {len(batches)} of size {batch_size}")
+    # batch_size = len(time2path)
+    # batches = [time_stamps[i:i + batch_size] for i in range(0, len(time_stamps), batch_size)]
+    batches = [time_stamps] # no need to batch
+    # print(f"=> Number of batches: {len(batches)} of size {batch_size}")
+    print(f"=> Number of batches: {len(batches)} of size {len(time_stamps)}")
 
     cov_save = os.path.join(root, "coverage")
     if not os.path.exists(cov_save):
@@ -80,7 +83,7 @@ def collect_cov(root, model_type, backend_type, batch_size=100, backend_target="
     with concurrent.futures.ProcessPoolExecutor(max_workers=len(BASELINES)) as executor:
         # Pass necessary arguments to the api_worker function
         # print('print', batch_exec, cov_save, model_type, backend_type, backend_target)
-        futures = [executor.submit(batch_exec, batch, time2path, cov_save, model_type, backend_type, backend_target) for batch in batches]
+        futures = [executor.submit(batch_exec, batch, time2path, cov_save, model_type, backend_type, backend_target, root_path=root) for batch in batches]
         for future in concurrent.futures.as_completed(futures):
             try:
                 result = future.result()
@@ -97,7 +100,7 @@ def process_profraw(path):
         f"--root {path}",
         "--llvm-config-path $(which llvm-config-14)",
         '--instrumented-libs "$(pwd)/build/pytorch-cov/build/lib/libtorch_cpu.so" "$(pwd)/build/pytorch-cov/build/lib/libtorch.so"',
-        f"--batch-size 1000 --parallel {cov_parallel}",
+        f"--batch-size 0 --parallel {cov_parallel}",
     ]
     full_command = activation_command + " ".join(arguments)
 
@@ -120,7 +123,7 @@ def process_lcov(path):
         "python",
         "experiments/process_lcov.py",
         f"--root {path}",
-        f"--batch-size 1000 --parallel {cov_parallel}",
+        f"--batch-size 0 --parallel {cov_parallel}",
     ]
     full_command = activation_command + " ".join(arguments)
     print(full_command)
@@ -172,7 +175,7 @@ def api_worker(api, cfg, BASELINES):
     # Trigger drawing after completing all baseline tasks for the current API
     # run_draw_script(api, cfg, BASELINES)
 
-def run(api_name, baseline, config, max_retries=100):
+def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov"):
     """
     Runs the fuzzing process for a given API and baseline with the specified configuration.
     Captures and displays output in real-time.
@@ -228,22 +231,25 @@ def run(api_name, baseline, config, max_retries=100):
                    f"debug.viz=true hydra.verbose=fuzz fuzz.resume=false " \
                    f"mgen.method={baseline.split('_')[0]} mgen.max_nodes={max_nodes} mgen.test_pool=\"{test_pool}\""
 
-    print(f"Running {api_name} with baseline {baseline}")
-    execute_command(fuzz_command)
-
-    print(f"Collect Cov for {api_name} with baseline {baseline}")
-    print("Activate Conda env -cov")
-    activate_conda_environment("cov")
-    collect_cov(root=save_path,
-                model_type=config['model']['type'],
-                backend_type=config['backend']['type'],
-                batch_size=100,  # or other desired default
-                backend_target="cpu",  # or config-specified
-                parallel=cov_parallel)  # or other desired default
-    if config['model']['type'] == "torch":
-        process_profraw(save_path)
-    elif config['model']['type'] == "tensorflow":
-        process_lcov(save_path)
+    print(f"Running {api_name} with baseline {baseline} - {task}")
+    if task == "fuzz":
+        execute_command(fuzz_command)
+    elif task == "cov":
+        print(f"Collect Cov for {api_name} with baseline {baseline}")
+        print("Activate Conda env -cov")
+        activate_conda_environment("cov")
+        parallel_collect_cov(root=save_path,
+                    model_type=config['model']['type'],
+                    backend_type=config['backend']['type'],
+                    batch_size=100,  # or other desired default
+                    backend_target="cpu",  # or config-specified
+                    parallel=cov_parallel)  # or other desired default
+        if config['model']['type'] == "torch":
+            process_profraw(save_path)
+        elif config['model']['type'] == "tensorflow":
+            process_lcov(save_path)
+        else :
+            raise NotImplementedError
     else :
         raise NotImplementedError
 def run_draw_script(api_name : str, cfg, BASELINES):
@@ -276,13 +282,26 @@ def load_api_names_from_json(path) :
 
 @hydra.main(version_base=None, config_path="../neuri/config", config_name="main")
 def main(cfg) : 
+    from neuri.cli.train import get_completed_list
     """
     totally, cfg['exp']['parallel'] * cov_parallel * len(BASELINES) process will be craeted
     """
+    global FIXED_FUNC
+    if cfg["model"]["type"] == "torch" :
+        FIXED_FUNC = "torch.sin"
+    elif cfg["model"]["type"] == "tensorflow" :
+        FIXED_FUNC = "tf.cos"
+    else :
+        raise NotImplementedError
     print(f" Will run {cfg['exp']['parallel'] * cov_parallel * len(BASELINES)} process in parallel")
     api_names = load_api_names_from_data(cfg["mgen"]["record_path"], cfg["mgen"]["pass_rate"])
+    print(f"From {len(api_names)} apis in total", sep=" ")
+    completed = get_completed_list()
+    for name in completed :
+        if name in api_names :
+            api_names.remove(name)
+    print(f"Test {len(api_names)} apis in total", sep=" ")
     # api_names = load_api_names_from_json("/artifact/tests/test.json")
-    print(f"Will run {len(api_names)} apis in total")
     parallel_eval(api_names, BASELINES, cfg)
 
 if __name__ == "__main__":

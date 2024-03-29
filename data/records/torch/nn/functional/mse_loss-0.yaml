@@ -25,4 +25,65 @@ args:
   - false
 name: torch.nn.functional.mse_loss
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'The error is due to the input tensor having a data type of ''Int'', which
+      is not supported by the mse_loss function. To prevent this error, the input
+      tensor should have a data type of ''Float'' or ''Double''. Therefore, the constraint
+      is:'
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        reduce: bool
+        reduction: str
+        size_average: bool
+        target: tensor
+      msg: '"mse_cpu" not implemented for ''Int'''
+      package: torch
+    txt: input.dtype in [torch.float32, torch.float64]
+  - f1_score: 67.79661016949153
+    overall_score: 100
+    precision: 100.0
+    recall: 51.28205128205129
+- - cot: "Based on the given runtime information, the error is caused by an invalid\
+      \ value for the 'reduction' argument. The provided value is 'WZFu', which is\
+      \ not a valid option for 'reduction'. The valid options for 'reduction' are\
+      \ ['none', 'mean', 'sum']. \n\nTherefore, the constraint to prevent the error\
+      \ is:"
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        reduce: None
+        reduction: str
+        size_average: None
+        target: tensor
+      msg: esph is not a valid value for reduction
+      package: torch
+    txt: reduction in ['none', 'mean', 'sum']
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Error is triggered because the two tensors ''input'' and ''target'' do not
+      match in their dimensions. It''s expecting them to have the same dimensions
+      for the non-singleton dimensions. Hence, the constraint that prevents this error
+      would be to ensure that the dimensions and shape of ''input'' and ''target''
+      are the same. Therefore, the condition would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        reduce: None
+        reduction: str
+        size_average: None
+        target: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (6) at non-singleton
+        dimension 3
+      package: torch
+    txt: input.dim() == target.dim() and input.shape == target.shape
+  - f1_score: 98.36065573770492
+    overall_score: 61.18032786885246
+    precision: 100.0
+    recall: 96.77419354838709

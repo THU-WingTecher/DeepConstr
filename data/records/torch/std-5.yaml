@@ -25,4 +25,56 @@ args:
   - true
 name: torch.std
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        keepdim: bool
+        out: tensor
+        self: tensor
+        unbiased: bool
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 67.11711711711712
+    overall_score: 45.55855855855856
+    precision: 99.33333333333333
+    recall: 50.68027210884354
+- - cot: "The error is triggered because the input tensor has an integer data type,\
+      \ but the `torch.std` function only supports floating point and complex data\
+      \ types. To prevent this error, we need to ensure that the input tensor has\
+      \ a valid data type. \n\nWe can formulate the constraint as follows:"
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        keepdim: bool
+        out: tensor
+        self: tensor
+        unbiased: bool
+      msg: std and var only support floating point and complex dtypes
+      package: torch
+    txt: self.dtype in [torch.float32, torch.float64, torch.complex64, torch.complex128]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: None
+        keepdim: bool
+        out: tensor
+        self: tensor
+        unbiased: bool
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: (dtype(self) == dtype(out)) and (dtype(self) == float32)
+  - f1_score: 90.6344410876133
+    overall_score: 51.31722054380665
+    precision: 100.0
+    recall: 82.8729281767956

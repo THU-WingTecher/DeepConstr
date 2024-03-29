@@ -17,4 +17,33 @@ args:
   - true
 name: torch.ge
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: int
+        out: tensor
+        self: tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(dim >= 0 for dim in self.shape)
+  - f1_score: 90.46898638426626
+    overall_score: 100
+    precision: 100.0
+    recall: 82.59668508287292
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: int
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank==self.rank) and (out.shape == self.shape)
+  - f1_score: 94.48818897637796
+    overall_score: 53.24409448818898
+    precision: 100.0
+    recall: 89.55223880597015

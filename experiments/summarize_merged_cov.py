@@ -95,22 +95,30 @@ def process_pickle_files(api_coverage_data):
     """
     summarized_data = {}
     for api_name, columns in api_coverage_data.items():
-        try :
             api_summary = {}
             for column, pickle_path in columns.items():
                 # Load the pickle file
-                with open(pickle_path, 'rb') as file:
-                    data = pickle.load(file)
-                
-                # Summarize the data
-                branch_by_time, final_bf = cov_summerize(data)
-                api_summary[column] = {
-                    'branch_by_time': branch_by_time,
-                    'final_bf': max([bf for _,_,bf in branch_by_time])
-                }
+                dir_path = os.path.dirname(os.path.dirname(pickle_path)) #../*.models/coverage/merged_cov.pkl
+                model_n = len(os.listdir(dir_path)) - 1
+                try :
+                    with open(pickle_path, 'rb') as file:
+                        data = pickle.load(file)
+                        # Summarize the data
+                        branch_by_time, final_bf = cov_summerize(data)
+                        api_summary[column] = {
+                            'branch_by_time': branch_by_time,
+                            'final_bf': max([bf for _,_,bf in branch_by_time]),
+                            'model_n': model_n
+                        }
+                except FileNotFoundError :
+                    api_summary[column] = {
+                        'branch_by_time': [[0, 0, 0], [0, 0, 0]],
+                        'final_bf': 0,
+                        'model_n': 0,
+                    }
+                    print("File not found : ", pickle_path)              
             summarized_data[api_name] = api_summary
-        except FileNotFoundError :
-            print("File not found for API: ", api_name)
+
     return summarized_data
 
 def aggregate_summarized_data(processed_data):
@@ -135,7 +143,7 @@ def aggregate_summarized_data(processed_data):
                     'API': api_name,
                     'Column': column,
                     'Time': time,
-                    'Model Count': model_count,
+                    'Model Count': summary['model_n'],
                     'Branch Coverage': branch_cov,
                     'Final BF': summary['final_bf']
                 })
@@ -154,6 +162,8 @@ def revise_complete_data(save_dir, api_names):
         else :
             data.append(name) 
     
+    data = list(set(data))
+    data.sort()
     with open(save_dir, 'w') as file:
         json.dump(data, file)
 
@@ -171,6 +181,7 @@ def summarize_final_bf(aggregated_df):
 
     cnt = 0
     # Extracting and reshaping the final_bf values
+    # print(aggregated_df)
     final_bf_summary = aggregated_df.pivot_table(index='API', columns='Column', values='Final BF', aggfunc='max')
     model_cnt = aggregated_df.pivot_table(index='API', columns='Column', values='Model Count', aggfunc='max')
 
@@ -201,7 +212,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         root_dir = sys.argv[1]
     else:
-        root_dir = '/artifact/exp_first/'
+        root_dir = '/artifact/gen_tf/'
     api_coverage_data = traverse_and_classify(root_dir)
     processed_data = process_pickle_files(api_coverage_data)
     aggregated_df = aggregate_summarized_data(processed_data)

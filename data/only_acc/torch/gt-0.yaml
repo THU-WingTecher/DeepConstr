@@ -1,0 +1,31 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.gt
+package: torch
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (6) must match the size of tensor b (8) at non-singleton
+        dimension 2
+      package: torch
+    txt: self.shape[6] == 1
+  - f1_score: 94.9367088607595
+    overall_score: 100
+    precision: 100.0
+    recall: 90.36144578313254

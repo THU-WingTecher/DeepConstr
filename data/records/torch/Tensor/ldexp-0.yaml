@@ -13,22 +13,21 @@ args:
   - true
 name: torch.Tensor.ldexp
 package: torch
-pass_rate: 35.66666666666667
+pass_rate: 100
 rules:
-- - cot: "Error is triggered because the size of tensor a (2) does not match the size\
-      \ of tensor b (3) at non-singleton dimension 6. \n\nTo prevent the error, we\
-      \ need to ensure that the sizes of tensor a and tensor b are consistent at non-singleton\
-      \ dimension 6. \n\nTherefore, the constraint can be formulated as:"
+- - cot: The error is triggered because the size of tensor a (9) does not match the
+      size of tensor b (3) at non-singleton dimension 3. To prevent this error, we
+      can add a constraint that ensures the dimensions and shapes of the tensors match.
     length: 1
     target:
       choosen_dtype:
         other: tensor
         self: tensor
-      msg: The size of tensor a (7) must match the size of tensor b (6) at non-singleton
+      msg: The size of tensor a (9) must match the size of tensor b (7) at non-singleton
         dimension 2
       package: torch
-    txt: self.shape[6] == other.shape[6]
-  - f1_score: 76.43312101910827
-    overall_score: 100
-    precision: 100.0
-    recall: 61.855670103092784
+    txt: self.dim == other.dim and self.shape == other.shape
+  - f1_score: 95.74105621805792
+    overall_score: 59.87052810902896
+    precision: 93.66666666666667
+    recall: 97.90940766550523

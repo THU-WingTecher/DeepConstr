@@ -1,0 +1,33 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.ne
+package: torch
+pass_rate: 100
+rules:
+- - cot: "Based on the given runtime information, the error is triggered because the\
+      \ size of tensor a (9) does not match the size of tensor b (8) at non-singleton\
+      \ dimension 6. \n\nTo prevent this error, the following constraint can be formulated:"
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (2) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.shape[6] == other.shape[6]
+  - f1_score: 76.72634271099744
+    overall_score: 100
+    precision: 100.0
+    recall: 62.24066390041494

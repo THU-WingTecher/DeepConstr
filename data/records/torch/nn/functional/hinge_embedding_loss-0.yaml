@@ -29,4 +29,65 @@ args:
   - false
 name: torch.nn.functional.hinge_embedding_loss
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'Error is triggered because the size of tensor a (7) must match the size
+      of tensor b (6) at non-singleton dimension 3. Let''s see what the args were.
+      It seems the dimensions and shapes of input and target are inconsistent. Therefore,
+      the condition to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        margin: float
+        reduce: bool
+        reduction: str
+        size_average: None
+        target: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (6) at non-singleton
+        dimension 2
+      package: torch
+    txt: input.dim() == target.dim() and input.shape == target.shape
+  - f1_score: 99.33774834437087
+    overall_score: 100
+    precision: 100.0
+    recall: 98.68421052631578
+- - cot: "Based on the given runtime information, the error occurs because the value\
+      \ of the \"reduction\" attribute is \"JqQP\", which is not a valid value. The\
+      \ valid values for the \"reduction\" attribute are \"mean\", \"sum\", and \"\
+      none\". \n\nTo prevent this error, the value of the \"reduction\" attribute\
+      \ should be one of the valid values."
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        margin: float
+        reduce: None
+        reduction: str
+        size_average: None
+        target: tensor
+      msg: sJbJ is not a valid value for reduction
+      package: torch
+    txt: reduction in ["mean", "sum", "none"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        margin: float
+        reduce: None
+        reduction: str
+        size_average: None
+        target: tensor
+      msg: 'mean(): could not infer output dtype. Input dtype must be either a floating
+        point or complex dtype. Got: Int'
+      package: torch
+    txt: dtype(input) == complex128
+  - f1_score: 67.18924972004478
+    overall_score: 100
+    precision: 100.0
+    recall: 50.5902192242833

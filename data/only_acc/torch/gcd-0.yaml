@@ -1,0 +1,67 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.gcd
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'Error is triggered because the size of tensors at non-singleton dimension
+      3 doesn''t match. The args were a tensor with shape [3, 3] and another tensor
+      with shape [7, 8, 8, 8]. We can revise the constraints as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (3) must match the size of tensor b (9) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.shape[3] == other.shape[3]
+  - f1_score: 75.75757575757576
+    overall_score: 100
+    precision: 100.0
+    recall: 60.97560975609756
+- - cot: "Based on the given error message, the error arises because the function\
+      \ torch.gcd does not have an implementation for the 'Float' data type. The tensors\
+      \ 'self' and 'other' are both provided as float32, which is not compatible with\
+      \ the 'Float' data type. \n\nTo prevent the error, the data type of 'self' and\
+      \ 'other' should be changed to one of the allowed types for the torch.gcd function,\
+      \ which are 'half', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32',\
+      \ 'uint64'. \n\nThe constraint to prevent the error can be formulated as:"
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"gcd_cpu" not implemented for ''Float'''
+      package: torch
+    txt: dtype(self) in ["half", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+      "uint64"] and dtype(other) in ["half", "int16", "int32", "int64", "uint8", "uint16",
+      "uint32", "uint64"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"gcd_cpu" not implemented for ''Half'''
+      package: torch
+    txt: (dtype(self) == int16) and (dtype(self) == dtype(other))
+  - f1_score: 97.56097560975608
+    overall_score: 100
+    precision: 100.0
+    recall: 95.23809523809523

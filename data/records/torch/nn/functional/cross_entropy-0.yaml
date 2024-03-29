@@ -37,4 +37,133 @@ args:
   - false
 name: torch.nn.functional.cross_entropy
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'Error is triggered because the batch size of the input tensor does not match
+      the batch size of the target tensor. Let''s see what the runtime information
+      says. The input tensor has a shape of [3, 9] and the target tensor has a shape
+      of [7, 7, 7, 7]. So, to prevent the error, we need to ensure that the batch
+      sizes of the input and target tensors are the same. Therefore, the constraint
+      is:'
+    length: 1
+    target:
+      choosen_dtype:
+        ignore_index: int
+        input: tensor
+        label_smoothing: float
+        reduce: None
+        reduction: str
+        size_average: bool
+        target: tensor
+        weight: tensor
+      msg: Expected input batch_size (3) to match target batch_size (0).
+      package: torch
+    txt: input.shape[0] == target.shape[0]
+  - f1_score: 63.83561643835617
+    overall_score: 41.83333333333333
+    precision: 77.66666666666666
+    recall: 54.186046511627914
+- - cot: 'The error is caused by an invalid value for the ''reduction'' parameter.
+      The value provided is ''eZTQ'', which is not a valid value for ''reduction''.
+      The valid values for ''reduction'' are ["none", "mean", "sum"]. Therefore, the
+      constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        ignore_index: int
+        input: tensor
+        label_smoothing: float
+        reduce: None
+        reduction: str
+        size_average: None
+        target: tensor
+        weight: None
+      msg: BOnl is not a valid value for reduction
+      package: torch
+    txt: reduction in ["none", "mean", "sum"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is due to the invalid ''label_smoothing'' value. Let''s see what
+      the args were. It appears that ''label_smoothing'' is currently set to 5.0,
+      which is outside the valid range of 0.0 to 1.0. Therefore, ''label_smoothing''
+      should be corrected. It says it should fall between 0.0 and 1.0, so the condition
+      to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        ignore_index: int
+        input: tensor
+        label_smoothing: float
+        reduce: bool
+        reduction: str
+        size_average: bool
+        target: tensor
+        weight: tensor
+      msg: 'label_smoothing must be between 0.0 and 1.0. Got: 5'
+      package: torch
+    txt: 0.0 <= label_smoothing <= 1.0
+  - f1_score: 81.96721311475409
+    overall_score: 100
+    precision: 100.0
+    recall: 69.44444444444444
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        ignore_index: int
+        input: tensor
+        label_smoothing: float
+        reduce: bool
+        reduction: str
+        size_average: bool
+        target: tensor
+        weight: None
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got 1)
+      package: torch
+    txt: 1 < len(input.shape)
+  - f1_score: 80.1068090787717
+    overall_score: 100
+    precision: 100.0
+    recall: 66.815144766147
+- - cot: 'Error is triggered because of mismatched batch sizes in input and target
+      tensors. The error message indicates that the input batch size is 1 while the
+      target batch size is 0. Therefore, left : input.size(0) op : == right : target.size(0)'
+    length: 1
+    target:
+      choosen_dtype:
+        ignore_index: int
+        input: tensor
+        label_smoothing: float
+        reduce: None
+        reduction: str
+        size_average: bool
+        target: tensor
+        weight: None
+      msg: Expected input batch_size (1) to match target batch_size (0).
+      package: torch
+    txt: input.size(0) == target.size(0)
+  - f1_score: 97.88519637462235
+    overall_score: 100
+    precision: 100.0
+    recall: 95.85798816568047
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        ignore_index: int
+        input: tensor
+        label_smoothing: float
+        reduce: bool
+        reduction: str
+        size_average: bool
+        target: tensor
+        weight: None
+      msg: 0D or 1D target tensor expected, multi-target not supported
+      package: torch
+    txt: target.shape[-1]==1
+  - f1_score: 68.4931506849315
+    overall_score: 100
+    precision: 100.0
+    recall: 52.083333333333336

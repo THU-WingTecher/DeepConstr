@@ -25,4 +25,79 @@ args:
   - false
 name: torch._C._nn.upsample_bilinear2d
 package: torch
-pass_rate: 0
+pass_rate: 95.33333333333334
+rules:
+- - cot: 'Error is triggered because the tensor `self` has a size of 0 at the second
+      dimension. To prevent this error, we need to add a constraint that ensures the
+      second dimension of `self` is non-zero. The constraint can be formulated as
+      follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        output_size: list[int]
+        scales_h: float
+        scales_w: float
+        self: tensor
+      msg: Non-empty 4D data tensor expected but got a tensor with sizes [9, 0, 3,
+        8]
+      package: torch
+    txt: self.shape[1] != 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is due to the fact that the ''upsample_bilinear2d'' function is
+      not implemented for tensors of type int32. The ''self'' tensor is of type int32,
+      which is not supported by the function. Therefore, the condition to prevent
+      the error is that the ''self'' tensor should be of a different data type, such
+      as float. So, the constraint is:'
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        output_size: list[int]
+        scales_h: None
+        scales_w: float
+        self: tensor
+      msg: '"upsample_bilinear2d_channels_last" not implemented for ''Int'''
+      package: torch
+    txt: dtype(self) != int32
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        output_size: list[int]
+        scales_h: None
+        scales_w: float
+        self: tensor
+      msg: 'Input and output sizes should be greater than 0, but got input (H: 7,
+        W: 1) output (H: -3, W: 3)'
+      package: torch
+    txt: self.shape[2] > 0 and self.shape[3] > 0 and output_size[0] > 0 and output_size[1]
+      > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        align_corners: bool
+        output_size: list[int]
+        scales_h: float
+        scales_w: None
+        self: tensor
+      msg: It is expected output_size equals to 2, but got size 0
+      package: torch
+    txt: (len(output_size) == 2) and (len(self.size()) == 4)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

@@ -25,4 +25,100 @@ args:
   - true
 name: torch._C._linalg.linalg_pinv
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: The error is due to the presence of negative dimensions in the shapes of
+      the tensors. The 'out' and 'self' tensors have dimensions [7, 6, 1, -4, -4]
+      which include negative values, which is not allowed. Thus, the shapes of 'out'
+      and 'self' tensors should be corrected to have only non-negative integers.
+    length: 1
+    target:
+      choosen_dtype:
+        atol: None
+        hermitian: bool
+        out: tensor
+        rtol: None
+        self: tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(dim >= 0 for dim in out.shape)
+  - f1_score: 83.19999999999999
+    overall_score: 53.599999999999994
+    precision: 100.0
+    recall: 71.23287671232877
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        atol: float
+        hermitian: bool
+        out: tensor
+        rtol: None
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 66.88963210702342
+    overall_score: 45.44481605351171
+    precision: 100.0
+    recall: 50.25125628140703
+- - cot: The error is triggered because the 'out' argument has a different dtype than
+      the 'self' argument. The 'self' argument is of type ComplexDouble and the function
+      is expecting the 'out' argument to be of the same type so that the result can
+      be safely cast. However, the 'out' argument is of type Float which is causing
+      the issue. Therefore, the dtypes of 'self' and 'out' arguments should be the
+      same.
+    length: 1
+    target:
+      choosen_dtype:
+        atol: None
+        hermitian: bool
+        out: tensor
+        rtol: float
+        self: tensor
+      msg: 'linalg.pinv: Expected result to be safely castable from ComplexDouble
+        dtype, but got result with dtype Float'
+      package: torch
+    txt: dtype(self) == dtype(out)
+  - f1_score: 77.06422018348623
+    overall_score: 50.532110091743114
+    precision: 100.0
+    recall: 62.686567164179095
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        atol: None
+        hermitian: bool
+        out: tensor
+        rtol: None
+        self: tensor
+      msg: 'linalg.pinv(Float{[]}): expected a tensor with 2 or more dimensions of
+        float, double, cfloat or cdouble types'
+      package: torch
+    txt: len(self.shape) >= 2 and self.dtype in ["float32", "float64", "complex64",
+      "complex128"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: "The error is triggered because the input tensor `self` has a shape of `[9,\
+      \ 4, 4, 4, 4, 4, 7]`, where the last two dimensions are not square matrices.\
+      \ To prevent the error, the last two dimensions of `self` should be square matrices.\
+      \ \n\nThe constraint to prevent the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        atol: None
+        hermitian: bool
+        out: tensor
+        rtol: None
+        self: tensor
+      msg: 'linalg.eigh: A must be batches of square matrices, but they are 1 by 7
+        matrices'
+      package: torch
+    txt: self.shape[-2] == self.shape[-1]
+  - f1_score: 75.76974564926373
+    overall_score: 49.88487282463186
+    precision: 100.0
+    recall: 60.991379310344826

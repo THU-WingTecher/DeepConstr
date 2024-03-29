@@ -17,4 +17,39 @@ args:
   - true
 name: torch.ge
 package: torch
-pass_rate: 0
+pass_rate: 64.0
+rules:
+- - cot: The error is due to a mismatch in the shape of the 'out' tensor and the result
+      of the operation. The 'out' tensor is supposed to have the same shape as the
+      input tensors for the operation. In this case, the 'out' tensor has a shape
+      of [1, 9, 9, 9, 9, 9, 9] and the 'other' and 'self' tensors have shapes of []
+      and [7, 9, 9, 9, 9, 9, 9] respectively. Therefore, the shape of the 'out' tensor
+      should match the shape of the 'other' and 'self' tensors.
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.shape == other.shape and out.shape == self.shape
+  - f1_score: 89.41877794336813
+    overall_score: 56.709388971684064
+    precision: 100.0
+    recall: 80.86253369272238
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (3) at non-singleton
+        dimension 3
+      package: torch
+    txt: other.shape[6] == 1
+  - f1_score: 81.52173913043478
+    overall_score: 52.76086956521739
+    precision: 100.0
+    recall: 68.80733944954129

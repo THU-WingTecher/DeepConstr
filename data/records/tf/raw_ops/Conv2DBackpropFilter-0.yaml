@@ -149,3 +149,104 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 90.49773755656109
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter_sizes: int
+        input: tensor
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+        use_cudnn_on_gpu: bool
+      msg: '{{function_node __wrapped__Conv2DBackpropFilter_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Row and column strides should be larger than 0. [Op:Conv2DBackpropFilter]
+        name: IPyZ'
+      package: tensorflow
+    txt: strides[1] > 0 and strides[2] > 0
+  - f1_score: 95.33169533169533
+    overall_score: 100
+    precision: 100.0
+    recall: 91.07981220657277
+- - cot: "The error is triggered because the dilations field should specify 4 dimensions.\
+      \ However, in the given runtime information, the dilations field is an empty\
+      \ list. To prevent the error, the dilations field should be a list of 4 elements.\
+      \ \n\nTo formulate the constraint, we can use the formula:"
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter_sizes: int
+        input: tensor
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+        use_cudnn_on_gpu: bool
+      msg: '{{function_node __wrapped__Conv2DBackpropFilter_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Sliding window dilations field must specify 4 dimensions [Op:Conv2DBackpropFilter]
+        name: PwFe'
+      package: tensorflow
+    txt: len(dilations) == 4
+  - f1_score: 84.31372549019606
+    overall_score: 100
+    precision: 100.0
+    recall: 72.88135593220339
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter_sizes: int
+        input: tensor
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+        use_cudnn_on_gpu: bool
+      msg: '{{function_node __wrapped__Conv2DBackpropFilter_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Current implementation does not yet support dilations in the batch and depth
+        dimensions. [Op:Conv2DBackpropFilter] name: wgcT'
+      package: tensorflow
+    txt: (((dilations[0] == 1)) and (all(d > 0 for d in dilations[:2]))) and (dilations[0]
+      == 1 and dilations[3] == 1)
+  - f1_score: 81.87134502923978
+    overall_score: 100
+    precision: 100.0
+    recall: 69.30693069306932
+- - cot: 'The error message indicates that the current CPU implementations do not
+      support dilation rates larger than 1 in the tf.raw_ops.Conv2DBackpropFilter
+      operation. The dilation rates are specified in the dilations argument, which
+      is set to [1, 7, 7, 1] in this case. Therefore, the constraint to prevent the
+      error is that all elements in the dilations argument should be 1. This can be
+      formulated as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter_sizes: int
+        input: tensor
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+        use_cudnn_on_gpu: bool
+      msg: '{{function_node __wrapped__Conv2DBackpropFilter_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Current CPU implementations do not yet support dilation rates larger than
+        1. [Op:Conv2DBackpropFilter] name: KmRo'
+      package: tensorflow
+    txt: all(i == 1 for i in dilations)
+  - f1_score: 79.00000000000001
+    overall_score: 100
+    precision: 100.0
+    recall: 65.28925619834712

@@ -1,0 +1,58 @@
+args:
+  dtype:
+  - Tensor
+  - float
+  - float
+  - Optional[Generator]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - mean
+  - std
+  - generator
+  required:
+  - true
+  - false
+  - false
+  - false
+name: torch.Tensor.normal_
+package: torch
+pass_rate: 100
+rules:
+- - cot: The error is due to the invalid 'std' value. The function 'torch.Tensor.normal_'
+      expects the standard deviation 'std' to be greater than or equal to 0.0, but
+      the given 'std' value is -2.0. Therefore, the 'std' value should be corrected.
+      It should be greater than or equal to 0.0, so the condition is
+    length: 1
+    target:
+      choosen_dtype:
+        mean: float
+        self: tensor
+        std: float
+      msg: normal expects std >= 0.0, but found std -3
+      package: torch
+    txt: std >= 0.0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is due to the ''normal_'' function not being implemented for tensors
+      of type ''Int''. To prevent the error, the tensor ''self'' should have a data
+      type of ''Float''. So, Left : self.dtype, Op : ==, Right : torch.float32'
+    length: 1
+    target:
+      choosen_dtype:
+        mean: float
+        self: tensor
+        std: float
+      msg: '"normal_kernel_cpu" not implemented for ''Int'''
+      package: torch
+    txt: (self.dtype == torch.float32)
+  - f1_score: 97.40259740259741
+    overall_score: 100
+    precision: 100.0
+    recall: 94.9367088607595

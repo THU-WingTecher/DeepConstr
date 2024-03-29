@@ -21,4 +21,65 @@ args:
   - true
 name: tf.raw_ops.Split
 package: tensorflow
-pass_rate: 0
+pass_rate: 86.0
+rules:
+- - cot: 'Based on the given runtime information, the error arises because the attribute
+      ''num_split'' is set to 0, which is less than the minimum allowed value. The
+      minimum allowed value for ''num_split'' is 1. Therefore, the constraint to prevent
+      the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        name: str
+        num_split: int
+        value: tensor
+      msg: "Value for attr 'num_split' of 0 must be at least minimum 1\n\t; NodeDef:\
+        \ {{node Split}}; Op<name=Split; signature=split_dim:int32, value:T -> output:num_split*T;\
+        \ attr=num_split:int,min=1; attr=T:type> [Op:Split] name: PQPs"
+      package: tensorflow
+    txt: num_split >= 1
+  - f1_score: 93.67681498829039
+    overall_score: 58.838407494145194
+    precision: 100.0
+    recall: 88.10572687224669
+- - cot: 'The error is triggered because the number of ways to split (num_split) is
+      not evenly dividing the size of the split dimension (split_dim). Therefore,
+      the following constraint should be satisfied in order to prevent the error:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        name: str
+        num_split: int
+        value: tensor
+      msg: '{{function_node __wrapped__Split_num_split_53_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Number of ways to split should evenly divide the split dimension, but got
+        split_dim 5 (size = 8) and num_split 53 [Op:Split] name: lncP'
+      package: tensorflow
+    txt: value.shape[split_dim] % num_split == 0
+  - f1_score: 85.06787330316742
+    overall_score: 54.53393665158371
+    precision: 94.0
+    recall: 77.68595041322314
+- - cot: 'The error is caused due to an invalid axis of splitting. The axis for splitting
+      is 5 while the input tensor only has 2 dimensions. Therefore, the split dimension
+      (axis) must be less than the rank of the input tensor and greater than or equal
+      to the negative of the rank of the input tensor. Thus, the constraints are as
+      follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        name: str
+        num_split: int
+        value: tensor
+      msg: '{{function_node __wrapped__Split_num_split_2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        -input rank(-4) <= split_dim < input rank (4), but got 67 [Op:Split] name:
+        jHVg'
+      package: tensorflow
+    txt: -len(value.shape) <= axis < len(value.shape)
+  - f1_score: 95.28795811518324
+    overall_score: 59.64397905759162
+    precision: 91.0
+    recall: 100.0

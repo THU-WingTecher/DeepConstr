@@ -21,4 +21,35 @@ args:
   - true
 name: torch.threshold
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+        threshold: int
+        value: int
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self)==dtype(out)
+  - f1_score: 87.46355685131195
+    overall_score: 55.731778425655975
+    precision: 100.0
+    recall: 77.720207253886
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+        threshold: int
+        value: int
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
+  - f1_score: 74.53416149068322
+    overall_score: 49.26708074534161
+    precision: 100.0
+    recall: 59.4059405940594

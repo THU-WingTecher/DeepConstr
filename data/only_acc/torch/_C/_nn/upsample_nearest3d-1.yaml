@@ -1,0 +1,118 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - Optional[float]
+  - Optional[float]
+  - Optional[float]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - output_size
+  - scales_d
+  - scales_h
+  - scales_w
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+name: torch._C._nn.upsample_nearest3d
+package: torch
+pass_rate: 96.88581314878893
+rules:
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        output_size: list[int]
+        scales_d: None
+        scales_h: None
+        scales_w: float
+        self: tensor
+      msg: It is expected output_size equals to 3, but got size 0
+      package: torch
+    txt: (((len(output_size) == 3) or (len(output_size) == 5)) and (len(self.shape)
+      == 5)) and (len(output_size) == 3)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: list[int]
+        scales_d: float
+        scales_h: float
+        scales_w: None
+        self: tensor
+      msg: 'Input and output sizes should be greater than 0, but got input (D: 8,
+        H: 2, W: 9) output (D: 5, H: 3, W: -3)'
+      package: torch
+    txt: output_size[0] > 0 and output_size[1] > 0 and output_size[2] > 0 and scales_d
+      > 0 and scales_h > 0 and self.shape[0] > 0 and self.shape[1] > 0 and self.shape[2]
+      > 0 and self.shape[3] > 0 and self.shape[4] > 0
+  - f1_score: 87.5549048316252
+    overall_score: 100
+    precision: 100.0
+    recall: 77.86458333333333
+- - cot: "The error is caused by the function \"compute_indices_weights_nearest\"\
+      \ not being implemented for the data type 'Int'. To prevent this error, the\
+      \ data type of the input tensor should be changed to a data type for which the\
+      \ function is implemented. \n\nCondition:"
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: list[int]
+        scales_d: None
+        scales_h: float
+        scales_w: None
+        self: tensor
+      msg: '"compute_indices_weights_nearest" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype != 'Int'
+  - f1_score: 67.51445086705202
+    overall_score: 100
+    precision: 100.0
+    recall: 50.959860383944154
+- - cot: The error message indicates that the function "compute_indices_weights_nearest"
+      is not implemented for the data type 'Bool'. To prevent this error, ensure that
+      the data type of the input tensor is not 'Bool'.
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: list[int]
+        scales_d: float
+        scales_h: float
+        scales_w: float
+        self: tensor
+      msg: '"compute_indices_weights_nearest" not implemented for ''Bool'''
+      package: torch
+    txt: not self.dtype == torch.bool
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: list[int]
+        scales_d: None
+        scales_h: float
+        scales_w: float
+        self: tensor
+      msg: '''complex32'''
+      package: torch
+    txt: output_size[1] == self.size(3)
+  - f1_score: 66.20473812846343
+    overall_score: 51.797250859106526
+    precision: 97.59450171821305
+    recall: 50.09307463670375

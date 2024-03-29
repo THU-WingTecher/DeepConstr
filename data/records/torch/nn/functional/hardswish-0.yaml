@@ -13,4 +13,62 @@ args:
   - false
 name: torch.nn.functional.hardswish
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        inplace: bool
+        input: tensor
+      msg: '''complex32'''
+      package: torch
+    txt: ((input.dim() == 2) or (input.dim() == 0)) and (input.dtype == torch.float32)
+  - f1_score: 65.83427922814982
+    overall_score: 44.91713961407491
+    precision: 96.66666666666667
+    recall: 49.91394148020654
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        inplace: bool
+        input: tensor
+      msg: '"hardswish_cpu" not implemented for ''Bool'''
+      package: torch
+    txt: input.dtype != torch.bool
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: '`torch.nn.functional.hardswish` is not implemented for tensors of type ''Long''.
+      Therefore, the input tensor should have a different data type. The constraint
+      to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        inplace: bool
+        input: tensor
+      msg: '"hardswish_cpu" not implemented for ''Long'''
+      package: torch
+    txt: input.dtype != torch.int64
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is due to the input tensor having a data type of ''Int'', which
+      is not supported by the ''hardswish'' function. To prevent the error, the input
+      tensor should have a data type other than ''Int''. Therefore, the constraint
+      to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        inplace: bool
+        input: tensor
+      msg: '"hardswish_cpu" not implemented for ''Int'''
+      package: torch
+    txt: input.dtype != torch.int
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

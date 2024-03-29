@@ -9,4 +9,5 @@ args:
   - true
 name: torch._C._linalg.linalg_eig
 package: torch
-pass_rate: 0
+pass_rate: 73.0
+rules: []

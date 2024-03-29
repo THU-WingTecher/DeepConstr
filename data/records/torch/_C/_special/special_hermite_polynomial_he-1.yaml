@@ -17,4 +17,53 @@ args:
   - true
 name: torch._C._special.special_hermite_polynomial_he
 package: torch
-pass_rate: 0
+pass_rate: 94.84126984126983
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        n: tensor
+        out: tensor
+        x: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank==x.rank) or (all(out.shape[i]==x.shape[i] for i in range(x.rank)))
+  - f1_score: 90.76131129775128
+    overall_score: 57.38065564887564
+    precision: 93.05555555555556
+    recall: 88.57747223691169
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        n: tensor
+        out: tensor
+        x: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == n.rank and all(out.shape[i] == n.shape[i] for i in range(out.rank))
+  - f1_score: 78.74015748031496
+    overall_score: 51.37007874015748
+    precision: 100.0
+    recall: 64.93506493506493
+- - cot: 'In this case, the error is triggered due to the mismatch in size of tensors
+      at non-singleton dimension 6. The function `torch._C._special.special_hermite_polynomial_he`
+      requires tensors of same size at each dimension to perform successful operations.
+      Therefore, the constraint to avoid this error would be to ensure that all input
+      tensors have the same shape at each dimension. Here are the tensors ''n'', ''out''
+      and ''x''. So, the condition could be formulated as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        n: tensor
+        out: tensor
+        x: tensor
+      msg: The size of tensor a (5) must match the size of tensor b (9) at non-singleton
+        dimension 6
+      package: torch
+    txt: n.shape == out.shape == x.shape
+  - f1_score: 67.83625730994152
+    overall_score: 45.91812865497076
+    precision: 100.0
+    recall: 51.32743362831859

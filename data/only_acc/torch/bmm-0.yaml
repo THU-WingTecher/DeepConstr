@@ -1,0 +1,44 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - mat2
+  required:
+  - true
+  - true
+name: torch.bmm
+package: torch
+pass_rate: 11.705685618729097
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        mat2: tensor
+        self: tensor
+      msg: batch2 must be a 3D tensor
+      package: torch
+    txt: (len(mat2.shape) == 3) and (self.dim() == 3)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        mat2: tensor
+        self: tensor
+      msg: 'Expected size for first two dimensions of batch2 tensor to be: [3, 8]
+        but got: [8, 8].'
+      package: torch
+    txt: mat2.size(0) == self.size(0) and mat2.size(2) == self.size(2)
+  - f1_score: 24.561403508771935
+    overall_score: 10.0
+    precision: 14.000000000000002
+    recall: 100.0

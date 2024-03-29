@@ -13,4 +13,32 @@ args:
   - true
 name: torch.tan
 package: torch
-pass_rate: 0
+pass_rate: 9.666666666666666
+rules:
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: ((dtype(out) == Short) or ((dtype(out) == dtype(self)) and (dtype(self) ==
+      float32))) or (dtype(out) == Float)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.shape == self.shape) and (out.rank == self.rank)
+  - f1_score: 95.84664536741214
+    overall_score: 53.92332268370607
+    precision: 100.0
+    recall: 92.02453987730061

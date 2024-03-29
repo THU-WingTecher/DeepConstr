@@ -1,0 +1,47 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.bitwise_xor
+package: torch
+pass_rate: 100
+rules:
+- - cot: The error is due to the fact that the bitwise_xor function is not implemented
+      for the 'Float' data type. To prevent this error, both the input tensors 'other'
+      and 'self' should have a data type other than 'Float'.
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"bitwise_xor_cpu" not implemented for ''Float'''
+      package: torch
+    txt: not (dtype(other) == 'Float' or dtype(self) == 'Float')
+  - f1_score: 69.68641114982579
+    overall_score: 100
+    precision: 100.0
+    recall: 53.475935828877
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (3) at non-singleton
+        dimension 3
+      package: torch
+    txt: self.shape[5] == other.shape[5]
+  - f1_score: 75.00000000000001
+    overall_score: 100
+    precision: 100.0
+    recall: 60.00000000000001

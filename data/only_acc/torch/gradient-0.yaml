@@ -1,0 +1,75 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[number]
+  - Optional[int]
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - spacing
+  - dim
+  - edge_order
+  required:
+  - true
+  - false
+  - false
+  - false
+name: torch.gradient
+package: torch
+pass_rate: 91.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        edge_order: int
+        self: tensor
+        spacing: None
+      msg: torch.gradient only supports edge_order=1 and edge_order=2.
+      package: torch
+    txt: edge_order == 2
+  - f1_score: 99.33774834437087
+    overall_score: 100
+    precision: 100.0
+    recall: 98.68421052631578
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        edge_order: int
+        self: tensor
+        spacing: int
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 8)
+      package: torch
+    txt: dim >= -1 and dim < 1
+  - f1_score: 72.90400972053463
+    overall_score: 100
+    precision: 100.0
+    recall: 57.361376673040155
+- - cot: The error message suggests that the size of each dimension of the tensor
+      should be at least edge_order + 1. In this case, the edge_order is 2, so the
+      size of each dimension should be at least 3. However, the size of the dimensions
+      in the tensor are [1, 1], which is less than 3. Therefore, the condition to
+      prevent this error would be to ensure that the size of each dimension is at
+      least edge_order + 1.
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        edge_order: int
+        self: tensor
+        spacing: int
+      msg: torch.gradient expected each dimension size to be at least edge_order+1
+      package: torch
+    txt: self.dim >= (edge_order + 1)
+  - f1_score: 60.627177700348426
+    overall_score: 46.5
+    precision: 87.0
+    recall: 46.524064171122994

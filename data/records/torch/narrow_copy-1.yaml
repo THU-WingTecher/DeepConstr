@@ -25,4 +25,337 @@ args:
   - true
 name: torch.narrow_copy
 package: torch
-pass_rate: 0
+pass_rate: 80.2675585284281
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        out: tensor
+        self: tensor
+        start: int
+      msg: start (2) + length (8) exceeds dimension size (9).
+      package: torch
+    txt: self.dim == out.dim and self.shape == out.shape and start + length <= self.shape[-1]
+  - f1_score: 65.91098395683193
+    overall_score: 44.955491978415964
+    precision: 91.91919191919192
+    recall: 51.37469655055609
+- - cot: 'This error is triggered because the starting index plus the length exceeds
+      the size of the dimension that we are trying to narrow. The function torch.narrow_copy
+      is trying to extract a slice of the tensor starting at index ''start'' and of
+      length ''length''. But this operation is not valid if ''start'' + ''length''
+      is greater than the size of the dimension. So, the constraint that needs to
+      be satisfied to prevent this error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        out: tensor
+        self: tensor
+        start: int
+      msg: start (2) + length (9) exceeds dimension size (3).
+      package: torch
+    txt: start + length <= self.size(dim)
+  - f1_score: 65.58516801853997
+    overall_score: 44.79258400926999
+    precision: 94.33333333333334
+    recall: 50.2664298401421
+- - cot: "Based on the given runtime information, the error is triggered because the\
+      \ start index (2) plus the length (9) exceeds the dimension size (9) along the\
+      \ specified dimension (-1). \n\nTo prevent this error, the start index and length\
+      \ should be adjusted so that the sum of the start index and length is less than\
+      \ or equal to the dimension size along the specified dimension.\n\nTherefore,\
+      \ the constraint to prevent the error can be formulated as:"
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        out: tensor
+        self: tensor
+        start: int
+      msg: start (2) + length (8) exceeds dimension size (9).
+      package: torch
+    txt: start + length <= self.size(dim)
+  - f1_score: 66.44163453294941
+    overall_score: 45.220817266474704
+    precision: 96.33333333333334
+    recall: 50.70740738567346
+- - cot: "Based on the given runtime information, the error is triggered because the\
+      \ start index (2) plus the length (8) exceeds the dimension size (8). To prevent\
+      \ this error, the start index and length should be adjusted to ensure that the\
+      \ resulting range does not exceed the dimension size. \n\nTherefore, the constraint\
+      \ can be formulated as:"
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        out: tensor
+        self: tensor
+        start: int
+      msg: start (7) + length (7) exceeds dimension size (8).
+      package: torch
+    txt: start + length <= self.size(dim)
+  - f1_score: 65.81691772885284
+    overall_score: 44.90845886442642
+    precision: 94.66666666666667
+    recall: 50.44404973357016
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        out: tensor
+        self: tensor
+        start: int
+      msg: start (6) + length (5) exceeds dimension size (9).
+      package: torch
+    txt: length >= 0
+  - f1_score: 81.49498632634459
+    overall_score: 52.747493163172294
+    precision: 92.3076923076923
+    recall: 72.94981640146878
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      start index (3) plus the length (9) exceeds the dimension size (9). To prevent
+      this error, we need to ensure that the start index plus the length is less than
+      or equal to the dimension size. Therefore, the constraint can be formulated
+      as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        out: tensor
+        self: tensor
+        start: int
+      msg: start (3) + length (9) exceeds dimension size (9).
+      package: torch
+    txt: start + length <= self.size(dim)
+  - f1_score: 65.13535431550493
+    overall_score: 44.56767715775246
+    precision: 94.64882943143813
+    recall: 49.652630587348696
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        out: tensor
+        self: tensor
+        start: int
+      msg: start (7) + length (9) exceeds dimension size (9).
+      package: torch
+    txt: start + length <= self.size(dim)
+  - f1_score: 64.74265650423911
+    overall_score: 44.371328252119554
+    precision: 93.95973154362416
+    recall: 49.385941991115764
+- - cot: "The error is triggered because the start index (2) plus the length (8) exceeds\
+      \ the size of the dimension (9). To prevent this error, we need to ensure that\
+      \ the start index plus the length is less than or equal to the size of the dimension.\
+      \ \n\nThe constraint can be formulated as follows:"
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        out: tensor
+        self: tensor
+        start: int
+      msg: start (2) + length (9) exceeds dimension size (7).
+      package: torch
+    txt: start + length <= self.size(dim)
+  - f1_score: 65.86812311010056
+    overall_score: 44.93406155505028
+    precision: 94.61279461279462
+    recall: 50.51957858401352
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        out: tensor
+        self: tensor
+        start: int
+      msg: start (2) + length (6) exceeds dimension size (4).
+      package: torch
+    txt: dim < self.dim and start + length <= self.size(dim)
+  - f1_score: 65.27777777777777
+    overall_score: 44.638888888888886
+    precision: 94.31438127090301
+    recall: 49.91150442477876
+- - cot: 'Based on the given values, Error is triggered because start index plus length
+      is exceeding the dimension size. It expects to have start + length less than
+      or equal to dimension size. Let''s see what the args were. start and length
+      are provided as arguments to the function and self is the tensor on which the
+      function is applied. Therefore, Left : start + length, and Right : self.size(dim),
+      here dim is -1 which corresponds to the last dimension of the tensor.'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        out: tensor
+        self: tensor
+        start: int
+      msg: start (6) + length (5) exceeds dimension size (8).
+      package: torch
+    txt: start + length <= self.size(dim)
+  - f1_score: 65.12166859791425
+    overall_score: 44.560834298957126
+    precision: 93.9799331103679
+    recall: 49.822695035460995
+- - cot: "Based on the given runtime information, the error is triggered because the\
+      \ start index (1) plus the length (-1) exceeds the dimension size (9). To prevent\
+      \ this error, we can add a constraint to ensure that the start index plus the\
+      \ length is less than or equal to the dimension size. \n\nTherefore, the constraint\
+      \ that prevents the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        out: tensor
+        self: tensor
+        start: int
+      msg: start (4) + length (7) exceeds dimension size (8).
+      package: torch
+    txt: (start + length) <= self.size(dim)
+  - f1_score: 66.44633141811155
+    overall_score: 45.22316570905578
+    precision: 95.65217391304348
+    recall: 50.90370832034902
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        out: tensor
+        self: tensor
+        start: int
+      msg: start out of range (expected to be in range of [-1, 1], but got 9)
+      package: torch
+    txt: start <= 0
+  - f1_score: 87.94117647058822
+    overall_score: 55.97058823529411
+    precision: 100.0
+    recall: 78.4776902887139
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      start (6) + length (6) exceeds the dimension size (9). To prevent this error,
+      we need to ensure that the start and length values are within the valid range
+      of the tensor dimension. Therefore, the constraint can be formulated as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        out: tensor
+        self: tensor
+        start: int
+      msg: start (5) + length (9) exceeds dimension size (9).
+      package: torch
+    txt: start >= 0 and start + length <= self.size(dim)
+  - f1_score: 63.00078296979212
+    overall_score: 43.500391484896056
+    precision: 85.66666666666667
+    recall: 49.81944075257872
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      start index (5) plus the length (9) exceeds the dimension size (9). To prevent
+      this error, we need to ensure that the start index plus the length does not
+      exceed the dimension size. Therefore, the constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        out: tensor
+        self: tensor
+        start: int
+      msg: start (6) + length (6) exceeds dimension size (9).
+      package: torch
+    txt: start + length <= self.size(dim)
+  - f1_score: 61.49802890932983
+    overall_score: 42.749014454664916
+    precision: 78.52348993288591
+    recall: 50.53995680345572
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        out: tensor
+        self: tensor
+        start: int
+      msg: start (0) + length (72) exceeds dimension size (9).
+      package: torch
+    txt: start + length <= self.dim
+  - f1_score: 72.75977653631284
+    overall_score: 48.37988826815642
+    precision: 84.61538461538461
+    recall: 63.818110544884355
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        out: tensor
+        self: tensor
+        start: int
+      msg: start out of range (expected to be in range of [-1, 1], but got -4)
+      package: torch
+    txt: start >= -self.shape[dim]
+  - f1_score: 80.05498602887664
+    overall_score: 52.02749301443832
+    precision: 99.33333333333333
+    recall: 67.04338535161246
+- - cot: 'The error is caused by applying the `narrow_copy` function to a 0-dimensional
+      tensor. The `narrow_copy` function expects a tensor with at least 1 dimension.
+      To prevent this error, we need to ensure that the input tensor has at least
+      1 dimension.
+
+
+      Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        out: tensor
+        self: tensor
+        start: int
+      msg: narrow() cannot be applied to a 0-dim tensor.
+      package: torch
+    txt: self.dim() > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        out: tensor
+        self: tensor
+        start: int
+      msg: Expected self.dtype() == output.dtype() to be true, but got false.  (Could
+        this error message be improved?  If so, please report an enhancement request
+        to PyTorch.)
+      package: torch
+    txt: ((dim < 3) and (dim < len(self.shape))) and (9 >= -len(self.shape))
+  - f1_score: 80.33536362706863
+    overall_score: 44.167681813534315
+    precision: 91.9732441471572
+    recall: 71.3118792625055

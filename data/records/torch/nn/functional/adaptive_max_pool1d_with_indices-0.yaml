@@ -17,4 +17,81 @@ args:
   - false
 name: torch.nn.functional.adaptive_max_pool1d_with_indices
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+        return_indices: bool
+      msg: 'adaptive_max_pool1d(): Expected input to have non-zero size for non-batch
+        dimensions, but input has sizes [8, 0] with dimension 1 being empty'
+      package: torch
+    txt: input.size(1) != 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error occurs because the "adaptive_max_pool1d_with_indices" function
+      expects the input tensor to be of float data type, but the provided input tensor
+      is of int32 data type. To prevent this error, the data type of the input tensor
+      should be float. Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+        return_indices: bool
+      msg: '"adaptive_max_pool2d" not implemented for ''Int'''
+      package: torch
+    txt: dtype(input) == torch.float32
+  - f1_score: 99.33774834437087
+    overall_score: 61.66887417218543
+    precision: 100.0
+    recall: 98.68421052631578
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+        return_indices: bool
+      msg: 'Trying to create tensor with negative dimension -4: [3, 1, -4]'
+      package: torch
+    txt: (len(output_size)==1) and (all(output_size[i] >= 0 for i in range(len(output_size))))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+        return_indices: bool
+      msg: 'Expected 2 to 3 dimensions, but got 4-dimensional tensor for argument
+        #1 ''self'' (while checking arguments for adaptive_max_pool1d)'
+      package: torch
+    txt: input.ndims() >= 2 and input.ndims() <= 3
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+        return_indices: bool
+      msg: adaptive_max_pool1d() argument 'output_size' should contain one int (got
+        0)
+      package: torch
+    txt: len(output_size) == 1
+  - f1_score: 72.28915662650601
+    overall_score: 100
+    precision: 100.0
+    recall: 56.60377358490566

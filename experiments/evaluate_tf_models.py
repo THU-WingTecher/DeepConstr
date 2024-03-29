@@ -70,9 +70,9 @@ def tf_model_exec(
 
     # print(len(model_paths))
     gcda_save_path = f"{WORKSPACE}/{id_path}-workspace"
-    while os.path.exists(gcda_save_path):
-        id_path = float(id_path) + 0.001
-        gcda_save_path = f"{WORKSPACE}/{str(id_path)}-workspace"
+    # while os.path.exists(gcda_save_path):
+    #     id_path = float(id_path) + 0.001
+    #     gcda_save_path = f"{WORKSPACE}/{str(id_path)}-workspace"
     os.system(f"rm {gcda_save_path} -r")
     os.makedirs(gcda_save_path)
     trial_arguments = [

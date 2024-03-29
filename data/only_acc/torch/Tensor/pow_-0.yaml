@@ -1,0 +1,30 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - exponent
+  required:
+  - true
+  - true
+name: torch.Tensor.pow_
+package: torch
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        exponent: int
+        self: tensor
+      msg: Integers to negative integer powers are not allowed.
+      package: torch
+    txt: self.dtype == torch.float
+  - f1_score: 71.51370679380216
+    overall_score: 100
+    precision: 100.0
+    recall: 55.65862708719852

@@ -33,4 +33,106 @@ args:
   - false
 name: torch.conv2d
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        bias: tensor
+        dilation: list[int]
+        groups: int
+        input: tensor
+        padding: list[int]
+        stride: list[int]
+        weight: tensor
+      msg: 'Expected 3D (unbatched) or 4D (batched) input to conv2d, but got input
+        of size: [1, 1]'
+      package: torch
+    txt: input.rank == 4
+  - f1_score: 95.38950715421304
+    overall_score: 100
+    precision: 100.0
+    recall: 91.1854103343465
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        bias: tensor
+        dilation: list[int]
+        groups: int
+        input: tensor
+        padding: list[int]
+        stride: list[int]
+        weight: tensor
+      msg: expected stride to be a single integer value or a list of 5 values to match
+        the convolution dimensions, but got stride=[]
+      package: torch
+    txt: (len(stride) == input.rank) or (len(padding) == 5)
+  - f1_score: 47.42585762643358
+    overall_score: 22.570234113712374
+    precision: 42.14046822742475
+    recall: 54.22720314260131
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        bias: None
+        dilation: list[int]
+        groups: int
+        input: tensor
+        padding: list[int]
+        stride: list[int]
+        weight: tensor
+      msg: expected stride to be a single integer value or a list of 5 values to match
+        the convolution dimensions, but got stride=[3, 9, 9, 9, 9, 9]
+      package: torch
+    txt: len(dilation) == 5
+  - f1_score: 42.12297338635668
+    overall_score: 20.832167832167833
+    precision: 35.66433566433567
+    recall: 51.438177063877475
+- - cot: 'The error is due to the stride parameter having more values than the convolution
+      expects. Let''s check the args. The rank of the input tensor is 4, so the stride
+      should be a single value or a list of 4 values. Therefore, we can prevent this
+      error by ensuring that the length of the stride is either 1 or equal to the
+      rank of the input tensor. The constraint for the ''stride'' parameter can be
+      expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        bias: None
+        dilation: list[int]
+        groups: int
+        input: tensor
+        padding: list[int]
+        stride: list[int]
+        weight: tensor
+      msg: expected stride to be a single integer value or a list of 5 values to match
+        the convolution dimensions, but got stride=[5, 9, 9, 9, 9, 9, 9, 9, 9]
+      package: torch
+    txt: len(stride) == 1 or len(stride) == len(input.shape)
+  - f1_score: 39.54416040024941
+    overall_score: 19.151202749140893
+    precision: 32.302405498281786
+    recall: 50.97120281968357
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        bias: tensor
+        dilation: list[int]
+        groups: int
+        input: tensor
+        padding: list[int]
+        stride: list[int]
+        weight: tensor
+      msg: expected stride to be a single integer value or a list of 5 values to match
+        the convolution dimensions, but got stride=[5, 9, 9, 9]
+      package: torch
+    txt: ((len(stride) == 1 or len(stride) == 5) or (len(padding) == 4)) and (len(stride)
+      == input.rank)
+  - f1_score: 49.198727415421224
+    overall_score: 23.362869198312236
+    precision: 44.72573839662447
+    recall: 54.66581651789063

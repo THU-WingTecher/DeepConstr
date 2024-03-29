@@ -25,4 +25,5 @@ args:
   - false
 name: torch.histogram
 package: torch
-pass_rate: 0
+pass_rate: 39.0
+rules: []

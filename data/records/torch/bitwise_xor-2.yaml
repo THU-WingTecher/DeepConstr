@@ -13,4 +13,33 @@ args:
   - true
 name: torch.bitwise_xor
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: int
+      msg: '"bitwise_xor_cpu" not implemented for ''Half'''
+      package: torch
+    txt: dtype(other) in ["int8", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+      "uint64"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: int
+      msg: '"bitwise_xor_cpu" not implemented for ''Float'''
+      package: torch
+    txt: dtype(other) in ["half", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+      "uint64"]
+  - f1_score: 98.6842105263158
+    overall_score: 100
+    precision: 100.0
+    recall: 97.40259740259741

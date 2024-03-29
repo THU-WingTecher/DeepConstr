@@ -1,0 +1,306 @@
+args:
+  dtype:
+  - str
+  - float
+  - float
+  - bool
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - data_format
+  - epsilon
+  - exponential_avg_factor
+  - is_training
+  - mean
+  - name
+  - offset
+  - scale
+  - variance
+  - x
+  required:
+  - false
+  - false
+  - false
+  - false
+  - true
+  - false
+  - true
+  - true
+  - true
+  - true
+name: tf.raw_ops.FusedBatchNorm
+package: tensorflow
+pass_rate: 21.818181818181817
+rules:
+- - cot: 'The error is due to an incorrect value for the ''data_format'' attribute.
+      The provided value is ''XGvU'', which is not in the list of allowed values:
+      "NHWC", "NCHW". Therefore, the ''data_format'' attribute should be corrected
+      to either "NHWC" or "NCHW", which is ["NHWC", "NCHW"].'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        epsilon: float
+        exponential_avg_factor: float
+        is_training: bool
+        mean: tensor
+        name: str
+        offset: tensor
+        scale: tensor
+        variance: tensor
+        x: tensor
+      msg: "Value for attr 'data_format' of \"BsrX\" is not in the list of allowed\
+        \ values: \"NHWC\", \"NCHW\"\n\t; NodeDef: {{node FusedBatchNorm}}; Op<name=FusedBatchNorm;\
+        \ signature=x:T, scale:T, offset:T, mean:T, variance:T -> y:T, batch_mean:T,\
+        \ batch_variance:T, reserve_space_1:T, reserve_space_2:T; attr=T:type,allowed=[DT_FLOAT];\
+        \ attr=epsilon:float,default=0.0001; attr=exponential_avg_factor:float,default=1;\
+        \ attr=data_format:string,default=\"NHWC\",allowed=[\"NHWC\", \"NCHW\"]; attr=is_training:bool,default=true>\
+        \ [Op:FusedBatchNorm] name: ByTg"
+      package: tensorflow
+    txt: data_format in ["NHWC", "NCHW"]
+  - f1_score: 97.95918367346938
+    overall_score: 51.0
+    precision: 96.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        epsilon: float
+        exponential_avg_factor: float
+        is_training: bool
+        mean: tensor
+        name: str
+        offset: tensor
+        scale: tensor
+        variance: tensor
+        x: tensor
+      msg: '{{function_node __wrapped__FusedBatchNorm_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        input must be 4 or 5-dimensional[] [Op:FusedBatchNorm] name: ptRW'
+      package: tensorflow
+    txt: x.rank == 5
+  - f1_score: 85.1063829787234
+    overall_score: 100
+    precision: 100.0
+    recall: 74.07407407407408
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      scale tensor has 7 dimensions instead of 1. To prevent the error, the scale
+      tensor should be 1-dimensional.
+
+
+      Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        epsilon: float
+        exponential_avg_factor: float
+        is_training: bool
+        mean: tensor
+        name: str
+        offset: tensor
+        scale: tensor
+        variance: tensor
+        x: tensor
+      msg: '{{function_node __wrapped__FusedBatchNorm_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        scale must be 1-dimensional[1,9,9,9,9,9,9] [Op:FusedBatchNorm] name: xWCi'
+      package: tensorflow
+    txt: scale.dim == 1
+  - f1_score: 92.09302325581395
+    overall_score: 100
+    precision: 100.0
+    recall: 85.34482758620689
+- - cot: 'The error is triggered because the offset tensor is not 1-dimensional. To
+      prevent the error, the offset tensor should have only one dimension. Therefore,
+      the constraint is:'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        epsilon: float
+        exponential_avg_factor: float
+        is_training: bool
+        mean: tensor
+        name: str
+        offset: tensor
+        scale: tensor
+        variance: tensor
+        x: tensor
+      msg: '{{function_node __wrapped__FusedBatchNorm_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        offset must be 1-dimensional[4,4,9,3,9,2,4] [Op:FusedBatchNorm] name: hWbg'
+      package: tensorflow
+    txt: offset.dim == 1
+  - f1_score: 93.26923076923077
+    overall_score: 100
+    precision: 100.0
+    recall: 87.38738738738739
+- - cot: The error indicates that the 'estimated_mean' must be 1-dimensional. Looking
+      at the runtime information, the 'mean' tensor has more than one dimension. Therefore,
+      the constraint that prevents the error would be to ensure that the 'mean' tensor
+      has only one dimension.
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        epsilon: float
+        exponential_avg_factor: float
+        is_training: bool
+        mean: tensor
+        name: str
+        offset: tensor
+        scale: tensor
+        variance: tensor
+        x: tensor
+      msg: '{{function_node __wrapped__FusedBatchNorm_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        estimated_mean must be 1-dimensional[3,9,9,9,9,9] [Op:FusedBatchNorm] name:
+        SUzO'
+      package: tensorflow
+    txt: mean.dim == 1
+  - f1_score: 92.95039164490862
+    overall_score: 100
+    precision: 100.0
+    recall: 86.82926829268293
+- - cot: 'The error is triggered because the ''variance'' argument in the function
+      tf.raw_ops.FusedBatchNorm is not 1-dimensional, as it should be. In this case,
+      ''variance'' has 6 dimensions. To avoid the error, the dimension of ''variance''
+      should be 1. So, the condition becomes:'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        epsilon: float
+        exponential_avg_factor: float
+        is_training: bool
+        mean: tensor
+        name: str
+        offset: tensor
+        scale: tensor
+        variance: tensor
+        x: tensor
+      msg: '{{function_node __wrapped__FusedBatchNorm_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        estimated_variance must be 1-dimensional[0,9,9,9,9,9] [Op:FusedBatchNorm]
+        name: NKng'
+      package: tensorflow
+    txt: variance.dim == 1
+  - f1_score: 94.11764705882352
+    overall_score: 100
+    precision: 100.0
+    recall: 88.88888888888889
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        data_format: str
+        epsilon: float
+        exponential_avg_factor: float
+        is_training: bool
+        mean: tensor
+        name: str
+        offset: tensor
+        scale: tensor
+        variance: tensor
+        x: tensor
+      msg: '{{function_node __wrapped__FusedBatchNorm_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        scale must have the same number of elements as the channels of x, got 7 and
+        6 [Op:FusedBatchNorm] name: nGlc'
+      package: tensorflow
+    txt: ((scale.shape[0] == x.shape[1]) and (offset.shape[0] == x.shape[1])) and
+      (scale.shape[-1] == x.shape[1])
+  - f1_score: 40.882802632453625
+    overall_score: 16.073529411764703
+    precision: 30.14705882352941
+    recall: 63.49370225067107
+- - cot: synthesized
+    length: 5
+    target:
+      choosen_dtype:
+        data_format: str
+        epsilon: float
+        exponential_avg_factor: float
+        is_training: bool
+        mean: tensor
+        name: str
+        offset: tensor
+        scale: tensor
+        variance: tensor
+        x: tensor
+      msg: '{{function_node __wrapped__FusedBatchNorm_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        When exponential_avg_factor != 1, mean must have the same number of elements
+        as the channels of x, got 3 and 6 [Op:FusedBatchNorm]'
+      package: tensorflow
+    txt: ((((scale.shape[0] == x.shape[3]) or (exponential_avg_factor != 1 and len(mean)
+      == x.shape[1])) and (mean.shape[0] == x.shape[3])) or (mean.shape[0] == x.shape[1]))
+      and (scale.shape[0] == x.shape[4])
+  - f1_score: 54.11931818181818
+    overall_score: 23.676923076923078
+    precision: 46.15384615384615
+    recall: 65.4077253218884
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        data_format: str
+        epsilon: float
+        exponential_avg_factor: float
+        is_training: bool
+        mean: tensor
+        name: str
+        offset: tensor
+        scale: tensor
+        variance: tensor
+        x: tensor
+      msg: '{{function_node __wrapped__FusedBatchNorm_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        When is_training=false, variance must have the same number of elements as
+        the channels of x, got 3 and 6 [Op:FusedBatchNorm] name: nQKo'
+      package: tensorflow
+    txt: ((variance.shape[0] == x.shape[1]) and (mean.shape[0] == x.shape[3])) and
+      (variance.shape[0] == x.shape[3])
+  - f1_score: 88.3495145631068
+    overall_score: 100
+    precision: 100.0
+    recall: 79.13043478260869
+- - cot: 'Based on the given runtime information, the error occurs because the function
+      is expecting the input tensor at index 3 to be of type float, but it is of type
+      int32. The constraint to prevent this error is to ensure that the input tensor
+      at index 3 has the same data type as the expected data type, which is float.
+
+
+      The formula to prevent this error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        epsilon: float
+        exponential_avg_factor: float
+        is_training: bool
+        mean: tensor
+        name: str
+        offset: tensor
+        scale: tensor
+        variance: tensor
+        x: tensor
+      msg: 'cannot compute FusedBatchNorm as input #2(zero-based) was expected to
+        be a float tensor but is a int32 tensor [Op:FusedBatchNorm] name: ztwA'
+      package: tensorflow
+    txt: dtype(variance) == dtype(offset) == dtype(scale) == dtype(mean) == dtype(x)
+      == float
+  - f1_score: 69.6629213483146
+    overall_score: 100
+    precision: 100.0
+    recall: 53.44827586206896

@@ -17,4 +17,23 @@ args:
   - true
 name: tf.raw_ops.SqrtGrad
 package: tensorflow
-pass_rate: 0
+pass_rate: 35.5
+rules:
+- - cot: 'The error is triggered because the number of elements in `dy` and `y` tensors
+      is different. Let''s see what the args were. `dy` had 22680 elements and `y`
+      had 531441 elements. Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dy: tensor
+        name: str
+        y: tensor
+      msg: '{{function_node __wrapped__SqrtGrad_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        The two arguments to a cwise op must have same number of elements, got 81
+        and 1 [Op:SqrtGrad] name: PqDF'
+      package: tensorflow
+    txt: dy.size == y.size
+  - f1_score: 48.57142857142857
+    overall_score: 20.0
+    precision: 34.0
+    recall: 85.0

@@ -1,0 +1,164 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - Tensor
+  - bool
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - index
+  - sparse_grad
+  - out
+  required:
+  - true
+  - true
+  - true
+  - false
+  - true
+name: torch.gather
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        out: tensor
+        self: tensor
+        sparse_grad: bool
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 9)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 77.69985974754559
+    overall_score: 49.166666666666664
+    precision: 92.33333333333333
+    recall: 67.07021791767555
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        out: tensor
+        self: tensor
+        sparse_grad: bool
+      msg: 'gather(): Expected dtype int64 for index'
+      package: torch
+    txt: index.dtype() == int64
+  - f1_score: 87.71929824561404
+    overall_score: 100
+    precision: 100.0
+    recall: 78.125
+- - cot: "Based on the given runtime information, the error message indicates that\
+      \ the index tensor must have the same number of dimensions as the input tensor.\
+      \ \n\nTo prevent this error, the constraint can be formulated as:"
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        out: tensor
+        self: tensor
+        sparse_grad: bool
+      msg: Index tensor must have the same number of dimensions as input tensor
+      package: torch
+    txt: index.dim == self.dim
+  - f1_score: 81.52173913043478
+    overall_score: 100
+    precision: 100.0
+    recall: 68.80733944954129
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        out: tensor
+        self: tensor
+        sparse_grad: bool
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: ((out.shape == self.shape) and (out.rank == self.rank and all(out.shape[i]
+      == self.shape[i] for i in range(out.rank)))) and (out.shape == index.shape)
+  - f1_score: 79.05138339920948
+    overall_score: 100
+    precision: 100.0
+    recall: 65.359477124183
+- - cot: The error is due to an index being out of bounds. In this case, the index
+      739078 is greater than the size of dimension 4 which is 8. What the args were?
+      The function torch.gather is trying to access index 739078 at dimension 4, but
+      the maximum valid index would be 7 (as indices start from 0). Therefore, all
+      indices should be less than the size of the corresponding dimension.
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        out: tensor
+        self: tensor
+        sparse_grad: bool
+      msg: index 512275 is out of bounds for dimension 0 with size 3
+      package: torch
+    txt: all(index[i] < self.shape[dim] for i in range(len(index)))
+  - f1_score: 72.68860513363599
+    overall_score: 51.281786941580755
+    precision: 96.56357388316151
+    recall: 58.2792795300799
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        out: tensor
+        self: tensor
+        sparse_grad: bool
+      msg: Dimension out of range (expected to be in range of [-4, 3], but got 5)
+      package: torch
+    txt: (dim < len(self.shape)) or (-1 >= -len(self.shape))
+  - f1_score: 28.742514970059883
+    overall_score: 18.283216783216783
+    precision: 33.56643356643357
+    recall: 25.130890052356026
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        out: tensor
+        self: tensor
+        sparse_grad: bool
+      msg: Dimension out of range (expected to be in range of [-4, 3], but got 4)
+      package: torch
+    txt: (dim == 9) or (7 < len(self.shape))
+  - f1_score: 69.09165518656388
+    overall_score: 31.79197080291971
+    precision: 60.58394160583942
+    recall: 80.37918570551729
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        out: tensor
+        self: tensor
+        sparse_grad: bool
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: (dim >= 0) and (all(i >= 0 for i in self.shape))
+  - f1_score: 89.60244648318043
+    overall_score: 100
+    precision: 100.0
+    recall: 81.16343490304709

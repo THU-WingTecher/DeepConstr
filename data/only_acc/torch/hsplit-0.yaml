@@ -1,0 +1,69 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - sections
+  required:
+  - true
+  - true
+name: torch.hsplit
+package: torch
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        sections: int
+        self: tensor
+      msg: torch.hsplit attempted to split along dimension 1, but the size of the
+        dimension 1 is not divisible by the split_size 59!
+      package: torch
+    txt: ((self.shape[1] % sections) == 0) or (self.shape[0] % 5 == 0)
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: 'Based on the given runtime information, the error occurs because the tensor
+      `self` has 0 dimensions, but `torch.hsplit` requires a tensor with at least
+      1 dimension.
+
+
+      To prevent this error, we need to ensure that the tensor `self` has at least
+      1 dimension.
+
+
+      The constraint to prevent the error can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        sections: int
+        self: tensor
+      msg: torch.hsplit requires a tensor with at least 1 dimension, but got a tensor
+        with 0 dimensions!
+      package: torch
+    txt: self.dim >= 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        sections: int
+        self: tensor
+      msg: torch.hsplit attempted to split along dimension 0, but the size of the
+        dimension 8 is not divisible by the split_size 0!
+      package: torch
+    txt: (((sections == 0 or self.size(0) % sections == 0) and (sections != 0)) and
+      (self.size(1) % sections == 0)) and (sections > 0)
+  - f1_score: 99.66777408637873
+    overall_score: 100
+    precision: 100.0
+    recall: 99.33774834437087

@@ -1,0 +1,79 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.copysign
+package: torch
+pass_rate: 96.32107023411372
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (2) must match the size of tensor b (6) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.shape[2] == other.shape[2]
+  - f1_score: 75.09386733416773
+    overall_score: 100
+    precision: 100.0
+    recall: 60.120240480961925
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.shape == other.shape) and (out.rank==other.rank and all(out.shape[i]==other.shape[i]
+      for i in range(out.rank)))
+  - f1_score: 63.602941176470594
+    overall_score: 30.333333333333332
+    precision: 57.666666666666664
+    recall: 70.90163934426229
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self) == dtype(other)
+  - f1_score: 66.36466591166479
+    overall_score: 51.833333333333336
+    precision: 97.66666666666667
+    recall: 50.25728987993139

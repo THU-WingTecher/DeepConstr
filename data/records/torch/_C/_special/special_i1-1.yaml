@@ -13,4 +13,49 @@ args:
   - true
 name: torch._C._special.special_i1
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'The error occurs because the function torch._C._special.special_i1 is not
+      implemented for ''Half'' data type. The tensors ''out'' and ''self'' are both
+      of type ''Half'', which is not supported. Therefore, dtype(out) and dtype(self)
+      should be corrected. They should not be ''Half'', so Op : !=, and Right : ''Half''.'
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: '"i1_cpu" not implemented for ''Half'''
+      package: torch
+    txt: dtype(out) != 'Half' and dtype(self) != 'Half'
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error occurs because the output data type ''Int'' cannot be cast to
+      the result type ''Float''. Therefore, the data type of ''out'' should be ''Float''
+      to match the result type. Therefore, Left : dtype(out), Op : ==, Right : ''Float'''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(out)== 'Float'
+  - f1_score: 99.83361064891847
+    overall_score: 61.91680532445923
+    precision: 100.0
+    recall: 99.66777408637874
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank==self.rank) and (out.shape == self.shape)
+  - f1_score: 91.46341463414635
+    overall_score: 51.73170731707317
+    precision: 100.0
+    recall: 84.26966292134831

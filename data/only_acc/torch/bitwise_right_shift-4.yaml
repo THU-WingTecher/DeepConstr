@@ -1,0 +1,66 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.bitwise_right_shift
+package: torch
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: int
+        out: tensor
+        self: tensor
+      msg: '"rshift_cpu" not implemented for ''Float'''
+      package: torch
+    txt: (dtype(self) in ["int8", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+      "uint64"])
+  - f1_score: 89.28571428571429
+    overall_score: 100
+    precision: 100.0
+    recall: 80.64516129032259
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: int
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
+  - f1_score: 74.34944237918216
+    overall_score: 100
+    precision: 100.0
+    recall: 59.171597633136095
+- - cot: "The error is caused by the presence of negative dimensions in the output\
+      \ tensor. To prevent this error, the dimensions of the output tensor should\
+      \ be non-negative. \n\nWrap the final formula with"
+    length: 1
+    target:
+      choosen_dtype:
+        other: int
+        out: tensor
+        self: tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(dim >= 0 for dim in out.shape)
+  - f1_score: 93.60374414976597
+    overall_score: 100
+    precision: 100.0
+    recall: 87.97653958944281

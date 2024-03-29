@@ -17,4 +17,19 @@ args:
   - true
 name: torch.ne
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: int
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank == self.rank) and (all(self.shape[i]==out.shape[i] for i in range(self.rank)))
+  - f1_score: 78.63013698630137
+    overall_score: 51.31506849315068
+    precision: 95.66666666666667
+    recall: 66.74418604651163

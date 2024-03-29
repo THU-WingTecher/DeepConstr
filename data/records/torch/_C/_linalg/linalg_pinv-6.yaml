@@ -17,4 +17,56 @@ args:
   - false
 name: torch._C._linalg.linalg_pinv
 package: torch
-pass_rate: 0
+pass_rate: 74.0
+rules:
+- - cot: 'The error is triggered because the function expects a square matrix, but
+      a 4x8 matrix is provided. In order to avoid this error, the number of rows and
+      columns in the input matrix should be the same. Hence, the constraint should
+      be:'
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        rcond: tensor
+        self: tensor
+      msg: 'linalg.eigh: A must be batches of square matrices, but they are 8 by 9
+        matrices'
+      package: torch
+    txt: self.shape[-1] == self.shape[-2]
+  - f1_score: 68.18181818181819
+    overall_score: 46.09090909090909
+    precision: 95.0
+    recall: 53.17164179104478
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        hermitian: bool
+        rcond: tensor
+        self: tensor
+      msg: 'linalg.pinv(Float{[]}): expected a tensor with 2 or more dimensions of
+        float, double, cfloat or cdouble types'
+      package: torch
+    txt: (len(self.shape) >= 2 and self.dtype in ["float", "double", "cfloat", "cdouble"])
+      and (self.dtype in ["float32", "float64", "complex64", "complex128"])
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Error is triggered because the size of tensor `a` (7) does not match the
+      size of tensor `b` (8) at non-singleton dimension 6. The constraint to prevent
+      this error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        rcond: tensor
+        self: tensor
+      msg: The size of tensor a (5) must match the size of tensor b (4) at non-singleton
+        dimension 5
+      package: torch
+    txt: self.shape[6] == rcond.shape[6]
+  - f1_score: 63.23319027181689
+    overall_score: 43.61659513590844
+    precision: 73.66666666666667
+    recall: 55.388471177944865

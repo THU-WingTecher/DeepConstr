@@ -1,0 +1,159 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - str
+  - str
+  - Optional[bool]
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - grid
+  - mode
+  - padding_mode
+  - align_corners
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+name: torch.nn.functional.grid_sample
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: 'The error occurs because the mode provided is not one of the valid options
+      (''bilinear'', ''nearest'', or ''bicubic''). Let''s see what the args were.
+      It related with arg_name ''mode=yaZL'', which is not a valid mode. To prevent
+      this error in the future and generate constraints that do not trigger it, we
+      need to ensure that the "mode" value is always one of the valid options. The
+      constraint for the ''mode'' parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        grid: tensor
+        input: tensor
+        mode: str
+        padding_mode: str
+      msg: 'nn.functional.grid_sample(): expected mode to be ''bilinear'', ''nearest''
+        or ''bicubic'', but got: ''VvZe'''
+      package: torch
+    txt: mode in ['bilinear', 'nearest', 'bicubic']
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is triggered because the padding_mode parameter is set to an invalid
+      value. The expected values for padding_mode are ''zeros'', ''border'', or ''reflection'',
+      but the actual value provided is ''VjSs''. To prevent this error, we need to
+      ensure that the padding_mode parameter is always set to a valid value. The constraint
+      for the padding_mode parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: None
+        grid: tensor
+        input: tensor
+        mode: str
+        padding_mode: str
+      msg: 'nn.functional.grid_sample(): expected padding_mode to be ''zeros'', ''border'',
+        or ''reflection'', but got: ''Dnwx'''
+      package: torch
+    txt: padding_mode in ['zeros', 'border', 'reflection']
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        align_corners: None
+        grid: tensor
+        input: tensor
+        mode: str
+        padding_mode: str
+      msg: 'grid_sampler(): expected grid and input to have same batch size, but got
+        input with sizes [3, 8, 7, 8] and grid with sizes [8, 8, 8, 8, 8]'
+      package: torch
+    txt: (input.ndim == grid.ndim) and ((grid.shape[0] == input.shape[0]))
+  - f1_score: 79.26023778071334
+    overall_score: 100
+    precision: 100.0
+    recall: 65.64551422319475
+- - cot: 'Error is triggered because the input tensor has no dimensions, but a dimension
+      is specified as 0 in the grid tensor. To prevent the error, we need to ensure
+      that the input tensor has at least one dimension. Let''s formulate the constraint:'
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        grid: tensor
+        input: tensor
+        mode: str
+        padding_mode: str
+      msg: Dimension specified as 0 but tensor has no dimensions
+      package: torch
+    txt: len(input) > 0
+  - f1_score: 62.70022883295194
+    overall_score: 25.833333333333332
+    precision: 45.666666666666664
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        align_corners: bool
+        grid: tensor
+        input: tensor
+        mode: str
+        padding_mode: str
+      msg: Dimension specified as 0 but tensor has no dimensions
+      package: torch
+    txt: (len(input.shape) > 0) and (len(grid) > 0)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Error is triggered because the grid tensor''s size in the last dimension
+      is not -1. Let''s see what the args were. grid tensor''s size in the last dimension
+      is 4, but the function expected -1. Therefore, Left : grid.shape[-1], op : ==,
+      right : -1.'
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        grid: tensor
+        input: tensor
+        mode: str
+        padding_mode: str
+      msg: 'grid_sampler(): expected grid to have size -1 in last dimension, but got
+        grid with sizes [1]'
+      package: torch
+    txt: grid.shape[-1] == -1
+  - f1_score: 81.65680473372781
+    overall_score: 37.5
+    precision: 69.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        align_corners: None
+        grid: tensor
+        input: tensor
+        mode: str
+        padding_mode: str
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: (grid.shape[dim] >= 0) and (grid.shape[1] > 0)
+  - f1_score: 86.33093525179856
+    overall_score: 100
+    precision: 100.0
+    recall: 75.9493670886076

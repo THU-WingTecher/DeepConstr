@@ -13,4 +13,82 @@ args:
   - true
 name: torch.nn.functional.adaptive_avg_pool2d
 package: torch
-pass_rate: 0
+pass_rate: 96.98996655518395
+rules:
+- - cot: The error is due to the input tensor being of type 'Int'. The adaptive_avg_pool2d
+      function is not implemented for 'Int' tensors. Therefore, the constraint to
+      prevent the error is to ensure that the input tensor is of a different type,
+      such as 'Float'.
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+      msg: '"adaptive_avg_pool2d" not implemented for ''Int'''
+      package: torch
+    txt: input.dtype != torch.int
+  - f1_score: 94.19152276295132
+    overall_score: 59.09576138147566
+    precision: 100.0
+    recall: 89.02077151335311
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+      msg: 'adaptive_avg_pool2d(): Expected input to have non-zero size for non-batch
+        dimensions, but input has sizes [8, 9, 0] with dimension 2 being empty'
+      package: torch
+    txt: all(input[i]!=0 for i in range(1,len(input.shape)))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+      msg: 'adaptive_avg_pool2d(): Expected 3D or 4D tensor, but got [7, 8, 8, 8,
+        8, 8, 8]'
+      package: torch
+    txt: len(input.shape) == 3 or len(input.shape) == 4
+  - f1_score: 81.74386920980926
+    overall_score: 52.87193460490463
+    precision: 100.0
+    recall: 69.12442396313364
+- - cot: "The error message indicates that the elements of the 'output_size' argument\
+      \ must be greater than or equal to 0. However, the received 'output_size' is\
+      \ {-4, -3}, which does not satisfy this requirement. \n\nTo prevent this error,\
+      \ we need to ensure that all elements of the 'output_size' are greater than\
+      \ or equal to 0. Therefore, the condition can be formulated as:"
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+      msg: 'adaptive_avg_pool2d: elements of output_size must be greater than or equal
+        to 0 but received {-4, -3}'
+      package: torch
+    txt: all(o >= 0 for o in output_size)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: Based on the given runtime information, the error occurs because the output_size
+      argument for the adaptive_avg_pool2d function is empty. To prevent this error,
+      the output_size must be a list or tuple of length 2.
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+      msg: 'adaptive_avg_pool2d: output_size must be 2'
+      package: torch
+    txt: len(output_size) == 2
+  - f1_score: 95.99999999999999
+    overall_score: 59.99999999999999
+    precision: 100.0
+    recall: 92.3076923076923

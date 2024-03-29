@@ -33,4 +33,26 @@ args:
   - false
 name: torch.conv2d
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'To prevent the error, we need to ensure that the input tensor has either
+      3D (unbatched) or 4D (batched) dimensions. The constraint for the input tensor
+      shape can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        bias: None
+        dilation: list[int]
+        groups: int
+        input: tensor
+        padding: str
+        stride: list[int]
+        weight: tensor
+      msg: 'Expected 3D (unbatched) or 4D (batched) input to conv2d, but got input
+        of size: [1, 1]'
+      package: torch
+    txt: len(input.shape) in [3, 4]
+  - f1_score: 99.83361064891847
+    overall_score: 100
+    precision: 100.0
+    recall: 99.66777408637874

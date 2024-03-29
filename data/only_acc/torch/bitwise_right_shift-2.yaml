@@ -1,0 +1,30 @@
+args:
+  dtype:
+  - number
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.bitwise_right_shift
+package: torch
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: int
+      msg: '"rshift_cpu" not implemented for ''Float'''
+      package: torch
+    txt: dtype(other) != 'Float'
+  - f1_score: 72.02881152460985
+    overall_score: 100
+    precision: 100.0
+    recall: 56.28517823639775

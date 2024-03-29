@@ -1,0 +1,119 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[float]
+  - Optional[float]
+  - bool
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - atol
+  - rtol
+  - hermitian
+  - out
+  required:
+  - true
+  - false
+  - false
+  - false
+  - true
+name: torch._C._linalg.linalg_pinv
+package: torch
+pass_rate: 100
+rules:
+- - cot: "The error is triggered because the input tensor `self` has a shape of `[9,\
+      \ 4, 4, 4, 4, 4, 7]`, where the last two dimensions are not square matrices.\
+      \ To prevent the error, the last two dimensions of `self` should be square matrices.\
+      \ \n\nThe constraint to prevent the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        atol: None
+        hermitian: bool
+        out: tensor
+        rtol: None
+        self: tensor
+      msg: 'linalg.eigh: A must be batches of square matrices, but they are 1 by 7
+        matrices'
+      package: torch
+    txt: self.shape[-2] == self.shape[-1]
+  - f1_score: 67.41573033707866
+    overall_score: 100
+    precision: 100.0
+    recall: 50.847457627118644
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        atol: float
+        hermitian: bool
+        out: tensor
+        rtol: float
+        self: tensor
+      msg: 'linalg.pinv(Float{[]}): expected a tensor with 2 or more dimensions of
+        float, double, cfloat or cdouble types'
+      package: torch
+    txt: (((self.rank >= 2) and (dtype(out) in [float, double, cfloat, cdouble]))
+      or (out.dim() >= 2 and out.dtype in [float, double, cfloat, cdouble])) and (self.dtype
+      in [torch.float32, torch.float64, torch.complex64, torch.complex128])
+  - f1_score: 98.36065573770492
+    overall_score: 100
+    precision: 100.0
+    recall: 96.77419354838709
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        atol: float
+        hermitian: bool
+        out: tensor
+        rtol: None
+        self: tensor
+      msg: 'linalg.pinv: Expected result to be safely castable from ComplexDouble
+        dtype, but got result with dtype Half'
+      package: torch
+    txt: out.dtype == torch.complex128
+  - f1_score: 98.52216748768473
+    overall_score: 100
+    precision: 100.0
+    recall: 97.0873786407767
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        atol: float
+        hermitian: bool
+        out: tensor
+        rtol: None
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 73.71007371007371
+    overall_score: 100
+    precision: 100.0
+    recall: 58.36575875486382
+- - cot: 'Based on the given runtime information, the error occurs because the tensor
+      dimensions provided are negative, which is not allowed. Therefore, the constraint
+      to prevent this error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        atol: float
+        hermitian: bool
+        out: tensor
+        rtol: float
+        self: tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(dim >= 0 for dim in self.shape)
+  - f1_score: 82.5657894736842
+    overall_score: 100
+    precision: 100.0
+    recall: 70.30812324929971

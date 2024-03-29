@@ -17,4 +17,70 @@ args:
   - false
 name: tf.raw_ops.SoftsignGrad
 package: tensorflow
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'Based on the given runtime information, the error occurs because the function
+      `tf.raw_ops.SoftsignGrad` expects the `gradients` input to be a half tensor,
+      but it is a float tensor.
+
+
+      To prevent this error, the `gradients` tensor should be converted to a half
+      tensor before passing it to the function.
+
+
+      The constraint formula to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        features: tensor
+        gradients: tensor
+        name: str
+      msg: 'cannot compute SoftsignGrad as input #1(zero-based) was expected to be
+        a half tensor but is a float tensor [Op:SoftsignGrad] name: BqKr'
+      package: tensorflow
+    txt: dtype(gradients) == dtype(features)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the error occurs because the attribute
+      ''gradients'' is of type int32, but it is expected to be one of the allowed
+      types: half, bfloat16, float, double. Therefore, the constraint to prevent the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        features: tensor
+        gradients: tensor
+        name: str
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: half,\
+        \ bfloat16, float, double\n\t; NodeDef: {{node SoftsignGrad}}; Op<name=SoftsignGrad;\
+        \ signature=gradients:T, features:T -> backprops:T; attr=T:type,allowed=[DT_HALF,\
+        \ DT_BFLOAT16, DT_FLOAT, DT_DOUBLE]> [Op:SoftsignGrad] name: Yulk"
+      package: tensorflow
+    txt: dtype(gradients) in ["half", "bfloat16", "float", "double"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Error is triggered because the inputs to the operation SoftsignGrad are
+      not of the same size and shape. It expects to have same dimension among all
+      tensors. Let''s see what the args were. It seems dimensions and shape of features,
+      and gradients are which should be corrected. Therefore, Left : {arg_name}.dim,
+      {arg_name}.shape Op : ==, and Right : gradients.dim, gradients.shape'
+    length: 1
+    target:
+      choosen_dtype:
+        features: tensor
+        gradients: tensor
+        name: str
+      msg: '{{function_node __wrapped__SoftsignGrad_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Inputs to operation SoftsignGrad of type SoftsignGrad must have the same size
+        and shape.  Input 0: [1,1,1,1] != input 1: [3,7,8,7,7] [Op:SoftsignGrad] name:
+        jrXy'
+      package: tensorflow
+    txt: features.dim == gradients.dim and features.shape == gradients.shape
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

@@ -13,4 +13,34 @@ args:
   - true
 name: torch.tile
 package: torch
-pass_rate: 0
+pass_rate: 48.18181818181818
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dims: list[int]
+        self: tensor
+      msg: '[enforce fail at alloc_cpu.cpp:117] err == 0. DefaultCPUAllocator: can''t
+        allocate memory: you tried to allocate 307453132546560 bytes. Error code 12
+        (Cannot allocate memory)'
+      package: torch
+    txt: all(dims[i] <= 100 for i in range(len(dims)))
+  - f1_score: 64.92650785605677
+    overall_score: 49.92307692307692
+    precision: 93.84615384615384
+    recall: 49.63192561022859
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dims: list[int]
+        self: tensor
+      msg: 'Trying to create tensor with negative dimension -2: [-2, -2, -2, -2, -2,
+        -2, -2, -10, -10]'
+      package: torch
+    txt: all(dim > 0 for dim in dims)
+  - f1_score: 86.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 76.47058823529412

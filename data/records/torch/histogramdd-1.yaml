@@ -25,4 +25,5 @@ args:
   - false
 name: torch.histogramdd
 package: torch
-pass_rate: 0
+pass_rate: 27.7027027027027
+rules: []

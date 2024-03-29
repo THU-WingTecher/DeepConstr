@@ -214,7 +214,7 @@ if __name__ == "__main__":
                 merged_cov[current_time] = {}
                 merged_cov[current_time][
                     "n_model"
-                ] = args.batch_size  # inaccurate for the last.
+                ] = len(profraws)  # inaccurate for the last.
                 current_cov = merge_cov(current_cov, res, f"merging {profraw_name}")
                 merged_cov[current_time]["merged_cov"] = deepcopy(current_cov)
 

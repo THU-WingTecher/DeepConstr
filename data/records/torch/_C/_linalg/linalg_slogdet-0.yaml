@@ -9,4 +9,64 @@ args:
   - true
 name: torch._C._linalg.linalg_slogdet
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+      msg: 'linalg.slogdet: Expected a floating point or complex tensor as input.
+        Got Int'
+      package: torch
+    txt: dtype(A) in [torch.float32, torch.float64, torch.complex64, torch.complex128]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is triggered because the input tensor A is not a batch of square
+      matrices. The shape of A is [5, 5, 2, 9, 8, 4, 5], which means it has 7 dimensions.
+      To prevent this error, we need to ensure that A is a batch of square matrices.
+      This can be achieved by adding the following constraint:'
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+      msg: 'linalg.slogdet: A must be batches of square matrices, but they are 3 by
+        2 matrices'
+      package: torch
+    txt: len(A.shape) == 3 and A.shape[0] == A.shape[1]
+  - f1_score: 69.12442396313365
+    overall_score: 46.562211981566826
+    precision: 100.0
+    recall: 52.816901408450704
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+      msg: 'linalg.slogdet: The input tensor A must have at least 2 dimensions.'
+      package: torch
+    txt: A.dim() >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: "The error is triggered because the input tensor A is not a batch of square\
+      \ matrices. The shape of A is [5, 5, 9], indicating that each matrix in the\
+      \ batch has dimensions of 5 by 9. However, to prevent the error and ensure that\
+      \ A is a batch of square matrices, the constraint should be that all matrices\
+      \ in A should have the same number of rows and columns. \n\nThe constraint for\
+      \ A can be expressed as:"
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+      msg: 'linalg.slogdet: A must be batches of square matrices, but they are 5 by
+        3 matrices'
+      package: torch
+    txt: all(A.shape[i] == A.shape[-1] for i in range(A.rank-2))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

@@ -21,4 +21,157 @@ args:
   - true
 name: torch.narrow_copy
 package: torch
-pass_rate: 0
+pass_rate: 95.0
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        self: tensor
+        start: int
+      msg: Expected dim < static_cast<int64_t>(self_sizes.size()) to be true, but
+        got false.  (Could this error message be improved?  If so, please report an
+        enhancement request to PyTorch.)
+      package: torch
+    txt: (dim < len(self.shape)) and (dim < 2)
+  - f1_score: 68.88633754305395
+    overall_score: 100
+    precision: 100.0
+    recall: 52.53940455341506
+- - cot: 'Based on the given runtime information, the error occurs because the function
+      is trying to apply `narrow_copy` on a 0-dimensional tensor. To prevent this
+      error, we need to ensure that the input tensor has at least one dimension.
+
+
+      So, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        self: tensor
+        start: int
+      msg: narrow() cannot be applied to a 0-dim tensor.
+      package: torch
+    txt: self.dim() > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        self: tensor
+        start: int
+      msg: start out of range (expected to be in range of [-1, 1], but got 8)
+      package: torch
+    txt: (start >= -len(self.shape) and start < len(self.shape)) and (dim >= -len(self.shape))
+  - f1_score: 72.2560975609756
+    overall_score: 41.0
+    precision: 79.0
+    recall: 66.57303370786516
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        self: tensor
+        start: int
+      msg: start (0) + length (88) exceeds dimension size (1).
+      package: torch
+    txt: start + length <= self.shape[dim]
+  - f1_score: 73.00150829562594
+    overall_score: 43.33333333333333
+    precision: 80.66666666666666
+    recall: 66.66666666666666
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        self: tensor
+        start: int
+      msg: start (0) + length (-2) exceeds dimension size (4).
+      package: torch
+    txt: start + length <= self.size(dim)
+  - f1_score: 60.60606060606061
+    overall_score: 43.0
+    precision: 80.0
+    recall: 48.78048780487805
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      start index (0) plus the length (-2) exceeds the dimension size (9). To prevent
+      this error, we need to ensure that the start index plus the length is within
+      the bounds of the dimension size.
+
+
+      Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        self: tensor
+        start: int
+      msg: start (0) + length (-4) exceeds dimension size (9).
+      package: torch
+    txt: start + length <= self.size(dim)
+  - f1_score: 62.3574144486692
+    overall_score: 44.0
+    precision: 82.0
+    recall: 50.306748466257666
+- - cot: "Based on the given runtime information, the error is triggered because the\
+      \ start index (8) plus the length (9) exceeds the size of the dimension (9).\n\
+      \nTo prevent this error, we need to ensure that the start index plus the length\
+      \ is less than or equal to the size of the dimension. \n\nTherefore, the constraint\
+      \ can be formulated as follows:"
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        self: tensor
+        start: int
+      msg: start (0) + length (-3) exceeds dimension size (1).
+      package: torch
+    txt: start + length <= self.size(dim)
+  - f1_score: 63.01020408163266
+    overall_score: 44.16666666666667
+    precision: 82.33333333333334
+    recall: 51.03305785123967
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        self: tensor
+        start: int
+      msg: start (9) + length (-4) exceeds dimension size (9).
+      package: torch
+    txt: length >= 0
+  - f1_score: 89.52380952380953
+    overall_score: 56.761904761904766
+    precision: 94.0
+    recall: 85.45454545454547
+- - cot: Wrap the final formula with
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        self: tensor
+        start: int
+      msg: start (2) + length (9) exceeds dimension size (6).
+      package: torch
+    txt: start >= 0 and length <= self.dim - start
+  - f1_score: 67.76470588235294
+    overall_score: 45.88235294117647
+    precision: 96.0
+    recall: 52.36363636363637

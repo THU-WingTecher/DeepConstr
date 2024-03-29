@@ -33,4 +33,62 @@ args:
   - false
 name: torch.Tensor.new_empty_strided
 package: torch
-pass_rate: 0
+pass_rate: 90.66666666666666
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dtype: None
+        layout: None
+        pin_memory: bool
+        self: tensor
+        size: list[int]
+        stride: list[int]
+      msg: Need to provide pin_memory allocator to use pin memory.
+      package: torch
+    txt: pin_memory == False
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the given values, the error is triggered because the dimensionality
+      of the sizes does not match with the dimensionality of the strides. The sizes
+      have 0 dimensionality while strides have 4. Hence, the dimensions of sizes and
+      strides should be equal to prevent this error. Therefore, the condition to prevent
+      this error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dtype: None
+        layout: None
+        pin_memory: bool
+        self: tensor
+        size: list[int]
+        stride: list[int]
+      msg: dimensionality of sizes (0) must match dimensionality of strides (4)
+      package: torch
+    txt: len(size) == len(stride)
+  - f1_score: 81.74386920980926
+    overall_score: 100
+    precision: 100.0
+    recall: 69.12442396313364
+- - cot: Based on the given runtime information, the error occurs because the function
+      is trying to create a tensor with a negative dimension (-4). To prevent this
+      error, the constraint should ensure that the dimensions are non-negative.
+    length: 1
+    target:
+      choosen_dtype:
+        dtype: None
+        layout: None
+        pin_memory: bool
+        self: tensor
+        size: list[int]
+        stride: list[int]
+      msg: 'Trying to create tensor with negative dimension -4: [-4, 9]'
+      package: torch
+    txt: (all(dim >= 0 for dim in size))
+  - f1_score: 89.55223880597015
+    overall_score: 100
+    precision: 100.0
+    recall: 81.08108108108108

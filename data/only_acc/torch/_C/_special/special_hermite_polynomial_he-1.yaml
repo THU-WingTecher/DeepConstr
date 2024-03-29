@@ -1,0 +1,64 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - x
+  - n
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch._C._special.special_hermite_polynomial_he
+package: torch
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        n: tensor
+        out: tensor
+        x: tensor
+      msg: The size of tensor a (8) must match the size of tensor b (9) at non-singleton
+        dimension 1
+      package: torch
+    txt: n.shape[6] == x.shape[6]
+  - f1_score: 75.94936708860759
+    overall_score: 100
+    precision: 100.0
+    recall: 61.224489795918366
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        n: tensor
+        out: tensor
+        x: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == n.rank and all(out.shape[i] == n.shape[i] for i in range(out.rank))
+  - f1_score: 48.015421011127664
+    overall_score: 26.220338983050848
+    precision: 46.440677966101696
+    recall: 49.70070741882823
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        n: tensor
+        out: tensor
+        x: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==x.rank
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0

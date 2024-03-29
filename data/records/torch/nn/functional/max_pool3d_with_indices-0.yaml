@@ -33,4 +33,5 @@ args:
   - false
 name: torch.nn.functional.max_pool3d_with_indices
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules: []

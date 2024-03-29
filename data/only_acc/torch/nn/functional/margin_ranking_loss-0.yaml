@@ -1,0 +1,99 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - float
+  - Optional[bool]
+  - Optional[bool]
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input1
+  - input2
+  - target
+  - margin
+  - size_average
+  - reduce
+  - reduction
+  required:
+  - true
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+name: torch.nn.functional.margin_ranking_loss
+package: torch
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input1: tensor
+        input2: tensor
+        margin: float
+        reduce: bool
+        reduction: str
+        size_average: None
+        target: tensor
+      msg: 'margin_ranking_loss : All input tensors should have same dimension but
+        got sizes: input1: torch.Size([6, 9]), input2: torch.Size([7, 9, 9]), target:
+        torch.Size([5, 9, 9, 9]) '
+      package: torch
+    txt: input1.dim() == input2.dim() and input1.dim() == target.dim()
+  - f1_score: 88.75739644970415
+    overall_score: 100
+    precision: 100.0
+    recall: 79.7872340425532
+- - cot: 'Error is triggered because the size of tensor a (6) must match the size
+      of tensor b (8) at non-singleton dimension 6. Based on the given runtime information,
+      the constraint to prevent this error can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        input1: tensor
+        input2: tensor
+        margin: float
+        reduce: bool
+        reduction: str
+        size_average: bool
+        target: tensor
+      msg: The size of tensor a (6) must match the size of tensor b (9) at non-singleton
+        dimension 1
+      package: torch
+    txt: input1.shape[6] == input2.shape[6]
+  - f1_score: 86.95652173913044
+    overall_score: 100
+    precision: 100.0
+    recall: 76.92307692307692
+- - cot: 'The error is due to an invalid value for the ''reduction'' parameter. The
+      value provided for ''reduction'' is ''nJFs'', which is not a valid value. The
+      valid values for ''reduction'' are ["mean", "sum", "none"]. Therefore, the constraint
+      that should be added to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        input1: tensor
+        input2: tensor
+        margin: float
+        reduce: None
+        reduction: str
+        size_average: None
+        target: tensor
+      msg: Hker is not a valid value for reduction
+      package: torch
+    txt: reduction in ["mean", "sum", "none"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

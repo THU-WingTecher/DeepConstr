@@ -29,4 +29,62 @@ args:
   - false
 name: torch.nn.functional.smooth_l1_loss
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: The error is due to the negative value of 'beta' which is not supported by
+      the smooth_l1_loss function. To prevent this error, the value of 'beta' should
+      be non-negative.
+    length: 1
+    target:
+      choosen_dtype:
+        beta: float
+        input: tensor
+        reduce: None
+        reduction: str
+        size_average: bool
+        target: tensor
+      msg: smooth_l1_loss does not support negative values for beta.
+      package: torch
+    txt: beta >= 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        beta: float
+        input: tensor
+        reduce: None
+        reduction: str
+        size_average: None
+        target: tensor
+      msg: qMLc is not a valid value for reduction
+      package: torch
+    txt: (reduction in ["none", "mean", "sum"])
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Error is triggered because the size of tensor a (8) must match the size
+      of tensor b (7) at non-singleton dimension 2. Let''s see what the args were.
+      It seems dimensions and shape of a and b are inconsistent. Therefore, Left :
+      input.dim, input.shape, Op : ==, and Right : target.dim, target.shape'
+    length: 1
+    target:
+      choosen_dtype:
+        beta: float
+        input: tensor
+        reduce: None
+        reduction: str
+        size_average: None
+        target: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (6) at non-singleton
+        dimension 3
+      package: torch
+    txt: input.dim == target.dim and input.shape == target.shape
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

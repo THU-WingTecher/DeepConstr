@@ -1,0 +1,32 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - size
+  required:
+  - true
+  - true
+name: torch.Tensor.sum_to_size
+package: torch
+pass_rate: 99.64539007092199
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        self: tensor
+        size: list[int]
+      msg: size {[53, 86, 60]} is not expandable to size {[1, 1]}.
+      package: torch
+    txt: ((self.shape[i] == 1) and (self.dim == 7 and size == [8, 7, 1, 8, 8, 8, 8]))
+      and (all(self.shape[i] == size[i] or self.shape[i] == 1 or size[i] == 1 for
+      i in range(-1, -min(len(self.shape), len(size))-1, -1)))
+  - f1_score: 99.66777408637873
+    overall_score: 100
+    precision: 100.0
+    recall: 99.33774834437087

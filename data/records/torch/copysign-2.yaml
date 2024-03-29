@@ -17,4 +17,69 @@ args:
   - true
 name: torch.copysign
 package: torch
-pass_rate: 0
+pass_rate: 96.32107023411372
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (2) must match the size of tensor b (6) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.shape[2] == other.shape[2]
+  - f1_score: 75.09386733416773
+    overall_score: 100
+    precision: 100.0
+    recall: 60.120240480961925
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.shape == other.shape) and (out.rank==other.rank and all(out.shape[i]==other.shape[i]
+      for i in range(out.rank)))
+  - f1_score: 63.602941176470594
+    overall_score: 30.333333333333332
+    precision: 57.666666666666664
+    recall: 70.90163934426229
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self) == dtype(other)
+  - f1_score: 65.98639455782313
+    overall_score: 44.993197278911566
+    precision: 97.0
+    recall: 50.0
+- - cot: "This error occurs because we are trying to resize a tensor that is not resizable.\
+      \ In this particular case, it seems like the output tensor ('out') is not matching\
+      \ the shape of the input tensor ('self'). The output tensor shape should match\
+      \ the operation result, which in this case should be the same shape as the input\
+      \ tensor. \n\nSo, the condition to prevent this error would be that the rank\
+      \ and shape of the 'out' tensor should be equal to the rank and shape of 'self'\
+      \ tensor."
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(self.rank))
+  - f1_score: 78.12080536912752
+    overall_score: 51.06040268456376
+    precision: 97.0
+    recall: 65.39325842696628

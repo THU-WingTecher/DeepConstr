@@ -17,4 +17,65 @@ args:
   - false
 name: torch._C._nn.upsample_nearest1d
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: list[int]
+        scales: None
+        self: tensor
+      msg: Non-empty 3D data tensor expected but got a tensor with sizes [8, 0, 7]
+      package: torch
+    txt: all(self.size()[i] != 0 for i in range(1, self.dim()))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: The error is due to the fact that the function "compute_indices_weights_nearest"
+      is not implemented for the data type 'Int'. To prevent this error, the data
+      type of the input tensor should be changed to a supported data type for nearest
+      neighbor upsampling, such as float or double.
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: list[int]
+        scales: None
+        self: tensor
+      msg: '"compute_indices_weights_nearest" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype in [torch.float32, torch.float64]
+  - f1_score: 99.33774834437087
+    overall_score: 61.66887417218543
+    precision: 100.0
+    recall: 98.68421052631578
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        output_size: list[int]
+        scales: float
+        self: tensor
+      msg: 'Input and output sizes should be greater than 0, but got input (W: 8)
+        and output (W: -3)'
+      package: torch
+    txt: ((output_size[0] > 0) and (self.shape[-1] > 0)) and (output_size[0] > 0)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        output_size: list[int]
+        scales: None
+        self: tensor
+      msg: It is expected output_size equals to 1, but got size 0
+      package: torch
+    txt: ((len(output_size) > 0) and (self.dim() == 3)) and (len(output_size) == 1)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

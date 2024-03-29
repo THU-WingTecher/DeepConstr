@@ -21,4 +21,35 @@ args:
   - true
 name: torch.sub
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        other: int
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self)==dtype(out)
+  - f1_score: 88.23529411764706
+    overall_score: 56.11764705882353
+    precision: 100.0
+    recall: 78.94736842105263
+- - cot: 'The constraint that prevents the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        other: int
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
+  - f1_score: 74.81296758104737
+    overall_score: 49.40648379052369
+    precision: 100.0
+    recall: 59.76095617529881

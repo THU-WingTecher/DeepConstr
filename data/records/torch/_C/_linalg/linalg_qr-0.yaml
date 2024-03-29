@@ -13,4 +13,46 @@ args:
   - false
 name: torch._C._linalg.linalg_qr
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        mode: str
+      msg: 'linalg.qr: Expected a floating point or complex tensor as input. Got Int'
+      package: torch
+    txt: dtype(A) in [torch.float32, torch.float64, torch.complex64, torch.complex128]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        mode: str
+      msg: 'linalg.qr: The input tensor A must have at least 2 dimensions.'
+      package: torch
+    txt: A.dim >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        mode: str
+      msg: qr received unrecognized mode 'RXoC' but expected one of 'reduced' (default),
+        'r', or 'complete'
+      package: torch
+    txt: mode in ['reduced', 'r', 'complete']
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

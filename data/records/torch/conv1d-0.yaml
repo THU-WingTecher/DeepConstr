@@ -33,4 +33,85 @@ args:
   - false
 name: torch.conv1d
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'Error is triggered because of mismatched input size. Let''s see what the
+      args were. The input tensor size is [3, 3, 3, 3, 3, 3, 3] and error message
+      says 2D or 3D input is expected. So, I guess the input tensor should have 2
+      or 3 dimensions. Therefore, left : input.ndim op : in right : [2, 3]'
+    length: 1
+    target:
+      choosen_dtype:
+        bias: tensor
+        dilation: list[int]
+        groups: int
+        input: tensor
+        padding: list[int]
+        stride: list[int]
+        weight: tensor
+      msg: 'Expected 2D (unbatched) or 3D (batched) input to conv1d, but got input
+        of size: [3, 3, 3, 3, 3, 3, 3]'
+      package: torch
+    txt: input.ndim in [2, 3]
+  - f1_score: 97.87928221859706
+    overall_score: 100
+    precision: 100.0
+    recall: 95.84664536741214
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        bias: tensor
+        dilation: list[int]
+        groups: int
+        input: tensor
+        padding: list[int]
+        stride: list[int]
+        weight: tensor
+      msg: expected stride to be a single integer value or a list of 2 values to match
+        the convolution dimensions, but got stride=[]
+      package: torch
+    txt: (len(stride) == 1 or len(stride) == 2) and (len(padding) == 1)
+  - f1_score: 48.99646621008849
+    overall_score: 23.85494880546075
+    precision: 44.7098976109215
+    recall: 54.192146988018486
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        bias: tensor
+        dilation: list[int]
+        groups: int
+        input: tensor
+        padding: list[int]
+        stride: list[int]
+        weight: tensor
+      msg: expected dilation to be a single integer value or a list of 2 values to
+        match the convolution dimensions, but got dilation=[]
+      package: torch
+    txt: (len(dilation) == 1 or len(dilation) == 5) and (all(d >= 1 for d in dilation))
+  - f1_score: 82.26744186046511
+    overall_score: 100
+    precision: 100.0
+    recall: 69.87654320987654
+- - cot: 'The error is triggered because the value of "groups" is non-positive (-3)
+      which is not supported. To prevent this error, the value of "groups" should
+      be positive. Therefore, the constraint for "groups" is:'
+    length: 1
+    target:
+      choosen_dtype:
+        bias: tensor
+        dilation: list[int]
+        groups: int
+        input: tensor
+        padding: list[int]
+        stride: list[int]
+        weight: tensor
+      msg: non-positive groups is not supported
+      package: torch
+    txt: groups > 0
+  - f1_score: 79.30308336843038
+    overall_score: 40.81818181818182
+    precision: 75.63636363636364
+    recall: 83.34342822531798

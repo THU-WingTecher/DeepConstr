@@ -1,0 +1,107 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - number
+  - number
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - bins
+  - min
+  - max
+  required:
+  - true
+  - false
+  - false
+  - false
+name: torch.histc
+package: torch
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        bins: int
+        max: int
+        min: int
+        self: tensor
+      msg: 'torch.histc: max must be larger than min'
+      package: torch
+    txt: max > min
+  - f1_score: 69.93006993006993
+    overall_score: 100
+    precision: 100.0
+    recall: 53.76344086021506
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        bins: int
+        max: int
+        min: int
+        self: tensor
+      msg: 'torch.histogram(): bins must be > 0, but got -1 for dimension 0'
+      package: torch
+    txt: bins > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: The error message indicates that the "histogram_cpu" function is not implemented
+      for tensors of type 'Int'. To prevent this error, the constraint should be added
+      to ensure that the tensor passed to the function is not of type 'Int'.
+    length: 1
+    target:
+      choosen_dtype:
+        bins: int
+        max: int
+        min: int
+        self: tensor
+      msg: '"histogram_cpu" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype != 'Int'
+  - f1_score: 68.02721088435375
+    overall_score: 100
+    precision: 100.0
+    recall: 51.54639175257733
+- - cot: 'The error is due to the ''linspace_cpu'' function not being implemented
+      for a boolean tensor. The function is trying to create a linearly spaced tensor
+      using the ''linspace_cpu'' function, but the input tensor has a data type of
+      ''Bool'' which is not supported. Therefore, to prevent this error, the input
+      tensor should have a data type other than ''Bool''. Op : !=, and Right : ''Bool''.'
+    length: 1
+    target:
+      choosen_dtype:
+        bins: int
+        max: int
+        min: int
+        self: tensor
+      msg: '"linspace_cpu" not implemented for ''Bool'''
+      package: torch
+    txt: self.dtype != 'Bool'
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        bins: int
+        max: int
+        min: int
+        self: tensor
+      msg: '''complex32'''
+      package: torch
+    txt: (self.dim() == 1) and (self.dtype in [torch.float32, torch.float64, torch.int32,
+      torch.int64])
+  - f1_score: 67.79661016949153
+    overall_score: 100
+    precision: 100.0
+    recall: 51.28205128205129

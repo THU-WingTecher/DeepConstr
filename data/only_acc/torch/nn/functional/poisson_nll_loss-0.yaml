@@ -1,0 +1,86 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - bool
+  - bool
+  - Optional[bool]
+  - float
+  - Optional[bool]
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - target
+  - log_input
+  - full
+  - size_average
+  - eps
+  - reduce
+  - reduction
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+name: torch.nn.functional.poisson_nll_loss
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'Error is triggered because the size of tensor a (8) doesn''t match the size
+      of tensor b (7) at non-singleton dimension 6. To prevent this error, we need
+      to ensure that the dimensions and shapes of both tensors match. Therefore, the
+      constraint can be formulated as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        eps: float
+        full: bool
+        input: tensor
+        log_input: bool
+        reduce: bool
+        reduction: str
+        size_average: None
+        target: tensor
+      msg: The size of tensor a (8) must match the size of tensor b (7) at non-singleton
+        dimension 4
+      package: torch
+    txt: input.dim == target.dim and input.shape == target.shape
+  - f1_score: 98.6842105263158
+    overall_score: 100
+    precision: 100.0
+    recall: 97.40259740259741
+- - cot: 'The error is due to an invalid value for the ''reduction'' parameter. The
+      value provided is ''ykxt'', which is not a valid value for ''reduction''. The
+      valid values for ''reduction'' are [''mean'', ''sum'', ''none'']. Therefore,
+      the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        eps: float
+        full: bool
+        input: tensor
+        log_input: bool
+        reduce: None
+        reduction: str
+        size_average: None
+        target: tensor
+      msg: trnp is not a valid value for reduction
+      package: torch
+    txt: reduction in ['mean', 'sum', 'none']
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

@@ -13,4 +13,38 @@ args:
   - false
 name: torch.Tensor.norm
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      norm value is -3, which is not a valid norm value for tensor normalization.
+      The norm value must be a positive number or 0.
+
+
+      Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        p: int
+        self: tensor
+      msg: linalg.vector_norm cannot compute the -3 norm on an empty tensor because
+        the operation does not have an identity
+      package: torch
+    txt: p >= 0
+  - f1_score: 67.04288939051919
+    overall_score: 45.521444695259596
+    precision: 99.0
+    recall: 50.68259385665529
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        p: int
+        self: tensor
+      msg: 'linalg.vector_norm: Expected a floating point or complex tensor as input.
+        Got Int'
+      package: torch
+    txt: dtype(self) in [float16, float32, float64, complex64, complex128]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

@@ -17,4 +17,35 @@ args:
   - false
 name: torch.nn.functional.celu
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'The error is due to the ''input'' tensor being of type int32, but the implementation
+      of ''elu_cpu'' does not support this data type. To prevent the error, the ''input''
+      tensor should be of type float. So, Left : input.dtype, Op : ==, Right : torch.float32'
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: float
+        inplace: bool
+        input: tensor
+      msg: '"elu_cpu" not implemented for ''Int'''
+      package: torch
+    txt: input.dtype == torch.float32
+  - f1_score: 97.71986970684038
+    overall_score: 60.85993485342019
+    precision: 100.0
+    recall: 95.54140127388536
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: float
+        inplace: bool
+        input: tensor
+      msg: 'ZeroDivisionError: alpha cannot be 0 for CELU'
+      package: torch
+    txt: alpha != 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

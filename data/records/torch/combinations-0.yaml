@@ -17,4 +17,33 @@ args:
   - false
 name: torch.combinations
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        r: int
+        self: tensor
+        with_replacement: bool
+      msg: Expect a non-negative number, but got -3
+      package: torch
+    txt: r >= 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        r: int
+        self: tensor
+        with_replacement: bool
+      msg: Expect a 1D vector, but got shape [6, 6]
+      package: torch
+    txt: len(self.shape) == 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

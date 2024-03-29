@@ -13,4 +13,107 @@ args:
   - true
 name: torch._C._linalg.linalg_det
 package: torch
-pass_rate: 0
+pass_rate: 99.66666666666667
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        out: tensor
+      msg: Expected out tensor to have dtype c10::complex<float>, but got float instead
+      package: torch
+    txt: dtype(out) == dtype(A)
+  - f1_score: 92.44992295839754
+    overall_score: 58.22496147919877
+    precision: 100.0
+    recall: 85.95988538681948
+- - cot: 'Based on the given runtime information, the constraint that should be added
+      to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        out: tensor
+      msg: 'linalg.det: Expected a floating point or complex tensor as input. Got
+        Int'
+      package: torch
+    txt: dtype(A) in ['float16', 'float32', 'float64', 'complex32', 'complex64', 'complex128']
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        out: tensor
+      msg: Expected out tensor to have dtype float, but got int instead
+      package: torch
+    txt: dtype(out) == torch.float32
+  - f1_score: 99.17355371900828
+    overall_score: 100
+    precision: 100.0
+    recall: 98.36065573770493
+- - cot: 'The error is triggered because we are trying to resize the storage of the
+      output tensor, which is not resizable. To prevent this error, the shape and
+      rank of the output tensor should match the shape and rank of the input tensor.
+      Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        out: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == A.rank and all(out.shape[i] == A.shape[i] for i in range(out.rank))
+  - f1_score: 69.21296296296298
+    overall_score: 46.60648148148149
+    precision: 99.66666666666667
+    recall: 53.01418439716312
+- - cot: The error is triggered because the input matrix A is not a square matrix.
+      To prevent this error, we need to ensure that A is a batch of square matrices.
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        out: tensor
+      msg: 'linalg.det: A must be batches of square matrices, but they are 4 by 3
+        matrices'
+      package: torch
+    txt: A.shape[-2] == A.shape[-1]
+  - f1_score: 98.89705882352942
+    overall_score: 61.44852941176471
+    precision: 100.0
+    recall: 97.81818181818181
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        out: tensor
+      msg: 'linalg.det: The input tensor A must have at least 2 dimensions.'
+      package: torch
+    txt: A.dim >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error occurs because the input tensor A is not a batch of square matrices.
+      It seems the last two dimensions of A are [7, 2], which is not a square matrix.
+      To prevent this error, we need to ensure that all input matrices in A are square
+      matrices. We can express this constraint as:'
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        out: tensor
+      msg: 'linalg.det: A must be batches of square matrices, but they are 1 by 6
+        matrices'
+      package: torch
+    txt: all(A.shape[i] == A.shape[-2] for i in range(A.ndim - 2))
+  - f1_score: 67.9611650485437
+    overall_score: 45.98058252427185
+    precision: 100.0
+    recall: 51.47058823529412

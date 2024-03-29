@@ -1,0 +1,52 @@
+args:
+  dtype:
+  - Tensor
+  - float
+  - Optional[bool]
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - input
+  - p
+  - train
+  required:
+  - true
+  - true
+  - false
+name: torch.native_dropout
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'The error is triggered because the ''p'' value is outside the valid range
+      of 0 to 1. To prevent this error in the future, we need to ensure that the ''p''
+      value falls between 0 and 1. The constraint for the ''p'' parameter can be expressed
+      as:'
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        p: float
+        train: None
+      msg: bernoulli_ expects p to be in [0, 1], but got p=5
+      package: torch
+    txt: 0 <= p <= 1
+  - f1_score: 99.50248756218905
+    overall_score: 100
+    precision: 100.0
+    recall: 99.00990099009901
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        input: tensor
+        p: float
+        train: None
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: ((p != 0.0) or (dtype(input) == int32)) and (dtype(input) == float)
+  - f1_score: 94.04388714733541
+    overall_score: 100
+    precision: 100.0
+    recall: 88.75739644970415

@@ -45,4 +45,79 @@ args:
   - false
 name: torch.istft
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        center: bool
+        hop_length: None
+        length: int
+        n_fft: int
+        normalized: bool
+        onesided: None
+        return_complex: bool
+        self: tensor
+        win_length: None
+        window: tensor
+      msg: istft requires a complex-valued input tensor matching the output from stft
+        with return_complex=True.
+      package: torch
+    txt: self.dtype == torch.complex64
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is triggered because the frequency dimension of the input tensor
+      does not match the expected size when onesided=True. The expected frequency
+      dimension should be n_fft/2 + 1. Let''s see what the args were. The frequency
+      dimension is the 3rd to the last dimension of the input tensor. Therefore, the
+      condition to prevent the error would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        center: bool
+        hop_length: int
+        length: None
+        n_fft: int
+        normalized: bool
+        onesided: bool
+        return_complex: bool
+        self: tensor
+        win_length: int
+        window: None
+      msg: 'istft(CPUComplexFloatType[1, 1], n_fft=8, hop_length=3, win_length=6,
+        window=None, center=1, normalized=1, onesided=1, length=None, return_complex=0)
+        : expected the frequency dimension (3rd to the last) of the input tensor to
+        match n_fft / 2 + 1 when onesided=True, but got 1'
+      package: torch
+    txt: self.size(-3) == n_fft / 2 + 1
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        center: bool
+        hop_length: int
+        length: None
+        n_fft: int
+        normalized: bool
+        onesided: bool
+        return_complex: bool
+        self: tensor
+        win_length: int
+        window: tensor
+      msg: 'istft(CPUComplexFloatType[9, 1, 1, 1, 1, 1, 1], n_fft=0, hop_length=4,
+        win_length=24, window=torch.FloatTensor{[8, 9, 9, 9, 9, 9, 9]}, center=0,
+        normalized=0, onesided=0, length=None, return_complex=0) : expected a tensor
+        with 3 or 4 dimensions, but got 8'
+      package: torch
+    txt: self.dim() == 3
+  - f1_score: 66.58959537572255
+    overall_score: 51.0
+    precision: 96.0
+    recall: 50.97345132743363

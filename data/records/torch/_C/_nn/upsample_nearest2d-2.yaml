@@ -25,4 +25,22 @@ args:
   - true
 name: torch._C._nn.upsample_nearest2d
 package: torch
-pass_rate: 0
+pass_rate: 31.0
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        out: tensor
+        output_size: list[int]
+        scales_h: None
+        scales_w: float
+        self: tensor
+      msg: It is expected output_size equals to 2, but got size 0
+      package: torch
+    txt: ((len(output_size) > 0) and (len(self.shape) == 4)) and (len(output_size)
+      == 2)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

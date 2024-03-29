@@ -37,4 +37,149 @@ args:
   - false
 name: torch.conv_transpose3d
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        bias: None
+        dilation: list[int]
+        groups: int
+        input: tensor
+        output_padding: list[int]
+        padding: list[int]
+        stride: list[int]
+        weight: tensor
+      msg: 'Expected 4D (unbatched) or 5D (batched) input to conv_transpose3d, but
+        got input of size: [3, 3, 3, 3, 3, 3, 3]'
+      package: torch
+    txt: input.rank == 5
+  - f1_score: 93.45794392523364
+    overall_score: 100
+    precision: 100.0
+    recall: 87.71929824561403
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        bias: tensor
+        dilation: list[int]
+        groups: int
+        input: tensor
+        output_padding: list[int]
+        padding: list[int]
+        stride: list[int]
+        weight: tensor
+      msg: expected padding to be a single integer value or a list of 5 values to
+        match the convolution dimensions, but got padding=[]
+      package: torch
+    txt: len(padding) == 1
+  - f1_score: 44.323896705656324
+    overall_score: 21.275862068965516
+    precision: 36.55172413793103
+    recall: 56.293957226926935
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        bias: tensor
+        dilation: list[int]
+        groups: int
+        input: tensor
+        output_padding: list[int]
+        padding: list[int]
+        stride: list[int]
+        weight: tensor
+      msg: expected stride to be a single integer value or a list of 5 values to match
+        the convolution dimensions, but got stride=[]
+      package: torch
+    txt: (len(stride) == 1 or len(stride) == 5) or (all(i > 0 for i in stride))
+  - f1_score: 46.59724193572485
+    overall_score: 21.255244755244757
+    precision: 39.51048951048951
+    recall: 56.78185194625496
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        bias: tensor
+        dilation: list[int]
+        groups: int
+        input: tensor
+        output_padding: list[int]
+        padding: list[int]
+        stride: list[int]
+        weight: tensor
+      msg: expected dilation to be a single integer value or a list of 5 values to
+        match the convolution dimensions, but got dilation=[]
+      package: torch
+    txt: ((len(dilation) == 1) or (len(dilation) == input.rank)) and (len(output_padding)
+      == 1 or len(output_padding) == 5)
+  - f1_score: 85.93040847201209
+    overall_score: 100
+    precision: 100.0
+    recall: 75.3315649867374
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        bias: tensor
+        dilation: list[int]
+        groups: int
+        input: tensor
+        output_padding: list[int]
+        padding: list[int]
+        stride: list[int]
+        weight: tensor
+      msg: expected stride to be a single integer value or a list of 5 values to match
+        the convolution dimensions, but got stride=[]
+      package: torch
+    txt: ((all(s >= 1 and s <= 5 for s in stride)) or (len(stride) == input.rank))
+      and (len(stride) == 1)
+  - f1_score: 74.52574525745258
+    overall_score: 100
+    precision: 100.0
+    recall: 59.395248380129594
+- - cot: The error is due to negative values in 'padding' and 'output_padding'. The
+      'padding' and 'output_padding' should contain non-negative integer values. Therefore,
+      all elements in 'padding' and 'output_padding' should be greater than or equal
+      to 0.
+    length: 1
+    target:
+      choosen_dtype:
+        bias: tensor
+        dilation: list[int]
+        groups: int
+        input: tensor
+        output_padding: list[int]
+        padding: list[int]
+        stride: list[int]
+        weight: tensor
+      msg: negative padding is not supported
+      package: torch
+    txt: all(i >= 0 for i in padding) and all(i >= 0 for i in output_padding)
+  - f1_score: 91.00529100529101
+    overall_score: 100
+    precision: 100.0
+    recall: 83.49514563106797
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        bias: tensor
+        dilation: list[int]
+        groups: int
+        input: tensor
+        output_padding: list[int]
+        padding: list[int]
+        stride: list[int]
+        weight: tensor
+      msg: Expected 6-dimensional input for 6-dimensional weight [5, 2, 2, 2, 2, 2],
+        but got 5-dimensional input of size [1, 8, 3, 8, 8] instead
+      package: torch
+    txt: weight.ndim() == 6
+  - f1_score: 54.961832061068705
+    overall_score: 33.0
+    precision: 60.0
+    recall: 50.70422535211267

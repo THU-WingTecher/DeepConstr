@@ -13,4 +13,20 @@ args:
   - true
 name: torch.Tensor.sum_to_size
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        size: list[int]
+      msg: size {[93, 59, 68, 88, 36, 40]} is not expandable to size {[3, 4, 8, 6,
+        2, 9, 4]}.
+      package: torch
+    txt: size == [3, 4, 8, 6, 2, 9, 4]
+  - f1_score: 99.65599177217436
+    overall_score: 53.82799588608718
+    precision: 99.64539007092199
+    recall: 99.66659572958785

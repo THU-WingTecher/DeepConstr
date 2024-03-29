@@ -1,0 +1,59 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  - number
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - threshold
+  - value
+  - out
+  required:
+  - true
+  - true
+  - true
+  - true
+name: torch.threshold
+package: torch
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+        threshold: int
+        value: int
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
+  - f1_score: 75.47169811320754
+    overall_score: 100
+    precision: 100.0
+    recall: 60.60606060606061
+- - cot: The error is triggered because the result type of Float cannot be cast to
+      the desired output type of Int. Let's see what the arguments were. The output
+      tensor `out` has a type of `Tensor<i32>`, while the input tensor `self` has
+      a type of `Tensor<f32>`. Therefore, in order to prevent the error, the types
+      of the output and input tensors should be consistent.
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+        threshold: int
+        value: int
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(out) == dtype(self)
+  - f1_score: 86.20689655172413
+    overall_score: 100
+    precision: 100.0
+    recall: 75.75757575757575

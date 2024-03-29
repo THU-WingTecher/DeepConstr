@@ -25,4 +25,40 @@ args:
   - true
 name: torch.isin
 package: torch
-pass_rate: 0
+pass_rate: 42.66666666666667
+rules:
+- - cot: 'The error is due to the mismatch in the data types of the ''out'' tensor
+      and the expected output data type. The ''out'' tensor is of type float, but
+      the function expects a bool data type. Therefore, the data type of the ''out''
+      tensor should be bool. So, the condition to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        assume_unique: bool
+        elements: tensor
+        invert: bool
+        out: tensor
+        test_element: int
+      msg: Expected out tensor to have dtype bool, but got float instead
+      package: torch
+    txt: out.dtype == torch.bool
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        assume_unique: bool
+        elements: tensor
+        invert: bool
+        out: tensor
+        test_element: int
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.shape[0]==1) or (out.shape[0] == 1 and out.shape[1] == 1)
+  - f1_score: 38.50746268656716
+    overall_score: 23.0
+    precision: 43.0
+    recall: 34.86486486486486

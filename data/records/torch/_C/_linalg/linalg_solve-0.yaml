@@ -17,4 +17,86 @@ args:
   - false
 name: torch._C._linalg.linalg_solve
 package: torch
-pass_rate: 0
+pass_rate: 98.64406779661017
+rules:
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        B: tensor
+        left: bool
+      msg: 'linalg.solve: A must be batches of square matrices, but they are 4 by
+        6 matrices'
+      package: torch
+    txt: A.shape[-2] == A.shape[-1]
+  - f1_score: 68.02721088435375
+    overall_score: 100
+    precision: 100.0
+    recall: 51.54639175257733
+- - cot: 'A : Based on the given runtime information, the error is triggered because
+      the input tensor A must have at least 2 dimensions. To prevent the error, we
+      can formulate the constraint as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        B: tensor
+        left: bool
+      msg: 'linalg.solve: The input tensor A must have at least 2 dimensions.'
+      package: torch
+    txt: A.dim() >= 2
+  - f1_score: 92.85714285714286
+    overall_score: 48.5
+    precision: 91.0
+    recall: 94.79166666666666
+- - cot: "The error message states that the shapes of A and B are incompatible for\
+      \ the equation XA = B. The shape of A is [5, 9, 4, 4, 4, 4, 4] and the shape\
+      \ of B is [7, 9, 9, 9, 9, 9]. To prevent this error, the shapes of A and B should\
+      \ be such that the number of dimensions, the length of each dimension, and the\
+      \ corresponding dimensions of A and B should match. \n\nTherefore, the constraint\
+      \ that prevents the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        B: tensor
+        left: bool
+      msg: 'linalg.solve: Incompatible shapes of A and B for the equation XA = B (5x5
+        and 8x8)'
+      package: torch
+    txt: len(A) == len(B) and all(A.shape[i] == B.shape[i] for i in range(A.rank))
+  - f1_score: 76.92307692307692
+    overall_score: 100
+    precision: 100.0
+    recall: 62.5
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        A: tensor
+        B: tensor
+        left: bool
+      msg: 'linalg.solve: Expected a floating point or complex tensor as input. Got
+        Int'
+      package: torch
+    txt: (dtype(B) == dtype(A)) and (dtype(B) == torch.float32)
+  - f1_score: 79.94350282485875
+    overall_score: 100
+    precision: 100.0
+    recall: 66.58823529411765
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        A: tensor
+        B: tensor
+        left: bool
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: ((A.dim() >= 0) and (A.shape[i] >= 0)) and (all(dim >= 0 for dim in B.shape))
+  - f1_score: 67.3469387755102
+    overall_score: 100
+    precision: 100.0
+    recall: 50.76923076923077

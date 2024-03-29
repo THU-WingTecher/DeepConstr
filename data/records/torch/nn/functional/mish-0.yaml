@@ -13,4 +13,18 @@ args:
   - false
 name: torch.nn.functional.mish
 package: torch
-pass_rate: 0
+pass_rate: 95.33333333333334
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        inplace: bool
+        input: tensor
+      msg: '"mish_cpu" not implemented for ''Int'''
+      package: torch
+    txt: dtype(input) != int32
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

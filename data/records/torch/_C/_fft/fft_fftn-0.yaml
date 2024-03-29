@@ -21,4 +21,20 @@ args:
   - false
 name: torch._C._fft.fft_fftn
 package: torch
-pass_rate: 0
+pass_rate: 97.66666666666667
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        norm: str
+        s: None
+        self: tensor
+      msg: 'Invalid normalization mode: "cipM"'
+      package: torch
+    txt: (norm == "forward")
+  - f1_score: 99.33774834437087
+    overall_score: 100
+    precision: 100.0
+    recall: 98.68421052631578

@@ -17,4 +17,71 @@ args:
   - true
 name: torch.bmm
 package: torch
-pass_rate: 0
+pass_rate: 91.48936170212765
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        mat2: tensor
+        out: tensor
+        self: tensor
+      msg: batch1 must be a 3D tensor
+      package: torch
+    txt: self.dim == 3 and mat2.dim == 3
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the error occurs because the size
+      of the first two dimensions of the `mat2` tensor does not match the size of
+      the corresponding dimensions in the `self` tensor. The expected size for the
+      first two dimensions of the `mat2` tensor is `[8, 6]`, but the actual size is
+      `[8, 8]`.
+
+
+      To prevent this error, the constraint can be formulated as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        mat2: tensor
+        out: tensor
+        self: tensor
+      msg: 'Expected size for first two dimensions of batch2 tensor to be: [3, 7]
+        but got: [5, 3].'
+      package: torch
+    txt: mat2.shape[0] == self.shape[0] and mat2.shape[1] == self.shape[2]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        mat2: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: ((out.rank == 4 and all(out.shape[i] == self.shape[i] for i in range(out.rank)))
+      or (out.shape == self.shape)) and (out.rank==mat2.rank and all(out.shape[i]==mat2.shape[i]
+      for i in range(out.rank)))
+  - f1_score: 68.93317702227432
+    overall_score: 100
+    precision: 100.0
+    recall: 52.59391771019678
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        mat2: tensor
+        out: tensor
+        self: tensor
+      msg: Expected out tensor to have dtype float, but got int instead
+      package: torch
+    txt: dtype(out) == dtype(self)
+  - f1_score: 62.5038804381569
+    overall_score: 43.25194021907845
+    precision: 88.04347826086956
+    recall: 48.44963905122035

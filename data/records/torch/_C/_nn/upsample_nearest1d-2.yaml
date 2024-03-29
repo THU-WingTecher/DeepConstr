@@ -21,4 +21,5 @@ args:
   - true
 name: torch._C._nn.upsample_nearest1d
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules: []

@@ -1,0 +1,113 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.nextafter
+package: torch
+pass_rate: 100
+rules:
+- - cot: "The error is triggered because the size of tensor `self` (3) does not match\
+      \ the size of tensor `other` (9) at non-singleton dimension 1. \n\nTo prevent\
+      \ this error, we need to ensure that the sizes of `self` and `other` match at\
+      \ non-singleton dimension 1. \n\nThe constraint can be formulated as follows:"
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (3) must match the size of tensor b (9) at non-singleton
+        dimension 4
+      package: torch
+    txt: self.shape[1] == other.shape[1]
+  - f1_score: 76.72634271099744
+    overall_score: 100
+    precision: 100.0
+    recall: 62.24066390041494
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (((out.shape == self.shape) and (out.rank == self.rank and all(out.shape[i]
+      == self.shape[i] for i in range(out.rank)))) or (self.shape == other.shape ==
+      out.shape)) and (other.rank==out.rank and all(other.shape[i]==out.shape[i] for
+      i in range(other.rank)))
+  - f1_score: 77.92207792207793
+    overall_score: 100
+    precision: 100.0
+    recall: 63.829787234042556
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self) == dtype(other) == dtype(out)
+  - f1_score: 68.72852233676976
+    overall_score: 100
+    precision: 100.0
+    recall: 52.35602094240838
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: '"nextafter_cpu" not implemented for ''Int'''
+      package: torch
+    txt: (dtype(out) == dtype(self)) and (out.dtype != 'Int')
+  - f1_score: 68.9655172413793
+    overall_score: 100
+    precision: 100.0
+    recall: 52.63157894736842
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: '"nextafter_cpu" not implemented for ''Bool'''
+      package: torch
+    txt: out.dtype != torch.bool
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: '''complex32'''
+      package: torch
+    txt: (self.dim == other.dim) and (all(self.dim() > other.dim() and self.shape[self.dim()]
+      == 1 for i in range(len(self))))
+  - f1_score: 68.72852233676976
+    overall_score: 100
+    precision: 100.0
+    recall: 52.35602094240838

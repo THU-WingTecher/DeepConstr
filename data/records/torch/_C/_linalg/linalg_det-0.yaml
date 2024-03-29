@@ -9,4 +9,62 @@ args:
   - true
 name: torch._C._linalg.linalg_det
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+      msg: 'linalg.det: Expected a floating point or complex tensor as input. Got
+        Int'
+      package: torch
+    txt: dtype(A) == float32
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error occurs because the input tensor `A` is not a batch of square matrices.
+      Let''s see what the shape of `A` is. It is a tensor with shape [9, 2, 5, 5,
+      9, 1, 5], where the last two dimensions are 1 by 5 matrices. To prevent this
+      error in the future and generate constraints that do not trigger it, we need
+      to ensure that all matrices in the batch are square. If we denote the shape
+      of the tensor as `[batch_dim, *matrix_dims]`, the constraint for the square
+      matrices can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+      msg: 'linalg.det: A must be batches of square matrices, but they are 5 by 7
+        matrices'
+      package: torch
+    txt: all(A.shape[i] == A.shape[i+1] for i in range(len(A.shape)-1))
+  - f1_score: 77.72020725388603
+    overall_score: 50.860103626943015
+    precision: 100.0
+    recall: 63.55932203389831
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+      msg: 'linalg.det: The input tensor A must have at least 2 dimensions.'
+      package: torch
+    txt: A.dim >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+      msg: 'linalg.det: A must be batches of square matrices, but they are 8 by 9
+        matrices'
+      package: torch
+    txt: A.shape[-2] == A.shape[-1]
+  - f1_score: 67.64374295377677
+    overall_score: 100
+    precision: 100.0
+    recall: 51.107325383304946

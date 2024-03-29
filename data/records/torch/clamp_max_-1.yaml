@@ -13,4 +13,37 @@ args:
   - true
 name: torch.clamp_max_
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        max: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(max)==dtype(self)
+  - f1_score: 95.23809523809523
+    overall_score: 59.61904761904761
+    precision: 100.0
+    recall: 90.9090909090909
+- - cot: "The error message indicates that the size of tensor `self` (with shape [2,\
+      \ 7, 7]) must match the size of tensor `max` (with shape [1, 6, 6, 6]) at non-singleton\
+      \ dimension 3. \n\nTo prevent this error, we need to ensure that the dimensions\
+      \ of both tensors are consistent. Specifically, the number of dimensions and\
+      \ the shape of `self` should be the same as the number of dimensions and the\
+      \ shape of `max`. \n\nTherefore, the constraint can be formulated as follows:"
+    length: 1
+    target:
+      choosen_dtype:
+        max: tensor
+        self: tensor
+      msg: The size of tensor a (8) must match the size of tensor b (6) at non-singleton
+        dimension 3
+      package: torch
+    txt: self.dim() == max.dim() and self.shape() == max.shape()
+  - f1_score: 97.78534923339012
+    overall_score: 60.89267461669506
+    precision: 95.66666666666667
+    recall: 100.0

@@ -37,5 +37,5 @@ args:
   - false
 name: torch.nn.functional.instance_norm
 package: torch
-pass_rate: 0.6666666666666667
+pass_rate: 0.33333333333333337
 rules: []

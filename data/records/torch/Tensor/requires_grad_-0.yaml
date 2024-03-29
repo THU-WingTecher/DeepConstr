@@ -13,4 +13,5 @@ args:
   - false
 name: torch.Tensor.requires_grad_
 package: torch
-pass_rate: 0
+pass_rate: 98.0
+rules: []

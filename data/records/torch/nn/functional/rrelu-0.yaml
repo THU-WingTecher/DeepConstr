@@ -25,4 +25,40 @@ args:
   - false
 name: torch.nn.functional.rrelu
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: The error occurs because the function `torch.nn.functional.rrelu` expects
+      the input tensor to have a float data type, but the input tensor in this case
+      has an integer data type. To prevent this error, the data type of the input
+      tensor should be float.
+    length: 1
+    target:
+      choosen_dtype:
+        inplace: bool
+        input: tensor
+        lower: float
+        training: bool
+        upper: float
+      msg: '"leaky_relu_cpu" not implemented for ''Int'''
+      package: torch
+    txt: dtype(input) == torch.float32
+  - f1_score: 98.84678747940691
+    overall_score: 61.42339373970346
+    precision: 100.0
+    recall: 97.71986970684038
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        inplace: bool
+        input: tensor
+        lower: float
+        training: bool
+        upper: float
+      msg: Lower bound should be less than or equal to the upper bound
+      package: torch
+    txt: lower <= upper
+  - f1_score: 97.56097560975608
+    overall_score: 60.78048780487804
+    precision: 100.0
+    recall: 95.23809523809523

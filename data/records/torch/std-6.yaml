@@ -25,4 +25,59 @@ args:
   - true
 name: torch.std
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        correction: int
+        dim: None
+        keepdim: bool
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
+  - f1_score: 67.64705882352942
+    overall_score: 45.82352941176471
+    precision: 99.66666666666667
+    recall: 51.1986301369863
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        correction: int
+        dim: None
+        keepdim: bool
+        out: tensor
+        self: tensor
+      msg: result type Double can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self)==dtype(out)
+  - f1_score: 67.41573033707866
+    overall_score: 45.70786516853933
+    precision: 100.0
+    recall: 50.847457627118644
+- - cot: 'The error is triggered because the dtypes of the input tensors are not supported
+      by the `torch.std` function. The function `std` and `var` only support floating
+      point and complex dtypes. To prevent the error, the dtypes of the input tensors
+      should be changed to a supported dtype.
+
+
+      Wrap the final formula with:'
+    length: 1
+    target:
+      choosen_dtype:
+        correction: None
+        dim: None
+        keepdim: bool
+        out: tensor
+        self: tensor
+      msg: std and var only support floating point and complex dtypes
+      package: torch
+    txt: self.dtype in [torch.float32, torch.float64, torch.complex64, torch.complex128]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

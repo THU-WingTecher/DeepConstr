@@ -1,0 +1,81 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - Optional[float]
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - output_size
+  - scales
+  required:
+  - true
+  - true
+  - false
+name: torch._C._nn.upsample_nearest1d
+package: torch
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        output_size: list[int]
+        scales: None
+        self: tensor
+      msg: It is expected output_size equals to 1, but got size 0
+      package: torch
+    txt: ((len(output_size) > 0) and (self.dim() == 3)) and (len(output_size) == 1)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        output_size: list[int]
+        scales: float
+        self: tensor
+      msg: 'Input and output sizes should be greater than 0, but got input (W: 8)
+        and output (W: -3)'
+      package: torch
+    txt: ((output_size[0] > 0) and (self.shape[-1] > 0)) and (output_size[0] > 0)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: Based on the given runtime information, the error is caused by the function
+      "compute_indices_weights_nearest" not being implemented for the data type 'Int'.
+      To prevent this error, the data type of the input tensor should be changed to
+      a type for which the function is implemented, such as 'Float'.
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: list[int]
+        scales: float
+        self: tensor
+      msg: '"compute_indices_weights_nearest" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype == Float
+  - f1_score: 98.36065573770492
+    overall_score: 100
+    precision: 100.0
+    recall: 96.77419354838709
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: list[int]
+        scales: None
+        self: tensor
+      msg: Non-empty 3D data tensor expected but got a tensor with sizes [0, 0, 5]
+      package: torch
+    txt: all(self.size()[i] != 0 for i in range(3))
+  - f1_score: 75.20435967302453
+    overall_score: 100
+    precision: 100.0
+    recall: 60.26200873362445

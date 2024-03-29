@@ -1,0 +1,59 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.Tensor.ldexp_
+package: torch
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (5) must match the size of tensor b (6) at non-singleton
+        dimension 2
+      package: torch
+    txt: (self.shape[2] == other.shape[2]) or (self.shape[5] == other.shape[5])
+  - f1_score: 74.25742574257426
+    overall_score: 100
+    precision: 100.0
+    recall: 59.055118110236215
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: output with shape [] doesn't match the broadcast shape [9, 9, 9, 9, 9,
+        9, 9]
+      package: torch
+    txt: (((self.dim() > 0 and self.shape == other.shape) or (len(self) == 0)) and
+      (len(self) == len(other))) and (self.dim() > 0)
+  - f1_score: 78.125
+    overall_score: 100
+    precision: 100.0
+    recall: 64.1025641025641
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: (dtype(other)==dtype(self)) and (dtype(other) == float32)
+  - f1_score: 95.08716323296355
+    overall_score: 100
+    precision: 100.0
+    recall: 90.6344410876133

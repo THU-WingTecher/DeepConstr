@@ -1,0 +1,51 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - p
+  required:
+  - true
+  - false
+name: torch.Tensor.norm
+package: torch
+pass_rate: 99.66666666666667
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        p: int
+        self: tensor
+      msg: 'linalg.vector_norm: Expected a floating point or complex tensor as input.
+        Got Int'
+      package: torch
+    txt: dtype(self) in [float16, float32, float64, complex64, complex128]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      tensor `self` has a shape of `[8, 9, 7, 7, 0]`, which means it is an empty tensor
+      along the last dimension. The `-3` norm is not defined for an empty tensor because
+      the operation does not have an identity.
+
+
+      To prevent this error, a constraint can be formulated as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        p: int
+        self: tensor
+      msg: linalg.vector_norm cannot compute the -3 norm on an empty tensor because
+        the operation does not have an identity
+      package: torch
+    txt: self.shape[-1] != 0
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0

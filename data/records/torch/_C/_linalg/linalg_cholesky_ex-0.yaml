@@ -17,4 +17,5 @@ args:
   - false
 name: torch._C._linalg.linalg_cholesky_ex
 package: torch
-pass_rate: 0
+pass_rate: 52.0
+rules: []

@@ -17,4 +17,23 @@ args:
   - false
 name: torch.subtract
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: "Error is triggered because the size of tensor a (self) (3) does not match\
+      \ the size of tensor b (other) (8) at non-singleton dimension 6. \n\nTo prevent\
+      \ this error, we need to ensure that the dimensions and shapes of both tensors\
+      \ are consistent. \n\nTherefore, the constraint can be formulated as follows:"
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (4) must match the size of tensor b (3) at non-singleton
+        dimension 5
+      package: torch
+    txt: self.dim == other.dim and self.shape == other.shape
+  - f1_score: 96.3455149501661
+    overall_score: 60.17275747508305
+    precision: 96.66666666666667
+    recall: 96.02649006622516

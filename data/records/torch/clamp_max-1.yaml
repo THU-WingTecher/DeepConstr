@@ -13,4 +13,22 @@ args:
   - true
 name: torch.clamp_max
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: "Error is triggered because the size of tensor \"self\" (0) does not match\
+      \ the size of tensor \"max\" (9) at non-singleton dimension 3. \n\nTo prevent\
+      \ this error, we need to ensure that the dimensions and shape of the two tensors\
+      \ are consistent. \n\nThe constraint formula can be written as:"
+    length: 1
+    target:
+      choosen_dtype:
+        max: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (6) at non-singleton
+        dimension 3
+      package: torch
+    txt: self.dim == max.dim and self.shape == max.shape
+  - f1_score: 99.50248756218905
+    overall_score: 61.75124378109452
+    precision: 100.0
+    recall: 99.00990099009901

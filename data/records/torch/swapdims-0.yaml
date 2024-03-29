@@ -17,4 +17,20 @@ args:
   - true
 name: torch.swapdims
 package: torch
-pass_rate: 0
+pass_rate: 75.66666666666667
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim0: int
+        dim1: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got -3)
+      package: torch
+    txt: dim0 >= -len(self.shape) and dim0 < len(self.shape) and dim1 >= -len(self.shape)
+      and dim1 < len(self.shape)
+  - f1_score: 74.47833065810593
+    overall_score: 49.239165329052966
+    precision: 77.33333333333333
+    recall: 71.8266253869969

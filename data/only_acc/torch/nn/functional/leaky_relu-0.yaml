@@ -1,0 +1,35 @@
+args:
+  dtype:
+  - Tensor
+  - float
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - input
+  - negative_slope
+  - inplace
+  required:
+  - true
+  - false
+  - false
+name: torch.nn.functional.leaky_relu
+package: torch
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        inplace: bool
+        input: tensor
+        negative_slope: float
+      msg: '"leaky_relu_cpu" not implemented for ''Int'''
+      package: torch
+    txt: dtype(input) == float
+  - f1_score: 98.6842105263158
+    overall_score: 100
+    precision: 100.0
+    recall: 97.40259740259741

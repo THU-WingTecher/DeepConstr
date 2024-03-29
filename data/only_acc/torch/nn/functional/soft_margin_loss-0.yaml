@@ -1,0 +1,98 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[bool]
+  - Optional[bool]
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - target
+  - size_average
+  - reduce
+  - reduction
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+name: torch.nn.functional.soft_margin_loss
+package: torch
+pass_rate: 94.33333333333334
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        reduce: bool
+        reduction: str
+        size_average: None
+        target: tensor
+      msg: The size of tensor a (5) must match the size of tensor b (3) at non-singleton
+        dimension 3
+      package: torch
+    txt: input.shape[3] == target.shape[3]
+  - f1_score: 76.04562737642586
+    overall_score: 100
+    precision: 100.0
+    recall: 61.34969325153374
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        reduce: None
+        reduction: str
+        size_average: bool
+        target: tensor
+      msg: output with shape [] doesn't match the broadcast shape [6, 8, 1, 9, 7,
+        8, 8]
+      package: torch
+    txt: len(input) == 7
+  - f1_score: 80.53691275167786
+    overall_score: 100
+    precision: 100.0
+    recall: 67.41573033707866
+- - cot: The error is due to an invalid value for the 'reduction' parameter. The given
+      value for 'reduction' is 'eZkv', which is not a valid value. The valid values
+      for 'reduction' are 'none', 'mean', and 'sum'. Therefore, the value of 'reduction'
+      should be corrected to one of these valid values.
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        reduce: None
+        reduction: str
+        size_average: None
+        target: tensor
+      msg: ulIV is not a valid value for reduction
+      package: torch
+    txt: reduction in ['none', 'mean', 'sum']
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        reduce: None
+        reduction: str
+        size_average: None
+        target: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(input) == dtype(target)
+  - f1_score: 64.27745664739885
+    overall_score: 49.33333333333333
+    precision: 92.66666666666666
+    recall: 49.203539823008846

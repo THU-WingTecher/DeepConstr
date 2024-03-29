@@ -1,0 +1,30 @@
+args:
+  dtype:
+  - Tensor
+  - bool
+  is_pos:
+  - false
+  - false
+  name:
+  - input
+  - inplace
+  required:
+  - true
+  - false
+name: torch.nn.functional.mish
+package: torch
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        inplace: bool
+        input: tensor
+      msg: '"mish_cpu" not implemented for ''Int'''
+      package: torch
+    txt: dtype(input) == torch.float32
+  - f1_score: 97.56097560975608
+    overall_score: 100
+    precision: 100.0
+    recall: 95.23809523809523

@@ -1,0 +1,119 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - float
+  - Optional[bool]
+  - Optional[bool]
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input1
+  - input2
+  - target
+  - margin
+  - size_average
+  - reduce
+  - reduction
+  required:
+  - true
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+name: torch.nn.functional.cosine_embedding_loss
+package: torch
+pass_rate: 100
+rules:
+- - cot: "The error is due to the target tensor having more than one dimension. The\
+      \ function expects the target tensor to be either a 0-dimensional or 1-dimensional\
+      \ tensor, and does not support multi-target tensors. \n\nTo prevent the error,\
+      \ the target tensor should be a 0-dimensional or 1-dimensional tensor. So, the\
+      \ condition would be:"
+    length: 1
+    target:
+      choosen_dtype:
+        input1: tensor
+        input2: tensor
+        margin: float
+        reduce: bool
+        reduction: str
+        size_average: None
+        target: tensor
+      msg: 0D or 1D target tensor expected, multi-target not supported
+      package: torch
+    txt: target.dim() <= 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        input1: tensor
+        input2: tensor
+        margin: float
+        reduce: bool
+        reduction: str
+        size_average: None
+        target: tensor
+      msg: 0D target tensor expects 1D input tensors, but found inputs with sizes
+        [7, 9, 9, 9, 9, 9] and [8, 8, 2, 8, 5, 8, 8].
+      package: torch
+    txt: (len(target.shape) == 0) and (len(input1.shape) == 1 and len(input2.shape)
+      == 1)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        input1: tensor
+        input2: tensor
+        margin: float
+        reduce: bool
+        reduction: str
+        size_average: bool
+        target: tensor
+      msg: The size of tensor a (3) must match the size of tensor b (7) at non-singleton
+        dimension 0
+      package: torch
+    txt: input1.shape == input2.shape
+  - f1_score: 92.0754716981132
+    overall_score: 100
+    precision: 100.0
+    recall: 85.3146853146853
+- - cot: The error is due to an invalid value for the 'reduction' parameter. The value
+      provided is 'mDEN', which is not a valid value for 'reduction'. The allowed
+      values for 'reduction' are ["none", "mean", "sum"]. Therefore, the 'reduction'
+      parameter should be set to either "none", "mean", or "sum".
+    length: 1
+    target:
+      choosen_dtype:
+        input1: tensor
+        input2: tensor
+        margin: float
+        reduce: None
+        reduction: str
+        size_average: None
+        target: tensor
+      msg: Hlyb is not a valid value for reduction
+      package: torch
+    txt: reduction in ["none", "mean", "sum"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

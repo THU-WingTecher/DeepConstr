@@ -21,4 +21,86 @@ args:
   - false
 name: torch._C._nn.upsample_linear1d
 package: torch
-pass_rate: 0
+pass_rate: 94.66666666666667
+rules:
+- - cot: 'Error is triggered because the tensor `self` has an empty dimension at index
+      1. The expected shape should be non-empty for all dimensions. Therefore, the
+      constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        output_size: list[int]
+        scales: float
+        self: tensor
+      msg: Non-empty 3D data tensor expected but got a tensor with sizes [8, 0, 1]
+      package: torch
+    txt: all(self.shape[i] > 0 for i in range(len(self.shape)))
+  - f1_score: 82.06521739130434
+    overall_score: 100
+    precision: 100.0
+    recall: 69.5852534562212
+- - cot: The error is due to the fact that the function "compute_indices_weights_linear"
+      is not implemented for the data type 'Bool'. To prevent this error, the data
+      type of the input tensor should be changed to a type that is supported by the
+      function "compute_indices_weights_linear".
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        output_size: list[int]
+        scales: None
+        self: tensor
+      msg: '"compute_indices_weights_linear" not implemented for ''Bool'''
+      package: torch
+    txt: self.dtype != torch.bool
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        output_size: list[int]
+        scales: None
+        self: tensor
+      msg: '"compute_indices_weights_linear" not implemented for ''Int'''
+      package: torch
+    txt: (self.dtype != torch.int32)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        align_corners: bool
+        output_size: list[int]
+        scales: None
+        self: tensor
+      msg: 'Input and output sizes should be greater than 0, but got input (W: 8)
+        and output (W: -3)'
+      package: torch
+    txt: (self.shape[-1] > 0) and (output_size[0] > 0)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        align_corners: bool
+        output_size: list[int]
+        scales: float
+        self: tensor
+      msg: It is expected output_size equals to 1, but got size 0
+      package: torch
+    txt: (len(output_size) == 1) and (len(self.shape) == 3)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

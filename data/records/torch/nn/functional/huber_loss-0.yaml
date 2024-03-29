@@ -21,4 +21,93 @@ args:
   - false
 name: torch.nn.functional.huber_loss
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: "The error is due to the input data type being 'Int'. The 'huber_loss' function\
+      \ is not implemented for integer data types. To prevent this error, the input\
+      \ data type should be changed to a floating-point data type, such as 'float'\
+      \ or 'double'. \n\nTherefore, the constraint to prevent the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        delta: float
+        input: tensor
+        reduction: str
+        target: tensor
+      msg: '"huber_cpu" not implemented for ''Int'''
+      package: torch
+    txt: input.dtype in [torch.float32, torch.float64]
+  - f1_score: 97.24473257698541
+    overall_score: 60.62236628849271
+    precision: 100.0
+    recall: 94.6372239747634
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        delta: float
+        input: tensor
+        reduction: str
+        target: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(input) == dtype(target)
+  - f1_score: 86.20689655172413
+    overall_score: 100
+    precision: 100.0
+    recall: 75.75757575757575
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      value of ''delta'' is -2.0, which is a non-positive value. The ''huber_loss''
+      function does not support non-positive values for ''delta''. Therefore, the
+      constraint that prevents the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        delta: float
+        input: tensor
+        reduction: str
+        target: tensor
+      msg: huber_loss does not support non-positive values for delta.
+      package: torch
+    txt: delta > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the error occurs because the value
+      provided for the ''reduction'' argument is ''ZeyK'', which is not a valid value.
+      The allowed values for ''reduction'' are ''mean'', ''sum'', and ''none''. So,
+      the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        delta: float
+        input: tensor
+        reduction: str
+        target: tensor
+      msg: Eavw is not a valid value for reduction
+      package: torch
+    txt: reduction in ['mean', 'sum', 'none']
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: "Error is triggered because the size of tensor a (2) does not match the size\
+      \ of tensor b (9) at non-singleton dimension 5. \n\nTo prevent this error, the\
+      \ dimensions and shapes of the two tensors should be consistent. \n\nTherefore,\
+      \ the constraint can be formulated as:"
+    length: 1
+    target:
+      choosen_dtype:
+        delta: float
+        input: tensor
+        reduction: str
+        target: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (8) at non-singleton
+        dimension 4
+      package: torch
+    txt: input.dim == target.dim and input.shape == target.shape
+  - f1_score: 98.52216748768473
+    overall_score: 61.26108374384236
+    precision: 100.0
+    recall: 97.0873786407767

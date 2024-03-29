@@ -33,4 +33,66 @@ args:
   - false
 name: torch.nn.functional.margin_ranking_loss
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'The error is due to an invalid value for the ''reduction'' parameter. The
+      value provided for ''reduction'' is ''nJFs'', which is not a valid value. The
+      valid values for ''reduction'' are ["mean", "sum", "none"]. Therefore, the constraint
+      that should be added to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        input1: tensor
+        input2: tensor
+        margin: float
+        reduce: None
+        reduction: str
+        size_average: None
+        target: tensor
+      msg: Hker is not a valid value for reduction
+      package: torch
+    txt: reduction in ["mean", "sum", "none"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        input1: tensor
+        input2: tensor
+        margin: float
+        reduce: bool
+        reduction: str
+        size_average: bool
+        target: tensor
+      msg: The size of tensor a (6) must match the size of tensor b (7) at non-singleton
+        dimension 3
+      package: torch
+    txt: ((input1.shape[5] == 1) or (input1.dim() == input2.dim() and input1.shape[6]
+      == input2.shape[6])) or (input1.size() == input2.size())
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input1: tensor
+        input2: tensor
+        margin: float
+        reduce: bool
+        reduction: str
+        size_average: None
+        target: tensor
+      msg: 'margin_ranking_loss : All input tensors should have same dimension but
+        got sizes: input1: torch.Size([6, 9]), input2: torch.Size([7, 9, 9]), target:
+        torch.Size([5, 9, 9, 9]) '
+      package: torch
+    txt: input1.dim() == input2.dim() and input1.dim() == target.dim()
+  - f1_score: 99.83361064891847
+    overall_score: 61.91680532445923
+    precision: 100.0
+    recall: 99.66777408637874

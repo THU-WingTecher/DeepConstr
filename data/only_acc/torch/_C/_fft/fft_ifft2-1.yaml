@@ -1,0 +1,100 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[List[int]]
+  - List[int]
+  - Optional[str]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - s
+  - dim
+  - norm
+  - out
+  required:
+  - true
+  - false
+  - false
+  - false
+  - true
+name: torch._C._fft.fft_ifft2
+package: torch
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: list[int]
+        norm: None
+        out: tensor
+        s: None
+        self: tensor
+      msg: fftn expects a complex output tensor, but got Float
+      package: torch
+    txt: out.dtype == torch.complex64
+  - f1_score: 97.24473257698541
+    overall_score: 100
+    precision: 100.0
+    recall: 94.6372239747634
+- - cot: The error is due to an invalid normalization mode. The value provided for
+      'norm' is "YQgZ", which is not a valid normalization mode. The valid normalization
+      modes for the function are "forward", "backward", and "ortho". Therefore, the
+      'norm' value should be corrected to be one of these valid modes.
+    length: 1
+    target:
+      choosen_dtype:
+        dim: list[int]
+        norm: str
+        out: tensor
+        s: None
+        self: tensor
+      msg: 'Invalid normalization mode: "YQgZ"'
+      package: torch
+    txt: norm in ["forward", "backward", "ortho"]
+  - f1_score: 96.15384615384615
+    overall_score: 100
+    precision: 100.0
+    recall: 92.59259259259258
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: list[int]
+        norm: str
+        out: tensor
+        s: None
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
+  - f1_score: 81.85538881309687
+    overall_score: 100
+    precision: 100.0
+    recall: 69.28406466512702
+- - cot: "Based on the given runtime information, the error message states that the\
+      \ dimension specified is 75, but the tensor has no dimensions. To prevent this\
+      \ error, we need to ensure that the dimension specified is valid and matches\
+      \ the number of dimensions in the tensor. \n\nThe constraint to prevent the\
+      \ error can be formulated as follows:"
+    length: 1
+    target:
+      choosen_dtype:
+        dim: list[int]
+        norm: None
+        out: tensor
+        s: None
+        self: tensor
+      msg: Dimension specified as 75 but tensor has no dimensions
+      package: torch
+    txt: len(dim) == len(self.shape)
+  - f1_score: 96.46302250803858
+    overall_score: 100
+    precision: 100.0
+    recall: 93.16770186335404

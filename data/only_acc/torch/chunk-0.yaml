@@ -1,0 +1,65 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - chunks
+  - dim
+  required:
+  - true
+  - true
+  - false
+name: torch.chunk
+package: torch
+pass_rate: 81.33333333333333
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        chunks: int
+        dim: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 8)
+      package: torch
+    txt: (dim >= -len(self.shape)) and (9 >= -len(self.shape))
+  - f1_score: 64.71251409244645
+    overall_score: 49.333333333333336
+    precision: 95.66666666666667
+    recall: 48.89267461669506
+- - cot: 'The error is triggered because the number of chunks specified is 0. The
+      expected value for `chunks` should be greater than 0. Therefore, the constraint
+      to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        chunks: int
+        dim: int
+        self: tensor
+      msg: 'chunk expects `chunks` to be greater than 0, got: -1'
+      package: torch
+    txt: chunks > 0
+  - f1_score: 96.93053311793216
+    overall_score: 100
+    precision: 100.0
+    recall: 94.04388714733544
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        chunks: int
+        dim: int
+        self: tensor
+      msg: chunk expects at least a 1-dimensional tensor
+      package: torch
+    txt: self.dim >= 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

@@ -33,4 +33,24 @@ args:
   - false
 name: torch.conv1d
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        bias: tensor
+        dilation: list[int]
+        groups: int
+        input: tensor
+        padding: str
+        stride: list[int]
+        weight: tensor
+      msg: 'Expected 2D (unbatched) or 3D (batched) input to conv1d, but got input
+        of size: [3, 3, 3, 3]'
+      package: torch
+    txt: input.rank == 3
+  - f1_score: 89.02077151335313
+    overall_score: 100
+    precision: 100.0
+    recall: 80.21390374331551

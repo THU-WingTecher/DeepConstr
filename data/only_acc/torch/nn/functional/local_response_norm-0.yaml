@@ -1,0 +1,104 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - float
+  - float
+  - float
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - size
+  - alpha
+  - beta
+  - k
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+name: torch.nn.functional.local_response_norm
+package: torch
+pass_rate: 100
+rules:
+- - cot: The error is triggered because the input tensor has 2 dimensions instead
+      of the expected 3 or higher dimensions. To prevent this error, the input tensor
+      should have at least 3 dimensions.
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: float
+        beta: float
+        input: tensor
+        k: float
+        size: int
+      msg: Expected 3D or higher dimensionality                          input (got
+        2 dimensions)
+      package: torch
+    txt: len(input.shape) >= 3
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      value of `size` is less than zero. The constraint that will prevent the error
+      is:'
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: float
+        beta: float
+        input: tensor
+        k: float
+        size: int
+      msg: pad should be at most half of effective kernel size, but got pad=0, kernel_size=-2
+        and dilation=1
+      package: torch
+    txt: size >= 0
+  - f1_score: 69.28406466512702
+    overall_score: 100
+    precision: 100.0
+    recall: 53.003533568904594
+- - cot: 'Error is triggered because of zero size for kernel size. Let''s see what
+      the args were. It seems size is set to 0, which is not allowed. Therefore, Left
+      : size. Op : >, and Right : 0.'
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: float
+        beta: float
+        input: tensor
+        k: float
+        size: int
+      msg: 'kernel size should be greater than zero, but got kT: 0 kH: 1 kW: 1'
+      package: torch
+    txt: size > 0
+  - f1_score: 98.52216748768473
+    overall_score: 100
+    precision: 100.0
+    recall: 97.0873786407767
+- - cot: "The error occurs because the function `avg_pool2d` is not implemented for\
+      \ integer data types. To prevent this error, the data type of the input tensor\
+      \ should be changed to a floating-point type. \n\nSo, the constraint to prevent\
+      \ the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: float
+        beta: float
+        input: tensor
+        k: float
+        size: int
+      msg: '"avg_pool2d" not implemented for ''Int'''
+      package: torch
+    txt: dtype(input) == torch.float32
+  - f1_score: 97.08737864077668
+    overall_score: 100
+    precision: 100.0
+    recall: 94.33962264150942

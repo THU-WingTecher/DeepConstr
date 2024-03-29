@@ -1,0 +1,43 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - dim
+  required:
+  - true
+  - true
+name: torch.squeeze
+package: torch
+pass_rate: 99.66666666666667
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 4)
+      package: torch
+    txt: (dim >= -len(self.shape)) and (dim < 3)
+  - f1_score: 74.71980074719801
+    overall_score: 100
+    precision: 100.0
+    recall: 59.64214711729622
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: dim >= 0
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0

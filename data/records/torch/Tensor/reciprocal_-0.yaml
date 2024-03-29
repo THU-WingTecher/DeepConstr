@@ -9,4 +9,20 @@ args:
   - true
 name: torch.Tensor.reciprocal_
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'The error is triggered because the output type Float cannot be cast to the
+      Int. Let''s see what the args were. The dtype of self is int32, but the reciprocal_
+      function returns a float. Therefore, the dtype of self should be float to prevent
+      this error. Left : dtype(self), Op : ==, Right : float'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self) == float
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

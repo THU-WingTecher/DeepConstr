@@ -13,4 +13,5 @@ args:
   - false
 name: torch._C._fft.fft_ifftshift
 package: torch
-pass_rate: 0
+pass_rate: 91.66666666666666
+rules: []

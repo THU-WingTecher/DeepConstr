@@ -1,0 +1,31 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.igamma
+package: torch
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (7) at non-singleton
+        dimension 5
+      package: torch
+    txt: (self.dim() == other.dim()) and (self.shape[1] == other.shape[1])
+  - f1_score: 80.42895442359249
+    overall_score: 100
+    precision: 100.0
+    recall: 67.26457399103138

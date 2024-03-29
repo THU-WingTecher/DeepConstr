@@ -17,4 +17,24 @@ args:
   - false
 name: torch.cholesky_solve
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: "The error is triggered because the matrix sizes are incompatible. The A\
+      \ matrix has dimensions of 6 by 6, while the b matrix has dimensions of 1 by\
+      \ 7. In matrix calculations, the last dimension of the A matrix should be the\
+      \ same as the first dimension of the b matrix. \n\nTherefore, the constraint\
+      \ to prevent the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        input2: tensor
+        self: tensor
+        upper: bool
+      msg: 'Incompatible matrix sizes for cholesky_solve: each A matrix is 1 by 1
+        but each b matrix is 2 by 2'
+      package: torch
+    txt: input2.shape[-1] == self.shape[-2]
+  - f1_score: 73.89162561576354
+    overall_score: 100
+    precision: 100.0
+    recall: 58.59375

@@ -1,0 +1,84 @@
+args:
+  dtype:
+  - Tensor
+  is_pos:
+  - true
+  name:
+  - self
+  required:
+  - true
+name: torch.geqrf
+package: torch
+pass_rate: 99.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+      msg: 'torch.geqrf: input must have at least 2 dimensions.'
+      package: torch
+    txt: self.dim >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is due to the fact that the function "geqrf_cpu" is not implemented
+      for input tensors of type ''Int''. Therefore, to prevent the error, the input
+      tensor should be of a different data type, such as ''Float''. So, the condition
+      would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+      msg: '"geqrf_cpu" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype != torch.int32
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is due to the fact that the function `torch.geqrf` is not implemented
+      for tensors of type ''Long''. Therefore, in order to prevent this error, the
+      input tensor should have a different data type. The constraint can be formulated
+      as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+      msg: '"geqrf_cpu" not implemented for ''Long'''
+      package: torch
+    txt: self.dtype != torch.int64
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error message states that the function "geqrf_cpu" is not implemented
+      for ''Bool'' tensors. Therefore, to prevent this error, we need to ensure that
+      the input tensor is not of type ''Bool''. We can formulate the constraint as
+      follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+      msg: '"geqrf_cpu" not implemented for ''Bool'''
+      package: torch
+    txt: self.dtype != torch.bool
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The torch.geqrf function requires a 2D input tensor. However, the input
+      tensor''s size is [3, 7]. This error can be prevented by ensuring that the tensor
+      is two-dimensional. Therefore, the constraint should be:'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+      msg: '''complex32'''
+      package: torch
+    txt: len(self.shape) == 2
+  - f1_score: 65.45454545454545
+    overall_score: 51.0
+    precision: 96.0
+    recall: 49.6551724137931

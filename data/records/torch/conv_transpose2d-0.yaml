@@ -37,4 +37,25 @@ args:
   - false
 name: torch.conv_transpose2d
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        bias: tensor
+        dilation: list[int]
+        groups: int
+        input: tensor
+        output_padding: list[int]
+        padding: list[int]
+        stride: list[int]
+        weight: tensor
+      msg: 'Expected 3D (unbatched) or 4D (batched) input to conv_transpose2d, but
+        got input of size: [3, 3, 3, 3, 3, 3, 3]'
+      package: torch
+    txt: input.rank == 4
+  - f1_score: 97.71986970684038
+    overall_score: 100
+    precision: 100.0
+    recall: 95.54140127388536

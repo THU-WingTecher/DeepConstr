@@ -1,0 +1,54 @@
+args:
+  dtype:
+  - Tensor
+  - bool
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - some
+  - compute_uv
+  required:
+  - true
+  - false
+  - false
+name: torch.svd
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'The error is triggered because the input tensor has 0 dimensions, but it
+      should have at least 2 dimensions. To prevent this error, the input tensor should
+      have at least 2 dimensions. Therefore, the condition that prevents the error
+      is:'
+    length: 1
+    target:
+      choosen_dtype:
+        compute_uv: bool
+        self: tensor
+        some: bool
+      msg: 'linalg.svd: input should have at least 2 dimensions, but has 0 dimensions
+        instead'
+      package: torch
+    txt: self.ndim() >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        compute_uv: bool
+        self: tensor
+        some: bool
+      msg: 'linalg.svd: Expected a floating point or complex tensor as input. Got
+        Int'
+      package: torch
+    txt: dtype(self) == torch.float32
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

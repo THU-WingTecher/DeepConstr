@@ -15,24 +15,6 @@ name: torch.heaviside
 package: torch
 pass_rate: 100
 rules:
-- - cot: 'Error is triggered because the size of tensor a (0) doesn''t match the size
-      of tensor b (8) at non-singleton dimension 2. The args were self=Tensor<f32>[0,
-      0] and values=Tensor<f32>[8, 8, 8]. To prevent the error, we need to ensure
-      that the size of tensor a matches the size of tensor b at non-singleton dimension
-      2. Therefore, the constraint can be formulated as:'
-    length: 1
-    target:
-      choosen_dtype:
-        self: tensor
-        values: tensor
-      msg: The size of tensor a (9) must match the size of tensor b (7) at non-singleton
-        dimension 3
-      package: torch
-    txt: self.shape[2] == values.shape[2]
-  - f1_score: 75.66204287515764
-    overall_score: 100
-    precision: 100.0
-    recall: 60.85192697768763
 - - cot: 'The error is due to tensors with different dtypes. The input tensor `self`
       has dtype `f32` and the input tensor `values` has dtype `i32`. To prevent this
       error, the dtypes of both tensors should be the same. Therefore, the constraint
@@ -49,3 +31,18 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 100.0
+- - cot: 'Based on the given runtime information, to prevent the error in the torch.heaviside
+      function, the following constraint should be satisfied:'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        values: tensor
+      msg: The size of tensor a (4) must match the size of tensor b (7) at non-singleton
+        dimension 4
+      package: torch
+    txt: self.dim == values.dim and self.shape == values.shape
+  - f1_score: 97.47899159663865
+    overall_score: 60.739495798319325
+    precision: 96.66666666666667
+    recall: 98.3050847457627

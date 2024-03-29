@@ -13,4 +13,18 @@ args:
   - true
 name: torch.Tensor.pow_
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        exponent: int
+        self: tensor
+      msg: Integers to negative integer powers are not allowed.
+      package: torch
+    txt: self.dtype == torch.float
+  - f1_score: 70.2576112412178
+    overall_score: 47.1288056206089
+    precision: 100.0
+    recall: 54.151624548736464

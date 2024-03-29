@@ -1,0 +1,48 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - out
+  required:
+  - true
+  - true
+name: torch.isposinf
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'The error is triggered because `torch.isposinf` does not support non-boolean
+      outputs. To prevent this error, the output tensor (`out`) should be of boolean
+      type.
+
+
+      Wrap the final formula with'
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: isposinf does not support non-boolean outputs.
+      package: torch
+    txt: out.dtype == torch.bool
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.shape==self.shape) and (out.rank==self.rank)
+  - f1_score: 94.7867298578199
+    overall_score: 100
+    precision: 100.0
+    recall: 90.09009009009009

@@ -1,0 +1,91 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - number
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - other
+  - alpha
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+name: torch.sub
+package: torch
+pass_rate: 99.66666666666667
+rules:
+- - cot: 'Error is triggered because the size of tensor a (7) must match the size
+      of tensor b (9) at non-singleton dimension 5. Let''s see what the args were.
+      The tensors involved are self with shape [9, 3, 2, 8, 7] and other with shape
+      [9, 8, 9, 9, 9, 9]. Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (8) must match the size of tensor b (9) at non-singleton
+        dimension 5
+      package: torch
+    txt: self.shape[4] == other.shape[5]
+  - f1_score: 76.33587786259541
+    overall_score: 100
+    precision: 100.0
+    recall: 61.72839506172839
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        alpha: int
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (all(out.shape[i]==self.shape[i] for i in range(out.rank))) and (all(out.shape[i]==self.shape[i]
+      for i in range(self.rank)))
+  - f1_score: 60.65808297567955
+    overall_score: 36.833333333333336
+    precision: 70.66666666666667
+    recall: 53.1328320802005
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        alpha: int
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank)))
+      or (self.rank==other.rank and all(self.shape[i]==other.shape[i] for i in range(self.rank)))
+  - f1_score: 67.0391061452514
+    overall_score: 100
+    precision: 100.0
+    recall: 50.42016806722689
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        alpha: int
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: (dtype(self) == dtype(out)) and ((dtype(other)==dtype(out)))
+  - f1_score: 67.26457399103138
+    overall_score: 100
+    precision: 100.0
+    recall: 50.67567567567568

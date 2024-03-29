@@ -17,4 +17,24 @@ args:
   - true
 name: torch.bitwise_right_shift
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: "The error is triggered because the size of tensor a (self) at non-singleton\
+      \ dimension 6 (indexing starts from 0) does not match the size of tensor b (other).\
+      \ \n\nTo prevent this error, we need to ensure that the size of tensor a at\
+      \ dimension 6 is equal to the size of tensor b at dimension 6. \n\nThe constraint\
+      \ can be formulated as follows:"
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (8) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.shape[6] == other.shape[6]
+  - f1_score: 75.56675062972292
+    overall_score: 100
+    precision: 100.0
+    recall: 60.72874493927126

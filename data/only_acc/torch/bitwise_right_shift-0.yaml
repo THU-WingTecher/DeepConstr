@@ -1,0 +1,49 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.bitwise_right_shift
+package: torch
+pass_rate: 100
+rules:
+- - cot: "The error is triggered because the size of tensor a (4) does not match the\
+      \ size of tensor b (7) at non-singleton dimension 6. To prevent this error,\
+      \ we need to ensure that the dimensions and shape of both tensors are consistent.\
+      \ \n\nTherefore, the constraint can be formulated as:"
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (8) must match the size of tensor b (9) at non-singleton
+        dimension 4
+      package: torch
+    txt: self.dim == other.dim and self.shape == other.shape
+  - f1_score: 93.60374414976597
+    overall_score: 100
+    precision: 100.0
+    recall: 87.97653958944281
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"rshift_cpu" not implemented for ''Float'''
+      package: torch
+    txt: dtype(self) in ["int8", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+      "uint64"] and dtype(other) in ["int8", "int16", "int32", "int64", "uint8", "uint16",
+      "uint32", "uint64"]
+  - f1_score: 99.83361064891847
+    overall_score: 100
+    precision: 100.0
+    recall: 99.66777408637874

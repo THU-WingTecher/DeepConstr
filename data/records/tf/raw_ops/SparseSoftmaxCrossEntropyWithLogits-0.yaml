@@ -17,4 +17,25 @@ args:
   - false
 name: tf.raw_ops.SparseSoftmaxCrossEntropyWithLogits
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        features: tensor
+        labels: tensor
+        name: str
+      msg: "Value for attr 'Tlabels' of float is not in the list of allowed values:\
+        \ int32, int64\n\t; NodeDef: {{node SparseSoftmaxCrossEntropyWithLogits}};\
+        \ Op<name=SparseSoftmaxCrossEntropyWithLogits; signature=features:T, labels:Tlabels\
+        \ -> loss:T, backprop:T; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16, DT_FLOAT,\
+        \ DT_DOUBLE]; attr=Tlabels:type,default=DT_INT64,allowed=[DT_INT32, DT_INT64]>\
+        \ [Op:SparseSoftmaxCrossEntropyWithLogits] name: THlj"
+      package: tensorflow
+    txt: (dtype(labels) in ["int32", "int64"]) and (dtype(features) in ["half", "bfloat16",
+      "float", "double"])
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

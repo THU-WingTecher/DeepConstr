@@ -1,0 +1,102 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - bool
+  - Optional[float]
+  - Optional[float]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - output_size
+  - align_corners
+  - scales_h
+  - scales_w
+  required:
+  - true
+  - true
+  - true
+  - false
+  - false
+name: torch._C._nn.upsample_bilinear2d
+package: torch
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        align_corners: bool
+        output_size: list[int]
+        scales_h: float
+        scales_w: None
+        self: tensor
+      msg: It is expected output_size equals to 2, but got size 0
+      package: torch
+    txt: (len(output_size) == 2) and (len(self.size()) == 4)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        output_size: list[int]
+        scales_h: None
+        scales_w: float
+        self: tensor
+      msg: 'Input and output sizes should be greater than 0, but got input (H: 7,
+        W: 1) output (H: -3, W: 3)'
+      package: torch
+    txt: self.shape[2] > 0 and self.shape[3] > 0 and output_size[0] > 0 and output_size[1]
+      > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is due to the ''upsample_bilinear2d_channels_last'' function not
+      being implemented for the int data type. To prevent this error, the data type
+      of the ''self'' tensor should be changed to float. Therefore, the condition
+      that prevents the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        output_size: list[int]
+        scales_h: float
+        scales_w: float
+        self: tensor
+      msg: '"upsample_bilinear2d_channels_last" not implemented for ''Int'''
+      package: torch
+    txt: dtype(self) == float
+  - f1_score: 97.71986970684038
+    overall_score: 100
+    precision: 100.0
+    recall: 95.54140127388536
+- - cot: 'Error is triggered because the tensor `self` has a size of 0 at the second
+      dimension. To prevent this error, we need to add a constraint that ensures the
+      second dimension of `self` is non-zero. The constraint can be formulated as
+      follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        output_size: list[int]
+        scales_h: float
+        scales_w: float
+        self: tensor
+      msg: Non-empty 4D data tensor expected but got a tensor with sizes [9, 0, 3,
+        8]
+      package: torch
+    txt: self.shape[1] != 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

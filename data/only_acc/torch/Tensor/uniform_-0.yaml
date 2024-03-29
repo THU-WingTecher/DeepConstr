@@ -1,0 +1,59 @@
+args:
+  dtype:
+  - Tensor
+  - float
+  - float
+  - Optional[Generator]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - from
+  - to
+  - generator
+  required:
+  - true
+  - false
+  - false
+  - false
+name: torch.Tensor.uniform_
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'The error is due to the ''from'' value being greater than the ''to'' value
+      in the uniform_ function. Let''s see what the args were. It seems that the ''from''
+      value is 5.0 and the ''to'' value is 0.9543962951859244. So, the ''from'' value
+      needs to be less than or equal to the ''to'' value to avoid this error. Therefore,
+      ''from'' <= ''to'' should be ensured. Therefore, left : ''from'' op : <= right
+      : ''to'''
+    length: 1
+    target:
+      choosen_dtype:
+        from: float
+        self: tensor
+        to: float
+      msg: uniform_ expects to return a [from, to) range, but found from=0.818842
+        > to=0.278326
+      package: torch
+    txt: '''from'' <= ''to'''
+  - f1_score: 95.99999999999999
+    overall_score: 100
+    precision: 100.0
+    recall: 92.3076923076923
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        from: float
+        self: tensor
+        to: float
+      msg: '"check_uniform_bounds" not implemented for ''Int'''
+      package: torch
+    txt: dtype(self) == torch.float32
+  - f1_score: 96.15384615384615
+    overall_score: 100
+    precision: 100.0
+    recall: 92.59259259259258

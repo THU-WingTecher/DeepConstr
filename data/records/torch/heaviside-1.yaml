@@ -17,4 +17,21 @@ args:
   - true
 name: torch.heaviside
 package: torch
-pass_rate: 0
+pass_rate: 21.0
+rules:
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+        values: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (3) at non-singleton
+        dimension 3
+      package: torch
+    txt: self.shape[2] == values.shape[2]
+  - f1_score: 73.34963325183375
+    overall_score: 100
+    precision: 100.0
+    recall: 57.91505791505792

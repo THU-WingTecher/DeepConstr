@@ -1,0 +1,50 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.ge
+package: torch
+pass_rate: 99.33333333333333
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (3) at non-singleton
+        dimension 3
+      package: torch
+    txt: other.shape[6] == 1
+  - f1_score: 96.46302250803858
+    overall_score: 100
+    precision: 100.0
+    recall: 93.16770186335404
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.shape == self.shape) and (out.rank == self.rank)
+  - f1_score: 90.6344410876133
+    overall_score: 100
+    precision: 100.0
+    recall: 82.8729281767956

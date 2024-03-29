@@ -1,0 +1,58 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[number]
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - p
+  required:
+  - true
+  - false
+name: torch._C._linalg.linalg_cond
+package: torch
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        p: int
+        self: tensor
+      msg: 'linalg.cond got an invalid norm type: 6'
+      package: torch
+    txt: (p == 2)
+  - f1_score: 92.7357032457496
+    overall_score: 100
+    precision: 100.0
+    recall: 86.45533141210375
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        p: int
+        self: tensor
+      msg: 'linalg.cond: The input tensor must have at least 2 dimensions.'
+      package: torch
+    txt: self.dim >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        p: int
+        self: tensor
+      msg: 'linalg.svd: Expected a floating point or complex tensor as input. Got
+        Int'
+      package: torch
+    txt: dtype(self) in ['float32', 'float64', 'complex64', 'complex128']
+  - f1_score: 98.6842105263158
+    overall_score: 100
+    precision: 100.0
+    recall: 97.40259740259741

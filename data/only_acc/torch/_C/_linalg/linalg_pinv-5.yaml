@@ -1,0 +1,119 @@
+args:
+  dtype:
+  - Tensor
+  - float
+  - bool
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - rcond
+  - hermitian
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+name: torch._C._linalg.linalg_pinv
+package: torch
+pass_rate: 100
+rules:
+- - cot: "The error message indicates that the input matrix `self` is a batch of 1\
+      \ by 7 matrices, while the function `torch._C._linalg.linalg_pinv` expects batches\
+      \ of square matrices. To prevent the error, the input matrix `self` must have\
+      \ dimensions `batch_size x n x n`, where `batch_size` is the number of matrices\
+      \ in the batch and `n` is the desired square matrix size. \n\nTherefore, the\
+      \ condition to prevent the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        out: tensor
+        rcond: float
+        self: tensor
+      msg: 'linalg.eigh: A must be batches of square matrices, but they are 2 by 7
+        matrices'
+      package: torch
+    txt: self.shape[-1] == self.shape[-2]
+  - f1_score: 67.41573033707866
+    overall_score: 100
+    precision: 100.0
+    recall: 50.847457627118644
+- - cot: "Based on the given runtime information, the error is triggered because the\
+      \ input tensor `self` is empty. The function `torch._C._linalg.linalg_pinv`\
+      \ expects a tensor with 2 or more dimensions of float, double, cfloat, or cdouble\
+      \ types.\n\nTo prevent the error, the input tensor `self` should be a non-empty\
+      \ tensor with 2 or more dimensions and of one of the allowed types. \n\nTherefore,\
+      \ the constraint can be formulated as:"
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        out: tensor
+        rcond: float
+        self: tensor
+      msg: 'linalg.pinv(Float{[]}): expected a tensor with 2 or more dimensions of
+        float, double, cfloat or cdouble types'
+      package: torch
+    txt: self.dim >= 2 and dtype(self) in ["float32", "float64", "complex64", "complex128"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: "The error occurs when trying to resize the storage of the output tensor,\
+      \ which is not resizable. In this case, the output tensor is represented by\
+      \ the variable \"out\". To prevent the error, we need to ensure that the shape\
+      \ and rank of the output tensor match the shape and rank of the input tensor.\
+      \ \n\nConstraint:"
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        out: tensor
+        rcond: float
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 78.53403141361257
+    overall_score: 100
+    precision: 100.0
+    recall: 64.65517241379311
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        out: tensor
+        rcond: float
+        self: tensor
+      msg: 'linalg.pinv: Expected result to be safely castable from ComplexDouble
+        dtype, but got result with dtype Float'
+      package: torch
+    txt: dtype(out) == torch.complex64
+  - f1_score: 68.10035842293907
+    overall_score: 100
+    precision: 100.0
+    recall: 51.63043478260869
+- - cot: 'The error is caused by negative dimensions in the shape of the input tensor.
+      To prevent this error, the dimensions of the input tensor should be non-negative.
+      Therefore, the constraint should be:'
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        out: tensor
+        rcond: float
+        self: tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(dim >= 0 for dim in self.shape)
+  - f1_score: 81.77641653905054
+    overall_score: 100
+    precision: 100.0
+    recall: 69.17098445595855

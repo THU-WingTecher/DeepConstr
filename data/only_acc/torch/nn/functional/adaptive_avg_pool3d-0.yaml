@@ -1,0 +1,93 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  is_pos:
+  - false
+  - false
+  name:
+  - input
+  - output_size
+  required:
+  - true
+  - true
+name: torch.nn.functional.adaptive_avg_pool3d
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'The error is caused because the `output_size` argument is not satisfying
+      the requirement of being a tuple of 3 integers. The received `output_size` is
+      an empty list, which does not have a length of 3. Therefore, the constraint
+      to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+      msg: 'adaptive_avg_pool3d: output_size must be 3'
+      package: torch
+    txt: len(output_size) == 3
+  - f1_score: 89.02077151335313
+    overall_score: 100
+    precision: 100.0
+    recall: 80.21390374331551
+- - cot: "The error occurs because the elements of the `output_size` argument are\
+      \ not greater than or equal to 0. The received `output_size` is [1, -4, -3],\
+      \ so it needs to be corrected. \n\nTo prevent this error in the future and generate\
+      \ constraints that do not trigger it, we need to ensure that all elements of\
+      \ the `output_size` argument are greater than or equal to 0. \n\nThe constraint\
+      \ for the `output_size` parameter can be expressed as:"
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+      msg: 'adaptive_avg_pool2d: elements of output_size must be greater than or equal
+        to 0 but received {1, -4,-3}'
+      package: torch
+    txt: all(o >= 0 for o in output_size)
+  - f1_score: 95.38950715421304
+    overall_score: 100
+    precision: 100.0
+    recall: 91.1854103343465
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+      msg: 'adaptive_avg_pool3d(): Expected 4D or 5D tensor, but got [2, 7, 9, 8,
+        5, 5, 1]'
+      package: torch
+    txt: input.dim() == 5
+  - f1_score: 74.25742574257426
+    overall_score: 100
+    precision: 100.0
+    recall: 59.055118110236215
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+      msg: 'adaptive_avg_pool3d(): Expected input to have non-zero size for non-batch
+        dimensions, but input has sizes [2, 9, 0, 7, 7] with dimension 2 being empty'
+      package: torch
+    txt: all(input[i]!=0 for i in range(1,len(input.shape)))
+  - f1_score: 99.22480620155041
+    overall_score: 100
+    precision: 100.0
+    recall: 98.46153846153847
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+      msg: '"adaptive_avg_pool3d_cpu" not implemented for ''Int'''
+      package: torch
+    txt: dtype(input) == float32
+  - f1_score: 98.6754966887417
+    overall_score: 100
+    precision: 100.0
+    recall: 97.38562091503267

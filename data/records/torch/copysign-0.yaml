@@ -13,4 +13,22 @@ args:
   - true
 name: torch.copysign
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: "The error is triggered because the size of tensor `a` (3) does not match\
+      \ the size of tensor `b` (7) at non-singleton dimension 2. To prevent this error,\
+      \ we need to ensure that the dimensions and shape of `a` and `b` are consistent.\
+      \ \n\nThe constraint can be formulated as follows:"
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (8) at non-singleton
+        dimension 2
+      package: torch
+    txt: self.dim == other.dim and self.shape == other.shape
+  - f1_score: 97.31543624161074
+    overall_score: 60.65771812080537
+    precision: 96.66666666666667
+    recall: 97.97297297297297

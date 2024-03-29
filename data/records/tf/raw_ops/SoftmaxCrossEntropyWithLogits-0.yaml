@@ -17,4 +17,93 @@ args:
   - false
 name: tf.raw_ops.SoftmaxCrossEntropyWithLogits
 package: tensorflow
-pass_rate: 0
+pass_rate: 25.5
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        features: tensor
+        labels: tensor
+        name: str
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: half,\
+        \ bfloat16, float, double\n\t; NodeDef: {{node SoftmaxCrossEntropyWithLogits}};\
+        \ Op<name=SoftmaxCrossEntropyWithLogits; signature=features:T, labels:T ->\
+        \ loss:T, backprop:T; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16, DT_FLOAT,\
+        \ DT_DOUBLE]> [Op:SoftmaxCrossEntropyWithLogits] name: RSse"
+      package: tensorflow
+    txt: dtype(labels) in ["half", "bfloat16", "float", "double"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: "Based on the given runtime information, the error arises because the function\
+      \ `tf.raw_ops.SoftmaxCrossEntropyWithLogits` is trying to perform an operation\
+      \ on a float tensor and a half tensor. However, both tensors in the provided\
+      \ arguments must have the same data type. \n\nTo prevent this error, the data\
+      \ type of the `labels` tensor should be corrected. It should be equal to the\
+      \ data type of the `features` tensor. \n\nTherefore, the constraint that prevents\
+      \ the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        features: tensor
+        labels: tensor
+        name: str
+      msg: 'cannot compute SoftmaxCrossEntropyWithLogits as input #1(zero-based) was
+        expected to be a float tensor but is a half tensor [Op:SoftmaxCrossEntropyWithLogits]
+        name: Mvnf'
+      package: tensorflow
+    txt: dtype(labels) == dtype(features)
+  - f1_score: 98.9795918367347
+    overall_score: 61.48979591836735
+    precision: 100.0
+    recall: 97.979797979798
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        features: tensor
+        labels: tensor
+        name: str
+      msg: '{{function_node __wrapped__SoftmaxCrossEntropyWithLogits_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        logits and labels must be broadcastable: logits_size=[9,7] labels_size=[1,2]
+        [Op:SoftmaxCrossEntropyWithLogits] name: tEtf'
+      package: tensorflow
+    txt: (labels.shape[1] == 1) and (features.shape == labels.shape)
+  - f1_score: 97.799511002445
+    overall_score: 54.8997555012225
+    precision: 100.0
+    recall: 95.69377990430623
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        features: tensor
+        labels: tensor
+        name: str
+      msg: '{{function_node __wrapped__SoftmaxCrossEntropyWithLogits_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        logits and labels must be either 2-dimensional, or broadcasted to be 2-dimensional
+        [Op:SoftmaxCrossEntropyWithLogits] name: YXSe'
+      package: tensorflow
+    txt: (features.dim == 2)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        features: tensor
+        labels: tensor
+        name: str
+      msg: '{{function_node __wrapped__SoftmaxCrossEntropyWithLogits_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        logits and labels must be broadcastable: logits_size=[1,6] labels_size=[7,5,5]
+        [Op:SoftmaxCrossEntropyWithLogits] name: sOjJ'
+      package: tensorflow
+    txt: (features.shape[i] == 1) or (labels.dim == 1)
+  - f1_score: 70.79646017699115
+    overall_score: 100
+    precision: 100.0
+    recall: 54.794520547945204

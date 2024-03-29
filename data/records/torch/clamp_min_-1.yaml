@@ -13,4 +13,21 @@ args:
   - true
 name: torch.clamp_min_
 package: torch
-pass_rate: 0
+pass_rate: 53.0
+rules:
+- - cot: 'Error is triggered because the size of tensor a (6) does not match the size
+      of tensor b (8) at non-singleton dimension 2. The constraint to prevent this
+      error can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        min: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (6) at non-singleton
+        dimension 3
+      package: torch
+    txt: self.shape[2] == min.shape[2]
+  - f1_score: 77.51937984496125
+    overall_score: 100
+    precision: 100.0
+    recall: 63.291139240506325

@@ -1,0 +1,30 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.Tensor.reshape_as
+package: torch
+pass_rate: 11.666666666666666
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: shape '[6, 6, 6]' is invalid for input of size 1
+      package: torch
+    txt: (other[0] == 9)
+  - f1_score: 20.72829131652661
+    overall_score: 9.166666666666668
+    precision: 12.333333333333334
+    recall: 64.91228070175438

@@ -25,4 +25,5 @@ args:
   - true
 name: torch._C._nn.upsample_linear1d
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules: []

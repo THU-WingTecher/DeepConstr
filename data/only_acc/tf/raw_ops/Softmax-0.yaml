@@ -1,0 +1,50 @@
+args:
+  dtype:
+  - float16,bfloat16,float32,float64
+  - str
+  is_pos:
+  - false
+  - false
+  name:
+  - logits
+  - name
+  required:
+  - true
+  - false
+name: tf.raw_ops.Softmax
+package: tensorflow
+pass_rate: 100
+rules:
+- - cot: 'The error is triggered because the logits tensor has 0 dimensions, but it
+      should have at least 1 dimension. The constraint to prevent this error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        logits: tensor
+        name: str
+      msg: '{{function_node __wrapped__Softmax_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        logits must have >= 1 dimension, got [] [Op:Softmax] name: lVeD'
+      package: tensorflow
+    txt: logits.dim >= 1
+  - f1_score: 99.06542056074767
+    overall_score: 100
+    precision: 100.0
+    recall: 98.14814814814815
+- - cot: 'Based on the given runtime information, the error occurs because the ''logits''
+      tensor is provided as int32, which is not one of the allowed types: half, bfloat16,
+      float, double. Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        logits: tensor
+        name: str
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: half,\
+        \ bfloat16, float, double\n\t; NodeDef: {{node Softmax}}; Op<name=Softmax;\
+        \ signature=logits:T -> softmax:T; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16,\
+        \ DT_FLOAT, DT_DOUBLE]> [Op:Softmax] name: mwWq"
+      package: tensorflow
+    txt: dtype(logits) in ["half", "bfloat16", "float", "double"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

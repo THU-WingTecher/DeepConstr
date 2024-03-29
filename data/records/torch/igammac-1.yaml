@@ -17,4 +17,20 @@ args:
   - true
 name: torch.igammac
 package: torch
-pass_rate: 0
+pass_rate: 17.666666666666668
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (2) at non-singleton
+        dimension 4
+      package: torch
+    txt: self.shape[3] == other.shape[3]
+  - f1_score: 75.37688442211054
+    overall_score: 100
+    precision: 100.0
+    recall: 60.483870967741936

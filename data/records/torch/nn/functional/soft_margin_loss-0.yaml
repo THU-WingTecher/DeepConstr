@@ -25,4 +25,57 @@ args:
   - false
 name: torch.nn.functional.soft_margin_loss
 package: torch
-pass_rate: 0
+pass_rate: 40.666666666666664
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        reduce: bool
+        reduction: str
+        size_average: None
+        target: tensor
+      msg: The size of tensor a (5) must match the size of tensor b (3) at non-singleton
+        dimension 3
+      package: torch
+    txt: input.shape[3] == target.shape[3]
+  - f1_score: 76.04562737642586
+    overall_score: 100
+    precision: 100.0
+    recall: 61.34969325153374
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        reduce: None
+        reduction: str
+        size_average: None
+        target: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(input) == dtype(target)
+  - f1_score: 65.67164179104479
+    overall_score: 44.835820895522396
+    precision: 95.33333333333334
+    recall: 50.0875656742557
+- - cot: The error is due to an invalid value for the 'reduction' parameter. The given
+      value for 'reduction' is 'eZkv', which is not a valid value. The valid values
+      for 'reduction' are 'none', 'mean', and 'sum'. Therefore, the value of 'reduction'
+      should be corrected to one of these valid values.
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        reduce: None
+        reduction: str
+        size_average: None
+        target: tensor
+      msg: ulIV is not a valid value for reduction
+      package: torch
+    txt: reduction in ['none', 'mean', 'sum']
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

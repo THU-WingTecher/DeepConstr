@@ -29,4 +29,5 @@ args:
   - false
 name: torch.Tensor.new_empty
 package: torch
-pass_rate: 0
+pass_rate: 74.66666666666667
+rules: []

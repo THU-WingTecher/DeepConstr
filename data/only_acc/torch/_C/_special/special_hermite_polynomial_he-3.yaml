@@ -1,0 +1,51 @@
+args:
+  dtype:
+  - number
+  - Tensor
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - x
+  - n
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch._C._special.special_hermite_polynomial_he
+package: torch
+pass_rate: 93.35664335664336
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        n: tensor
+        out: tensor
+        x: int
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.shape == n.shape) and (out.rank==n.rank)
+  - f1_score: 85.97560975609757
+    overall_score: 100
+    precision: 100.0
+    recall: 75.40106951871658
+- - cot: Based on the given runtime information, the error is triggered because the
+      result type Float cannot be cast to the desired output type Int. To prevent
+      this error, the dtypes of the input and output tensors should be consistent.
+    length: 1
+    target:
+      choosen_dtype:
+        n: tensor
+        out: tensor
+        x: int
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(out) == dtype(n)
+  - f1_score: 92.93924466338261
+    overall_score: 50.16666666666667
+    precision: 94.33333333333334
+    recall: 91.58576051779936

@@ -25,4 +25,29 @@ args:
   - false
 name: torch.nn.functional.layer_norm
 package: torch
-pass_rate: 0
+pass_rate: 1.0
+rules:
+- - cot: 'The error occurs because the `normalized_shape` parameter is expected to
+      be at least 1-dimensional, containing at least one element. However, in the
+      given runtime information, `normalized_shape` is an empty list `[]`, which does
+      not meet this requirement.
+
+
+      To prevent this error, we can add a constraint to ensure that `normalized_shape`
+      is a non-empty list. The constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        bias: None
+        eps: float
+        input: tensor
+        normalized_shape: list[int]
+        weight: tensor
+      msg: Expected normalized_shape to be at least 1-dimensional, i.e., containing
+        at least one element, but got normalized_shape = []
+      package: torch
+    txt: len(normalized_shape) > 0
+  - f1_score: 97.12793733681463
+    overall_score: 100
+    precision: 100.0
+    recall: 94.41624365482234

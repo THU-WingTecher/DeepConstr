@@ -1,0 +1,31 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - min
+  required:
+  - true
+  - true
+name: torch.clamp_min
+package: torch
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        min: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (6) at non-singleton
+        dimension 3
+      package: torch
+    txt: min.shape[2] == self.shape[2]
+  - f1_score: 77.12082262210798
+    overall_score: 100
+    precision: 100.0
+    recall: 62.76150627615063

@@ -1,0 +1,46 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - n
+  required:
+  - true
+  - true
+name: torch.Tensor.polygamma_
+package: torch
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        n: int
+        self: tensor
+      msg: polygamma(n, x) does not support negative n.
+      package: torch
+    txt: n >= 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is triggered because the result type Float cannot be cast to the
+      Int. Let''s see what the args were. The function torch.Tensor.polygamma_ is
+      trying to return a float, but the tensor self is of type int32. Therefore, the
+      dtype of self should be float. Left : dtype(self), op : ==, Right : float'
+    length: 1
+    target:
+      choosen_dtype:
+        n: int
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self)==float
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

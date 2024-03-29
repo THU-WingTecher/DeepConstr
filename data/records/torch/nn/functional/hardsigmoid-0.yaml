@@ -13,4 +13,66 @@ args:
   - false
 name: torch.nn.functional.hardsigmoid
 package: torch
-pass_rate: 0
+pass_rate: 97.0
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        inplace: bool
+        input: tensor
+      msg: '''complex32'''
+      package: torch
+    txt: ((input.dim() == 6) or (input.dtype == torch.float32)) or (input.dtype !=
+      'complex32')
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is due to the fact that the function `hardsigmoid` does not support
+      the data type ''Bool'' for the input tensor. To prevent this error, the input
+      tensor should have a data type other than ''Bool''. Therefore, the constraint
+      can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        inplace: bool
+        input: tensor
+      msg: '"hardsigmoid_cpu" not implemented for ''Bool'''
+      package: torch
+    txt: (input.dtype != torch.bool)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the runtime information, the error is due to the fact that the
+      ''hardsigmoid'' function is not implemented for a tensor with a data type of
+      ''Long''. Therefore, the constraint should be that the data type of the input
+      tensor should not be ''Long''. Op : !=, and Right : ''Long''.'
+    length: 1
+    target:
+      choosen_dtype:
+        inplace: bool
+        input: tensor
+      msg: '"hardsigmoid_cpu" not implemented for ''Long'''
+      package: torch
+    txt: input.dtype != torch.int64
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is due to the fact that the ''hardsigmoid'' function is not implemented
+      for the ''Int'' data type. To prevent this error, the input tensor should have
+      a data type other than ''Int''. So, the constraint would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        inplace: bool
+        input: tensor
+      msg: '"hardsigmoid_cpu" not implemented for ''Int'''
+      package: torch
+    txt: input.dtype != torch.int
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

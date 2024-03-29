@@ -25,4 +25,47 @@ args:
   - true
 name: tf.raw_ops.Cumsum
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: The error is due to the attribute 'Tidx' being a float, but it is expected
+      to be one of int32 or int64. The tensor 'axis' is provided as float32, which
+      is not compatible. Therefore, the constraint to prevent the error is to set
+      the data type of 'axis' to be either int32 or int64.
+    length: 1
+    target:
+      choosen_dtype:
+        axis: tensor
+        exclusive: bool
+        name: str
+        reverse: bool
+        x: tensor
+      msg: "Value for attr 'Tidx' of float is not in the list of allowed values: int32,\
+        \ int64\n\t; NodeDef: {{node Cumsum}}; Op<name=Cumsum; signature=x:T, axis:Tidx\
+        \ -> out:T; attr=exclusive:bool,default=false; attr=reverse:bool,default=false;\
+        \ attr=T:type,allowed=[DT_FLOAT, DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16,\
+        \ 10440210506161272279, DT_UINT16, DT_COMPLEX128, DT_HALF, DT_UINT32, DT_UINT64];\
+        \ attr=Tidx:type,default=DT_INT32,allowed=[DT_INT32, DT_INT64]> [Op:Cumsum]\
+        \ name: iEyg"
+      package: tensorflow
+    txt: dtype(axis) in ["int32", "int64"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        axis: tensor
+        exclusive: bool
+        name: str
+        reverse: bool
+        x: tensor
+      msg: '{{function_node __wrapped__Cumsum_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        ScanOp: axis must be a scalar, not [9,3,7,3] [Op:Cumsum] name: zrId'
+      package: tensorflow
+    txt: axis.dim == 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

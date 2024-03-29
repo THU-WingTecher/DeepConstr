@@ -21,4 +21,51 @@ args:
   - true
 name: torch.subtract
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        alpha: int
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: (dtype(other)==float32) and (dtype(other) == dtype(out))
+  - f1_score: 81.52173913043478
+    overall_score: 46.76086956521739
+    precision: 100.0
+    recall: 68.80733944954129
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        alpha: int
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank == self.rank) and (out.rank==other.rank)
+  - f1_score: 94.4
+    overall_score: 53.2
+    precision: 98.33333333333333
+    recall: 90.76923076923077
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (8) at non-singleton
+        dimension 1
+      package: torch
+    txt: self.shape[5] == other.shape[5]
+  - f1_score: 94.2528735632184
+    overall_score: 59.1264367816092
+    precision: 95.66666666666667
+    recall: 92.88025889967638

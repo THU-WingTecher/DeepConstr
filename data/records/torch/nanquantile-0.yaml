@@ -25,4 +25,5 @@ args:
   - false
 name: torch.nanquantile
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules: []

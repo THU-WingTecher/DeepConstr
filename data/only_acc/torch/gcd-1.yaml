@@ -1,0 +1,71 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.gcd
+package: torch
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (8) must match the size of tensor b (6) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.shape[4] == 9
+  - f1_score: 91.6030534351145
+    overall_score: 100
+    precision: 100.0
+    recall: 84.50704225352112
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: '"gcd_cpu" not implemented for ''Float'''
+      package: torch
+    txt: '(
+
+      dtype(out) in ["half", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+      "uint64"]) and (dtype(other) in ["int8", "int16", "int32", "int64", "uint8",
+      "uint16", "uint32", "uint64"] and dtype(out) in ["int8", "int16", "int32", "int64",
+      "uint8", "uint16", "uint32", "uint64"] and dtype(self) in ["int8", "int16",
+      "int32", "int64", "uint8", "uint16", "uint32", "uint64"])'
+  - f1_score: 74.71980074719801
+    overall_score: 100
+    precision: 100.0
+    recall: 59.64214711729622
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank==other.rank and all(out.shape[i]==other.shape[i] for i in range(out.rank)))
+      and (all(out.shape[i] == self.shape[i] for i in range(self.rank)))
+  - f1_score: 71.68458781362006
+    overall_score: 100
+    precision: 100.0
+    recall: 55.865921787709496

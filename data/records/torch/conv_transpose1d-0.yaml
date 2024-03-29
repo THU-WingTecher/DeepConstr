@@ -37,4 +37,66 @@ args:
   - false
 name: torch.conv_transpose1d
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        bias: None
+        dilation: list[int]
+        groups: int
+        input: tensor
+        output_padding: list[int]
+        padding: list[int]
+        stride: list[int]
+        weight: tensor
+      msg: 'Expected 2D (unbatched) or 3D (batched) input to conv_transpose1d, but
+        got input of size: [3, 3, 3, 3, 3, 3, 3]'
+      package: torch
+    txt: input.rank == 3
+  - f1_score: 91.88361408882082
+    overall_score: 100
+    precision: 100.0
+    recall: 84.98583569405098
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        bias: tensor
+        dilation: list[int]
+        groups: int
+        input: tensor
+        output_padding: list[int]
+        padding: list[int]
+        stride: list[int]
+        weight: tensor
+      msg: expected stride to be a single integer value or a list of 5 values to match
+        the convolution dimensions, but got stride=[]
+      package: torch
+    txt: (len(stride) == len(input.shape)) or (len(padding) == 1 or len(padding) ==
+      5)
+  - f1_score: 44.310452491422204
+    overall_score: 20.652542372881356
+    precision: 38.30508474576271
+    recall: 52.54893217180806
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        bias: None
+        dilation: list[int]
+        groups: int
+        input: tensor
+        output_padding: list[int]
+        padding: list[int]
+        stride: list[int]
+        weight: tensor
+      msg: expected stride to be a single integer value or a list of 5 values to match
+        the convolution dimensions, but got stride=[-3, 3, 3, 3, 3, 3]
+      package: torch
+    txt: (len(dilation) == 1 or len(dilation) == 5) and (len(stride) == input.rank)
+  - f1_score: 48.19914000552289
+    overall_score: 22.277027027027025
+    precision: 41.55405405405405
+    recall: 57.37407256675954

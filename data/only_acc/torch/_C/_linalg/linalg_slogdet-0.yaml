@@ -1,0 +1,71 @@
+args:
+  dtype:
+  - Tensor
+  is_pos:
+  - false
+  name:
+  - A
+  required:
+  - true
+name: torch._C._linalg.linalg_slogdet
+package: torch
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+      msg: 'linalg.slogdet: A must be batches of square matrices, but they are 1 by
+        5 matrices'
+      package: torch
+    txt: (A.shape[-2] == A.shape[-1])
+  - f1_score: 67.41573033707866
+    overall_score: 100
+    precision: 100.0
+    recall: 50.847457627118644
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+      msg: 'linalg.slogdet: The input tensor A must have at least 2 dimensions.'
+      package: torch
+    txt: A.dim() >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is caused because the input tensor A is not a batch of square
+      matrices. The shape of A is [5, 8, 4, 8, 8, 2, 8], but it should be [batch_size,
+      n, n] where batch_size is the number of matrices in the batch and n is the size
+      of each square matrix.
+
+
+      To prevent this error, we need to ensure that the dimensions of A satisfy the
+      requirements. The constraint for A can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+      msg: 'linalg.slogdet: A must be batches of square matrices, but they are 7 by
+        1 matrices'
+      package: torch
+    txt: A.rank == 3
+  - f1_score: 66.96428571428572
+    overall_score: 100
+    precision: 100.0
+    recall: 50.335570469798654
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+      msg: 'linalg.slogdet: Expected a floating point or complex tensor as input.
+        Got Int'
+      package: torch
+    txt: dtype(A) in [torch.float32, torch.float64, torch.complex64, torch.complex128]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

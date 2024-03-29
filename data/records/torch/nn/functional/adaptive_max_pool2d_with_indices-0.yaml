@@ -17,4 +17,83 @@ args:
   - false
 name: torch.nn.functional.adaptive_max_pool2d_with_indices
 package: torch
-pass_rate: 0
+pass_rate: 95.66666666666667
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+        return_indices: bool
+      msg: 'adaptive_max_pool2d(): Expected input to have non-zero size for non-batch
+        dimensions, but input has sizes [8, 8, 0] with dimension 2 being empty'
+      package: torch
+    txt: ((all(input[i]!=0 for i in range(0,len(input.shape)))) or (input.size(1)
+      != 0)) and (all(input[i]!=0 for i in range(2,len(input.shape))))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Input tensor should have a data type other than ''Int''. The constraint
+      to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+        return_indices: bool
+      msg: '"adaptive_max_pool2d" not implemented for ''Int'''
+      package: torch
+    txt: input.dtype != torch.int
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+        return_indices: bool
+      msg: 'Trying to create tensor with negative dimension -3: [3, -3, -4]'
+      package: torch
+    txt: ((input.rank == 3) and (all(x >= 0 for x in output_size))) or (all(size>0
+      for size in output_size))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: "Based on the given runtime information, the error is triggered because the\
+      \ `output_size` argument is empty, but it is expected to have a size of 2. \n\
+      \nTo prevent the error, the `output_size` argument should be a list or tuple\
+      \ with a size of 2. \n\nTherefore, the constraint that prevents the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+        return_indices: bool
+      msg: 'adaptive_max_pool2d(): internal error: output_size.size() must be 2'
+      package: torch
+    txt: len(output_size) == 2
+  - f1_score: 88.10572687224668
+    overall_score: 56.05286343612334
+    precision: 100.0
+    recall: 78.74015748031495
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        output_size: list[int]
+        return_indices: bool
+      msg: 'adaptive_max_pool2d(): Expected 3D or 4D tensor, but got: [9, 4, 9, 9,
+        9, 9, 9]'
+      package: torch
+    txt: input.rank in [3, 4]
+  - f1_score: 75.09386733416773
+    overall_score: 49.54693366708386
+    precision: 100.0
+    recall: 60.120240480961925

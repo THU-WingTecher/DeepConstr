@@ -17,4 +17,40 @@ args:
   - false
 name: torch._C._linalg.linalg_cross
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        other: tensor
+        self: tensor
+      msg: 'linalg.cross: inputs must have the same number of dimensions.'
+      package: torch
+    txt: dim == other.dim and dim == self.dim
+  - f1_score: 93.60374414976597
+    overall_score: 100
+    precision: 100.0
+    recall: 87.97653958944281
+- - cot: "The error occurs because the dimension provided is out of the valid range.\
+      \ In this case, the 'dim' parameter has a value of 5, but it should be within\
+      \ the range of [-5, 4] (inclusive) based on the shape of the input tensor. To\
+      \ prevent this error in the future and generate constraints that do not trigger\
+      \ it, we need to ensure that the \"dim\" value is always within the valid range\
+      \ for the given tensor. If we denote the shape of the tensor as n, the valid\
+      \ range for the dimension would be [-n, n-1]. \n\nThe constraint for the 'dim'\
+      \ parameter can be expressed as:"
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        other: tensor
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 2)
+      package: torch
+    txt: -5 <= dim < 5
+  - f1_score: 28.021015761821367
+    overall_score: 16.333333333333336
+    precision: 26.666666666666668
+    recall: 29.520295202952028

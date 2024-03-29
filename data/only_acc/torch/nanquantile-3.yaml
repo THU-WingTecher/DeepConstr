@@ -1,0 +1,160 @@
+args:
+  dtype:
+  - Tensor
+  - float
+  - Optional[int]
+  - bool
+  - str
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - q
+  - dim
+  - keepdim
+  - interpolation
+  - out
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - true
+name: torch.nanquantile
+package: torch
+pass_rate: 99.66442953020133
+rules:
+- - cot: 'The error message indicates that the `q` parameter should be in the range
+      [0, 1], but it got a value of 8. To prevent this error, we need to ensure that
+      the `q` value is within the valid range. The constraint for the `q` parameter
+      can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        interpolation: str
+        keepdim: bool
+        out: tensor
+        q: float
+        self: tensor
+      msg: quantile() q must be in the range [0, 1] but got 7
+      package: torch
+    txt: q >= 0 and q <= 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is caused because the interpolation value is not one of the expected
+      options (linear, lower, higher, midpoint, or nearest). The provided interpolation
+      value is "VjXv". To prevent this error, we need to ensure that the interpolation
+      value is one of the expected options. The constraint for the "interpolation"
+      parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        interpolation: str
+        keepdim: bool
+        out: tensor
+        q: float
+        self: tensor
+      msg: quantile() interpolation must be one of linear, lower, higher, midpoint
+        or nearest, but got jOCN
+      package: torch
+    txt: '"interpolation" in ["linear", "lower", "higher", "midpoint", "nearest"]'
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        interpolation: str
+        keepdim: bool
+        out: tensor
+        q: float
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 8)
+      package: torch
+    txt: ((dim >= -8) and (dim < 4)) and (dim >= -len(self.shape) and dim < len(self.shape))
+  - f1_score: 73.89162561576354
+    overall_score: 100
+    precision: 100.0
+    recall: 58.59375
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        interpolation: str
+        keepdim: bool
+        out: tensor
+        q: float
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 75.66204287515764
+    overall_score: 100
+    precision: 100.0
+    recall: 60.85192697768763
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        interpolation: str
+        keepdim: bool
+        out: tensor
+        q: float
+        self: tensor
+      msg: quantile() input tensor must be non-empty
+      package: torch
+    txt: self.size()[0] != 0
+  - f1_score: 97.86084215266831
+    overall_score: 51.80952380952381
+    precision: 97.61904761904762
+    recall: 98.1038374717833
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        interpolation: str
+        keepdim: bool
+        out: tensor
+        q: float
+        self: tensor
+      msg: quantile() out tensor must be same dtype as the input tensor
+      package: torch
+    txt: out.dtype == self.dtype
+  - f1_score: 72.5943970767357
+    overall_score: 100
+    precision: 100.0
+    recall: 56.97896749521989
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        interpolation: str
+        keepdim: bool
+        out: tensor
+        q: float
+        self: tensor
+      msg: quantile() input tensor must be either float or double dtype
+      package: torch
+    txt: self.dtype == double
+  - f1_score: 67.62936221419976
+    overall_score: 100
+    precision: 100.0
+    recall: 51.090909090909086

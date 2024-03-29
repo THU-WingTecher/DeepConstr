@@ -1,0 +1,69 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.bitwise_or
+package: torch
+pass_rate: 56.99999999999999
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (0) must match the size of tensor b (9) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.shape[3] == other.shape[3]
+  - f1_score: 75.00000000000001
+    overall_score: 100
+    precision: 100.0
+    recall: 60.00000000000001
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: all(out.shape[i]==self.shape[i] for i in range(self.rank))
+  - f1_score: 52.67727930535457
+    overall_score: 33.333333333333336
+    precision: 60.66666666666667
+    recall: 46.54731457800512
+- - cot: 'The given runtime information states that the function torch.bitwise_or
+      is not implemented for the data type ''Float''. Therefore, to prevent the error,
+      the data type of the input tensors should be changed to one of the allowed types:
+      int8, int16, int32, int64, uint8, uint16, uint32, uint64.'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: '"bitwise_or_cpu" not implemented for ''Float'''
+      package: torch
+    txt: dtype(self) in ["int8", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+      "uint64"] and dtype(other) in ["int8", "int16", "int32", "int64", "uint8", "uint16",
+      "uint32", "uint64"]
+  - f1_score: 81.47138964577657
+    overall_score: 100
+    precision: 100.0
+    recall: 68.73563218390805

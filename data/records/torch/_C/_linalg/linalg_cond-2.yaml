@@ -17,4 +17,25 @@ args:
   - true
 name: torch._C._linalg.linalg_cond
 package: torch
-pass_rate: 0
+pass_rate: 2.0
+rules:
+- - cot: 'The error is caused because the norm type provided to the function linalg.cond
+      is invalid. What the args were? The function expects a norm type among {None,
+      ''fro'', ''nuc'', inf, -inf, 1, -1, 2, -2}. However, a value of 5 was provided.
+      Therefore, Left : p which is the norm type should be corrected. It says that
+      cannot be 5, so Op : !=, and Right : 5. Also, it should be one of the valid
+      norm types, so Op : in, and Right : {None, ''fro'', ''nuc'', inf, -inf, 1, -1,
+      2, -2}.'
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        p: int
+        self: tensor
+      msg: 'linalg.cond got an invalid norm type: 79'
+      package: torch
+    txt: p != 5
+  - f1_score: 28.217821782178216
+    overall_score: 12.5
+    precision: 19.0
+    recall: 54.8076923076923

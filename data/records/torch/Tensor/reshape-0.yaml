@@ -13,4 +13,5 @@ args:
   - true
 name: torch.Tensor.reshape
 package: torch
-pass_rate: 0
+pass_rate: 38.666666666666664
+rules: []

@@ -13,4 +13,35 @@ args:
   - true
 name: torch.Tensor.true_divide_
 package: torch
-pass_rate: 0
+pass_rate: 93.66666666666667
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self)==dtype(other)
+  - f1_score: 93.68770764119601
+    overall_score: 58.84385382059801
+    precision: 94.0
+    recall: 93.37748344370861
+- - cot: 'Error is triggered because the size of tensor a (9) must match the size
+      of tensor b (6) at non-singleton dimension 6. Let''s see what the args were.
+      It seems dimensions and shape of a, and b are which should be corrected. Therefore,
+      the condition to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (4) must match the size of tensor b (7) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.dim == other.dim and self.shape == other.shape
+  - f1_score: 99.66777408637873
+    overall_score: 61.833887043189364
+    precision: 100.0
+    recall: 99.33774834437087

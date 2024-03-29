@@ -25,4 +25,76 @@ args:
   - true
 name: torch._C._fft.fft_ifft2
 package: torch
-pass_rate: 0
+pass_rate: 4.545454545454546
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: list[int]
+        norm: None
+        out: tensor
+        s: None
+        self: tensor
+      msg: Dimension specified as -3 but tensor has no dimensions
+      package: torch
+    txt: (len(self.shape) > 0) and (len(self.shape) >= max(dim) + 1)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: list[int]
+        norm: str
+        out: tensor
+        s: None
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
+  - f1_score: 67.79661016949153
+    overall_score: 45.898305084745765
+    precision: 100.0
+    recall: 51.28205128205129
+- - cot: The error is due to an invalid normalization mode. The value provided for
+      'norm' is "YjvM", which is not a valid normalization mode. The valid normalization
+      modes for the 'norm' argument are "ortho" and "forward". Therefore, the value
+      of 'norm' should be corrected to either "ortho" or "forward".
+    length: 1
+    target:
+      choosen_dtype:
+        dim: list[int]
+        norm: str
+        out: tensor
+        s: None
+        self: tensor
+      msg: 'Invalid normalization mode: "YjvM"'
+      package: torch
+    txt: ('norm' in ["ortho", "forward"])
+  - f1_score: 73.02904564315352
+    overall_score: 48.51452282157676
+    precision: 100.0
+    recall: 57.51633986928104
+- - cot: 'Error is triggered because the output tensor is not complex. The function
+      expects the output tensor to be complex. Let''s see what the args were. It seems
+      the output tensor is of type Float, which is the problem. So the type of output
+      tensor should be corrected, which is out.dtype. Therefore, Left : out.dtype.
+      It says that expected complex, so Op : ==, and Right : complex.'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: list[int]
+        norm: str
+        out: tensor
+        s: None
+        self: tensor
+      msg: fftn expects a complex output tensor, but got Float
+      package: torch
+    txt: out.dtype == complex
+  - f1_score: 76.36363636363637
+    overall_score: 50.18181818181819
+    precision: 100.0
+    recall: 61.76470588235294

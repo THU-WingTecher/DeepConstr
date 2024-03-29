@@ -1,0 +1,84 @@
+args:
+  dtype:
+  - int
+  - str
+  - int
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - axis
+  - name
+  - num_split
+  - value
+  required:
+  - true
+  - false
+  - true
+  - true
+name: tf.raw_ops.Split
+package: tensorflow
+pass_rate: 83.0
+rules:
+- - cot: 'The error is caused due to an invalid axis of splitting. The axis for splitting
+      is 5 while the input tensor only has 2 dimensions. Therefore, the split dimension
+      (axis) must be less than the rank of the input tensor and greater than or equal
+      to the negative of the rank of the input tensor. Thus, the constraints are as
+      follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        name: str
+        num_split: int
+        value: tensor
+      msg: '{{function_node __wrapped__Split_num_split_2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        -input rank(-4) <= split_dim < input rank (4), but got 67 [Op:Split] name:
+        jHVg'
+      package: tensorflow
+    txt: -len(value.shape) <= axis < len(value.shape)
+  - f1_score: 68.91089108910892
+    overall_score: 46.5
+    precision: 87.0
+    recall: 57.049180327868854
+- - cot: 'The error is triggered because the number of ways to split (num_split) is
+      not evenly dividing the size of the split dimension (split_dim). Therefore,
+      the following constraint should be satisfied in order to prevent the error:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        name: str
+        num_split: int
+        value: tensor
+      msg: '{{function_node __wrapped__Split_num_split_53_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Number of ways to split should evenly divide the split dimension, but got
+        split_dim 5 (size = 8) and num_split 53 [Op:Split] name: lncP'
+      package: tensorflow
+    txt: value.shape[split_dim] % num_split == 0
+  - f1_score: 68.45878136200716
+    overall_score: 50.75
+    precision: 95.5
+    recall: 53.351955307262564
+- - cot: 'Based on the given runtime information, the error arises because the attribute
+      ''num_split'' is set to -1, which is not allowed. The minimum value for ''num_split''
+      should be at least 1. Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        name: str
+        num_split: int
+        value: tensor
+      msg: "Value for attr 'num_split' of 0 must be at least minimum 1\n\t; NodeDef:\
+        \ {{node Split}}; Op<name=Split; signature=split_dim:int32, value:T -> output:num_split*T;\
+        \ attr=num_split:int,min=1; attr=T:type> [Op:Split] name: whGq"
+      package: tensorflow
+    txt: num_split >= 1
+  - f1_score: 94.56264775413712
+    overall_score: 100
+    precision: 100.0
+    recall: 89.68609865470853

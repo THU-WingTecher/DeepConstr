@@ -33,4 +33,24 @@ args:
   - false
 name: torch.Tensor.new_full
 package: torch
-pass_rate: 0
+pass_rate: 99.33333333333333
+rules:
+- - cot: 'Error is triggered because of not providing pin_memory allocator. Let''s
+      see what the args were. If pin_memory is True, we should provide pin_memory
+      allocator. Therefore, left : pin_memory op : == right : False'
+    length: 1
+    target:
+      choosen_dtype:
+        dtype: None
+        fill_value: int
+        layout: None
+        pin_memory: bool
+        self: tensor
+        size: list[int]
+      msg: Need to provide pin_memory allocator to use pin memory.
+      package: torch
+    txt: pin_memory == False
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

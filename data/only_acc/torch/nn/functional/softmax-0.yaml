@@ -1,0 +1,73 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[int]
+  - int
+  - None
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - dim
+  - _stacklevel
+  - dtype
+  required:
+  - true
+  - false
+  - false
+  - false
+name: torch.nn.functional.softmax
+package: torch
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        _stacklevel: int
+        dim: int
+        dtype: None
+        input: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got -4)
+      package: torch
+    txt: (-4 <= dim < 4) and (dim >= -len(input.shape) and dim < len(input.shape))
+  - f1_score: 74.07407407407409
+    overall_score: 100
+    precision: 100.0
+    recall: 58.82352941176471
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        _stacklevel: int
+        dim: int
+        dtype: None
+        input: tensor
+      msg: '"softmax_kernel_impl" not implemented for ''Int'''
+      package: torch
+    txt: dtype(input) != int32
+  - f1_score: 99.83361064891847
+    overall_score: 100
+    precision: 100.0
+    recall: 99.66777408637874
+- - cot: The error is due to the input tensor having a data type of 'Long', which
+      is not supported by the softmax function. To prevent the error, the input tensor
+      should have a data type that is supported by the softmax function, such as 'Float'
+      or 'Double'.
+    length: 1
+    target:
+      choosen_dtype:
+        _stacklevel: int
+        dim: None
+        dtype: None
+        input: tensor
+      msg: '"softmax_kernel_impl" not implemented for ''Long'''
+      package: torch
+    txt: dtype(input) in ["Float", "Double"]
+  - f1_score: 97.87928221859706
+    overall_score: 100
+    precision: 100.0
+    recall: 95.84664536741214

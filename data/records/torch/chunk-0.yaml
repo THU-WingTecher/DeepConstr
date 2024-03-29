@@ -17,4 +17,48 @@ args:
   - false
 name: torch.chunk
 package: torch
-pass_rate: 0
+pass_rate: 90.33333333333333
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        chunks: int
+        dim: int
+        self: tensor
+      msg: chunk expects at least a 1-dimensional tensor
+      package: torch
+    txt: self.dim >= 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: "Error is triggered because `chunks` is expected to be greater than 0, but\
+      \ it is currently 0. \nTherefore, the constraint to prevent the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        chunks: int
+        dim: int
+        self: tensor
+      msg: 'chunk expects `chunks` to be greater than 0, got: -3'
+      package: torch
+    txt: chunks > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        chunks: int
+        dim: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got -4)
+      package: torch
+    txt: dim >= -len(self.shape) and dim < len(self.shape)
+  - f1_score: 88.27361563517915
+    overall_score: 56.13680781758958
+    precision: 90.33333333333333
+    recall: 86.30573248407643

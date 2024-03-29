@@ -13,4 +13,38 @@ args:
   - true
 name: torch.bitwise_xor
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'Based on the given error message, it is clear that the problem arises from
+      the inconsistent dimensions of the two tensors. In particular, the dimension
+      5 of tensor ''a'' is 5, while the same dimension of tensor ''b'' is 9. To prevent
+      this error, the dimensions of the tensors should match. The following condition
+      should be satisfied:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (3) must match the size of tensor b (9) at non-singleton
+        dimension 4
+      package: torch
+    txt: self.dim == other.dim and self.shape == other.shape
+  - f1_score: 93.17803660565724
+    overall_score: 58.58901830282862
+    precision: 93.33333333333333
+    recall: 93.02325581395348
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"bitwise_xor_cpu" not implemented for ''Float'''
+      package: torch
+    txt: (dtype(self) == "int" and dtype(other) == "int") or (dtype(self) in ["int16",
+      "int32", "int64", "uint8", "uint16", "uint32", "uint64"] and dtype(other) in
+      ["int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64"])
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

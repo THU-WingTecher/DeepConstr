@@ -17,4 +17,20 @@ args:
   - true
 name: torch.swapaxes
 package: torch
-pass_rate: 0
+pass_rate: 89.33333333333333
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        axis0: int
+        axis1: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 78)
+      package: torch
+    txt: (axis0 >= -len(self.shape) and axis0 < len(self.shape) and axis1 >= -len(self.shape)
+      and axis1 < len(self.shape)) and (axis0 < 2)
+  - f1_score: 79.23976608187134
+    overall_score: 45.61988304093567
+    precision: 90.33333333333333
+    recall: 70.57291666666666

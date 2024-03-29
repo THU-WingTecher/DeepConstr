@@ -13,4 +13,45 @@ args:
   - true
 name: torch.frac
 package: torch
-pass_rate: 0
+pass_rate: 73.33333333333333
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: '"frac_cpu" not implemented for ''Int'''
+      package: torch
+    txt: ((dtype(out) == torch.float) or (self.dtype in [float32, float64])) or (self.dtype
+      != torch.int32)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Found dtype Float but expected Int
+      package: torch
+    txt: dtype(out) == dtype(self)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
+  - f1_score: 77.72020725388603
+    overall_score: 50.860103626943015
+    precision: 100.0
+    recall: 63.55932203389831

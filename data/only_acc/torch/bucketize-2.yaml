@@ -1,0 +1,79 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - bool
+  - bool
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - boundaries
+  - out_int32
+  - right
+  - out
+  required:
+  - true
+  - true
+  - false
+  - false
+  - true
+name: torch.bucketize
+package: torch
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        boundaries: tensor
+        out: tensor
+        out_int32: bool
+        right: bool
+        self: tensor
+      msg: boundaries tensor must be 1 dimension, but got dim(7)
+      package: torch
+    txt: len(boundaries.shape) == 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        boundaries: tensor
+        out: tensor
+        out_int32: bool
+        right: bool
+        self: tensor
+      msg: 'torch.searchsorted(): output tensor''s dtype is wrong, it can only be
+        Int(int32) or Long(int64) depending on whether out_int32 flag is True, but
+        we got output tensor''s dtype Float and out_int32 flag is False'
+      package: torch
+    txt: (out.dtype == torch.int32) and (out_int32 == True)
+  - f1_score: 99.33774834437087
+    overall_score: 100
+    precision: 100.0
+    recall: 98.68421052631578
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        boundaries: tensor
+        out: tensor
+        out_int32: bool
+        right: bool
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
+  - f1_score: 83.10249307479225
+    overall_score: 100
+    precision: 100.0
+    recall: 71.09004739336493

@@ -29,4 +29,24 @@ args:
   - true
 name: torch._C._nn.upsample_nearest3d
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: synthesized
+    length: 5
+    target:
+      choosen_dtype:
+        out: tensor
+        output_size: list[int]
+        scales_d: None
+        scales_h: None
+        scales_w: float
+        self: tensor
+      msg: It is expected output_size equals to 3, but got size 0
+      package: torch
+    txt: ((((len(output_size) == 3) or (all(d >= -len(self.shape) and d < len(self.shape)
+      for d in output_size))) or (len(output_size) == len(self.shape))) and (len(self.shape)
+      == 5)) and (len(output_size) == 3)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

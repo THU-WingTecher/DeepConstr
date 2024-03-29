@@ -17,4 +17,19 @@ args:
   - true
 name: torch.Tensor.select
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: str
+        index: int
+        self: tensor
+      msg: Name 'ntll' not found in Tensor[None, None].
+      package: torch
+    txt: dim=="mzki"
+  - f1_score: 10.725552050473185
+    overall_score: 8.666666666666666
+    precision: 11.333333333333332
+    recall: 10.179640718562874

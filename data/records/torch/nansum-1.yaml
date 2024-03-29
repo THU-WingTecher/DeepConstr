@@ -25,4 +25,43 @@ args:
   - true
 name: torch.nansum
 package: torch
-pass_rate: 0
+pass_rate: 99.66666666666667
+rules:
+- - cot: "The error is due to a mismatch in the shape of the output tensor 'out' and\
+      \ the expected result of the nansum operation on the input tensor 'self'. The\
+      \ 'out' tensor should have a shape that matches the result of the operation.\
+      \ In this case, since 'keepdim' is set to False, the result of the nansum operation\
+      \ would have less dimensions than the input. Therefore, the shape of 'out' should\
+      \ match this. \n\nLeft: out.shape, out.rank\nOp: ==\nRight: self.shape, self.rank\
+      \ (after nansum operation with keepdim=False)"
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==self.rank-1 and all(out.shape[i]==self.shape[i] for i in range(out.rank))
+  - f1_score: 67.41573033707866
+    overall_score: 45.70786516853933
+    precision: 100.0
+    recall: 50.847457627118644
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        out: tensor
+        self: tensor
+      msg: '"nansum_cpu" not implemented for ''Int'''
+      package: torch
+    txt: dtype(out) == dtype(self)
+  - f1_score: 76.72634271099744
+    overall_score: 50.36317135549872
+    precision: 100.0
+    recall: 62.24066390041494

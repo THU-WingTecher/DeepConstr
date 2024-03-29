@@ -17,4 +17,55 @@ args:
   - true
 name: torch.take
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: '`out` tensor should have the same shape as the `self` tensor. Therefore,
+      the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        index: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 75.94936708860759
+    overall_score: 49.974683544303794
+    precision: 100.0
+    recall: 61.224489795918366
+- - cot: "The error occurs because the index value provided is out of range for the\
+      \ given tensor. Based on the runtime information, the index value is -600098,\
+      \ which is not within the valid range for the tensor with 729 elements. \n\n\
+      To prevent this error in the future and generate constraints that do not trigger\
+      \ it, we need to ensure that the index values are always within the valid range\
+      \ for the given tensor. If we denote the shape of the tensor as n, the valid\
+      \ range for the index would be [0, n-1].\n\nThe constraint for the 'index' parameter\
+      \ can be expressed as:"
+    length: 1
+    target:
+      choosen_dtype:
+        index: tensor
+        out: tensor
+        self: tensor
+      msg: 'out of range: tried to access index 138835 on a tensor of 87480 elements.'
+      package: torch
+    txt: all(i >= 0 and i < len(self) for i in index)
+  - f1_score: 40.0
+    overall_score: 32.0
+    precision: 50.0
+    recall: 33.33333333333333
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        index: tensor
+        out: tensor
+        self: tensor
+      msg: 'take(): Expected a long tensor for index, but got Float'
+      package: torch
+    txt: index.dtype == torch.int64
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

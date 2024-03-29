@@ -21,4 +21,90 @@ args:
   - false
 name: torch.histc
 package: torch
-pass_rate: 0
+pass_rate: 98.0
+rules:
+- - cot: 'The error is due to the fact that the ''self'' tensor is complex, while
+      the torch.histc function does not support complex tensors. Therefore, the ''self''
+      tensor needs to be real. So, the error will disappear if the ''self'' tensor
+      is of a real type. Therefore, constraint could be: Left : self.dtype, Op : !=,
+      and Right : complex'
+    length: 1
+    target:
+      choosen_dtype:
+        bins: int
+        max: int
+        min: int
+        self: tensor
+      msg: '''complex32'''
+      package: torch
+    txt: self.dtype != complex
+  - f1_score: 74.81296758104737
+    overall_score: 49.40648379052369
+    precision: 100.0
+    recall: 59.76095617529881
+- - cot: 'The error is due to the ''linspace_cpu'' function not being implemented
+      for a boolean tensor. The function is trying to create a linearly spaced tensor
+      using the ''linspace_cpu'' function, but the input tensor has a data type of
+      ''Bool'' which is not supported. Therefore, to prevent this error, the input
+      tensor should have a data type other than ''Bool''. Op : !=, and Right : ''Bool''.'
+    length: 1
+    target:
+      choosen_dtype:
+        bins: int
+        max: int
+        min: int
+        self: tensor
+      msg: '"linspace_cpu" not implemented for ''Bool'''
+      package: torch
+    txt: self.dtype != 'Bool'
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: The error is due to the use of an integer tensor with the "histogram_cpu"
+      function, which is not implemented for integer types. Therefore, the tensor
+      passed to the function should be of a type other than integer.
+    length: 1
+    target:
+      choosen_dtype:
+        bins: int
+        max: int
+        min: int
+        self: tensor
+      msg: '"histogram_cpu" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype != torch.int32
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        bins: int
+        max: int
+        min: int
+        self: tensor
+      msg: 'torch.histogram(): bins must be > 0, but got -1 for dimension 0'
+      package: torch
+    txt: bins > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        bins: int
+        max: int
+        min: int
+        self: tensor
+      msg: 'torch.histc: max must be larger than min'
+      package: torch
+    txt: max > min
+  - f1_score: 71.59904534606206
+    overall_score: 47.79952267303103
+    precision: 100.0
+    recall: 55.762081784386616

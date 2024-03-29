@@ -21,4 +21,50 @@ args:
   - true
 name: torch._C._linalg.linalg_cross
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: 'linalg.cross: inputs must have the same number of dimensions.'
+      package: torch
+    txt: self.dim == other.dim
+  - f1_score: 91.74311926605505
+    overall_score: 100
+    precision: 100.0
+    recall: 84.74576271186442
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 4)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 66.83046683046683
+    overall_score: 48.33333333333333
+    precision: 90.66666666666666
+    recall: 52.918287937743195
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: 'linalg.cross: inputs dimension -4 must have length 3. Got 5 and 4'
+      package: torch
+    txt: (self.shape[0] == 3) and (dim == -4 and len(self) == 3)
+  - f1_score: 82.64462809917356
+    overall_score: 100
+    precision: 100.0
+    recall: 70.42253521126761

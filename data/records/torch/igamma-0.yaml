@@ -13,4 +13,22 @@ args:
   - true
 name: torch.igamma
 package: torch
-pass_rate: 0
+pass_rate: 99.66666666666667
+rules:
+- - cot: "The error is triggered because the size of tensor `a` (5) does not match\
+      \ the size of tensor `b` (6) at non-singleton dimension 2. To prevent this error,\
+      \ we need to ensure that the two tensors have compatible sizes at the specified\
+      \ dimension. \n\nThe constraint can be formulated as follows:"
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (8) at non-singleton
+        dimension 2
+      package: torch
+    txt: self.shape[2] == other.shape[2]
+  - f1_score: 96.61016949152541
+    overall_score: 60.305084745762706
+    precision: 95.0
+    recall: 98.27586206896551

@@ -1,0 +1,57 @@
+args:
+  dtype:
+  - Tensor
+  - str
+  is_pos:
+  - false
+  - false
+  name:
+  - A
+  - mode
+  required:
+  - true
+  - false
+name: torch._C._linalg.linalg_qr
+package: torch
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        mode: str
+      msg: qr received unrecognized mode 'Gijb' but expected one of 'reduced' (default),
+        'r', or 'complete'
+      package: torch
+    txt: mode == 'complete'
+  - f1_score: 95.69377990430624
+    overall_score: 100
+    precision: 100.0
+    recall: 91.74311926605505
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        mode: str
+      msg: 'linalg.qr: The input tensor A must have at least 2 dimensions.'
+      package: torch
+    txt: A.dim >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        mode: str
+      msg: 'linalg.qr: Expected a floating point or complex tensor as input. Got Int'
+      package: torch
+    txt: dtype(A) == torch.float64
+  - f1_score: 67.18924972004478
+    overall_score: 100
+    precision: 100.0
+    recall: 50.5902192242833

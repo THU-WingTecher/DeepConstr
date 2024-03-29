@@ -13,4 +13,24 @@ args:
   - true
 name: torch.ge
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'Error is triggered because the size of tensor "self" at non-singleton dimension
+      6 (size 7) does not match the size of tensor "other" at non-singleton dimension
+      6 (size 9).
+
+
+      The constraints to prevent this error can be formulated as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (6) at non-singleton
+        dimension 3
+      package: torch
+    txt: self.dim() == other.dim() and self.shape[6] == other.shape[6]
+  - f1_score: 96.76320272572403
+    overall_score: 60.381601362862014
+    precision: 94.66666666666667
+    recall: 98.95470383275261

@@ -17,4 +17,50 @@ args:
   - false
 name: torch.Tensor.split
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+        split_size: int
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got -3)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 68.28675577156744
+    overall_score: 49.833333333333336
+    precision: 93.66666666666667
+    recall: 53.72848948374761
+- - cot: 'The error occurs because the split_size provided is negative. To prevent
+      this error, we need to ensure that the split_size is always non-negative. The
+      constraint for the ''split_size'' parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+        split_size: int
+      msg: split expects split_size be non-negative, but got split_size=-4
+      package: torch
+    txt: split_size >= 0
+  - f1_score: 96.7741935483871
+    overall_score: 100
+    precision: 100.0
+    recall: 93.75
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+        split_size: int
+      msg: split_size can only be 0 if dimension size is 0, but got dimension size
+        of 2
+      package: torch
+    txt: self.dim() == 0
+  - f1_score: 74.6268656716418
+    overall_score: 100
+    precision: 100.0
+    recall: 59.523809523809526

@@ -13,4 +13,19 @@ args:
   - true
 name: torch._C._special.special_laguerre_polynomial_l
 package: torch
-pass_rate: 0
+pass_rate: 36.333333333333336
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        n: tensor
+        x: tensor
+      msg: The size of tensor a (4) must match the size of tensor b (9) at non-singleton
+        dimension 5
+      package: torch
+    txt: n.shape[3] == x.shape[3]
+  - f1_score: 77.77777777777777
+    overall_score: 100
+    precision: 100.0
+    recall: 63.63636363636363

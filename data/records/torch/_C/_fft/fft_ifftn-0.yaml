@@ -21,4 +21,23 @@ args:
   - false
 name: torch._C._fft.fft_ifftn
 package: torch
-pass_rate: 0
+pass_rate: 99.0
+rules:
+- - cot: The error is caused by an invalid normalization mode. The provided mode is
+      "AkXX" which is not a valid normalization mode. The valid normalization modes
+      for `fft_ifftn` are "forward" and "backward". Therefore, the normalization mode
+      should be corrected to either "forward" or "backward".
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        norm: str
+        s: None
+        self: tensor
+      msg: 'Invalid normalization mode: "CMPv"'
+      package: torch
+    txt: norm in ["forward", "backward"]
+  - f1_score: 99.50248756218905
+    overall_score: 100
+    precision: 100.0
+    recall: 99.00990099009901

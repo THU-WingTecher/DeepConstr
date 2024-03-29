@@ -1,0 +1,49 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - x
+  - n
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch._C._special.special_hermite_polynomial_he
+package: torch
+pass_rate: 92.3076923076923
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        n: int
+        out: tensor
+        x: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == x.rank and all(out.shape[i] == x.shape[i] for i in range(out.rank))
+  - f1_score: 74.53416149068322
+    overall_score: 100
+    precision: 100.0
+    recall: 59.4059405940594
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        n: int
+        out: tensor
+        x: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: ((dtype(x) == float32) or (len(out) > 0)) and (len(out) == 0)
+  - f1_score: 67.41573033707866
+    overall_score: 100
+    precision: 100.0
+    recall: 50.847457627118644

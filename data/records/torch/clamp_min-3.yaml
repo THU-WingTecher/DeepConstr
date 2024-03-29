@@ -17,4 +17,66 @@ args:
   - true
 name: torch.clamp_min
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        min: tensor
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: ((dtype(min) == float32) and (dtype(min) == dtype(out))) or ((dtype(self)
+      == float32) and (dtype(self) == dtype(out)))
+  - f1_score: 96.30818619582664
+    overall_score: 51.15409309791332
+    precision: 100.0
+    recall: 92.87925696594426
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        min: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: ((out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank)))
+      and (out.shape == self.shape)) and (self.rank==min.rank and all(self.shape[i]==min.shape[i]
+      for i in range(self.rank)))
+  - f1_score: 56.91196330196566
+    overall_score: 40.455981650982835
+    precision: 59.395973154362416
+    recall: 54.627381589235014
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        min: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank)))
+      and (out.shape == self.shape)
+  - f1_score: 62.94227188081936
+    overall_score: 29.666666666666668
+    precision: 56.333333333333336
+    recall: 71.30801687763713
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        min: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (8) must match the size of tensor b (9) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.shape[6] == min.shape[0]
+  - f1_score: 75.56675062972292
+    overall_score: 100
+    precision: 100.0
+    recall: 60.72874493927126

@@ -1,0 +1,44 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.igammac
+package: torch
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (8) must match the size of tensor b (9) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.shape[3] == other.shape[3]
+  - f1_score: 75.85335018963336
+    overall_score: 100
+    precision: 100.0
+    recall: 61.09979633401221
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"igammac_cpu" not implemented for ''Int'''
+      package: torch
+    txt: dtype(self) == float32
+  - f1_score: 67.64374295377677
+    overall_score: 100
+    precision: 100.0
+    recall: 51.107325383304946

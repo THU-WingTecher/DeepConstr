@@ -17,8 +17,27 @@ args:
   - true
 name: tf.raw_ops.LogicalAnd
 package: tensorflow
-pass_rate: 0.0
+pass_rate: 99.5
 rules:
+- - cot: 'The error is due to the incompatible shapes of ''x'' and ''y'' in the LogicalAnd
+      operation. Let''s see what the args were. Both ''x'' and ''y'' are tensors but
+      they are of different shapes. For the LogicalAnd operation, the shapes of ''x''
+      and ''y'' must be the same. Therefore, the constraints that will prevent the
+      error can be defined as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: '{{function_node __wrapped__LogicalAnd_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [6,6,6,6] vs. [8,7,1,8,8] [Op:LogicalAnd] name: cKvI'
+      package: tensorflow
+    txt: len(x) == len(y) and all(x.shape[i] == y.shape[i] for i in range(len(x.shape)))
+  - f1_score: 96.61835748792271
+    overall_score: 60.309178743961354
+    precision: 100.0
+    recall: 93.45794392523365
 - - cot: synthesized
     length: 2
     target:
