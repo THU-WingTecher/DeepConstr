@@ -225,14 +225,14 @@ class FuzzingLoop:
         if cfg["mgen"]["test_pool"] : 
             AUTOINF_LOG.info(f"Using test pool: {cfg['mgen']['test_pool']}")
 
+        self.opset = auto_opset(
+        self.ModelType, 
+        self.factory, 
+        vulops=cfg["mgen"]["vulops"],
+        test_pool=cfg["mgen"]["test_pool"],
+        ) 
         if "constrinf" in cfg["mgen"]["method"]:
             from neuri.constrinf import make_record_finder
-            self.opset = auto_opset(
-            self.ModelType, 
-            self.factory, 
-            vulops=cfg["mgen"]["vulops"],
-            test_pool=cfg["mgen"]["test_pool"],
-            ) 
             self.record_finder = make_record_finder(
                 path=cfg["mgen"]["record_path"],
                 pass_rate=cfg["mgen"]["pass_rate"],
@@ -241,12 +241,6 @@ class FuzzingLoop:
             assert len(self.record_finder) > 0, "No record found."
         else :
             from neuri.autoinf import make_record_finder
-            self.opset = auto_opset(
-            self.ModelType, 
-            self.factory, 
-            vulops=cfg["mgen"]["vulops"],
-            test_pool=cfg["mgen"]["test_pool"],
-        )
             self.record_finder = make_record_finder(
                 path=cfg["mgen"]["record_path"],
                 max_elem_per_tensor=cfg["mgen"]["max_elem_per_tensor"],

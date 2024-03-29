@@ -23,31 +23,34 @@ def model_exec(test_paths, model_type, backend_type, backend_target, profraw_pat
                 model_paths.append(os.path.join(test_path, file))
                 break
     activation_command = "source /opt/conda/etc/profile.d/conda.sh && conda activate " + "cov" + " && "
-    arguments = [
-        "python3",
-        "neuri/cli/model_exec.py",
-        "model.type=" + model_type,
-        "backend.type=" + backend_type,
-        "backend.target=" + backend_target,
-        f"'model.path={model_paths}'",
-    ]
-    full_command = activation_command + " ".join(arguments)
-    copied_env = os.environ.copy()
-    copied_env["LLVM_PROFILE_FILE"] = profraw_path
+    # model_paths = model_paths[:len(model_paths)//10]
+    batches = batched(model_paths, n=1000)
+    for model_paths in batches :
+        arguments = [
+            "python3",
+            "neuri/cli/model_exec.py",
+            "model.type=" + model_type,
+            "backend.type=" + backend_type,
+            "backend.target=" + backend_target,
+            f"'model.path={model_paths}'",
+        ]
+        full_command = activation_command + " ".join(arguments)
+        copied_env = os.environ.copy()
+        copied_env["LLVM_PROFILE_FILE"] = profraw_path
 
-    p = subprocess.Popen(
-        full_command,  # Show all output
-        env=copied_env,
-        shell=True,
-        executable='/bin/bash',
-    )
-    p.communicate()
-    exit_code = p.returncode
-
-    if exit_code != 0:
-        print(
-            f"==> model_exec crashed when generating {profraw_path}! => EXIT CODE {exit_code}"
+        p = subprocess.Popen(
+            full_command,  # Show all output
+            env=copied_env,
+            shell=True,
+            executable='/bin/bash',
         )
+        p.communicate()
+        exit_code = p.returncode
+
+        if exit_code != 0:
+            print(
+                f"==> model_exec crashed when generating {profraw_path}! => EXIT CODE {exit_code}"
+            )
 
 
 if __name__ == "__main__":
@@ -57,7 +60,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--root", type=str, required=True, help="Folder to all the tests."
     )
-    parser.add_argument("--batch_size", type=int, default=100, help="")
+    parser.add_argument("--batch_size", type=int, default=10000, help="")
     parser.add_argument("--model_type", type=str, required=True, help="Model type.")
     parser.add_argument("--backend_type", type=str, required=True, help="Backend type.")
     parser.add_argument(

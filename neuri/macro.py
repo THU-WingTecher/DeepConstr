@@ -17,8 +17,7 @@ python experiments/evaluate_apis.py \
 exp.save_dir=gen_torch2 mgen.record_path=$(pwd)/data/records/torch/ mgen.pass_rate=0.05 model.type=torch backend.type=torchjit fuzz.time=10m exp.parallel=15 mgen.noise=0.8
 """
 """ API TEST
-python experiments/evaluate_apis.py \
-exp.save_dir=gen_test mgen.record_path=/artifact/records/tf/ mgen.pass_rate=0.05 model.type=tensorflow backend.type=xla fuzz.time=1m exp.parallel=1 mgen.noise=0.8
+python experiments/evaluate_apis.py exp.save_dir=gen_tf2 mgen.record_path=/artifact/data/records/tf/ mgen.pass_rate=0.05 model.type=tensorflow backend.type=xla fuzz.time=10m exp.parallel=5 mgen.noise=0.8
 """
 
 """ FUZZING 

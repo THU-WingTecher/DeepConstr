@@ -75,26 +75,28 @@ def tf_model_exec(
     #     gcda_save_path = f"{WORKSPACE}/{str(id_path)}-workspace"
     os.system(f"rm {gcda_save_path} -r")
     os.makedirs(gcda_save_path)
-    trial_arguments = [
-        "python3",
-        f"{ROOT_DIR}/neuri/cli/model_exec.py",
-        "model.type=" + model_type,
-        "backend.type=" + backend_type,
-        "backend.target=" + backend_target,
-        f"model.path={model_paths}",
-    ]
-    p = subprocess.Popen(
-        trial_arguments,  # Show all output
-        cwd=os.path.join(os.getcwd(), gcda_save_path),
-    )
-    p.communicate()
-    exit_code = p.returncode
-
-    if exit_code != 0:
-        print(
-            f"==> model_exec crashed when generating {output_path}! => EXIT CODE {exit_code}"
+    batches = batched(model_paths, n=1000)
+    for model_paths in batches :
+        trial_arguments = [
+            "python3",
+            f"{ROOT_DIR}/neuri/cli/model_exec.py",
+            "model.type=" + model_type,
+            "backend.type=" + backend_type,
+            "backend.target=" + backend_target,
+            f"model.path={model_paths}",
+        ]
+        p = subprocess.Popen(
+            trial_arguments,  # Show all output
+            cwd=os.path.join(os.getcwd(), gcda_save_path),
         )
-        return
+        p.communicate()
+        exit_code = p.returncode
+
+        if exit_code != 0:
+            print(
+                f"==> model_exec crashed when generating {output_path}! => EXIT CODE {exit_code}"
+            )
+            return
 
     coverage_collect(output_path, id_path)
     # os.system(f"rm {gcda_save_path} -r")
