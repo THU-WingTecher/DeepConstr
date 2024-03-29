@@ -140,7 +140,7 @@ def process_lcov(path):
         print(
             f"==> model_exec crashed when generating {os.path.join(path, 'coverage','merged_cov.pkl')}! => EXIT CODE {exit_code}"
         )
-def parallel_eval(api_list, BASELINES, config):
+def parallel_eval(api_list, BASELINES, config, task):
     """
     Runs fuzzing processes in parallel for each combination of API and baseline.
     
@@ -151,25 +151,24 @@ def parallel_eval(api_list, BASELINES, config):
 
     with concurrent.futures.ProcessPoolExecutor(max_workers=config["exp"]["parallel"]) as executor:
         # Pass necessary arguments to the api_worker function
-        futures = [executor.submit(api_worker, api, config, BASELINES) for api in api_list]
+        futures = [executor.submit(api_worker, api, config, BASELINES, task) for api in api_list]
         for future in concurrent.futures.as_completed(futures):
             try:
                 result = future.result()
             except Exception as e:
                 print(f"An error occured: {e}")
 
-def api_worker(api, cfg, BASELINES):
+def api_worker(api, cfg, BASELINES, task):
     """
     Top-level worker function for multiprocessing, handles each API task.
     """
     print("Running fuzzing for API", api)
     with concurrent.futures.ProcessPoolExecutor(max_workers=len(BASELINES)) as executor:
         # Pass necessary arguments to the api_worker function
-        futures = [executor.submit(run, api, baseline, cfg) for baseline in BASELINES]
+        futures = [executor.submit(run, api, baseline, cfg, task) for baseline in BASELINES]
         for future in concurrent.futures.as_completed(futures):
             try:
                 result = future.result()
-                print(result)
             except Exception as e:
                 print(f"An error occured: {e}")
     # Trigger drawing after completing all baseline tasks for the current API
@@ -302,7 +301,7 @@ def main(cfg) :
             api_names.remove(name)
     print(f"Test {len(api_names)} apis in total", sep=" ")
     # api_names = load_api_names_from_json("/artifact/tests/test.json")
-    parallel_eval(api_names, BASELINES, cfg)
-
+    parallel_eval(api_names, BASELINES, cfg, task="fuzz")
+    parallel_eval(api_names, BASELINES, cfg, task="cov")
 if __name__ == "__main__":
     main()
