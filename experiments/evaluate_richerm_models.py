@@ -105,11 +105,11 @@ def model_exec(
         p.communicate()
         exit_code = p.returncode
 
-        # if exit_code != 0:
-        #     print(
-        #         f"==> model_exec crashed when generating {output_path}! => EXIT CODE {exit_code}"
-        #     )
-        #     return
+        if exit_code != 0:
+            print(
+                f"==> model_exec crashed when generating {output_path}! => EXIT CODE {exit_code}"
+            )
+            return
     if package != "torch" :
         coverage_collect(output_path, id_path)
         os.system(f"rm {gcda_save_path} -r")

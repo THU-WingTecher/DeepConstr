@@ -127,7 +127,7 @@ def verify_testcase(
 def main(cfg: DictConfig):
     cmp_cfg = cfg["cmp"]
     seed = random.getrandbits(32) if cmp_cfg["seed"] is None else cmp_cfg["seed"]
-    EXEC_LOG.info(f"Using seed {seed}")
+    EXEC_LOG.debug(f"Using seed {seed}")
 
     model_cfg = cfg["model"]
     ModelType = Model.init(model_cfg["type"], cfg["backend"]["target"])
@@ -197,7 +197,7 @@ def main(cfg: DictConfig):
         )
 
         if test_inputs is None:
-            EXEC_LOG.info("Generating input data from BackendFactory.make_random_input")
+            EXEC_LOG.debug("Generating input data from BackendFactory.make_random_input")
             test_inputs = this_fac.make_random_input(model.input_like)
             provider = f"random inputs"
 

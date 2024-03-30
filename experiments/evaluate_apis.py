@@ -115,7 +115,7 @@ def process_profraw(path):
 
     if exit_code != 0:
         print(
-            f"==> model_exec crashed when generating {os.path.join(path, 'coverage','merged_cov.pkl')}! => EXIT CODE {exit_code}"
+            f"==> process_profraw crashed when generating {os.path.join(path, 'coverage','merged_cov.pkl')}! => EXIT CODE {exit_code}"
         )    
 def process_lcov(path):
     activation_command = "source /opt/conda/etc/profile.d/conda.sh && conda activate " + "cov" + " && "
@@ -138,7 +138,7 @@ def process_lcov(path):
 
     if exit_code != 0:
         print(
-            f"==> model_exec crashed when generating {os.path.join(path, 'coverage','merged_cov.pkl')}! => EXIT CODE {exit_code}"
+            f"==> process_lcov crashed when generating {os.path.join(path, 'coverage','merged_cov.pkl')}! => EXIT CODE {exit_code}"
         )
 def parallel_eval(api_list, BASELINES, config, task):
     """
@@ -162,7 +162,6 @@ def api_worker(api, cfg, BASELINES, task):
     """
     Top-level worker function for multiprocessing, handles each API task.
     """
-    print("Running fuzzing for API", api)
     with concurrent.futures.ProcessPoolExecutor(max_workers=len(BASELINES)) as executor:
         # Pass necessary arguments to the api_worker function
         futures = [executor.submit(run, api, baseline, cfg, task) for baseline in BASELINES]
@@ -184,7 +183,7 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov"):
     :param config: Configuration parameters for the fuzzing process.
     :param max_retries: Maximum number of retries in case of failure.
     """
-    print("Running fuzzing for API", api_name, "with baseline", baseline)
+    print(f"Running {task} API {api_name} with baseline {baseline}")
     test_pool = [FIXED_FUNC, api_name]
     test_pool_modified = '-'.join(test_pool)
     if config['mgen']['max_nodes'] is not None :
@@ -230,7 +229,6 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov"):
                    f"debug.viz=true hydra.verbose=fuzz fuzz.resume=false " \
                    f"mgen.method={baseline.split('_')[0]} mgen.max_nodes={max_nodes} mgen.test_pool=\"{test_pool}\""
 
-    print(f"Running {api_name} with baseline {baseline} - {task}")
     if task == "fuzz":
         execute_command(fuzz_command)
     elif task == "cov":
@@ -282,6 +280,8 @@ def load_api_names_from_json(path) :
 @hydra.main(version_base=None, config_path="../neuri/config", config_name="main")
 def main(cfg) : 
     from neuri.cli.train import get_completed_list
+    # from experiments.summarize_merged_cov import parse_directory_name
+
     """
     totally, cfg['exp']['parallel'] * cov_parallel * len(BASELINES) process will be craeted
     """
@@ -299,9 +299,22 @@ def main(cfg) :
     for name in completed :
         if name in api_names :
             api_names.remove(name)
+    # for dir_name in os.listdir(os.path.join(os.getcwd(),cfg["exp"]["save_dir"])) :
+    #     if dir_name.endswith("models") :
+    #         test_list = os.listdir(os.path.join(os.getcwd(),cfg["exp"]["save_dir"],dir_name))
+    #         baseline, name = parse_directory_name(dir_name)
+    #         name = name.replace('.models','')
+    #         if test_list and max(map(float, test_list)) > 500 :
+    #             print(len(test_list), sep="")
+    #             if name in api_names :
+    #                 print(f"Remove {name} from test list")
+    #                 api_names.remove(name)
+    #         else :
+    #             print(f"keep test {name}")
+                
     print(f"Test {len(api_names)} apis in total", sep=" ")
     # api_names = load_api_names_from_json("/artifact/tests/test.json")
-    parallel_eval(api_names, BASELINES, cfg, task="fuzz")
+    # parallel_eval(api_names, BASELINES, cfg, task="fuzz")
     parallel_eval(api_names, BASELINES, cfg, task="cov")
 if __name__ == "__main__":
     main()

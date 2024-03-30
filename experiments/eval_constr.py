@@ -57,7 +57,7 @@ args:
   - false
   name:
   - self
-  - other
+  - naive
   required:
   - true
   - true
@@ -69,12 +69,12 @@ rules:
     length: 1
     target:
       choosen_dtype:
-        other: tensor
+        naive: tensor
         self: tensor
       msg: The size of tensor a (2) must match the size of tensor b (9) at non-singleton
         dimension 5
       package: torch
-    txt: self.shape[5] == other.shape[5]
+    txt: self.shape[5] == naive.shape[5]
   - f1_score: 69.06077348066299
     overall_score: 100
     precision: 100.0
@@ -83,11 +83,11 @@ rules:
     length: 1
     target:
       choosen_dtype:
-        other: tensor
+        naive: tensor
         self: tensor
       msg: 'Too large tensor shape: shape = [6, 9, 7, 8, 9, 9, 9, 9, 9]'
       package: torch
-    txt: self.shape == other.shape
+    txt: self.shape == naive.shape
   - f1_score: 67.79661016949153
     overall_score: 100
     precision: 100.0
@@ -97,8 +97,7 @@ rules:
 def get_constr_stats(data_list):
     constr_stats = {
         "synthesized": 0,
-        "divided": 0,
-        "other": 0
+        "naive": 0
     }
     constr_len = []
     constr_operator = {}
@@ -110,7 +109,7 @@ def get_constr_stats(data_list):
             if "synthesized" == rule[0]["cot"] or "divided" == rule[0]["cot"]:
                 constr_stats["synthesized"] += 1
             else :
-                constr_stats["other"] += 1
+                constr_stats["naive"] += 1
             constr_len.append(rule[0].get("length", 1))
             constr_f1.append(rule[1]["f1_score"])
             constr_prec.append(rule[1]["precision"])
@@ -172,13 +171,13 @@ def viz_num_of_constr_with_pass_rate(data_list, acc_data_list, name, path = "/ar
     plt.minorticks_on()
 
     # Show the adjusted plot
-    plt.savefig(path + f"num_constr_passrate-{name}.pdf")
-    plt.savefig(path + f"num_constr_passrate-{name}.png")
+    plt.savefig(path + f"5_constr_pass_rate_{name}.pdf")
+    plt.savefig(path + f"5_constr_pass_rate_{name}.png")
 
 def viz_gen_way_of_constrs(constr_stats):
     print(constr_stats)
-    for key in constr_stats.keys():
-        print("key", constr_stats[key] / sum(constr_stats.values()))
+    # for key in constr_stats.keys():
+    #     print("key", constr_stats[key] / sum(constr_stats.values()))
 
 def viz_constr_len(constr_len : List[int]):
     plt.hist(constr_len, bins=range(1, max(constr_len) + 1))
@@ -200,8 +199,8 @@ def viz_constr_f1(constr_f1 : List[float], constr_prec, acc_f1, acc_prec , path 
     plt.xticks(range(0, 101, 10))
     plt.yticks(range(0, 101, 10))
     plt.grid(True, which='both', linestyle='--', linewidth=0.5)
-    plt.savefig(path + f"dist-time-{name}.pdf")
-    plt.savefig(path + f"dist-time-{name}.png")
+    plt.savefig(path + f"5_dist_{name}.pdf")
+    plt.savefig(path + f"5_dist_{name}.png")
 
 if __name__ == "__main__" : 
     record_dir = "/artifact/data/"

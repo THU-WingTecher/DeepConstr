@@ -22,7 +22,7 @@ def main(cfg: DictConfig):
 
     seed = random.getrandbits(32) if mgen_cfg["seed"] is None else mgen_cfg["seed"]
 
-    MGEN_LOG.info(f"Using seed {seed}")
+    MGEN_LOG.debug(f"Using seed {seed}")
 
     # TODO(@ganler): skip operators outside of model gen with `cfg[exclude]`
     model_cfg = cfg["model"]

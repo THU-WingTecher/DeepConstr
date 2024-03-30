@@ -61,8 +61,21 @@ def transform_record_for_saving(record: Record) -> dict:
     return transformed
 
 def get_completed_list(path = "/artifact/experiments/results/completed.json") : 
-    with open(path, "r") as f:
-        return json.load(f)
+    data = set()
+    # with open(path, "r") as f:
+    #     data.extend(json.load(f))
+    
+    #load csv 
+    csv_paths = [
+        "/artifact/experiments/results/torch1.csv",
+        "/artifact/experiments/results/torch2.csv"
+        ]
+    for csv_path in csv_paths :
+        with open(csv_path, "r") as f:
+            for i, line in enumerate(f.readlines()) :
+                if i==0 : continue # head 
+                data.add(line.split(",")[0].replace(".models",""))
+    return list(data)
 
 def save_record(record: dict, path: str) -> None:
     """
