@@ -1,0 +1,37 @@
+args:
+  dtype:
+  - list[int]
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - axis
+  - input
+  - name
+  required:
+  - false
+  - true
+  - false
+name: tf.raw_ops.Squeeze
+package: tensorflow
+pass_rate: 91.33333333333333
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        axis: list[int]
+        input: tensor
+        name: str
+      msg: '{{function_node __wrapped__Squeeze_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Tried to squeeze dim index 73 for tensor with 2 dimensions. [Op:Squeeze] name:
+        vCFh'
+      package: tensorflow
+    txt: all(input.shape[axis[i]] == 1 for i in range(len(axis)))
+  - f1_score: 83.91167192429023
+    overall_score: 47.333333333333336
+    precision: 88.66666666666667
+    recall: 79.64071856287426

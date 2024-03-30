@@ -13,4 +13,32 @@ args:
   - true
 name: torch.cosh
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: (dtype(self)==dtype(out)) and (dtype(self) == Float)
+  - f1_score: 80.74179743223965
+    overall_score: 52.370898716119825
+    precision: 94.33333333333334
+    recall: 70.57356608478803
+- - cot: '`out.shape` should be equal to `self.shape`. Hence, the constraint to prevent
+      the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.shape == self.shape
+  - f1_score: 83.30914368650217
+    overall_score: 53.654571843251084
+    precision: 95.66666666666667
+    recall: 73.7789203084833

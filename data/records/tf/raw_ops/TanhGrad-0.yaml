@@ -17,4 +17,25 @@ args:
   - true
 name: tf.raw_ops.TanhGrad
 package: tensorflow
-pass_rate: 0
+pass_rate: 21.333333333333336
+rules:
+- - cot: 'The error occurs because the number of elements in the two input tensors,
+      `dy` and `y`, is not the same. The `dy` tensor has 1 element, while the `y`
+      tensor has 36 elements. To prevent this error, the number of elements in the
+      two tensors should be the same. Therefore, the constraint can be formulated
+      as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dy: tensor
+        name: str
+        y: tensor
+      msg: '{{function_node __wrapped__TanhGrad_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        The two arguments to a cwise op must have same number of elements, got 288
+        and 5 [Op:TanhGrad] name: Dfyu'
+      package: tensorflow
+    txt: (size(dy) == size(y))
+  - f1_score: 48.076923076923066
+    overall_score: 19.666666666666664
+    precision: 33.33333333333333
+    recall: 86.20689655172413

@@ -17,4 +17,63 @@ args:
   - true
 name: torch.bitwise_and
 package: torch
-pass_rate: 0
+pass_rate: 92.33333333333333
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
+  - f1_score: 78.22685788787483
+    overall_score: 51.113428943937414
+    precision: 100.0
+    recall: 64.23982869379014
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Short
+      package: torch
+    txt: dtype(self) == dtype(other)
+  - f1_score: 98.36065573770492
+    overall_score: 61.18032786885246
+    precision: 100.0
+    recall: 96.77419354838709
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: '"bitwise_and_cpu" not implemented for ''Float'''
+      package: torch
+    txt: (((dtype(other) != "float32")) or (dtype(out) != 'Float')) or (dtype(self)
+      != "Float")
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (8) must match the size of tensor b (3) at non-singleton
+        dimension 3
+      package: torch
+    txt: self.dim == other.dim and self.shape == other.shape
+  - f1_score: 67.34926052332196
+    overall_score: 45.67463026166098
+    precision: 100.0
+    recall: 50.77186963979416

@@ -17,4 +17,48 @@ args:
   - true
 name: torch.bitwise_left_shift
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: int
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
+  - f1_score: 74.71980074719801
+    overall_score: 49.359900373599004
+    precision: 100.0
+    recall: 59.64214711729622
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: int
+        out: tensor
+        self: tensor
+      msg: '"lshift_cpu" not implemented for ''Half'''
+      package: torch
+    txt: dtype(self) != 'Half'
+  - f1_score: 98.36065573770492
+    overall_score: 61.18032786885246
+    precision: 100.0
+    recall: 96.77419354838709
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: int
+        out: tensor
+        self: tensor
+      msg: '"lshift_cpu" not implemented for ''Float'''
+      package: torch
+    txt: dtype(self) in ["half", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+      "uint64"]
+  - f1_score: 97.08737864077668
+    overall_score: 60.54368932038834
+    precision: 100.0
+    recall: 94.33962264150942

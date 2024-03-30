@@ -9,4 +9,5 @@ args:
   - true
 name: torch.corrcoef
 package: torch
-pass_rate: 0
+pass_rate: 75.66666666666667
+rules: []

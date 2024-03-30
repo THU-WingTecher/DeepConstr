@@ -25,4 +25,82 @@ args:
   - false
 name: torch._C._linalg.linalg_norm
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'Based on the given runtime information, the error occurs because the function
+      expects a floating point or complex tensor as input, but it received an integer
+      tensor. To prevent this error, the input tensor should be of floating point
+      or complex data type.
+
+
+      Therefore, the constraint that prevents the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        ord: str
+        self: tensor
+      msg: 'linalg.matrix_norm: Expected a floating point or complex tensor as input.
+        Got Int'
+      package: torch
+    txt: self.dtype in [torch.float32, torch.float64, torch.complex64, torch.complex128]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Error is triggered because the input tensor A has less than 2 dimensions.
+      The function torch._C._linalg.linalg_norm is used to calculate the matrix norm
+      or vector norm, which requires the input to be at least 2-dimensional. The argument
+      ''self'' in the function call is the tensor to be processed. So, the dimension
+      of ''self'' should be at least 2. The condition to avoid this error can be given
+      as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        ord: str
+        self: tensor
+      msg: 'linalg.matrix_norm: The input tensor A must have at least 2 dimensions.'
+      package: torch
+    txt: len(self.shape) >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        ord: str
+        self: tensor
+      msg: 'linalg.norm: If dim is not specified but ord is, the input must be 1D
+        or 2D. Got 5D.'
+      package: torch
+    txt: self.ndim == 1 or self.ndim == 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        ord: str
+        self: tensor
+      msg: 'linalg.matrix_norm: Order hHQY not supported.'
+      package: torch
+    txt: ord == 'fro'
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

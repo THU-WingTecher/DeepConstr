@@ -1,0 +1,89 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - int
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - y
+  - x
+  - dim
+  required:
+  - true
+  - true
+  - false
+name: torch.cumulative_trapezoid
+package: torch
+pass_rate: 90.33333333333333
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        x: tensor
+        y: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 8)
+      package: torch
+    txt: dim >= -len(x.shape)
+  - f1_score: 63.01369863013699
+    overall_score: 33.666666666666664
+    precision: 61.33333333333333
+    recall: 64.7887323943662
+- - cot: 'The error is due to a mismatch in the size of tensors a and b at non-singleton
+      dimension 2. The function torch.cumulative_trapezoid is expecting the input
+      tensors to have matching size at non-singleton dimension 2. In this case, tensor
+      a has size 0 and tensor b has size 4 at dimension 2. Therefore, the constraint
+      that prevents this error would be ensuring that the sizes of tensor a and tensor
+      b at non-singleton dimension 2 are the same. This can be expressed in the following
+      formula:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        x: tensor
+        y: tensor
+      msg: The size of tensor a (6) must match the size of tensor b (7) at non-singleton
+        dimension 6
+      package: torch
+    txt: x.shape[2] == y.shape[2]
+  - f1_score: 69.65986394557822
+    overall_score: 45.66666666666667
+    precision: 85.33333333333334
+    recall: 58.85057471264368
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        x: tensor
+        y: tensor
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got -4)
+      package: torch
+    txt: ((dim < len(x.shape)) or (9 >= -len(y.shape) and 9 < len(y.shape))) and (1
+      >= -len(x.shape) and 1 < len(x.shape))
+  - f1_score: 80.96590909090908
+    overall_score: 48.5
+    precision: 95.0
+    recall: 70.54455445544554
+- - cot: 'Error is triggered because the size of tensor a (7) doesn''t match the size
+      of tensor b (5) at non-singleton dimension 6. Let''s see what the args were.
+      The dimension and shape of tensor a and b are inconsistent at dimension 6. Therefore,
+      the condition to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        x: tensor
+        y: tensor
+      msg: The size of tensor a (8) must match the size of tensor b (4) at non-singleton
+        dimension 6
+      package: torch
+    txt: x.dim == y.dim and x.shape == y.shape
+  - f1_score: 88.36524300441828
+    overall_score: 100
+    precision: 100.0
+    recall: 79.155672823219

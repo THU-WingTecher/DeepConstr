@@ -1,0 +1,49 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.copysign
+package: torch
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: int
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.shape == self.shape) and (out.rank==self.rank)
+  - f1_score: 87.97653958944281
+    overall_score: 100
+    precision: 100.0
+    recall: 78.53403141361255
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: int
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: (dtype(self)==dtype(out)) and (dtype(self) == float32)
+  - f1_score: 94.19152276295132
+    overall_score: 100
+    precision: 100.0
+    recall: 89.02077151335311

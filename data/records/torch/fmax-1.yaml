@@ -17,25 +17,23 @@ args:
   - true
 name: torch.fmax
 package: torch
-pass_rate: 56.043956043956044
+pass_rate: 96.0
 rules:
-- - cot: 'Based on the given runtime information, the error is triggered because the
-      size of tensor `a` (9) does not match the size of tensor `b` (5) at non-singleton
-      dimension 6. To prevent this error, we can formulate the following constraint:'
-    length: 1
+- - cot: synthesized
+    length: 2
     target:
       choosen_dtype:
         other: tensor
         out: tensor
         self: tensor
-      msg: The size of tensor a (6) must match the size of tensor b (9) at non-singleton
-        dimension 1
+      msg: Trying to resize storage that is not resizable
       package: torch
-    txt: self.shape[6] == other.shape[6]
-  - f1_score: 76.92307692307692
-    overall_score: 100
-    precision: 100.0
-    recall: 62.5
+    txt: (out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank)))
+      and (out.rank==other.rank)
+  - f1_score: 72.99270072992701
+    overall_score: 48.496350364963504
+    precision: 94.44444444444444
+    recall: 59.482155353393985
 - - cot: divided
     length: 1
     target:
@@ -57,11 +55,13 @@ rules:
         other: tensor
         out: tensor
         self: tensor
-      msg: Trying to resize storage that is not resizable
+      msg: The size of tensor a (6) must match the size of tensor b (8) at non-singleton
+        dimension 1
       package: torch
-    txt: (out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank)))
-      and (out.rank == other.rank)
-  - f1_score: 74.01360544217687
-    overall_score: 100
-    precision: 100.0
-    recall: 58.747300215982726
+    txt: (self.dim == other.dim and all(self.shape[i] == other.shape[i] or self.shape[i]
+      == 1 or other.shape[i] == 1 for i in range(-1, -min(len(self.shape), len(other.shape))-1,
+      -1))) or (self.shape == other.shape == out.shape)
+  - f1_score: 88.53627687708405
+    overall_score: 56.268138438542024
+    precision: 92.9054054054054
+    recall: 84.55963101251922

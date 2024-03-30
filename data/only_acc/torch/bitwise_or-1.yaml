@@ -1,0 +1,35 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.bitwise_or
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'The error is caused by the fact that the ''bitwise_or'' function is not
+      implemented for the ''Float'' data type. To prevent this error, the ''self''
+      tensor should have a data type that is compatible with the ''bitwise_or'' function,
+      such as ''int8'', ''int16'', ''int32'', ''int64'', ''uint8'', ''uint16'', ''uint32'',
+      or ''uint64''. Therefore, the constraint should be:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: int
+        self: tensor
+      msg: '"bitwise_or_cpu" not implemented for ''Float'''
+      package: torch
+    txt: dtype(self) in ['int8', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32',
+      'uint64']
+  - f1_score: 98.03921568627452
+    overall_score: 100
+    precision: 100.0
+    recall: 96.15384615384615

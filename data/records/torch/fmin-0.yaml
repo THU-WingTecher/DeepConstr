@@ -13,4 +13,22 @@ args:
   - true
 name: torch.fmin
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: "The error is triggered because the size of tensor a (9) must match the size\
+      \ of tensor b (4) at non-singleton dimension 4. To prevent this error, we need\
+      \ to ensure that the dimensions and shapes of the tensors are consistent. \n\
+      \nThe constraints can be formulated as follows:"
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (3) must match the size of tensor b (8) at non-singleton
+        dimension 4
+      package: torch
+    txt: self.dim == other.dim and self.shape == other.shape
+  - f1_score: 99.00990099009901
+    overall_score: 61.504950495049506
+    precision: 100.0
+    recall: 98.0392156862745

@@ -1,0 +1,82 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.bitwise_and
+package: torch
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (8) must match the size of tensor b (9) at non-singleton
+        dimension 1
+      package: torch
+    txt: (self.dim(6) == other.dim(6)) and (self.shape == other.shape)
+  - f1_score: 96.7741935483871
+    overall_score: 100
+    precision: 100.0
+    recall: 93.75
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: '"bitwise_and_cpu" not implemented for ''Float'''
+      package: torch
+    txt: (dtype(self) != float) and (dtype(out) in ["int8", "int16", "int32", "int64",
+      "uint8", "uint16", "uint32", "uint64"])
+  - f1_score: 81.96721311475409
+    overall_score: 100
+    precision: 100.0
+    recall: 69.44444444444444
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Short
+      package: torch
+    txt: dtype(self) == dtype(other)
+  - f1_score: 98.6842105263158
+    overall_score: 100
+    precision: 100.0
+    recall: 97.40259740259741
+- - cot: '`out` tensor is trying to be resized to match the shape of the operation
+      result, but it is not resizable. To prevent this error, the shape of the `out`
+      tensor should match the shape of the operation result. Therefore, the constraint
+      would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.shape == self.shape
+  - f1_score: 73.17073170731707
+    overall_score: 100
+    precision: 100.0
+    recall: 57.692307692307686

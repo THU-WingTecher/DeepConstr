@@ -1,0 +1,155 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[int]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - other
+  - dim
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+name: torch.cross
+package: torch
+pass_rate: 99.56896551724138
+rules:
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: 'linalg.cross: inputs must have the same number of dimensions.'
+      package: torch
+    txt: self.dim == other.dim
+  - f1_score: 90.22556390977444
+    overall_score: 100
+    precision: 100.0
+    recall: 82.1917808219178
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 3)
+      package: torch
+    txt: (dim >= -len(self.shape)) and (dim >= -2 and dim < 2)
+  - f1_score: 69.20415224913494
+    overall_score: 100
+    precision: 100.0
+    recall: 52.910052910052904
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: 'linalg.cross: inputs dimension 0 must have length 3. Got 1 and 7'
+      package: torch
+    txt: (other.shape[0] == 3) and (self.shape[0] == 3)
+  - f1_score: 88.75739644970415
+    overall_score: 100
+    precision: 100.0
+    recall: 79.7872340425532
+- - cot: 'Based on the given runtime information, the error arises because the specified
+      dimension is 0, but the tensor has no dimensions. To prevent this error, the
+      dimension specified in the function call should be within the range of dimensions
+      of the tensor.
+
+
+      Formulated constraint to prevent the error:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Dimension specified as 0 but tensor has no dimensions
+      package: torch
+    txt: 0 <= dim < len(self.shape)
+  - f1_score: 82.41758241758242
+    overall_score: 100
+    precision: 100.0
+    recall: 70.09345794392523
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: None
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Expected out tensor to have dtype float, but got int instead
+      package: torch
+    txt: (dtype(out) == float) and (dtype(out) == dtype(self))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: expected scalar type Half but found Float
+      package: torch
+    txt: ((dtype(out) == Double) and (dtype(out) == dtype(self))) and (dtype(other)
+      == dtype(self))
+  - f1_score: 92.45585874799359
+    overall_score: 100
+    precision: 100.0
+    recall: 85.97014925373134
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank)))
+      and (out.shape == self.shape)
+  - f1_score: 69.57605985037408
+    overall_score: 100
+    precision: 100.0
+    recall: 53.346080305927345
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (7) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.shape == other.shape
+  - f1_score: 66.86217008797654
+    overall_score: 100
+    precision: 100.0
+    recall: 50.22026431718062

@@ -1,0 +1,68 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.bitwise_left_shift
+package: torch
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: int
+        out: tensor
+        self: tensor
+      msg: '"lshift_cpu" not implemented for ''Float'''
+      package: torch
+    txt: dtype(self) in ["half", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+      "uint64"]
+  - f1_score: 88.36524300441828
+    overall_score: 100
+    precision: 100.0
+    recall: 79.155672823219
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: int
+        out: tensor
+        self: tensor
+      msg: '"lshift_cpu" not implemented for ''Half'''
+      package: torch
+    txt: dtype(self) in ["int8", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+      "uint64"]
+  - f1_score: 91.18541033434651
+    overall_score: 100
+    precision: 100.0
+    recall: 83.79888268156425
+- - cot: '`out` tensor is trying to resize, but it is not resizable. To prevent this
+      error, the shape of `out` tensor should match the shape of the operation result.
+      In this case, the shape of `out` tensor should be the same as the shape of `self`
+      tensor. Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: int
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 74.25742574257426
+    overall_score: 100
+    precision: 100.0
+    recall: 59.055118110236215

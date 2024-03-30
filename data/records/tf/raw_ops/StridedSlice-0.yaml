@@ -45,4 +45,5 @@ args:
   - true
 name: tf.raw_ops.StridedSlice
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules: []

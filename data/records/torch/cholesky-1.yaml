@@ -17,5 +17,24 @@ args:
   - true
 name: torch.cholesky
 package: torch
-pass_rate: 4.0
-rules: []
+pass_rate: 0.0
+rules:
+- - cot: "The error is triggered because the input tensor \"self\" is not a batch\
+      \ of square matrices. The last two dimensions of \"self\" should be equal, indicating\
+      \ that it represents a square matrix. \n\nTo prevent this error, we need to\
+      \ enforce the constraint that the last two dimensions of \"self\" are the same.\
+      \ Let's denote the shape of \"self\" as (batch_size, n). The constraint can\
+      \ be expressed as:"
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+        upper: bool
+      msg: 'cholesky: A must be batches of square matrices, but they are 1 by 7 matrices'
+      package: torch
+    txt: self.shape[-1] == self.shape[-2]
+  - f1_score: 67.72009029345372
+    overall_score: 100
+    precision: 100.0
+    recall: 51.19453924914675

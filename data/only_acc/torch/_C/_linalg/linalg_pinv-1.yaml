@@ -1,0 +1,60 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[float]
+  - Optional[float]
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - atol
+  - rtol
+  - hermitian
+  required:
+  - true
+  - false
+  - false
+  - false
+name: torch._C._linalg.linalg_pinv
+package: torch
+pass_rate: 96.33333333333334
+rules:
+- - cot: "Based on the error message and the runtime information, the error is triggered\
+      \ because the input tensor has less than 2 dimensions. The error message expects\
+      \ a tensor with 2 or more dimensions of float, double, cfloat, or cdouble types.\
+      \ \n\nTherefore, to prevent the error, the following constraint can be formulated:"
+    length: 1
+    target:
+      choosen_dtype:
+        atol: None
+        hermitian: bool
+        rtol: float
+        self: tensor
+      msg: 'linalg.pinv(Float{[]}): expected a tensor with 2 or more dimensions of
+        float, double, cfloat or cdouble types'
+      package: torch
+    txt: self.dim() >= 2 and self.dtype() in ["float32", "float64", "complex64", "complex128"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        atol: float
+        hermitian: bool
+        rtol: float
+        self: tensor
+      msg: 'linalg.eigh: A must be batches of square matrices, but they are 3 by 8
+        matrices'
+      package: torch
+    txt: (self.size(-2) == self.size(-1))
+  - f1_score: 66.13816534541338
+    overall_score: 51.66666666666667
+    precision: 97.33333333333334
+    recall: 50.08576329331047

@@ -88,3 +88,22 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 78.94736842105263
+- - cot: "The error is triggered because the size tensor must have two elements. However,\
+      \ the given size tensor has only one element. \n\nTo prevent the error, the\
+      \ size tensor should have exactly two elements."
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        half_pixel_centers: bool
+        images: tensor
+        name: str
+        size: tensor
+      msg: '{{function_node __wrapped__ResizeNearestNeighbor_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        shape_t must have two elements[8] [Op:ResizeNearestNeighbor] name: OzGu'
+      package: tensorflow
+    txt: size.shape[0] == 2
+  - f1_score: 89.82035928143713
+    overall_score: 100
+    precision: 100.0
+    recall: 81.5217391304348

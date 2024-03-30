@@ -21,4 +21,43 @@ args:
   - true
 name: torch.cumsum
 package: torch
-pass_rate: 0
+pass_rate: 96.98996655518395
+rules:
+- - cot: 'The error is triggered because we are trying to resize the ''out'' tensor,
+      but it is not resizable. To prevent this error, we need to ensure that the shape
+      and rank of the ''out'' tensor match the shape and rank of the operation result,
+      which is determined by the ''self'' tensor. Therefore, the constraint that prevents
+      the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 73.26007326007327
+    overall_score: 48.630036630036635
+    precision: 100.0
+    recall: 57.80346820809249
+- - cot: 'The error occurs because the value of the "dim" parameter is out of the
+      valid range. The valid range for the "dim" parameter in torch.cumsum is [-len(self.shape),
+      len(self.shape)-1]. Therefore, to prevent this error, we need to ensure that
+      the "dim" value is within the valid range. The constraint for the "dim" parameter
+      can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        out: tensor
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got 8)
+      package: torch
+    txt: dim >= -len(self.shape) and dim < len(self.shape)
+  - f1_score: 85.97285067873302
+    overall_score: 54.98642533936651
+    precision: 95.0
+    recall: 78.51239669421487

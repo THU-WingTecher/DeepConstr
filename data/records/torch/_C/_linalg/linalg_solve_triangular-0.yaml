@@ -25,4 +25,126 @@ args:
   - false
 name: torch._C._linalg.linalg_solve_triangular
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        B: tensor
+        left: bool
+        self: tensor
+        unitriangular: bool
+        upper: bool
+      msg: 'linalg.solve_triangular: Incompatible shapes of A and B for the equation
+        XA = B (8x8 and 1x1)'
+      package: torch
+    txt: self.shape[-1] == B.shape[-1]
+  - f1_score: 73.43941248470013
+    overall_score: 100
+    precision: 100.0
+    recall: 58.027079303675045
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        B: tensor
+        left: bool
+        self: tensor
+        unitriangular: bool
+        upper: bool
+      msg: 'linalg.solve_triangular: The input tensor B must have at least 2 dimensions.'
+      package: torch
+    txt: (B.dim >= 2) and (len(self.shape) >= 2)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        B: tensor
+        left: bool
+        self: tensor
+        unitriangular: bool
+        upper: bool
+      msg: 'linalg.solve_triangular: Incompatible shapes of A and B for the equation
+        XA = B (8x8 and 9x9)'
+      package: torch
+    txt: (len(B) == len(self)) and (all(self.shape[i] == B.shape[i] for i in range(self.rank)))
+  - f1_score: 91.46341463414635
+    overall_score: 100
+    precision: 100.0
+    recall: 84.26966292134831
+- - cot: 'The error is caused because the input matrix A is not a square matrix. To
+      prevent this error, we need to ensure that A is a square matrix. We can express
+      this constraint as:'
+    length: 1
+    target:
+      choosen_dtype:
+        B: tensor
+        left: bool
+        self: tensor
+        unitriangular: bool
+        upper: bool
+      msg: 'linalg.solve_triangular: A must be batches of square matrices, but they
+        are 6 by 7 matrices'
+      package: torch
+    txt: self.shape[-2] == self.shape[-1]
+  - f1_score: 91.0752131116658
+    overall_score: 52.82993197278912
+    precision: 99.65986394557824
+    recall: 83.85222443847022
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        B: tensor
+        left: bool
+        self: tensor
+        unitriangular: bool
+        upper: bool
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: (self.dim() >= 0) and (all(dim >= 0 for dim in B.shape) and all(dim >= 0
+      for dim in self.shape))
+  - f1_score: 89.69258589511755
+    overall_score: 100
+    precision: 100.0
+    recall: 81.31147540983608
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        B: tensor
+        left: bool
+        self: tensor
+        unitriangular: bool
+        upper: bool
+      msg: '"triangular_solve_cpu" not implemented for ''Half'''
+      package: torch
+    txt: dtype(self) != "float16"
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: "The error is due to the input tensor `self` having a data type of 'Int',\
+      \ which is not supported by the `torch._C._linalg.linalg_solve_triangular` function.\
+      \ \n\nTo prevent this error, the input tensor `self` should have a data type\
+      \ that is supported by the function, such as 'Float'."
+    length: 1
+    target:
+      choosen_dtype:
+        B: tensor
+        left: bool
+        self: tensor
+        unitriangular: bool
+        upper: bool
+      msg: '"triangular_solve_cpu" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype == torch.float
+  - f1_score: 98.78542510121456
+    overall_score: 61.39271255060728
+    precision: 100.0
+    recall: 97.60000000000001

@@ -13,4 +13,34 @@ args:
   - true
 name: torch.bitwise_left_shift
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"lshift_cpu" not implemented for ''Float'''
+      package: torch
+    txt: (shape(self) == shape(other)) and (dtype(self) in ["int8", "int16", "int32",
+      "int64", "uint8", "uint16", "uint32", "uint64"] and dtype(other) in ["int8",
+      "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64"])
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (2) must match the size of tensor b (5) at non-singleton
+        dimension 5
+      package: torch
+    txt: self.dim == other.dim
+  - f1_score: 84.7457627118644
+    overall_score: 54.3728813559322
+    precision: 100.0
+    recall: 73.52941176470588

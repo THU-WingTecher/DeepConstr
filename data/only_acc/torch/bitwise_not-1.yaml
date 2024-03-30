@@ -1,0 +1,87 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - out
+  required:
+  - true
+  - true
+name: torch.bitwise_not
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'Based on the given runtime information, the error occurs because the function
+      torch.bitwise_not is not implemented for the data type ''Float''. The ''self''
+      tensor has a data type of float32, which is not compatible with the bitwise_not
+      operation.
+
+
+      To prevent this error, the ''self'' tensor should have a data type that is one
+      of the allowed types for the bitwise_not operation. The allowed types are ''half'',
+      ''int16'', ''int32'', ''int64'', ''uint8'', ''uint16'', ''uint32'', ''uint64''.
+
+
+      Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: '"bitwise_not_cpu" not implemented for ''Float'''
+      package: torch
+    txt: dtype(self) in ["half", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+      "uint64"]
+  - f1_score: 89.02077151335313
+    overall_score: 100
+    precision: 100.0
+    recall: 80.21390374331551
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Found dtype Float but expected Half
+      package: torch
+    txt: dtype(out) == dtype(self)
+  - f1_score: 97.24473257698541
+    overall_score: 100
+    precision: 100.0
+    recall: 94.6372239747634
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 75.37688442211054
+    overall_score: 100
+    precision: 100.0
+    recall: 60.483870967741936
+- - cot: "Based on the given runtime information, the error arises because the torch.bitwise_not\
+      \ function is not implemented for tensors of dtype 'Half'. The 'self' tensor\
+      \ is provided as dtype 'Half', which is not compatible. \n\nTo prevent the error,\
+      \ the 'self' tensor should be of one of the allowed types: int8, int16, int32,\
+      \ int64, uint8, uint16, uint32, uint64. \n\nThe condition that prevents the\
+      \ error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: '"bitwise_not_cpu" not implemented for ''Half'''
+      package: torch
+    txt: dtype(self) in ["int8", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+      "uint64"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

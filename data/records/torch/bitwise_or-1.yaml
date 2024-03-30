@@ -13,4 +13,24 @@ args:
   - true
 name: torch.bitwise_or
 package: torch
-pass_rate: 0
+pass_rate: 95.0
+rules:
+- - cot: "Based on the given runtime information, the error occurs because the function\
+      \ \"torch.bitwise_or\" is not implemented for float tensors. The 'self' tensor\
+      \ has a dtype of float32, which is not compatible with the bitwise_or operation.\
+      \ To prevent the error, the dtype of 'self' tensor should be changed to one\
+      \ of the allowed types for bitwise_or operation. \n\nWrap the final formula\
+      \ with"
+    length: 1
+    target:
+      choosen_dtype:
+        other: int
+        self: tensor
+      msg: '"bitwise_or_cpu" not implemented for ''Float'''
+      package: torch
+    txt: dtype(self) in ["half", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+      "uint64"]
+  - f1_score: 97.87928221859706
+    overall_score: 60.93964110929853
+    precision: 100.0
+    recall: 95.84664536741214

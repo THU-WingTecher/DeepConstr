@@ -49,4 +49,33 @@ args:
   - true
 name: tf.raw_ops.TensorStridedSliceUpdate
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        begin: tensor
+        begin_mask: int
+        ellipsis_mask: int
+        end: tensor
+        end_mask: int
+        input: tensor
+        name: str
+        new_axis_mask: int
+        shrink_axis_mask: int
+        strides: tensor
+        value: tensor
+      msg: "Value for attr 'Index' of float is not in the list of allowed values:\
+        \ int32, int64\n\t; NodeDef: {{node TensorStridedSliceUpdate}}; Op<name=TensorStridedSliceUpdate;\
+        \ signature=input:T, begin:Index, end:Index, strides:Index, value:T -> output:T;\
+        \ attr=T:type; attr=Index:type,allowed=[DT_INT32, DT_INT64]; attr=begin_mask:int,default=0;\
+        \ attr=end_mask:int,default=0; attr=ellipsis_mask:int,default=0; attr=new_axis_mask:int,default=0;\
+        \ attr=shrink_axis_mask:int,default=0> [Op:TensorStridedSliceUpdate] name:\
+        \ VoxJ"
+      package: tensorflow
+    txt: dtype(begin) in ["int32", "int64"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

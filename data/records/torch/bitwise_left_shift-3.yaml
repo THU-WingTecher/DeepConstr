@@ -17,4 +17,56 @@ args:
   - true
 name: torch.bitwise_left_shift
 package: torch
-pass_rate: 0
+pass_rate: 20.80536912751678
+rules:
+- - cot: '`out` tensor is trying to be resized, but it is not resizable. To prevent
+      this error, the shape and rank of `out` tensor should match the shape and rank
+      of the operation result. Therefore, the following constraint should be added:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 73.98273736128237
+    overall_score: 48.99136868064119
+    precision: 100.0
+    recall: 58.70841487279843
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: '"lshift_cpu" not implemented for ''Float'''
+      package: torch
+    txt: ((dtype(self) == "int32") and (dtype(other) in ["int8", "int16", "int32",
+      "int64", "uint8", "uint16", "uint32", "uint64"])) or (dtype(out) != 'Float')
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'This error occurs because the dimensions of the tensors involved in the
+      operation do not match. In particular, the size of the third dimension of tensor
+      ''other'' (9) does not match the size of the first dimension of tensor ''self''
+      (7). To avoid this error, the sizes of the corresponding dimensions of the tensors
+      must be equal. We can enforce this requirement with the following condition:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (9) at non-singleton
+        dimension 2
+      package: torch
+    txt: all(self.shape[i] == other.shape[i] for i in range(-1, -min(len(self.shape),
+      len(other.shape))-1, -1))
+  - f1_score: 92.16068600730391
+    overall_score: 58.080343003651954
+    precision: 99.65635738831615
+    recall: 85.71371319219709

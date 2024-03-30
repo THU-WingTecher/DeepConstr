@@ -1,0 +1,81 @@
+args:
+  dtype:
+  - float
+  - float16,bfloat16,float32,float64
+  - float16,bfloat16,float32,float64
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - alpha
+  - features
+  - gradients
+  - name
+  required:
+  - false
+  - true
+  - true
+  - false
+name: tf.raw_ops.LeakyReluGrad
+package: tensorflow
+pass_rate: 46.0
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        alpha: float
+        features: tensor
+        gradients: tensor
+        name: str
+      msg: '{{function_node __wrapped__LeakyReluGrad_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Inputs to operation LeakyReluGrad of type LeakyReluGrad must have the same
+        size and shape.  Input 0: [] != input 1: [1,1] [Op:LeakyReluGrad] name: rjEx'
+      package: tensorflow
+    txt: (all(features[i]==gradients[i] for i in range(len(features.shape)))) and
+      (len(features.shape) == len(gradients.shape))
+  - f1_score: 98.6842105263158
+    overall_score: 100
+    precision: 100.0
+    recall: 97.40259740259741
+- - cot: 'Based on the given information, the error arises because the function is
+      expecting a float tensor for the first input, but it is receiving an int32 tensor.
+      Therefore, the constraint should be that the data type of the first input tensor
+      must be float. This can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: float
+        features: tensor
+        gradients: tensor
+        name: str
+      msg: 'cannot compute LeakyReluGrad as input #1(zero-based) was expected to be
+        a float tensor but is a int32 tensor [Op:LeakyReluGrad] name: gjIN'
+      package: tensorflow
+    txt: dtype(features) == tf.float32
+  - f1_score: 97.71986970684038
+    overall_score: 100
+    precision: 100.0
+    recall: 95.54140127388536
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: float
+        features: tensor
+        gradients: tensor
+        name: str
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: half,\
+        \ bfloat16, float, double\n\t; NodeDef: {{node LeakyReluGrad}}; Op<name=LeakyReluGrad;\
+        \ signature=gradients:T, features:T -> backprops:T; attr=alpha:float,default=0.2;\
+        \ attr=T:type,default=DT_FLOAT,allowed=[DT_HALF, DT_BFLOAT16, DT_FLOAT, DT_DOUBLE]>\
+        \ [Op:LeakyReluGrad] name: ePEA"
+      package: tensorflow
+    txt: dtype(gradients) in ["half", "bfloat16", "float", "double"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

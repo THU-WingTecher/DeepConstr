@@ -17,4 +17,52 @@ args:
   - true
 name: tf.raw_ops.TruncateDiv
 package: tensorflow
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: '{{function_node __wrapped__TruncateDiv_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [2] vs. [8] [Op:TruncateDiv] name: daJs'
+      package: tensorflow
+    txt: x.shape == y.shape
+  - f1_score: 66.815144766147
+    overall_score: 100
+    precision: 100.0
+    recall: 50.16722408026756
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: 'cannot compute TruncateDiv as input #1(zero-based) was expected to be
+        a int32 tensor but is a float tensor [Op:TruncateDiv] name: fpui'
+      package: tensorflow
+    txt: ((dtype(x) == float) and (dtype(y) == dtype(x))) or ((dtype(y) == int32)
+      and (dtype(y) == dtype(x)))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: '{{function_node __wrapped__TruncateDiv_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [1,4,1,8,2] vs. [1,4,1,8,2,1] [Op:TruncateDiv] name:
+        TXVc'
+      package: tensorflow
+    txt: len(x) == len(y)
+  - f1_score: 86.95652173913044
+    overall_score: 55.47826086956522
+    precision: 100.0
+    recall: 76.92307692307692

@@ -1,0 +1,43 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - dim
+  required:
+  - true
+  - true
+name: torch.cummin
+package: torch
+pass_rate: 83.33333333333334
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 91)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 68.70415647921762
+    overall_score: 49.833333333333336
+    precision: 93.66666666666667
+    recall: 54.24710424710425
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 7)
+      package: torch
+    txt: dim < len(self.shape)
+  - f1_score: 58.113207547169814
+    overall_score: 41.5
+    precision: 77.0
+    recall: 46.66666666666667

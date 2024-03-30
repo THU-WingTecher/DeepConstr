@@ -21,4 +21,27 @@ args:
   - true
 name: tf.raw_ops.TensorScatterUpdate
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'The error is due to the attribute ''indices'' being provided as a float,
+      but it is expected to be one of int16, int32, int64, uint8. The tensor ''indices''
+      is provided as float32, which is not compatible. So, the constraint to prevent
+      this error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        indices: tensor
+        name: str
+        tensor: tensor
+        updates: tensor
+      msg: "Value for attr 'Tindices' of float is not in the list of allowed values:\
+        \ int16, int32, int64, uint16\n\t; NodeDef: {{node TensorScatterUpdate}};\
+        \ Op<name=TensorScatterUpdate; signature=tensor:T, indices:Tindices, updates:T\
+        \ -> output:T; attr=T:type; attr=Tindices:type,allowed=[DT_INT16, DT_INT32,\
+        \ DT_INT64, DT_UINT16]> [Op:TensorScatterUpdate] name: mGSD"
+      package: tensorflow
+    txt: dtype(indices) in ["int16", "int32", "int64", "uint8"]
+  - f1_score: 97.61092150170649
+    overall_score: 50.66666666666667
+    precision: 95.33333333333334
+    recall: 100.0

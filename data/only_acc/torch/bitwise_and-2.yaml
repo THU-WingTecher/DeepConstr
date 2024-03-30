@@ -1,0 +1,34 @@
+args:
+  dtype:
+  - number
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.bitwise_and
+package: torch
+pass_rate: 100
+rules:
+- - cot: The error occurs because the torch.bitwise_and function is not implemented
+      for 'Float' type tensors. The data type of 'other' tensor is 'Float' while the
+      function expects an integer type tensor. Therefore, to prevent this error, the
+      data type of 'other' tensor should be one of the integer types.
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: int
+      msg: '"bitwise_and_cpu" not implemented for ''Float'''
+      package: torch
+    txt: dtype(other) in ["int8", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+      "uint64"]
+  - f1_score: 98.6842105263158
+    overall_score: 100
+    precision: 100.0
+    recall: 97.40259740259741

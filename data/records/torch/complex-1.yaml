@@ -18,4 +18,19 @@ args:
 name: torch.complex
 package: torch
 pass_rate: 0.0
-rules: []
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        imag: tensor
+        out: tensor
+        real: tensor
+      msg: Expected object of scalar type ComplexFloat but got scalar type Float for
+        argument 'out'
+      package: torch
+    txt: (out.dtype == torch.complex) and (dtype(out) == dtype(real))
+  - f1_score: 96.93053311793216
+    overall_score: 100
+    precision: 100.0
+    recall: 94.04388714733544

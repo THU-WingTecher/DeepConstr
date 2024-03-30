@@ -1,0 +1,184 @@
+args:
+  dtype:
+  - Tensor
+  - str
+  - Optional[List[int]]
+  - bool
+  - None
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - ord
+  - dim
+  - keepdim
+  - dtype
+  - out
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - true
+name: torch._C._linalg.linalg_norm
+package: torch
+pass_rate: 99.66666666666667
+rules:
+- - cot: 'The error is due to the order value "tAnf" not being supported. The order
+      value should be one of the supported norms for matrix_norm, such as "fro", "nuc",
+      "inf", "nuc", "1", or "2". Therefore, the ord value should be one of these supported
+      norms. Op : in, and Right : ["fro", "nuc", "inf", "nuc", "1", "2"].'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        ord: str
+        out: tensor
+        self: tensor
+      msg: 'linalg.matrix_norm: Order dBSo not supported.'
+      package: torch
+    txt: ord in ["fro", "nuc", "inf", "nuc", "1", "2"]
+  - f1_score: 63.914373088685025
+    overall_score: 37.833333333333336
+    precision: 69.66666666666667
+    recall: 59.03954802259888
+- - cot: The error is caused by providing a 4D input tensor to the `torch._C._linalg.linalg_norm`
+      function, but the function expects the input to be either 1D or 2D when the
+      `ord` argument is specified. Therefore, the constraint to prevent the error
+      is to ensure that the input tensor has either 1 or 2 dimensions.
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        ord: str
+        out: tensor
+        self: tensor
+      msg: 'linalg.norm: If dim is not specified but ord is, the input must be 1D
+        or 2D. Got 5D.'
+      package: torch
+    txt: self.dim() in [1, 2]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: The error is due to the value of `ord` being set to `inf`, which is not supported.
+      To prevent the error, the value of `ord` should be changed to a supported order
+      value.
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        ord: str
+        out: tensor
+        self: tensor
+      msg: 'linalg.matrix_norm: Order inf not supported.'
+      package: torch
+    txt: ord != inf
+  - f1_score: 70.41036717062636
+    overall_score: 30.166666666666668
+    precision: 54.333333333333336
+    recall: 100.0
+- - cot: 'Based on the given runtime information, to prevent the error, the constraint
+      should be formulated as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        ord: str
+        out: tensor
+        self: tensor
+      msg: 'linalg.matrix_norm: The input tensor A must have at least 2 dimensions.'
+      package: torch
+    txt: self.dim() >= 2
+  - f1_score: 80.42895442359249
+    overall_score: 100
+    precision: 100.0
+    recall: 67.26457399103138
+- - cot: 'The error is due to the fact that order 1 is not supported in the linalg.matrix_norm
+      function. Therefore, the ''ord'' value should be corrected to be a supported
+      value. In this case, for matrix norm, it should be either ''fro'' or ''nuc''.
+      So, ord should be in [''fro'', ''nuc'']. Op : in, and Right : [''fro'', ''nuc''].'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        ord: str
+        out: tensor
+        self: tensor
+      msg: 'linalg.matrix_norm: Order 1 not supported.'
+      package: torch
+    txt: ord in ['fro', 'nuc']
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        ord: str
+        out: tensor
+        self: tensor
+      msg: 'linalg.matrix_norm: Expected a floating point or complex tensor as input.
+        Got Int'
+      package: torch
+    txt: (dtype(self) == dtype(out)) and (dtype(self) in [torch.float32, torch.float64,
+      torch.complex64, torch.complex128])
+  - f1_score: 99.33774834437087
+    overall_score: 100
+    precision: 100.0
+    recall: 98.68421052631578
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        ord: str
+        out: tensor
+        self: tensor
+      msg: 'linalg.norm expected out tensor dtype Float but got: ComplexFloat'
+      package: torch
+    txt: dtype(out) == torch.float32
+  - f1_score: 71.94244604316549
+    overall_score: 100
+    precision: 100.0
+    recall: 56.17977528089888
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        ord: str
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 66.96428571428572
+    overall_score: 100
+    precision: 100.0
+    recall: 50.335570469798654

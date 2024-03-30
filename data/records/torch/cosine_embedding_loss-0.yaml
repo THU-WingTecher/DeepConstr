@@ -25,4 +25,60 @@ args:
   - false
 name: torch.cosine_embedding_loss
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input1: tensor
+        input2: tensor
+        margin: float
+        reduction: int
+        target: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (7) at non-singleton
+        dimension 0
+      package: torch
+    txt: input1.dim == input2.dim and input1.shape == input2.shape
+  - f1_score: 90.06024096385542
+    overall_score: 57.03012048192771
+    precision: 100.0
+    recall: 81.91780821917808
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        input1: tensor
+        input2: tensor
+        margin: float
+        reduction: int
+        target: tensor
+      msg: 0D target tensor expects 1D input tensors, but found inputs with sizes
+        [7, 8, 8, 9] and [7, 9, 9, 9, 9, 9].
+      package: torch
+    txt: (input1.dim() == 1 and input2.dim() == 2) or (input1.dim() == 1 and input2.dim()
+      == 1)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: The error is triggered because the target tensor has a shape of [3, 3, 3,
+      3], which is not a 0D or 1D tensor. The function expects the target tensor to
+      be either a 0D tensor or a 1D tensor. To prevent this error, the shape of the
+      target tensor should be modified to be either [1] or [N], where N is the size
+      of the target tensor.
+    length: 1
+    target:
+      choosen_dtype:
+        input1: tensor
+        input2: tensor
+        margin: float
+        reduction: int
+        target: tensor
+      msg: 0D or 1D target tensor expected, multi-target not supported
+      package: torch
+    txt: len(target.shape) <= 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

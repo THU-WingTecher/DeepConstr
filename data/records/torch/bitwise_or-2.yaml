@@ -13,4 +13,18 @@ args:
   - true
 name: torch.bitwise_or
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: int
+      msg: '"bitwise_or_cpu" not implemented for ''Float'''
+      package: torch
+    txt: (dtype(other) != "float32")
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

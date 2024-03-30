@@ -1,0 +1,30 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.bitwise_left_shift
+package: torch
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: int
+        self: tensor
+      msg: '"lshift_cpu" not implemented for ''Float'''
+      package: torch
+    txt: dtype(self) in [int8, int16, int32, int64, uint8, uint16, uint32, uint64]
+  - f1_score: 98.36065573770492
+    overall_score: 100
+    precision: 100.0
+    recall: 96.77419354838709

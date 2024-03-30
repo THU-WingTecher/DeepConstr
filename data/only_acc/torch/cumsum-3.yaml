@@ -1,0 +1,58 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - None
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - dtype
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+name: torch.cumsum
+package: torch
+pass_rate: 32.666666666666664
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        out: tensor
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-5, 4], but got 6)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 79.3201133144476
+    overall_score: 49.666666666666664
+    precision: 93.33333333333333
+    recall: 68.96551724137932
+- - cot: '`out` tensor shape should be matched with the operation results. In this
+      operation, the result shape is `self.shape`. Therefore, `out.shape` should be
+      equal to `self.shape` and all dimensions of `out.shape` should be equal to the
+      corresponding dimensions of `self.shape`.'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 74.34944237918216
+    overall_score: 100
+    precision: 100.0
+    recall: 59.171597633136095

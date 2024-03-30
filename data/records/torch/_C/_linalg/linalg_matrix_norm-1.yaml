@@ -25,7 +25,7 @@ args:
   - false
 name: torch._C._linalg.linalg_matrix_norm
 package: torch
-pass_rate: 63.66666666666667
+pass_rate: 83.33333333333334
 rules:
 - - cot: The error is due to an unsupported value for the parameter 'ord'. The value
       provided for 'ord' is 'TwMs' which is not supported. Therefore, the value of

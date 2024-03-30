@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - Tensor
+  is_pos:
+  - true
+  name:
+  - self
+  required:
+  - true
+name: torch.bitwise_not
+package: torch
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+      msg: '"bitwise_not_cpu" not implemented for ''Float'''
+      package: torch
+    txt: dtype(self) not in ["float16", "float32", "float64"]
+  - f1_score: 72.11538461538463
+    overall_score: 100
+    precision: 100.0
+    recall: 56.390977443609025

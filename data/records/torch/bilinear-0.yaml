@@ -21,4 +21,182 @@ args:
   - false
 name: torch.bilinear
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        bias: None
+        input1: tensor
+        input2: tensor
+        weight: tensor
+      msg: 'bilinear(): input dimensions do not match: got 0 and 2'
+      package: torch
+    txt: (len(input1.shape) == len(input2.shape)) or (input1.dim() == input2.dim()
+      - 1)
+  - f1_score: 92.16300940438872
+    overall_score: 50.5
+    precision: 98.0
+    recall: 86.98224852071006
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        bias: tensor
+        input1: tensor
+        input2: tensor
+        weight: tensor
+      msg: Dimension specified as -1 but tensor has no dimensions
+      package: torch
+    txt: (len(weight.shape)>0) and (len(input1.shape) > 0 and len(input2.shape) >
+      0)
+  - f1_score: 85.0715746421268
+    overall_score: 100
+    precision: 100.0
+    recall: 74.02135231316727
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        bias: None
+        input1: tensor
+        input2: tensor
+        weight: tensor
+      msg: 'bilinear(): input1 size does not match weight size: got 7 but expected
+        9'
+      package: torch
+    txt: input1.shape[0] == weight.shape[2]
+  - f1_score: 77.61966364812419
+    overall_score: 100
+    precision: 100.0
+    recall: 63.424947145877375
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        bias: tensor
+        input1: tensor
+        input2: tensor
+        weight: tensor
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got 1)
+      package: torch
+    txt: (1 >= -len(weight.shape) and 1 < len(weight.shape)) and (len(input2.shape)
+      > 2)
+  - f1_score: 89.41877794336813
+    overall_score: 100
+    precision: 100.0
+    recall: 80.86253369272238
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        bias: None
+        input1: tensor
+        input2: tensor
+        weight: tensor
+      msg: 'bilinear(): input batch dimensions do not match at dim 0: got 5 and 7'
+      package: torch
+    txt: (input1.shape[0] == input2.shape[0]) and (input1.shape[1] == input2.shape[1])
+  - f1_score: 68.05614632071459
+    overall_score: 29.78282828282828
+    precision: 56.56565656565656
+    recall: 85.40491078236998
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        bias: None
+        input1: tensor
+        input2: tensor
+        weight: tensor
+      msg: 'bilinear(): input batch dimensions do not match at dim 2: got 3 and 8'
+      package: torch
+    txt: (input1.shape[1] == input2.shape[1]) and (input1.shape[0] == weight.shape[0])
+  - f1_score: 55.55555555555555
+    overall_score: 34.77257525083612
+    precision: 63.54515050167224
+    recall: 49.35064935064935
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        bias: tensor
+        input1: tensor
+        input2: tensor
+        weight: tensor
+      msg: 'bilinear(): input batch dimensions do not match at dim 2: got 3 and 2'
+      package: torch
+    txt: (input1.shape[2] == input2.shape[2]) or (input1.shape[2]!=input2.shape[2])
+  - f1_score: 61.05191662775396
+    overall_score: 27.52040816326531
+    precision: 52.04081632653062
+    recall: 73.83714960468221
+- - cot: 'The error is caused because the batch dimensions of input1 and input2 do
+      not match at dimension 4. To prevent this error, the batch dimension at index
+      4 for both input1 and input2 tensors must be equal. Here is the condition that
+      will prevent the error:'
+    length: 1
+    target:
+      choosen_dtype:
+        bias: tensor
+        input1: tensor
+        input2: tensor
+        weight: tensor
+      msg: 'bilinear(): input batch dimensions do not match at dim 2: got 9 and 3'
+      package: torch
+    txt: input1.shape[4] == input2.shape[4]
+  - f1_score: 59.827616672883984
+    overall_score: 38.61643835616438
+    precision: 71.23287671232876
+    recall: 51.570538857297585
+- - cot: 'Error is triggered because the size of input1 doesn''t match the size of
+      weight. The size of input1 at the last dimension is 3, while the size of weight
+      at the last dimension is 8. To prevent this error, the size of input1 and weight
+      at the last dimension should match. Therefore, the constraint can be formulated
+      as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        bias: tensor
+        input1: tensor
+        input2: tensor
+        weight: tensor
+      msg: 'bilinear(): input1 size does not match weight size: got 3 but expected
+        5'
+      package: torch
+    txt: input1.shape[-1] == weight.shape[-1]
+  - f1_score: 90.32258064516128
+    overall_score: 100
+    precision: 100.0
+    recall: 82.3529411764706
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        bias: tensor
+        input1: tensor
+        input2: tensor
+        weight: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 2)
+      package: torch
+    txt: bias.shape[0] == input1.shape[0] == input2.shape[0]
+  - f1_score: 44.48897795591183
+    overall_score: 21.8135593220339
+    precision: 37.6271186440678
+    recall: 54.41176470588236
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        bias: tensor
+        input1: tensor
+        input2: tensor
+        weight: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 2)
+      package: torch
+    txt: (input1.dim < 2) or (len(input1.shape) > 2 and len(input2.shape) > 2)
+  - f1_score: 31.57894736842105
+    overall_score: 20.25
+    precision: 37.5
+    recall: 27.27272727272727

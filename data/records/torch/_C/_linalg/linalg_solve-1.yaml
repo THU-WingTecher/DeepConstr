@@ -21,4 +21,135 @@ args:
   - true
 name: torch._C._linalg.linalg_solve
 package: torch
-pass_rate: 0
+pass_rate: 47.22222222222222
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        B: tensor
+        left: bool
+        out: tensor
+      msg: 'linalg.solve: Expected A and B to have the same dtype, but found A of
+        type Float and B of type Int instead'
+      package: torch
+    txt: dtype(A) == dtype(B)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        A: tensor
+        B: tensor
+        left: bool
+        out: tensor
+      msg: 'linalg.solve: Expected a floating point or complex tensor as input. Got
+        Int'
+      package: torch
+    txt: ((dtype(out) == torch.float32) and (dtype(out) == dtype(A))) or (B.dtype
+      == torch.float)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        B: tensor
+        left: bool
+        out: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == A.rank and all(out.shape[i] == A.shape[i] for i in range(out.rank))
+  - f1_score: 68.82793017456359
+    overall_score: 46.413965087281795
+    precision: 100.0
+    recall: 52.47148288973384
+- - cot: "The error is triggered because the size of tensor B (7) does not match the\
+      \ size of tensor A (8) at non-singleton dimension 0. To prevent this error,\
+      \ we need to ensure that the dimensions and shapes of tensor A and B are consistent.\
+      \ \n\nThe constraints can be formulated as follows:"
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        B: tensor
+        left: bool
+        out: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (4) at non-singleton
+        dimension 0
+      package: torch
+    txt: A.dim == B.dim and A.shape == B.shape
+  - f1_score: 80.0212728239674
+    overall_score: 52.0106364119837
+    precision: 84.72222222222221
+    recall: 75.81457843466578
+- - cot: 'Based on the given runtime information, the constraint that would prevent
+      the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        B: tensor
+        left: bool
+        out: tensor
+      msg: 'linalg.solve: The input tensor B must have at least 2 dimensions.'
+      package: torch
+    txt: B.dim >= 2
+  - f1_score: 96.45161290322581
+    overall_score: 100
+    precision: 100.0
+    recall: 93.14641744548287
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        A: tensor
+        B: tensor
+        left: bool
+        out: tensor
+      msg: 'linalg.solve: A must be batches of square matrices, but they are 3 by
+        5 matrices'
+      package: torch
+    txt: (A.shape[-1] == A.shape[-2]) and (rank(A) == 3)
+  - f1_score: 67.33416770963704
+    overall_score: 39.66708385481852
+    precision: 100.0
+    recall: 50.75471698113208
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        B: tensor
+        left: bool
+        out: tensor
+      msg: 'linalg.solve: The input tensor B must have at least 2 dimensions.'
+      package: torch
+    txt: A.dim >= 2
+  - f1_score: 87.0796460176991
+    overall_score: 44.0
+    precision: 82.0
+    recall: 92.83018867924528
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        A: tensor
+        B: tensor
+        left: bool
+        out: tensor
+      msg: 'linalg.solve: Incompatible shapes of A and B for the equation XA = B (9x9
+        and 8x8)'
+      package: torch
+    txt: (len(A) == len(B)) and (A.shape[-1] == B.shape[-2])
+  - f1_score: 75.66204287515764
+    overall_score: 100
+    precision: 100.0
+    recall: 60.85192697768763

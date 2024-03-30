@@ -21,4 +21,139 @@ args:
   - true
 name: torch.cross
 package: torch
-pass_rate: 0
+pass_rate: 2.6936026936026933
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (7) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.shape == other.shape
+  - f1_score: 67.05202312138728
+    overall_score: 45.52601156069364
+    precision: 100.0
+    recall: 50.43478260869565
+- - cot: '`out` tensor shape should be matched with the operation results. In this
+      case, the result shape is `self.shape`. Therefore, the condition to prevent
+      the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 67.66169154228855
+    overall_score: 45.830845771144276
+    precision: 100.0
+    recall: 51.127819548872175
+- - cot: 'The error is due to the mismatch in the data types of the ''other'' tensor
+      and the ''self'' tensor. The ''other'' tensor is of type float32 while ''self''
+      tensor and ''out'' tensor are of type float16. Therefore, the data type of the
+      ''other'' tensor should be float16. So, Left : other.dtype, Op : ==, Right :
+      dtype(self)'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: expected scalar type Half but found Float
+      package: torch
+    txt: dtype(other) == dtype(self)
+  - f1_score: 89.38775510204083
+    overall_score: 56.693877551020414
+    precision: 100.0
+    recall: 80.81180811808119
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: None
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Expected out tensor to have dtype float, but got int instead
+      package: torch
+    txt: (dtype(out) == float) and (dtype(out) == dtype(self))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Dimension specified as 0 but tensor has no dimensions
+      package: torch
+    txt: (dim < len(self.shape)) or (len(self) > 0)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is triggered because the dimension 0 of the input tensor ''self''
+      must have a length of 3. However, the given input tensor ''self'' has a length
+      of 7. To prevent this error, the dimension 0 of ''self'' should have a length
+      of 3. Therefore, the constraint should be:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: 'linalg.cross: inputs dimension 0 must have length 3. Got 9 and 9'
+      package: torch
+    txt: self.shape[0] == 3
+  - f1_score: 75.71403228667731
+    overall_score: 49.857016143338655
+    precision: 97.34513274336283
+    recall: 61.94844403158384
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 9)
+      package: torch
+    txt: dim < len(self.shape)
+  - f1_score: 89.00644541518729
+    overall_score: 56.50322270759364
+    precision: 90.33333333333333
+    recall: 87.71797397745738
+- - cot: "Based on the given runtime information, the error is triggered because the\
+      \ number of dimensions of the input tensors doesn't match. The function `torch.cross`\
+      \ expects the input tensors to have the same number of dimensions. \n\nTo prevent\
+      \ the error, we can add a constraint that ensures the number of dimensions of\
+      \ the input tensors are the same. \n\nTherefore, the final formula is:"
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: 'linalg.cross: inputs must have the same number of dimensions.'
+      package: torch
+    txt: self.dim == other.dim
+  - f1_score: 91.18541033434651
+    overall_score: 57.59270516717326
+    precision: 100.0
+    recall: 83.79888268156425

@@ -21,4 +21,77 @@ args:
   - false
 name: torch._C._linalg.linalg_pinv
 package: torch
-pass_rate: 0
+pass_rate: 93.66666666666667
+rules:
+- - cot: 'The error is triggered because the input tensor `self` is not a batch of
+      square matrices. The shape of `self` is [5, 8, 3, 8, 9, 5, 2] which indicates
+      that it has 7 dimensions, and the last two dimensions are 5 and 2 respectively.
+      In order to prevent this error, we need to ensure that the last two dimensions
+      of `self` are the same and represent square matrices.
+
+
+      The constraint for ensuring `self` is a batch of square matrices can be formulated
+      as:'
+    length: 1
+    target:
+      choosen_dtype:
+        atol: None
+        hermitian: bool
+        rtol: tensor
+        self: tensor
+      msg: 'linalg.eigh: A must be batches of square matrices, but they are 3 by 7
+        matrices'
+      package: torch
+    txt: self.shape[-2] == self.shape[-1]
+  - f1_score: 68.52976913730255
+    overall_score: 46.264884568651276
+    precision: 94.0
+    recall: 53.91969407265774
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        atol: None
+        hermitian: bool
+        rtol: tensor
+        self: tensor
+      msg: The size of tensor a (3) must match the size of tensor b (9) at non-singleton
+        dimension 6
+      package: torch
+    txt: rtol.shape[6] == 1
+  - f1_score: 96.61835748792271
+    overall_score: 60.309178743961354
+    precision: 100.0
+    recall: 93.45794392523365
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        atol: None
+        hermitian: bool
+        rtol: None
+        self: tensor
+      msg: 'linalg.pinv(Float{[]}): expected a tensor with 2 or more dimensions of
+        float, double, cfloat or cdouble types'
+      package: torch
+    txt: self.dim >= 2 and self.dtype in ["float32", "float64", "complex64", "complex128"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        atol: tensor
+        hermitian: bool
+        rtol: None
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (4) at non-singleton
+        dimension 6
+      package: torch
+    txt: (atol.shape[5] == 1) and (atol.size(4) == self.size(4))
+  - f1_score: 95.98715890850723
+    overall_score: 59.99357945425361
+    precision: 99.66666666666667
+    recall: 92.56965944272446

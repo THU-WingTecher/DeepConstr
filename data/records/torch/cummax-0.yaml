@@ -13,4 +13,31 @@ args:
   - true
 name: torch.cummax
 package: torch
-pass_rate: 0
+pass_rate: 99.33333333333333
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 7)
+      package: torch
+    txt: dim < 6
+  - f1_score: 88.03827751196172
+    overall_score: 50.01913875598086
+    precision: 92.0
+    recall: 84.40366972477064
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 5)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 82.61474269819192
+    overall_score: 47.30737134909596
+    precision: 99.0
+    recall: 70.88305489260142

@@ -1,0 +1,112 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[int]
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - dim
+  required:
+  - true
+  - true
+  - false
+name: torch.cross
+package: torch
+pass_rate: 99.06103286384976
+rules:
+- - cot: "The error message indicates that the input tensors `other` and `self` must\
+      \ have the same number of dimensions. \n\nTo prevent this error, we can formulate\
+      \ the following constraint:"
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        other: tensor
+        self: tensor
+      msg: 'linalg.cross: inputs must have the same number of dimensions.'
+      package: torch
+    txt: dim(other) == dim(self)
+  - f1_score: 93.75
+    overall_score: 100
+    precision: 100.0
+    recall: 88.23529411764706
+- - cot: "Based on the given runtime information, the error occurs because the dimension\
+      \ of size 3 is not present in the input tensor \"other\". \n\nTo prevent this\
+      \ error, the input tensor \"other\" should have a dimension of size 3. \n\n\
+      The constraint that prevents the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        other: tensor
+        self: tensor
+      msg: no dimension of size 3 in input
+      package: torch
+    txt: other.dim == 3
+  - f1_score: 67.70833333333333
+    overall_score: 35.5
+    precision: 65.0
+    recall: 70.65217391304348
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        dim: None
+        other: tensor
+        self: tensor
+      msg: 'linalg.cross: inputs dimension 1 must have length 3. Got 3 and 2'
+      package: torch
+    txt: (((self.shape[1] == 3) and (len(self) == 3)) and (other.shape[0] == 3)) and
+      (self.shape[0] == other.shape[0] == 3)
+  - f1_score: 68.97347174163784
+    overall_score: 100
+    precision: 100.0
+    recall: 52.640845070422536
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: None
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (3) must match the size of tensor b (4) at non-singleton
+        dimension 2
+      package: torch
+    txt: (self.shape[2] == other.shape[2]) and (self.shape[1] == other.shape[1])
+  - f1_score: 98.34254143646407
+    overall_score: 100
+    precision: 100.0
+    recall: 96.73913043478261
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        other: tensor
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-3, 2], but got 56)
+      package: torch
+    txt: (-4 >= -len(self.shape)) or (dim >= -len(self.shape) and dim < len(self.shape))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        other: tensor
+        self: tensor
+      msg: expected scalar type Float but found Int
+      package: torch
+    txt: dtype(other) == dtype(self)
+  - f1_score: 97.18670076726343
+    overall_score: 100
+    precision: 100.0
+    recall: 94.5273631840796

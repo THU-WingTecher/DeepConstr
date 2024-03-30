@@ -1,0 +1,69 @@
+args:
+  dtype:
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - name
+  - x
+  - y
+  required:
+  - false
+  - true
+  - true
+name: tf.raw_ops.Less
+package: tensorflow
+pass_rate: 98.66666666666667
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: '{{function_node __wrapped__Less_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [5,5,5,5,5,5,5] vs. [3,6,9,9,8,9,9] [Op:Less] name: cfAt'
+      package: tensorflow
+    txt: (all(x.shape[i] == y.shape[i] or x.shape[i] == 1 or y.shape[i] == 1 for i
+      in range(-1, -min(len(x.shape), len(y.shape))-1, -1))) and (all(x.shape[i] ==
+      y.shape[i] for i in range(x.rank)))
+  - f1_score: 92.87925696594425
+    overall_score: 100
+    precision: 100.0
+    recall: 86.70520231213872
+- - cot: 'The error is caused because the dimensions of the y tensor contain negative
+      values, which is not allowed. To prevent this error, all dimensions of y should
+      be non-negative. The constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(dim >= 0 for dim in y.shape)
+  - f1_score: 70.11764705882354
+    overall_score: 52.666666666666664
+    precision: 99.33333333333333
+    recall: 54.18181818181819
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: 'cannot compute Less as input #1(zero-based) was expected to be a float
+        tensor but is a int32 tensor [Op:Less] name: kovO'
+      package: tensorflow
+    txt: (dtype(x) == int32) and (dtype(y) == dtype(x))
+  - f1_score: 67.72009029345372
+    overall_score: 100
+    precision: 100.0
+    recall: 51.19453924914675

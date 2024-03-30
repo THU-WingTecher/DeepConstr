@@ -1,0 +1,69 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.bitwise_left_shift
+package: torch
+pass_rate: 100
+rules:
+- - cot: "The error is triggered because the dimensions of tensors `self` and `other`\
+      \ are not consistent. The size of tensor `self` at non-singleton dimension 5\
+      \ is 2, while the size of tensor `other` at non-singleton dimension 5 is 9.\
+      \ To prevent this error, we need to ensure that the dimensions and shapes of\
+      \ `self` and `other` are consistent. \n\nThe constraint that prevents the error\
+      \ can be formulated as:"
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (8) must match the size of tensor b (9) at non-singleton
+        dimension 3
+      package: torch
+    txt: self.dim(5) == other.dim(5) and self.shape == other.shape
+  - f1_score: 95.23809523809523
+    overall_score: 100
+    precision: 100.0
+    recall: 90.9090909090909
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: '"lshift_cpu" not implemented for ''Float'''
+      package: torch
+    txt: (dtype(self) != "float") and (dtype(other) != "float")
+  - f1_score: 77.51937984496125
+    overall_score: 100
+    precision: 100.0
+    recall: 63.291139240506325
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
+  - f1_score: 73.52941176470588
+    overall_score: 100
+    precision: 100.0
+    recall: 58.139534883720934

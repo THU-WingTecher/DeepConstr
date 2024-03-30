@@ -21,4 +21,59 @@ args:
   - false
 name: tf.raw_ops.LeakyReluGrad
 package: tensorflow
-pass_rate: 0
+pass_rate: 99.33333333333333
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: float
+        features: tensor
+        gradients: tensor
+        name: str
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: half,\
+        \ bfloat16, float, double\n\t; NodeDef: {{node LeakyReluGrad}}; Op<name=LeakyReluGrad;\
+        \ signature=gradients:T, features:T -> backprops:T; attr=alpha:float,default=0.2;\
+        \ attr=T:type,default=DT_FLOAT,allowed=[DT_HALF, DT_BFLOAT16, DT_FLOAT, DT_DOUBLE]>\
+        \ [Op:LeakyReluGrad] name: ePEA"
+      package: tensorflow
+    txt: dtype(gradients) in ["half", "bfloat16", "float", "double"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        alpha: float
+        features: tensor
+        gradients: tensor
+        name: str
+      msg: 'cannot compute LeakyReluGrad as input #1(zero-based) was expected to be
+        a half tensor but is a float tensor [Op:LeakyReluGrad] name: fGjg'
+      package: tensorflow
+    txt: (((dtype(gradients) == float16) and (dtype(features) == float)) and (dtype(features)
+      == tf.float32)) or (dtype(gradients) == dtype(features))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        alpha: float
+        features: tensor
+        gradients: tensor
+        name: str
+      msg: '{{function_node __wrapped__LeakyReluGrad_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Inputs to operation LeakyReluGrad of type LeakyReluGrad must have the same
+        size and shape.  Input 0: [] != input 1: [1,1] [Op:LeakyReluGrad] name: rjEx'
+      package: tensorflow
+    txt: (all(features[i]==gradients[i] for i in range(len(features.shape)))) and
+      (len(features.shape) == len(gradients.shape))
+  - f1_score: 99.33774834437087
+    overall_score: 55.66887417218543
+    precision: 100.0
+    recall: 98.68421052631578

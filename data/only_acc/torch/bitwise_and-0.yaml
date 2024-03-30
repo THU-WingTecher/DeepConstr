@@ -1,0 +1,50 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.bitwise_and
+package: torch
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (2) at non-singleton
+        dimension 4
+      package: torch
+    txt: self.shape[3] == other.shape[3]
+  - f1_score: 77.12082262210798
+    overall_score: 100
+    precision: 100.0
+    recall: 62.76150627615063
+- - cot: The error occurs because the bitwise_and function is not implemented for
+      floating-point tensors. To prevent this error, the input tensors 'self' and
+      'other' should have a data type that is compatible with bitwise_and. The allowed
+      data types for 'self' and 'other' are int8, int16, int32, int64, uint8, uint16,
+      uint32, uint64.
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"bitwise_and_cpu" not implemented for ''Float'''
+      package: torch
+    txt: dtype(self) in ["int8", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+      "uint64"] and dtype(other) in ["int8", "int16", "int32", "int64", "uint8", "uint16",
+      "uint32", "uint64"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

@@ -1,0 +1,57 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - int
+  - float
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - x1
+  - x2
+  - dim
+  - eps
+  required:
+  - true
+  - true
+  - false
+  - false
+name: torch.cosine_similarity
+package: torch
+pass_rate: 31.666666666666664
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        eps: float
+        x1: tensor
+        x2: tensor
+      msg: The size of tensor a (2) must match the size of tensor b (9) at non-singleton
+        dimension 3
+      package: torch
+    txt: (x1.size(2) == x2.size(2)) or (x1.shape[4] == x2.shape[1])
+  - f1_score: 74.25742574257426
+    overall_score: 100
+    precision: 100.0
+    recall: 59.055118110236215
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        eps: float
+        x1: tensor
+        x2: tensor
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 7)
+      package: torch
+    txt: ((dim >= -len(x1.shape) and dim < len(x1.shape)) and (dim >= -len(x1.shape)
+      + 1)) and (all(d >= 0 for d in x2.shape))
+  - f1_score: 69.01579586877278
+    overall_score: 48.333333333333336
+    precision: 94.66666666666667
+    recall: 54.30210325047802

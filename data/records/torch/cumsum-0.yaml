@@ -17,4 +17,19 @@ args:
   - false
 name: torch.cumsum
 package: torch
-pass_rate: 0
+pass_rate: 86.33333333333333
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 8)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 77.85817655571634
+    overall_score: 50.92908827785817
+    precision: 89.66666666666666
+    recall: 68.79795396419436
