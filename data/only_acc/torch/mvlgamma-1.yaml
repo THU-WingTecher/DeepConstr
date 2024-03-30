@@ -1,0 +1,64 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - p
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.mvlgamma
+package: torch
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        p: int
+        self: tensor
+      msg: p has to be greater than or equal to 1
+      package: torch
+    txt: p >= 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        p: int
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.shape == self.shape) and (out.rank==self.rank)
+  - f1_score: 92.59259259259261
+    overall_score: 100
+    precision: 100.0
+    recall: 86.20689655172414
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        p: int
+        self: tensor
+      msg: 'mvlgamma: result type Float can''t be cast to the desired output type
+        Float'
+      package: torch
+    txt: (dtype(out) == dtype(self)) and (dtype(self)==Float)
+  - f1_score: 69.08462867012089
+    overall_score: 100
+    precision: 100.0
+    recall: 52.770448548812666

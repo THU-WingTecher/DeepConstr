@@ -17,4 +17,49 @@ args:
   - true
 name: torch.mul
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: (dtype(self) == float32) and (dtype(self)==dtype(out))
+  - f1_score: 89.68609865470852
+    overall_score: 50.84304932735426
+    precision: 100.0
+    recall: 81.30081300813008
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: ((out.shape == self.shape) and (out.rank == self.rank)) and (self.rank==other.rank
+      and all(self.shape[i]==other.shape[i] for i in range(self.rank)))
+  - f1_score: 68.84681583476764
+    overall_score: 38.42340791738382
+    precision: 100.0
+    recall: 52.493438320209975
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (8) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.shape[1] == other.shape[1]
+  - f1_score: 75.61436672967864
+    overall_score: 100
+    precision: 100.0
+    recall: 60.790273556231

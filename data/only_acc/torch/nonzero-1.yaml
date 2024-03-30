@@ -1,0 +1,46 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - out
+  required:
+  - true
+  - true
+name: torch.nonzero
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'The error occurs because the data type of the ''out'' tensor is float, but
+      the function expects it to be of type Long. To prevent this error, we need to
+      ensure that the data type of the ''out'' tensor is Long. The constraint for
+      the data types can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: 'nonzero: Expected out tensor to have scalar type Long but got scalar typeFloat'
+      package: torch
+    txt: dtype(out) == Long
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 83.26359832635983
+    overall_score: 52.75
+    precision: 99.5
+    recall: 71.58273381294963

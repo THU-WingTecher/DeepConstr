@@ -17,4 +17,42 @@ args:
   - true
 name: torch.moveaxis
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: "The error occurs because the dimension provided is out of the valid range.\
+      \ The valid range for the dimension would be [-n, n-1], where n is the length\
+      \ of the shape of the tensor. In this case, the shape of the input tensor is\
+      \ [8, 8, 8, 8, 8, 8, 8], so the valid range for the dimension is [-7, 6]. To\
+      \ prevent this error in the future and generate constraints that do not trigger\
+      \ it, we need to ensure that the \"dim\" value is always within the valid range\
+      \ for the given tensor. \n\nThe constraint for the 'dim' parameter can be expressed\
+      \ as:"
+    length: 1
+    target:
+      choosen_dtype:
+        destination: int
+        self: tensor
+        source: int
+      msg: Dimension out of range (expected to be in range of [-3, 2], but got 9)
+      package: torch
+    txt: -7 <= source < 7
+  - f1_score: 74.94824016563147
+    overall_score: 49.47412008281574
+    precision: 90.5
+    recall: 63.957597173144876
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        destination: int
+        self: tensor
+        source: int
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got 1)
+      package: torch
+    txt: ((destination < 2) and (source >= -len(self.shape) and source < len(self.shape)))
+      and (destination >= -len(self.shape) + 1 and destination < len(self.shape) -
+      1)
+  - f1_score: 95.56135770234987
+    overall_score: 53.78067885117493
+    precision: 91.5
+    recall: 100.0

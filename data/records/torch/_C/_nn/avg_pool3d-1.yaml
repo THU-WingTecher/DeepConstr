@@ -37,4 +37,24 @@ args:
   - true
 name: torch._C._nn.avg_pool3d
 package: torch
-pass_rate: 0
+pass_rate: 0.5025125628140703
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: int
+        kernel_size: list[int]
+        out: tensor
+        padding: list[int]
+        self: tensor
+        stride: list[int]
+      msg: 'avg_pool3d: kernel_size must be a single int, or a tuple of three ints'
+      package: torch
+    txt: ((len(kernel_size) == 1) or (len(padding) == 0)) and (len(padding) == 3)
+  - f1_score: 98.98477157360406
+    overall_score: 49.99497487437186
+    precision: 97.98994974874373
+    recall: 100.0

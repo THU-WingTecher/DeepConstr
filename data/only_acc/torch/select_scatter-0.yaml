@@ -1,0 +1,88 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - int
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - src
+  - dim
+  - index
+  required:
+  - true
+  - true
+  - true
+  - true
+name: torch.select_scatter
+package: torch
+pass_rate: 37.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        index: int
+        self: tensor
+        src: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 4)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 67.77163904235728
+    overall_score: 49.0
+    precision: 92.0
+    recall: 53.64431486880466
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        index: int
+        self: tensor
+        src: tensor
+      msg: 'select(): index 8 out of range for tensor of size [1, 4, 4, 4, 4, 4, 4]
+        at dimension 5'
+      package: torch
+    txt: index >= 0
+  - f1_score: 60.46511627906977
+    overall_score: 45.25
+    precision: 84.5
+    recall: 47.07520891364902
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        index: int
+        self: tensor
+        src: tensor
+      msg: expected src to have a size equal to the slice of self. src size = [7,
+        4], slice size = [5, 5, 5, 5, 5, 5]
+      package: torch
+    txt: ((len(src) == len(self)) and (self.shape[dim] == src.shape[dim])) and (src.shape[0]
+      == self.shape[dim])
+  - f1_score: 77.23577235772358
+    overall_score: 48.5
+    precision: 95.0
+    recall: 65.06849315068493
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        index: int
+        self: tensor
+        src: tensor
+      msg: select() cannot be applied to a 0-dim tensor.
+      package: torch
+    txt: self.dim() > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

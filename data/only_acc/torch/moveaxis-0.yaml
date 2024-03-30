@@ -1,0 +1,52 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - List[int]
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - source
+  - destination
+  required:
+  - true
+  - true
+  - true
+name: torch.moveaxis
+package: torch
+pass_rate: 75.0
+rules:
+- - cot: "The error is triggered because the source and destination dimensions do\
+      \ not match. The source dimensions should contain the same number of dimensions\
+      \ as the destination. \n\nTherefore, the constraint to prevent the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        destination: list[int]
+        self: tensor
+        source: list[int]
+      msg: 'movedim: Invalid source or destination dims: source ([45, 29, 34, 11]
+        dims) should contain the same number of dims as destination ([] dims)'
+      package: torch
+    txt: len(source) == len(destination)
+  - f1_score: 96.38554216867469
+    overall_score: 100
+    precision: 100.0
+    recall: 93.02325581395348
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        destination: list[int]
+        self: tensor
+        source: list[int]
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 9)
+      package: torch
+    txt: all(d >= -len(self.shape) and d < len(self.shape) for d in destination)
+  - f1_score: 81.12676056338029
+    overall_score: 39.0
+    precision: 72.0
+    recall: 92.9032258064516

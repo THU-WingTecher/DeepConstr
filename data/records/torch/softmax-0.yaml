@@ -17,4 +17,38 @@ args:
   - false
 name: torch.softmax
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: The error is due to an unsupported data type for the input tensor. The input
+      tensor has a data type of 'Int' which is not supported by the 'softmax_lastdim_kernel_impl'
+      implementation. Therefore, the constraint to prevent the error is to ensure
+      that the input tensor has a data type that is supported by the 'softmax_lastdim_kernel_impl'
+      implementation.
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        self: tensor
+      msg: '"softmax_lastdim_kernel_impl" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype in [torch.float32, torch.float64]
+  - f1_score: 98.03921568627452
+    overall_score: 61.01960784313726
+    precision: 100.0
+    recall: 96.15384615384615
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 55)
+      package: torch
+    txt: (dim >= -len(self.shape) and dim < len(self.shape)) and (dim >= -7 and dim
+      < 6)
+  - f1_score: 77.5862068965517
+    overall_score: 50.79310344827585
+    precision: 90.0
+    recall: 68.18181818181817

@@ -1,0 +1,136 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - int
+  - Optional[Tensor]
+  - Optional[Tensor]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - n
+  - dim
+  - prepend
+  - append
+  required:
+  - true
+  - false
+  - false
+  - false
+  - false
+name: torch.diff
+package: torch
+pass_rate: 71.5
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        append: None
+        dim: int
+        n: int
+        prepend: None
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got -4)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 67.38738738738739
+    overall_score: 49.75
+    precision: 93.5
+    recall: 52.676056338028175
+- - cot: 'The error is caused because the `prepend` tensor provided has a different
+      dimension than the `self` tensor. The `prepend` tensor has a shape of [2, 2,
+      2], while the `self` tensor has a shape of [9, 9, 9, 9]. To prevent this error,
+      the `prepend` tensor should have the same dimension as the `self` tensor. Therefore,
+      the constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        append: None
+        dim: int
+        n: int
+        prepend: tensor
+        self: tensor
+      msg: diff expects prepend or append to be the same dimension as input
+      package: torch
+    txt: (prepend.rank() == self.rank())
+  - f1_score: 85.1063829787234
+    overall_score: 100
+    precision: 100.0
+    recall: 74.07407407407408
+- - cot: 'The error is triggered because the size of the tensor to prepend or append
+      (tensor.size(1) = 6) does not match the size of the input tensor (input.size(1)
+      = 9), except along the differencing dimension. Therefore, the constraint to
+      prevent this error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        append: None
+        dim: int
+        n: int
+        prepend: tensor
+        self: tensor
+      msg: diff expects the shape of tensor to prepend or append to match that of
+        input except along the differencing dimension; input.size(1) = 7, but got
+        tensor.size(1) = 2
+      package: torch
+    txt: prepend.shape[1] == self.shape[1]
+  - f1_score: 76.52859960552267
+    overall_score: 51.5
+    precision: 97.0
+    recall: 63.192182410423456
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        append: None
+        dim: int
+        n: int
+        prepend: tensor
+        self: tensor
+      msg: diff expects input to be at least one-dimensional
+      package: torch
+    txt: self.dim() >= 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        append: tensor
+        dim: int
+        n: int
+        prepend: None
+        self: tensor
+      msg: diff expects prepend or append to be the same dimension as input
+      package: torch
+    txt: len(append.dim()) == len(self.dim())
+  - f1_score: 85.65310492505354
+    overall_score: 100
+    precision: 100.0
+    recall: 74.90636704119851
+- - cot: 'The error is caused because the value of the argument `n` is not as expected.
+      The function `torch.diff` expects the value of `n` to be non-negative, but it
+      received a value of -2. Therefore, the constraint to prevent this error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        append: None
+        dim: int
+        n: int
+        prepend: None
+        self: tensor
+      msg: order must be non-negative but got -4
+      package: torch
+    txt: n >= 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

@@ -17,4 +17,35 @@ args:
   - true
 name: torch._C._special.special_laguerre_polynomial_l
 package: torch
-pass_rate: 0
+pass_rate: 94.3298969072165
+rules:
+- - cot: 'The error is triggered because the result type Float cannot be cast to the
+      desired output type Short. Based on the given runtime information, the constraint
+      to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        n: tensor
+        out: tensor
+        x: int
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(out) == dtype(n)
+  - f1_score: 86.60524450744153
+    overall_score: 55.30262225372076
+    precision: 91.0
+    recall: 82.61541433262506
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        n: tensor
+        out: tensor
+        x: int
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank==n.rank) and (all(n.shape[i] == out.shape[i] for i in range(n.rank)))
+  - f1_score: 78.2028148682786
+    overall_score: 51.1014074341393
+    precision: 98.5
+    recall: 64.84141232794734

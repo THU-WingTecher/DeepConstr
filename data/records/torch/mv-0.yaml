@@ -13,4 +13,22 @@ args:
   - true
 name: torch.mv
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'The error is caused by incompatible sizes of the input tensor and the vector.
+      The input tensor has shape [3, 7] and the vector has shape [1, 6, 6, 6]. The
+      expected shape for the vector is [7]. To prevent the error, the number of elements
+      in the last dimension of the vector should match the size of the second dimension
+      of the input tensor. Therefore, the condition to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        vec: tensor
+      msg: vector + matrix @ vector expected, got 1, 6, 7
+      package: torch
+    txt: vec.shape[-1] == self.shape[1]
+  - f1_score: 56.198347107438025
+    overall_score: 28.5
+    precision: 51.0
+    recall: 62.57668711656442

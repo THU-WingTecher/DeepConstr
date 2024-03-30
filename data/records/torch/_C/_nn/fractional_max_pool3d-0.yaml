@@ -21,4 +21,55 @@ args:
   - true
 name: torch._C._nn.fractional_max_pool3d
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        kernel_size: list[int]
+        output_size: list[int]
+        random_samples: tensor
+        self: tensor
+      msg: 'fractional_max_pool3d: kernel_size must either be a single Int or tuple
+        of three Ints'
+      package: torch
+    txt: ((len(kernel_size) == 1) or (len(output_size) == 3)) and (len(kernel_size)
+      == 3)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        kernel_size: list[int]
+        output_size: list[int]
+        random_samples: tensor
+        self: tensor
+      msg: 'fractional_max_pool3d_out(): Expected 4D or 5D tensor, but got: []'
+      package: torch
+    txt: self.dim() == 5
+  - f1_score: 81.05906313645622
+    overall_score: 100
+    precision: 100.0
+    recall: 68.15068493150685
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        kernel_size: list[int]
+        output_size: list[int]
+        random_samples: tensor
+        self: tensor
+      msg: 'fractional_max_pool3d_out(): pool time 7 too large relative to input time
+        8'
+      package: torch
+    txt: (((kernel_size[0] < self.shape[1] and output_size[0] < self.shape[1]) and
+      (kernel_size[0] <= self.shape[4])) and (output_size[i] != 0)) and (output_size[0]
+      <= self.shape[2] and kernel_size[0] <= self.shape[2])
+  - f1_score: 80.18239722061378
+    overall_score: 47.524193548387096
+    precision: 93.54838709677419
+    recall: 70.15832805573147

@@ -25,4 +25,42 @@ args:
   - false
 name: torch.diagonal_scatter
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        dim1: int
+        dim2: int
+        offset: int
+        self: tensor
+        src: tensor
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 49)
+      package: torch
+    txt: ((dim1 >= -len(self.shape) and dim1 < len(self.shape)) and (dim2 >= -len(self.shape)
+      and dim2 < len(self.shape))) and (dim1 >= -7 and dim1 < 7 and dim2 >= -7 and
+      dim2 < 7)
+  - f1_score: 84.92569002123143
+    overall_score: 100
+    precision: 100.0
+    recall: 73.80073800738008
+- - cot: 'Error is triggered because the diagonal dimensions of -1 and 0 are identical.
+      The runtime information shows that the dimensions of `self` are [3] and the
+      dimensions of `src` are [1, 9, 9, 9, 9, 9, 9]. To prevent the error, the diagonal
+      dimensions need to be different. Therefore, the constraint would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim1: int
+        dim2: int
+        offset: int
+        self: tensor
+        src: tensor
+      msg: diagonal dimensions cannot be identical -1, 0
+      package: torch
+    txt: dim1 != dim2
+  - f1_score: 86.68555240793201
+    overall_score: 41.25
+    precision: 76.5
+    recall: 100.0

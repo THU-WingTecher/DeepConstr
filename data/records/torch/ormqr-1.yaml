@@ -29,4 +29,76 @@ args:
   - true
 name: torch.ormqr
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input2: tensor
+        input3: tensor
+        left: bool
+        out: tensor
+        self: tensor
+        transpose: bool
+      msg: 'torch.ormqr: other.shape[-1] must be equal to input.shape[-2]'
+      package: torch
+    txt: input2.shape[-2] == input3.shape[-2]
+  - f1_score: 72.20216606498195
+    overall_score: 100
+    precision: 100.0
+    recall: 56.49717514124294
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        input2: tensor
+        input3: tensor
+        left: bool
+        out: tensor
+        self: tensor
+        transpose: bool
+      msg: 'torch.ormqr: other must have at least 2 dimensions.'
+      package: torch
+    txt: ((input2.dim >= 2) and (self.dim >= 2)) and (len(input3.shape) >= 2)
+  - f1_score: 99.50248756218905
+    overall_score: 100
+    precision: 100.0
+    recall: 99.00990099009901
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input2: tensor
+        input3: tensor
+        left: bool
+        out: tensor
+        self: tensor
+        transpose: bool
+      msg: 'torch.ormqr: other.shape[-1] must be greater than or equal to tau.shape[-1]'
+      package: torch
+    txt: input2.shape[-2] >= input3.shape[-1]
+  - f1_score: 63.665594855305464
+    overall_score: 27.75
+    precision: 49.5
+    recall: 89.1891891891892
+- - cot: 'The error is caused because the dimension of the last axis of the ''other''
+      tensor (input2) is not greater than or equal to the dimension of the last axis
+      of the ''tau'' tensor (self). Therefore, Left : input2.shape[-1], Op : >=, and
+      Right : self.shape[-1].'
+    length: 1
+    target:
+      choosen_dtype:
+        input2: tensor
+        input3: tensor
+        left: bool
+        out: tensor
+        self: tensor
+        transpose: bool
+      msg: 'torch.ormqr: other.shape[-1] must be greater than or equal to tau.shape[-1]'
+      package: torch
+    txt: input2.shape[-1] >= self.shape[-1]
+  - f1_score: 54.2238558896753
+    overall_score: 29.13065326633166
+    precision: 52.26130653266332
+    recall: 56.33955415910506

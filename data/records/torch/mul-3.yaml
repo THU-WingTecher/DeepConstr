@@ -17,4 +17,33 @@ args:
   - true
 name: torch.mul
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: int
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self) == dtype(out)
+  - f1_score: 85.65310492505354
+    overall_score: 54.82655246252677
+    precision: 100.0
+    recall: 74.90636704119851
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: int
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 85.65121412803533
+    overall_score: 54.82560706401767
+    precision: 97.0
+    recall: 76.6798418972332

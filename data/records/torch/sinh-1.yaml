@@ -13,4 +13,46 @@ args:
   - true
 name: torch.sinh
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: The error is caused by negative dimensions in the output tensor. To prevent
+      this error, the dimensions of the output tensor should be non-negative.
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(dim >= 0 for dim in out.shape)
+  - f1_score: 94.56264775413712
+    overall_score: 100
+    precision: 100.0
+    recall: 89.68609865470853
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: (((dtype(out) == dtype(self)) or (dtype(self)==int32)) or (dtype(out) ==
+      int)) and (dtype(out)=='Float')
+  - f1_score: 85.0574712643678
+    overall_score: 54.5287356321839
+    precision: 92.5
+    recall: 78.72340425531915
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
+  - f1_score: 71.81328545780968
+    overall_score: 47.90664272890484
+    precision: 100.0
+    recall: 56.022408963585434

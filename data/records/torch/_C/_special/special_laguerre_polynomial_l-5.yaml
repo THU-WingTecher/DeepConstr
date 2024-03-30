@@ -17,4 +17,37 @@ args:
   - true
 name: torch._C._special.special_laguerre_polynomial_l
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'The error is triggered because the result type Float cannot be cast to the
+      desired output type Int. Let''s see what the args were. The ''out'' argument
+      is a tensor of type Int, but the function is trying to assign a Float value
+      to it. Therefore, the type of ''out'' should be able to hold float values. Left
+      : dtype(out), Op : ==, Right : Float'
+    length: 1
+    target:
+      choosen_dtype:
+        n: int
+        out: tensor
+        x: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(out) == Float
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        n: int
+        out: tensor
+        x: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==x.rank and all(out.shape[i]==x.shape[i] for i in range(x.rank))
+  - f1_score: 85.28784648187634
+    overall_score: 54.64392324093817
+    precision: 100.0
+    recall: 74.34944237918216

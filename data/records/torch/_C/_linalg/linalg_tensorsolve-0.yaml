@@ -17,7 +17,7 @@ args:
   - false
 name: torch._C._linalg.linalg_tensorsolve
 package: torch
-pass_rate: 2.5
+pass_rate: 11.5
 rules:
 - - cot: 'Based on the given runtime information, the error occurs because the function
       is trying to create a `std::vector` that is larger than its maximum size. Let''s

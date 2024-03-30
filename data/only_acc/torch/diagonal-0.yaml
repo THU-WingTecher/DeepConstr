@@ -1,0 +1,59 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - int
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - offset
+  - dim1
+  - dim2
+  required:
+  - true
+  - false
+  - false
+  - false
+name: torch.diagonal
+package: torch
+pass_rate: 48.5
+rules:
+- - cot: 'The constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim1: int
+        dim2: int
+        offset: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 97)
+      package: torch
+    txt: dim1 >= -len(self.shape) and dim1 < len(self.shape) and dim2 >= -len(self.shape)
+      and dim2 < len(self.shape)
+  - f1_score: 74.81662591687042
+    overall_score: 41.25
+    precision: 76.5
+    recall: 73.20574162679426
+- - cot: Based on the given runtime information, the error occurs because the diagonal
+      dimensions `dim1` and `dim2` are identical, which is -1 and 0. To prevent this
+      error, the constraint should be that the diagonal dimensions `dim1` and `dim2`
+      must be different.
+    length: 1
+    target:
+      choosen_dtype:
+        dim1: int
+        dim2: int
+        offset: int
+        self: tensor
+      msg: diagonal dimensions cannot be identical -3, 0
+      package: torch
+    txt: dim1 != dim2
+  - f1_score: 81.1881188118812
+    overall_score: 44.0
+    precision: 82.0
+    recall: 80.3921568627451

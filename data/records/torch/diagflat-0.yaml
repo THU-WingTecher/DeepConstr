@@ -13,4 +13,5 @@ args:
   - false
 name: torch.diagflat
 package: torch
-pass_rate: 0
+pass_rate: 98.68421052631578
+rules: []

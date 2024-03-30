@@ -1,0 +1,35 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.mul
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'Error is triggered because the size of tensor a (3) must match the size
+      of tensor b (5) at non-singleton dimension 6. Let''s see what the args were.
+      The first tensor has shape [7, 8, 3, 8, 3, 3] and the second tensor has shape
+      [5, 5, 5, 5, 5, 5]. The mismatch occurs at dimension 6. Therefore, we can formulate
+      the constraint as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (5) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.shape[6] == other.shape[6]
+  - f1_score: 76.19047619047619
+    overall_score: 100
+    precision: 100.0
+    recall: 61.53846153846154

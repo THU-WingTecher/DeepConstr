@@ -1,0 +1,50 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - source
+  - destination
+  required:
+  - true
+  - true
+  - true
+name: torch.moveaxis
+package: torch
+pass_rate: 92.5
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        destination: int
+        self: tensor
+        source: int
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got -4)
+      package: torch
+    txt: (destination >= -len(self.shape)) and (source >= -len(self.shape))
+  - f1_score: 72.60579064587974
+    overall_score: 42.25
+    precision: 81.5
+    recall: 65.46184738955823
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        destination: int
+        self: tensor
+        source: int
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got 6)
+      package: torch
+    txt: ((destination >= -len(self.shape) and destination < len(self.shape)) and
+      (source < len(self.shape))) and (source < 0)
+  - f1_score: 73.828125
+    overall_score: 48.25
+    precision: 94.5
+    recall: 60.57692307692307

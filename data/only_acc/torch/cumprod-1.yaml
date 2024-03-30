@@ -1,0 +1,42 @@
+args:
+  dtype:
+  - Tensor
+  - str
+  - None
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - dtype
+  required:
+  - true
+  - true
+  - false
+name: torch.cumprod
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: 'Based on the given runtime information, the error arises because the `dim`
+      argument is not a valid dimension value. The `dim` argument should be an integer
+      value that represents the dimension along which the cumulative product is computed.
+
+
+      To prevent the error, the `dim` argument should be a valid dimension value.
+      Let''s say `dim_val` is the valid dimension value. Then, the constraint to prevent
+      the error can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: str
+        dtype: None
+        self: tensor
+      msg: Name 'cROF' not found in Tensor[None, None].
+      package: torch
+    txt: dim == dim_val
+  - f1_score: 9.976247030878858
+    overall_score: 8.25
+    precision: 10.5
+    recall: 9.502262443438914

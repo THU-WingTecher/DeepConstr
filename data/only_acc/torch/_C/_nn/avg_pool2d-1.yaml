@@ -1,0 +1,204 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - List[int]
+  - List[int]
+  - bool
+  - bool
+  - Optional[int]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - kernel_size
+  - stride
+  - padding
+  - ceil_mode
+  - count_include_pad
+  - divisor_override
+  - out
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - true
+name: torch._C._nn.avg_pool2d
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: int
+        kernel_size: list[int]
+        out: tensor
+        padding: list[int]
+        self: tensor
+        stride: list[int]
+      msg: 'avg_pool2d: kernel_size must either be a single int, or a tuple of two
+        ints'
+      package: torch
+    txt: ((len(kernel_size) == 1 or len(kernel_size) == 2) and (len(padding) == 2))
+      and (len(kernel_size) == 2)
+  - f1_score: 98.7146529562982
+    overall_score: 49.73096446700508
+    precision: 97.46192893401016
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      padding value is greater than half of the effective kernel size. The formula
+      to prevent the error can be written as:'
+    length: 1
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: int
+        kernel_size: list[int]
+        out: tensor
+        padding: list[int]
+        self: tensor
+        stride: list[int]
+      msg: pad should be at most half of effective kernel size, but got pad=8, kernel_size=1
+        and dilation=1
+      package: torch
+    txt: (padding[0] <= kernel_size[0]/2) and (padding[1] <= kernel_size[1]/2)
+  - f1_score: 78.34645669291339
+    overall_score: 100
+    precision: 100.0
+    recall: 64.40129449838187
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: None
+        kernel_size: list[int]
+        out: tensor
+        padding: list[int]
+        self: tensor
+        stride: list[int]
+      msg: stride should not be zero
+      package: torch
+    txt: all(i!=0 for i in stride)
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: None
+        kernel_size: list[int]
+        out: tensor
+        padding: list[int]
+        self: tensor
+        stride: list[int]
+      msg: 'avg_pool2d: stride must either be omitted, a single int, or a tuple of
+        two ints'
+      package: torch
+    txt: len(stride)==2
+  - f1_score: 79.91803278688523
+    overall_score: 100
+    precision: 100.0
+    recall: 66.55290102389078
+- - cot: 'The error is due to the invalid ''pad'' value. Let''s see what the args
+      were. It appears that ''pad'' is the padding and it''s currently -1, which is
+      outside the valid range of non-negative numbers. Therefore, ''pad'' should be
+      corrected. It says it should be non-negative, so Operation : >=; and Right :
+      0.'
+    length: 1
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: int
+        kernel_size: list[int]
+        out: tensor
+        padding: list[int]
+        self: tensor
+        stride: list[int]
+      msg: 'pad must be non-negative, but got pad: -1'
+      package: torch
+    txt: all(i>=0 for i in padding)
+  - f1_score: 94.76439790575915
+    overall_score: 100
+    precision: 100.0
+    recall: 90.04975124378109
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: int
+        kernel_size: list[int]
+        out: tensor
+        padding: list[int]
+        self: tensor
+        stride: list[int]
+      msg: 'stride should be greater than zero, but got dH: 8 dW: -1'
+      package: torch
+    txt: stride[0] > 0 and stride[1] > 0
+  - f1_score: 86.03988603988601
+    overall_score: 100
+    precision: 100.0
+    recall: 75.49999999999999
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: int
+        kernel_size: list[int]
+        out: tensor
+        padding: list[int]
+        self: tensor
+        stride: list[int]
+      msg: Expected 3D or 4D (batch mode) tensor with optional 0 dim batch size for
+        input, but got:[8, 9, 9, 9, 9, 9, 9]
+      package: torch
+    txt: self.dim(0) == 0
+  - f1_score: 86.26198083067094
+    overall_score: 100
+    precision: 100.0
+    recall: 75.84269662921349
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: int
+        kernel_size: list[int]
+        out: tensor
+        padding: list[int]
+        self: tensor
+        stride: list[int]
+      msg: Dimension specified as -3 but tensor has no dimensions
+      package: torch
+    txt: (len(self) == 7) or (all(i > 0 for i in kernel_size))
+  - f1_score: 25.454545454545453
+    overall_score: 9.833333333333332
+    precision: 16.666666666666664
+    recall: 53.84615384615385

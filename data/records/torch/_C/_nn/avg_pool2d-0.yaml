@@ -33,4 +33,24 @@ args:
   - false
 name: torch._C._nn.avg_pool2d
 package: torch
-pass_rate: 0
+pass_rate: 0.5025125628140703
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: int
+        kernel_size: list[int]
+        padding: list[int]
+        self: tensor
+        stride: list[int]
+      msg: 'avg_pool2d: kernel_size must either be a single int, or a tuple of two
+        ints'
+      package: torch
+    txt: (len(kernel_size) == 2) and (len(padding) == 2)
+  - f1_score: 98.98989898989899
+    overall_score: 50.5
+    precision: 98.0
+    recall: 100.0

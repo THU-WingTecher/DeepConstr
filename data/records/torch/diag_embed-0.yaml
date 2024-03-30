@@ -21,4 +21,35 @@ args:
   - false
 name: torch.diag_embed
 package: torch
-pass_rate: 0
+pass_rate: 79.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim1: int
+        dim2: int
+        offset: int
+        self: tensor
+      msg: diagonal dimensions cannot be identical -2, 6
+      package: torch
+    txt: dim1 != dim2
+  - f1_score: 93.04812834224599
+    overall_score: 58.524064171122994
+    precision: 87.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim1: int
+        dim2: int
+        offset: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-4, 3], but got 9)
+      package: torch
+    txt: (dim1 >= -len(self.shape)) or (dim1 >= -7)
+  - f1_score: 94.73684210526316
+    overall_score: 53.36842105263158
+    precision: 90.0
+    recall: 100.0

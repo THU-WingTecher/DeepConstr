@@ -1,0 +1,87 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - int
+  - int
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - src
+  - offset
+  - dim1
+  - dim2
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+name: torch.diagonal_scatter
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        dim1: int
+        dim2: int
+        offset: int
+        self: tensor
+        src: tensor
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 49)
+      package: torch
+    txt: ((dim1 >= -len(self.shape) and dim1 < len(self.shape)) and (dim2 >= -len(self.shape)
+      and dim2 < len(self.shape))) and (dim1 >= -7 and dim1 < 7 and dim2 >= -7 and
+      dim2 < 7)
+  - f1_score: 84.92569002123143
+    overall_score: 100
+    precision: 100.0
+    recall: 73.80073800738008
+- - cot: 'Error is triggered because the diagonal dimensions of -1 and 0 are identical.
+      The runtime information shows that the dimensions of `self` are [3] and the
+      dimensions of `src` are [1, 9, 9, 9, 9, 9, 9]. To prevent the error, the diagonal
+      dimensions need to be different. Therefore, the constraint would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim1: int
+        dim2: int
+        offset: int
+        self: tensor
+        src: tensor
+      msg: diagonal dimensions cannot be identical -1, 0
+      package: torch
+    txt: dim1 != dim2
+  - f1_score: 86.68555240793201
+    overall_score: 41.25
+    precision: 76.5
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      size of the source tensor `src` is expected to be equal to the size of the slice
+      of the self tensor `self`. The size of the source tensor is `[7, 9, 9, 9, 9,
+      9, 9]` and the size of the slice of the self tensor is `[9, 9, 0]`. Therefore,
+      the constraint that prevents the error can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim1: int
+        dim2: int
+        offset: int
+        self: tensor
+        src: tensor
+      msg: expected src to have a size equal to the slice of self. src size = [8,
+        8, 8, 8, 8, 8, 8], slice size = [2, 2, 0]
+      package: torch
+    txt: self.size(dim1) == src.size(dim2)
+  - f1_score: 39.73941368078176
+    overall_score: 18.25
+    precision: 30.5
+    recall: 57.009345794392516

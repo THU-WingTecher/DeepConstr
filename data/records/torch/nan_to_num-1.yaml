@@ -25,4 +25,37 @@ args:
   - true
 name: torch.nan_to_num
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        nan: None
+        neginf: None
+        out: tensor
+        posinf: None
+        self: tensor
+      msg: 'nan_to_num: dtype of out: Int should be same as input: Float'
+      package: torch
+    txt: dtype(out) == dtype(self)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        nan: float
+        neginf: None
+        out: tensor
+        posinf: float
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.shape == self.shape) and (out.rank==self.rank)
+  - f1_score: 74.90636704119851
+    overall_score: 49.453183520599254
+    precision: 100.0
+    recall: 59.88023952095809

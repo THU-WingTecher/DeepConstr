@@ -1,0 +1,50 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - vec
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.mv
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+        vec: tensor
+      msg: vector + matrix @ vector expected, got 1, 4, 6
+      package: torch
+    txt: ((self.shape[-1] == vec.shape[-2]) or (self.shape[-1] == vec.shape[-1]))
+      or (self[-2] == vec[0])
+  - f1_score: 61.99460916442048
+    overall_score: 29.749999999999996
+    precision: 57.49999999999999
+    recall: 67.25146198830409
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+        vec: tensor
+      msg: Dimension specified as 0 but tensor has no dimensions
+      package: torch
+    txt: ((self.ndim == 0) or (vec.dim() > 0)) and (len(self) > 0)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

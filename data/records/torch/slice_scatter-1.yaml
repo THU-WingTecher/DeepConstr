@@ -33,4 +33,104 @@ args:
   - true
 name: torch.slice_scatter
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        end: None
+        out: tensor
+        self: tensor
+        src: tensor
+        start: None
+        step: int
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 8)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 66.78507992895204
+    overall_score: 50.0
+    precision: 94.0
+    recall: 51.790633608815426
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        end: None
+        out: tensor
+        self: tensor
+        src: tensor
+        start: int
+        step: int
+      msg: expected src to have a size equal to the slice of self. src size = [2,
+        9, 9], slice size = [9, 0, 7, 7, 7, 7, 7]
+      package: torch
+    txt: ((src.shape[-1] == self.shape[-1]) or (len(src) == self.size()[dim])) and
+      (src.dim == self.dim)
+  - f1_score: 67.95366795366795
+    overall_score: 45.0
+    precision: 88.0
+    recall: 55.345911949685544
+- - cot: "Based on the given runtime information, the error occurs because the function\
+      \ is trying to apply the `slice()` operation to a 0-dimensional tensor. \n\n\
+      To prevent this error, we need to ensure that the `self` tensor passed to `torch.slice_scatter`\
+      \ is not a 0-dimensional tensor. \n\nTherefore, the constraint to prevent the\
+      \ error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        end: None
+        out: tensor
+        self: tensor
+        src: tensor
+        start: None
+        step: int
+      msg: slice() cannot be applied to a 0-dim tensor.
+      package: torch
+    txt: self.dim() > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the constraint that would prevent
+      the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        end: None
+        out: tensor
+        self: tensor
+        src: tensor
+        start: None
+        step: int
+      msg: expected src to have a size equal to the slice of self. src size = [],
+        slice size = [8, 9, 1, 9, 9, 9, 9]
+      package: torch
+    txt: self.shape[dim] == src.shape[dim]
+  - f1_score: 61.257606490872206
+    overall_score: 40.75
+    precision: 75.5
+    recall: 51.5358361774744
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        end: None
+        out: tensor
+        self: tensor
+        src: tensor
+        start: int
+        step: int
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got 9)
+      package: torch
+    txt: ((-7 <= dim < 6) and (dim >= -len(out.shape) and dim < len(out.shape))) and
+      (dim < len(self.shape))
+  - f1_score: 72.07207207207207
+    overall_score: 100
+    precision: 100.0
+    recall: 56.33802816901409

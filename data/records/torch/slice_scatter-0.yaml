@@ -29,4 +29,22 @@ args:
   - false
 name: torch.slice_scatter
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        end: int
+        self: tensor
+        src: tensor
+        start: None
+        step: int
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 6)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 66.54411764705883
+    overall_score: 48.25
+    precision: 90.5
+    recall: 52.616279069767444

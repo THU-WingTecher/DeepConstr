@@ -1,0 +1,57 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - int
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - offset
+  - dim1
+  - dim2
+  required:
+  - true
+  - false
+  - false
+  - false
+name: torch.diag_embed
+package: torch
+pass_rate: 76.0
+rules:
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        dim1: int
+        dim2: int
+        offset: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-5, 4], but got 5)
+      package: torch
+    txt: (((dim1 >= -2) and (dim2 >= -len(self.shape))) and (dim1 < 0)) and (dim1
+      >= -len(self.shape) and dim1 < len(self.shape) and dim2 >= -len(self.shape)
+      and dim2 < len(self.shape))
+  - f1_score: 78.8
+    overall_score: 50.0
+    precision: 98.5
+    recall: 65.66666666666666
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim1: int
+        dim2: int
+        offset: int
+        self: tensor
+      msg: diagonal dimensions cannot be identical -2, 6
+      package: torch
+    txt: dim1 != dim2
+  - f1_score: 92.76139410187668
+    overall_score: 46.25
+    precision: 86.5
+    recall: 100.0

@@ -1,0 +1,79 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[List[int]]
+  - bool
+  - None
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - keepdim
+  - dtype
+  - out
+  required:
+  - true
+  - false
+  - false
+  - false
+  - true
+name: torch.nanmean
+package: torch
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        out: tensor
+        self: tensor
+      msg: 'nanmean(): expected input to have floating point or complex dtype but
+        got Int'
+      package: torch
+    txt: out.dtype == float
+  - f1_score: 64.94845360824743
+    overall_score: 50.25
+    precision: 94.5
+    recall: 49.47643979057592
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        out: tensor
+        self: tensor
+      msg: 'nanmean(): expected input to have floating point or complex dtype but
+        got Int'
+      package: torch
+    txt: out.dtype == dtype(self)
+  - f1_score: 67.56756756756758
+    overall_score: 100
+    precision: 100.0
+    recall: 51.02040816326531
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 67.34006734006734
+    overall_score: 100
+    precision: 100.0
+    recall: 50.76142131979695

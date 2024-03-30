@@ -1,0 +1,58 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - int
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - offset
+  - dim1
+  - dim2
+  required:
+  - true
+  - false
+  - false
+  - false
+name: torch.diagonal_copy
+package: torch
+pass_rate: 82.0
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim1: int
+        dim2: int
+        offset: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 3)
+      package: torch
+    txt: (dim1 >= -len(self.shape) and dim1 < len(self.shape) and dim1 >= -2 and dim1
+      <= 0) and (dim2 >= -len(self.shape) and dim2 < len(self.shape))
+  - f1_score: 76.8267223382046
+    overall_score: 47.5
+    precision: 92.0
+    recall: 65.94982078853047
+- - cot: 'The error is triggered because the diagonal dimensions are identical (-1,
+      2). To prevent this error, we need to ensure that the diagonal dimensions are
+      not identical. Let''s formulate the constraint based on the given runtime information:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim1: int
+        dim2: int
+        offset: int
+        self: tensor
+      msg: diagonal dimensions cannot be identical -1, 2
+      package: torch
+    txt: dim1 != -1 or dim2 != 2
+  - f1_score: 88.78281622911695
+    overall_score: 49.5
+    precision: 93.0
+    recall: 84.93150684931507

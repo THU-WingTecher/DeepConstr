@@ -17,4 +17,50 @@ args:
   - true
 name: torch.mvlgamma
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: The error is triggered because the result type Int cannot be cast to the
+      desired output type Float. To prevent this error, the result type should be
+      consistent with the desired output type.
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        p: int
+        self: tensor
+      msg: 'mvlgamma: result type Float can''t be cast to the desired output type
+        Float'
+      package: torch
+    txt: dtype(out) == Float
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        p: int
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 77.07129094412332
+    overall_score: 50.53564547206166
+    precision: 100.0
+    recall: 62.695924764890286
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        p: int
+        self: tensor
+      msg: p has to be greater than or equal to 1
+      package: torch
+    txt: p >= 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
