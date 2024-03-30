@@ -17,4 +17,162 @@ args:
   - true
 name: torch.lu_solve
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        LU_data: tensor
+        LU_pivots: tensor
+        self: tensor
+      msg: 'linalg.lu_solve: pivots should be a Tensor of scalar type torch.int32'
+      package: torch
+    txt: LU_pivots.dtype == torch.int32
+  - f1_score: 96.38554216867469
+    overall_score: 100
+    precision: 100.0
+    recall: 93.02325581395348
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        LU_data: tensor
+        LU_pivots: tensor
+        self: tensor
+      msg: 'linalg.lu_solve: Incompatible shapes of A and B for the equation AX =
+        B (9x9 and 8x8)'
+      package: torch
+    txt: self.shape[-2] == LU_data.shape[-1]
+  - f1_score: 70.05253940455341
+    overall_score: 100
+    precision: 100.0
+    recall: 53.908355795148246
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        LU_data: tensor
+        LU_pivots: tensor
+        self: tensor
+      msg: 'linalg.lu_solve: The input tensor B must have at least 2 dimensions.'
+      package: torch
+    txt: (self.dim() >= 2) and (LU_data.dim() >= 2)
+  - f1_score: 98.03921568627452
+    overall_score: 100
+    precision: 100.0
+    recall: 96.15384615384615
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        LU_data: tensor
+        LU_pivots: tensor
+        self: tensor
+      msg: 'linalg.lu_solve: Incompatible shapes of A and B for the equation AX =
+        B (1x1 and 9x9)'
+      package: torch
+    txt: (LU_data.shape[-1] == self.shape[-1]) and (LU_data.shape[-2] == self.shape[-1])
+  - f1_score: 58.48563968668408
+    overall_score: 29.500000000000004
+    precision: 56.00000000000001
+    recall: 61.20218579234973
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        LU_data: tensor
+        LU_pivots: tensor
+        self: tensor
+      msg: 'linalg.lu_solve: Incompatible shapes of A and B for the equation AX =
+        B (9x9 and 5x5)'
+      package: torch
+    txt: (len(LU_data) == len(self)) and (LU_data.shape[-1] == self.shape[-2])
+  - f1_score: 77.20739219712524
+    overall_score: 48.5
+    precision: 94.0
+    recall: 65.50522648083623
+- - cot: 'Error is triggered because the number of pivots per batch in LU_pivots tensor
+      is not the same as the dimension of the LU_data tensor. The expected number
+      of pivots per batch should be the same as the dimension of the LU_data tensor,
+      which is 5 in this case. We can formulate the constraint as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        LU_data: tensor
+        LU_pivots: tensor
+        self: tensor
+      msg: 'linalg.lu_solve: Number of pivots per batch should be same as the dimension
+        of the matrix'
+      package: torch
+    txt: LU_pivots.shape[1] == LU_data.shape[0]
+  - f1_score: 72.72727272727272
+    overall_score: 100
+    precision: 100.0
+    recall: 57.14285714285714
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        LU_data: tensor
+        LU_pivots: tensor
+        self: tensor
+      msg: Dimension specified as -1 but tensor has no dimensions
+      package: torch
+    txt: (LU_data.dim() > 0) and (len(LU_pivots.shape) > 0)
+  - f1_score: 93.63636363636364
+    overall_score: 100
+    precision: 100.0
+    recall: 88.03418803418805
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        LU_data: tensor
+        LU_pivots: tensor
+        self: tensor
+      msg: 'linalg.lu_solve: Number of pivots per batch should be same as the dimension
+        of the matrix'
+      package: torch
+    txt: (LU_data.shape[0] == LU_pivots.shape[0]) and (LU_pivots.shape[0] == self.shape[0])
+  - f1_score: 70.61855670103093
+    overall_score: 35.75
+    precision: 68.5
+    recall: 72.87234042553192
+- - cot: 'The error is triggered because the pivots provided to lu_solve must all
+      be smaller or equal to the second dimension of the LU tensor. Let''s see what
+      the args were. The shape of LU_data is [1, 1], which means it has only one element
+      in the second dimension. The shape of LU_pivots is [1], which means it has only
+      one element. Therefore, to prevent this error in the future, we need to ensure
+      that the value of the pivot is smaller or equal to the second dimension of the
+      LU tensor. We can formulate this constraint as:'
+    length: 1
+    target:
+      choosen_dtype:
+        LU_data: tensor
+        LU_pivots: tensor
+        self: tensor
+      msg: Pivots given to lu_solve must all be smaller or equal to LU.size(-2). Did
+        you properly pass the result of lu_factor?
+      package: torch
+    txt: all(p <= LU_data.size(-2) for p in LU_pivots)
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        LU_data: tensor
+        LU_pivots: tensor
+        self: tensor
+      msg: 'linalg.lu_solve: Number of pivots per batch should be same as the dimension
+        of the matrix'
+      package: torch
+    txt: ((LU_pivots.shape[0] == self.shape[1]) and (LU_pivots.shape[0] == LU_data.shape[1]))
+      and (LU_data.shape[-1] == LU_pivots.shape[0])
+  - f1_score: 77.95275590551181
+    overall_score: 100
+    precision: 100.0
+    recall: 63.87096774193548

@@ -17,4 +17,37 @@ args:
   - true
 name: torch._C._special.special_xlog1py
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: The error is triggered because result type Float cannot be cast to the Int.
+      The output tensor type is Int, but the result of the function is Float. Therefore,
+      the type of the output tensor should be Float. Let's see what the args were.
+      The dtype of 'out' is 'Int', but it should be 'Float'. Therefore, dtype(out)
+      should be 'Float'.
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: int
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(out)==torch.float32
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: int
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: other.rank==out.rank and all(other.shape[i]==out.shape[i] for i in range(other.rank))
+  - f1_score: 87.33624454148472
+    overall_score: 55.66812227074236
+    precision: 100.0
+    recall: 77.51937984496124

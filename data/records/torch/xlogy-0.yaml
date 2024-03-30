@@ -13,4 +13,20 @@ args:
   - true
 name: torch.xlogy
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (5) must match the size of tensor b (7) at non-singleton
+        dimension 5
+      package: torch
+    txt: self.dim == other.dim and self.shape == other.shape
+  - f1_score: 96.42857142857143
+    overall_score: 60.214285714285715
+    precision: 94.5
+    recall: 98.4375

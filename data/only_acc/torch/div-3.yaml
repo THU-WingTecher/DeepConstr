@@ -1,0 +1,63 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  - Optional[str]
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - rounding_mode
+  required:
+  - true
+  - true
+  - false
+name: torch.div
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'The error occurs because the rounding_mode provided is not one of the valid
+      options (''None'', ''trunc'', or ''floor''). The given rounding_mode is ''kZlR''.
+      To prevent this error in the future and generate constraints that do not trigger
+      it, we can add a constraint to ensure that the rounding_mode is one of the valid
+      options. So, Left : rounding_mode, Op : in, Right : [''None'', ''trunc'', ''floor'']'
+    length: 1
+    target:
+      choosen_dtype:
+        other: int
+        rounding_mode: str
+        self: tensor
+      msg: div expected rounding_mode to be one of None, 'trunc', or 'floor' but found
+        'Kxtv'
+      package: torch
+    txt: rounding_mode in ['None', 'trunc', 'floor']
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      divisor `other` is set to 0 in the `torch.div` function. To prevent this error,
+      we need to ensure that the `other` value is not equal to 0. Therefore, the constraint
+      to prevent the error is:
+
+
+      `other != 0`.
+
+
+      Wrap the final formula with'
+    length: 1
+    target:
+      choosen_dtype:
+        other: int
+        rounding_mode: str
+        self: tensor
+      msg: ZeroDivisionError
+      package: torch
+    txt: other != 0
+  - f1_score: 67.68189509306261
+    overall_score: 100
+    precision: 100.0
+    recall: 51.150895140664964

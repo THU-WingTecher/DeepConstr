@@ -1,0 +1,63 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  - Optional[List[int]]
+  - bool
+  - None
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - ord
+  - dim
+  - keepdim
+  - dtype
+  required:
+  - true
+  - false
+  - false
+  - false
+  - false
+name: torch._C._linalg.linalg_vector_norm
+package: torch
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        ord: int
+        self: tensor
+      msg: 'linalg.vector_norm: Expected a floating point or complex tensor as input.
+        Got Int'
+      package: torch
+    txt: dtype(self) == torch.float64
+  - f1_score: 67.34006734006734
+    overall_score: 100
+    precision: 100.0
+    recall: 50.76142131979695
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        ord: int
+        self: tensor
+      msg: linalg.vector_norm cannot compute the -3 norm on an empty tensor because
+        the operation does not have an identity
+      package: torch
+    txt: (ord == -3) and (self.shape[1] != 0)
+  - f1_score: 66.77796327212019
+    overall_score: 100
+    precision: 100.0
+    recall: 50.125313283208015

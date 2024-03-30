@@ -1,0 +1,103 @@
+args:
+  dtype:
+  - Tensor
+  - None
+  - None
+  - Optional[Device]
+  - Optional[bool]
+  - None
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dtype
+  - layout
+  - device
+  - pin_memory
+  - memory_format
+  required:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+name: torch.randn_like
+package: torch
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dtype: None
+        layout: None
+        memory_format: None
+        pin_memory: bool
+        self: tensor
+      msg: Need to provide pin_memory allocator to use pin memory.
+      package: torch
+    txt: not pin_memory
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dtype: None
+        layout: None
+        memory_format: None
+        pin_memory: bool
+        self: tensor
+      msg: '"normal_kernel_cpu" not implemented for ''Int'''
+      package: torch
+    txt: dtype(self) != torch.int32
+  - f1_score: 99.25558312655089
+    overall_score: 100
+    precision: 100.0
+    recall: 98.52216748768474
+- - cot: 'The error is due to the fact that the "normal_kernel_cpu" function is not
+      implemented for ''Long'' data type. Therefore, to prevent the error, the data
+      type of the tensor should be changed to a type for which the "normal_kernel_cpu"
+      function is implemented. The constraint for preventing the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dtype: None
+        layout: None
+        memory_format: None
+        pin_memory: None
+        self: tensor
+      msg: '"normal_kernel_cpu" not implemented for ''Long'''
+      package: torch
+    txt: self.dtype != torch.int64
+  - f1_score: 99.25558312655089
+    overall_score: 100
+    precision: 100.0
+    recall: 98.52216748768474
+- - cot: The error is due to the fact that the function `torch.randn_like` is not
+      implemented for tensors with dtype 'Bool'. To prevent this error, the dtype
+      of the input tensor should be changed to a dtype that is supported by `torch.randn_like`,
+      such as 'float32' or 'float64'.
+    length: 1
+    target:
+      choosen_dtype:
+        dtype: None
+        layout: None
+        memory_format: None
+        pin_memory: None
+        self: tensor
+      msg: '"normal_kernel_cpu" not implemented for ''Bool'''
+      package: torch
+    txt: self.dtype in ['float32', 'float64']
+  - f1_score: 98.52216748768473
+    overall_score: 100
+    precision: 100.0
+    recall: 97.0873786407767

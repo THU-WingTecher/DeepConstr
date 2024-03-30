@@ -1,0 +1,97 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.remainder
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'Error is triggered because the size of tensor a (9) must match the size
+      of tensor b (8) at non-singleton dimension 6. The two tensors are inconsistent
+      in shape. Let''s see what the args were. The shape of self tensor is [3, 9,
+      9, 9, 9] and the shape of other tensor is [6, 7, 3, 8, 8, 8, 8]. Therefore,
+      the condition that would prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (7) at non-singleton
+        dimension 3
+      package: torch
+    txt: self.shape[6] == other.shape[6]
+  - f1_score: 75.046904315197
+    overall_score: 100
+    precision: 100.0
+    recall: 60.06006006006006
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: ((out.shape == self.shape) or (out.rank == self.rank)) and (all(out.shape[i]
+      == self.shape[i] for i in range(out.rank)))
+  - f1_score: 61.327231121281464
+    overall_score: 34.5
+    precision: 67.0
+    recall: 56.540084388185655
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.shape == other.shape) and (out.rank==other.rank)
+  - f1_score: 84.21052631578947
+    overall_score: 100
+    precision: 100.0
+    recall: 72.72727272727273
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self)==dtype(other)==dtype(out)
+  - f1_score: 93.24009324009324
+    overall_score: 100
+    precision: 100.0
+    recall: 87.33624454148472
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(dim >= 0 for dim in other.shape)
+  - f1_score: 69.68641114982579
+    overall_score: 100
+    precision: 100.0
+    recall: 53.475935828877

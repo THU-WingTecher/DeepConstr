@@ -13,4 +13,23 @@ args:
   - true
 name: torch._C._special.special_xlog1py
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'Based on the given values, Error is triggered because the dimensions of
+      the two tensors do not match. The function expects the tensors to have the same
+      dimensions and shape. Looking at the arguments, it appears that the dimensions
+      and shape of ''other'' and ''self'' are causing the issue. Therefore, the condition
+      to prevent this error would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (4) must match the size of tensor b (7) at non-singleton
+        dimension 2
+      package: torch
+    txt: other.dim == self.dim and other.shape == self.shape
+  - f1_score: 96.4824120603015
+    overall_score: 60.24120603015075
+    precision: 96.0
+    recall: 96.96969696969697

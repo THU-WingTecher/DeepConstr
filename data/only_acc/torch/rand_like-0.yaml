@@ -1,0 +1,102 @@
+args:
+  dtype:
+  - Tensor
+  - None
+  - None
+  - Optional[Device]
+  - Optional[bool]
+  - None
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dtype
+  - layout
+  - device
+  - pin_memory
+  - memory_format
+  required:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+name: torch.rand_like
+package: torch
+pass_rate: 98.5
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dtype: None
+        layout: None
+        memory_format: None
+        pin_memory: bool
+        self: tensor
+      msg: Need to provide pin_memory allocator to use pin memory.
+      package: torch
+    txt: not pin_memory
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: "The error is due to the 'check_uniform_bounds' function not being implemented\
+      \ for the data type 'Int'. To prevent this error, the data type of the 'self'\
+      \ tensor should be changed to a data type for which the 'check_uniform_bounds'\
+      \ function is implemented. \n\nTherefore, the constraint to prevent this error\
+      \ is:"
+    length: 1
+    target:
+      choosen_dtype:
+        dtype: None
+        layout: None
+        memory_format: None
+        pin_memory: bool
+        self: tensor
+      msg: '"check_uniform_bounds" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype != Int
+  - f1_score: 67.79661016949153
+    overall_score: 100
+    precision: 100.0
+    recall: 51.28205128205129
+- - cot: '`self` should be a tensor with 2 or 3 dimensions and should not be a boolean
+      tensor. Also, `pin_memory` should be set to True.'
+    length: 1
+    target:
+      choosen_dtype:
+        dtype: None
+        layout: None
+        memory_format: None
+        pin_memory: bool
+        self: tensor
+      msg: '"check_uniform_bounds" not implemented for ''Bool'''
+      package: torch
+    txt: self.dtype() != bool
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dtype: None
+        layout: None
+        memory_format: None
+        pin_memory: bool
+        self: tensor
+      msg: '''complex32'''
+      package: torch
+    txt: self.dim() == 2
+  - f1_score: 66.21160409556313
+    overall_score: 51.5
+    precision: 97.0
+    recall: 50.259067357512954

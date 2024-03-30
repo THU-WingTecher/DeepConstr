@@ -17,4 +17,5 @@ args:
   - true
 name: torch.view_copy
 package: torch
-pass_rate: 0
+pass_rate: 10.0
+rules: []

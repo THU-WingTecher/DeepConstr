@@ -13,4 +13,53 @@ args:
   - true
 name: torch.vsplit
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        sections: int
+        self: tensor
+      msg: torch.vsplit attempted to split along dimension 0, but the size of the
+        dimension 1 is not divisible by the split_size 0!
+      package: torch
+    txt: sections != 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      tensor `self` has 0 dimensions, but `torch.vsplit` requires a tensor with at
+      least 2 dimensions. To prevent the error, the constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        sections: int
+        self: tensor
+      msg: torch.vsplit requires a tensor with at least 2 dimension, but got a tensor
+        with 0 dimensions!
+      package: torch
+    txt: self.dim >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is triggered because torch.vsplit is attempting to split a tensor
+      of size 5 along dimension 0 into -4 sections, which is not possible. The sections
+      parameter should be a positive integer and it should divide the size of the
+      dimension 0 of the input tensor evenly. Here are the conditions that need to
+      be met to prevent this error:'
+    length: 1
+    target:
+      choosen_dtype:
+        sections: int
+        self: tensor
+      msg: torch.vsplit attempted to split along dimension 0, but the size of the
+        dimension 3 is not divisible by the split_size 8!
+      package: torch
+    txt: sections > 0 and self.shape[0] % sections == 0
+  - f1_score: 98.74055415617129
+    overall_score: 61.37027707808564
+    precision: 98.0
+    recall: 99.49238578680203

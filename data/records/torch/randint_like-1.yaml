@@ -37,4 +37,45 @@ args:
   - false
 name: torch.randint_like
 package: torch
-pass_rate: 0
+pass_rate: 92.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dtype: None
+        high: int
+        layout: None
+        low: int
+        memory_format: None
+        pin_memory: bool
+        self: tensor
+      msg: Need to provide pin_memory allocator to use pin memory.
+      package: torch
+    txt: pin_memory == False
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: "The error occurs because the `from` value (`low`) is greater than or equal\
+      \ to the `to` value (`high`) in the `torch.randint_like` function. \n\nTo prevent\
+      \ this error, we need to ensure that the `low` value is always less than the\
+      \ `high` value. The constraint for the `low` and `high` parameters can be expressed\
+      \ as:"
+    length: 1
+    target:
+      choosen_dtype:
+        dtype: None
+        high: int
+        layout: None
+        low: int
+        memory_format: None
+        pin_memory: None
+        self: tensor
+      msg: random_ expects 'from' to be less than 'to', but got from=20 >= to=4
+      package: torch
+    txt: low < high
+  - f1_score: 97.17223650385604
+    overall_score: 60.58611825192802
+    precision: 94.5
+    recall: 100.0

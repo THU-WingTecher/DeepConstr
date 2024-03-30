@@ -1,0 +1,37 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.xlogy
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'Based on the given runtime information, the error occurs because the size
+      of tensor `a` (8) does not match the size of tensor `b` (3) at non-singleton
+      dimension 4. To prevent this error, the sizes of `a` and `b` at dimension 4
+      should be equal.
+
+
+      The constraint that prevents the error can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (8) at non-singleton
+        dimension 2
+      package: torch
+    txt: self.shape[4] == other.shape[4]
+  - f1_score: 77.07129094412332
+    overall_score: 100
+    precision: 100.0
+    recall: 62.695924764890286

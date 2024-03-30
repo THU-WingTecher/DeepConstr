@@ -1,0 +1,106 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[str]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - other
+  - rounding_mode
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+name: torch.div
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'The error is due to the rounding_mode argument being set to "zIvK", which
+      is not a valid value. The rounding_mode argument should be one of None, ''trunc'',
+      or ''floor''. Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        rounding_mode: str
+        self: tensor
+      msg: div expected rounding_mode to be one of None, 'trunc', or 'floor' but found
+        'uJyZ'
+      package: torch
+    txt: rounding_mode in [None, 'trunc', 'floor']
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        rounding_mode: None
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (3) at non-singleton
+        dimension 3
+      package: torch
+    txt: self.shape[6] == other.shape[6]
+  - f1_score: 73.93715341959334
+    overall_score: 100
+    precision: 100.0
+    recall: 58.65102639296187
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        rounding_mode: str
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (((out.rank == 7) or (out.rank==self.rank)) and (out.shape == other.shape))
+      and (out.rank==other.rank)
+  - f1_score: 86.76789587852495
+    overall_score: 100
+    precision: 100.0
+    recall: 76.62835249042146
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        rounding_mode: None
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (5) at non-singleton
+        dimension 6
+      package: torch
+    txt: (self.shape[6] == other.shape[6]) and (self.dim == other.dim)
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        rounding_mode: str
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self) == dtype(other) == dtype(out)
+  - f1_score: 68.37606837606836
+    overall_score: 100
+    precision: 100.0
+    recall: 51.94805194805194

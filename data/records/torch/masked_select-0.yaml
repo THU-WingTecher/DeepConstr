@@ -13,4 +13,36 @@ args:
   - true
 name: torch.masked_select
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        mask: tensor
+        self: tensor
+      msg: The size of tensor a (6) must match the size of tensor b (7) at non-singleton
+        dimension 2
+      package: torch
+    txt: self.shape[-1] == 1
+  - f1_score: 98.03921568627452
+    overall_score: 61.01960784313726
+    precision: 100.0
+    recall: 96.15384615384615
+- - cot: "`torch.masked_select` expects a boolean mask tensor as the `mask` argument.\
+      \ However, in the given runtime information, the `mask` tensor is of type `f32`.\
+      \ \n\nTo prevent this error, the `mask` tensor should be converted to a boolean\
+      \ tensor. So, the data type of the `mask` tensor should be `bool`. \n\nTherefore,\
+      \ the constraint to prevent the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        mask: tensor
+        self: tensor
+      msg: 'masked_select: expected BoolTensor for mask'
+      package: torch
+    txt: dtype(mask) == bool
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

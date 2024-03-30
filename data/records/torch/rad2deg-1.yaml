@@ -13,4 +13,31 @@ args:
   - true
 name: torch.rad2deg
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: (dtype(self) == float32) and (dtype(self) == dtype(out))
+  - f1_score: 88.78281622911695
+    overall_score: 56.39140811455847
+    precision: 93.0
+    recall: 84.93150684931507
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
+  - f1_score: 75.61436672967864
+    overall_score: 49.80718336483932
+    precision: 100.0
+    recall: 60.790273556231

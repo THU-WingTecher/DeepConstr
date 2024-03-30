@@ -1,0 +1,100 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - int
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - x
+  - y
+  - dim
+  required:
+  - true
+  - true
+  - false
+name: torch._C._linalg.linalg_vecdot
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'Error is triggered because the size of tensor a (8) must match the size
+      of tensor b (9) at non-singleton dimension 3. Let''s see what the args were.
+      The dimensions and shapes of x and y are [8, 9, 8] and [9, 9, 9, 9] respectively.
+      Therefore, the condition to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        x: tensor
+        y: tensor
+      msg: The size of tensor a (8) must match the size of tensor b (9) at non-singleton
+        dimension 5
+      package: torch
+    txt: x.shape[3] == y.shape[3]
+  - f1_score: 75.32956685499057
+    overall_score: 100
+    precision: 100.0
+    recall: 60.42296072507553
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        x: tensor
+        y: tensor
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 86)
+      package: torch
+    txt: (dim >= -len(x.shape)) and (dim >= -7 and dim < 6)
+  - f1_score: 69.93006993006993
+    overall_score: 100
+    precision: 100.0
+    recall: 53.76344086021506
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      size of tensor `x` (2) does not match the size of tensor `y` (9) at non-singleton
+      dimension 6. To prevent this error, we can formulate the constraint as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        x: tensor
+        y: tensor
+      msg: The size of tensor a (4) must match the size of tensor b (6) at non-singleton
+        dimension 6
+      package: torch
+    txt: x.shape[-1] == y.shape[-1]
+  - f1_score: 69.08462867012089
+    overall_score: 100
+    precision: 100.0
+    recall: 52.770448548812666
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        x: tensor
+        y: tensor
+      msg: 'linalg.vecdot: Expected x and y to have the same dtype, but found x of
+        type Float and y of type Int instead'
+      package: torch
+    txt: dtype(x) == dtype(y)
+  - f1_score: 77.22007722007723
+    overall_score: 100
+    precision: 100.0
+    recall: 62.8930817610063
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        x: tensor
+        y: tensor
+      msg: 'linalg.vecdot: Expected a floating point or complex tensor as input. Got
+        Int'
+      package: torch
+    txt: dtype(y) in [float32, float64]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

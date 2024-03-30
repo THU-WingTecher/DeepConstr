@@ -13,4 +13,5 @@ args:
   - false
 name: torch._C._linalg.linalg_svdvals
 package: torch
-pass_rate: 0
+pass_rate: 47.0
+rules: []

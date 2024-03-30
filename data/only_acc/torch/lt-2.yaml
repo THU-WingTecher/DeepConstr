@@ -1,0 +1,41 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.lt
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'The error is triggered because we are trying to resize the storage of the
+      output tensor, but it is not resizable. To prevent this error, we need to ensure
+      that the shape and rank of the output tensor match the shape and rank of the
+      input tensor.
+
+
+      Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: int
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 76.77543186180422
+    overall_score: 100
+    precision: 100.0
+    recall: 62.30529595015576

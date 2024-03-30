@@ -25,4 +25,40 @@ args:
   - false
 name: torch._C._linalg.linalg_vector_norm
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        ord: int
+        self: tensor
+      msg: linalg.vector_norm cannot compute the -3 norm on an empty tensor because
+        the operation does not have an identity
+      package: torch
+    txt: (ord == -3) and (self.shape[1] != 0)
+  - f1_score: 66.89075630252101
+    overall_score: 45.445378151260506
+    precision: 99.5
+    recall: 50.37974683544304
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        ord: int
+        self: tensor
+      msg: 'linalg.vector_norm: Expected a floating point or complex tensor as input.
+        Got Int'
+      package: torch
+    txt: self.dtype() in [torch.float16, torch.float32, torch.float64, torch.complex64,
+      torch.complex128]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

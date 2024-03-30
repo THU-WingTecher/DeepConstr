@@ -17,4 +17,20 @@ args:
   - true
 name: torch._C._linalg.linalg_svdvals
 package: torch
-pass_rate: 0
+pass_rate: 40.5
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        driver: str
+        out: tensor
+      msg: 'torch.linalg.svd: keyword argument `driver=` is only supported on CUDA
+        inputs with cuSOLVER backend.'
+      package: torch
+    txt: driver == 'zEME'
+  - f1_score: 37.88819875776397
+    overall_score: 18.25
+    precision: 30.5
+    recall: 50.0

@@ -29,4 +29,75 @@ args:
   - false
 name: torch.randn_like
 package: torch
-pass_rate: 0
+pass_rate: 98.0
+rules:
+- - cot: The error is due to the fact that the function "normal_kernel_cpu" is not
+      implemented for boolean tensors. The runtime information shows that the input
+      tensor has a dtype of 'Bool'. Therefore, in order to prevent the error, the
+      input tensor should have a dtype other than 'Bool'.
+    length: 1
+    target:
+      choosen_dtype:
+        dtype: None
+        layout: None
+        memory_format: None
+        pin_memory: None
+        self: tensor
+      msg: '"normal_kernel_cpu" not implemented for ''Bool'''
+      package: torch
+    txt: self.dtype != torch.bool
+  - f1_score: 99.50248756218905
+    overall_score: 61.75124378109452
+    precision: 100.0
+    recall: 99.00990099009901
+- - cot: 'The error is due to the fact that the "normal_kernel_cpu" function is not
+      implemented for ''Long'' data type. Therefore, to prevent the error, the data
+      type of the tensor should be changed to a type for which the "normal_kernel_cpu"
+      function is implemented. The constraint for preventing the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dtype: None
+        layout: None
+        memory_format: None
+        pin_memory: None
+        self: tensor
+      msg: '"normal_kernel_cpu" not implemented for ''Long'''
+      package: torch
+    txt: self.dtype != torch.int64
+  - f1_score: 99.25558312655089
+    overall_score: 61.627791563275444
+    precision: 100.0
+    recall: 98.52216748768474
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dtype: None
+        layout: None
+        memory_format: None
+        pin_memory: bool
+        self: tensor
+      msg: '"normal_kernel_cpu" not implemented for ''Int'''
+      package: torch
+    txt: dtype(self) != torch.int32
+  - f1_score: 99.75062344139653
+    overall_score: 61.875311720698264
+    precision: 100.0
+    recall: 99.50248756218907
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dtype: None
+        layout: None
+        memory_format: None
+        pin_memory: bool
+        self: tensor
+      msg: Need to provide pin_memory allocator to use pin memory.
+      package: torch
+    txt: not pin_memory
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

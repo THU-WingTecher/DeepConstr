@@ -1,0 +1,67 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - diagonal
+  - out
+  required:
+  - true
+  - false
+  - true
+name: torch.diag
+package: torch
+pass_rate: 99.66666666666667
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        diagonal: int
+        out: tensor
+        self: tensor
+      msg: Supports 1D or 2D tensors. Got 7D
+      package: torch
+    txt: self.rank == 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        diagonal: int
+        out: tensor
+        self: tensor
+      msg: Expected out tensor to have dtype float, but got int instead
+      package: torch
+    txt: (dtype(out) == int) and (dtype(out) == dtype(self))
+  - f1_score: 96.93053311793216
+    overall_score: 100
+    precision: 100.0
+    recall: 94.04388714733544
+- - cot: "The error is triggered because we are trying to resize the 'out' tensor,\
+      \ which is not resizable. To prevent this error, we need to ensure that the\
+      \ shape of the 'out' tensor matches the shape of the operation result. In this\
+      \ case, the result shape is the same as the shape of the 'self' tensor, which\
+      \ is [8, 7]. \n\nTherefore, the constraint that prevents the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        diagonal: int
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.shape == self.shape
+  - f1_score: 66.88963210702342
+    overall_score: 100
+    precision: 100.0
+    recall: 50.25125628140703

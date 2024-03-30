@@ -17,4 +17,43 @@ args:
   - false
 name: torch.div
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'Error is triggered because the size of tensor a (7) must match the size
+      of tensor b (8) at non-singleton dimension 5. Let''s see what the args were.
+      The two tensors have inconsistent dimensions and shapes. Therefore, the constraint
+      to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        rounding_mode: str
+        self: tensor
+      msg: The size of tensor a (3) must match the size of tensor b (8) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.dim == other.dim and self.shape == other.shape
+  - f1_score: 97.21518987341771
+    overall_score: 60.60759493670886
+    precision: 96.0
+    recall: 98.46153846153845
+- - cot: 'The error is triggered because the rounding_mode provided is not one of
+      None, ''trunc'', or ''floor''. The rounding_mode should be one of these three
+      options. To prevent this error in the future and generate constraints that do
+      not trigger it, we need to ensure that the rounding_mode is always one of None,
+      ''trunc'', or ''floor''. So, the constraint for the ''rounding_mode'' parameter
+      can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        rounding_mode: str
+        self: tensor
+      msg: div expected rounding_mode to be one of None, 'trunc', or 'floor' but found
+        'vmBq'
+      package: torch
+    txt: rounding_mode in [None, 'trunc', 'floor']
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

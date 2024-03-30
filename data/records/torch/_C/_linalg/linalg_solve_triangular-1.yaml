@@ -29,4 +29,41 @@ args:
   - true
 name: torch._C._linalg.linalg_solve_triangular
 package: torch
-pass_rate: 0
+pass_rate: 8.0
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        B: tensor
+        left: bool
+        out: tensor
+        self: tensor
+        unitriangular: bool
+        upper: bool
+      msg: 'linalg.solve_triangular: Incompatible shapes of A and B for the equation
+        XA = B (6x6 and 6x7)'
+      package: torch
+    txt: ((len(self) == len(B)) and (self.shape[1] == B.shape[1])) and (self.shape[1]
+      == B.shape[0])
+  - f1_score: 84.83116492441904
+    overall_score: 54.41558246220952
+    precision: 90.96774193548387
+    recall: 79.47019867549669
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        B: tensor
+        left: bool
+        out: tensor
+        self: tensor
+        unitriangular: bool
+        upper: bool
+      msg: 'linalg.solve_triangular: The input tensor A must have at least 2 dimensions.'
+      package: torch
+    txt: (self.dim >= 2) and (len(B.shape) >= 2)
+  - f1_score: 98.76543209876544
+    overall_score: 55.38271604938272
+    precision: 100.0
+    recall: 97.56097560975611

@@ -29,4 +29,80 @@ args:
   - false
 name: torch.rand_like
 package: torch
-pass_rate: 0
+pass_rate: 10.0
+rules:
+- - cot: 'Based on the given runtime information, the error occurs because the `torch.rand_like`
+      function expects the input tensor to have a floating-point or integer data type,
+      but the provided input tensor has a complex32 data type.
+
+
+      To prevent the error, the data type of the input tensor should be changed to
+      a floating-point or integer type. Therefore, the constraint to prevent the error
+      is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dtype: None
+        layout: None
+        memory_format: None
+        pin_memory: None
+        self: tensor
+      msg: '''complex32'''
+      package: torch
+    txt: self.dtype in [torch.float32, torch.float64, torch.int32, torch.int64]
+  - f1_score: 98.76543209876544
+    overall_score: 61.38271604938272
+    precision: 100.0
+    recall: 97.56097560975611
+- - cot: '`self` should be a tensor with 2 or 3 dimensions and should not be a boolean
+      tensor. Also, `pin_memory` should be set to True.'
+    length: 1
+    target:
+      choosen_dtype:
+        dtype: None
+        layout: None
+        memory_format: None
+        pin_memory: bool
+        self: tensor
+      msg: '"check_uniform_bounds" not implemented for ''Bool'''
+      package: torch
+    txt: self.dtype() != bool
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is because the ''check_uniform_bounds'' is not implemented for
+      ''Int'' and the function torch.rand_like is trying to apply it on an integer
+      tensor. Therefore, to avoid this error, we need to ensure that the input tensor
+      is not of ''Int'' type. A possible constraint would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        dtype: None
+        layout: None
+        memory_format: None
+        pin_memory: None
+        self: tensor
+      msg: '"check_uniform_bounds" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype != torch.int32
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dtype: None
+        layout: None
+        memory_format: None
+        pin_memory: bool
+        self: tensor
+      msg: Need to provide pin_memory allocator to use pin memory.
+      package: torch
+    txt: not pin_memory
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

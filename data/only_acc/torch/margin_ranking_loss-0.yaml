@@ -1,0 +1,48 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - float
+  - int
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input1
+  - input2
+  - target
+  - margin
+  - reduction
+  required:
+  - true
+  - true
+  - true
+  - false
+  - false
+name: torch.margin_ranking_loss
+package: torch
+pass_rate: 56.99999999999999
+rules:
+- - cot: synthesized
+    length: 5
+    target:
+      choosen_dtype:
+        input1: tensor
+        input2: tensor
+        margin: float
+        reduction: int
+        target: tensor
+      msg: The size of tensor a (3) must match the size of tensor b (4) at non-singleton
+        dimension 5
+      package: torch
+    txt: ((((input1.shape[6] == input2.shape[6]) and ((input1.dim == input2.dim)))
+      or (input1.shape[2] == input2.shape[2])) or (input1.dim == input2.dim and input1.shape[3]
+      == input2.shape[3])) or (input1.shape[4] == 1)
+  - f1_score: 71.46814404432133
+    overall_score: 32.85
+    precision: 64.5
+    recall: 80.12422360248446

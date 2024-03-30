@@ -17,4 +17,34 @@ args:
   - true
 name: torch._C._special.special_xlog1py
 package: torch
-pass_rate: 0
+pass_rate: 98.5
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank==self.rank) and (out.rank==other.rank)
+  - f1_score: 89.28571428571429
+    overall_score: 50.642857142857146
+    precision: 100.0
+    recall: 80.64516129032259
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (9) at non-singleton
+        dimension 2
+      package: torch
+    txt: (self.shape[6] == other.shape[6]) or (self.shape[5] == other.shape[5])
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

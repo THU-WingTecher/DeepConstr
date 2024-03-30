@@ -9,4 +9,5 @@ args:
   - true
 name: torch.view_as_real
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules: []

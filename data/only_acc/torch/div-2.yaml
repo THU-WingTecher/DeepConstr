@@ -1,0 +1,59 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[str]
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - rounding_mode
+  required:
+  - true
+  - true
+  - false
+name: torch.div
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'The error is triggered because the rounding_mode provided is not one of
+      None, ''trunc'', or ''floor''. The rounding_mode should be one of these three
+      options. To prevent this error in the future and generate constraints that do
+      not trigger it, we need to ensure that the rounding_mode is always one of None,
+      ''trunc'', or ''floor''. So, the constraint for the ''rounding_mode'' parameter
+      can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        rounding_mode: str
+        self: tensor
+      msg: div expected rounding_mode to be one of None, 'trunc', or 'floor' but found
+        'vmBq'
+      package: torch
+    txt: rounding_mode in [None, 'trunc', 'floor']
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Error is triggered because the size of tensor a (6) must match the size
+      of tensor b (5) at non-singleton dimension 2. Let''s see what the args were.
+      The size of tensor a is 6 and the size of tensor b is 5 at non-singleton dimension
+      2. Therefore, the condition that prevents the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        rounding_mode: None
+        self: tensor
+      msg: The size of tensor a (6) must match the size of tensor b (5) at non-singleton
+        dimension 2
+      package: torch
+    txt: self.shape[2] == other.shape[2]
+  - f1_score: 76.62835249042146
+    overall_score: 100
+    precision: 100.0
+    recall: 62.111801242236034

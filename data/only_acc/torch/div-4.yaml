@@ -1,0 +1,81 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.div
+package: torch
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (5) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.shape[2] == other.shape[2]
+  - f1_score: 75.046904315197
+    overall_score: 100
+    precision: 100.0
+    recall: 60.06006006006006
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.shape[0] == self.shape[0] and out.shape[1] == self.shape[1] and out.shape[2]
+      == self.shape[2] and out.shape[3] == self.shape[3] and out.shape[4] == self.shape[4]
+      and out.shape[5] == self.shape[5] and out.shape[6] == self.shape[6]
+  - f1_score: 50.88757396449704
+    overall_score: 24.5
+    precision: 43.0
+    recall: 62.31884057971014
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: ((out.rank == self.rank) or (out.shape == self.shape)) or (out.rank==other.rank
+      and all(out.shape[i]==other.shape[i] for i in range(out.rank)))
+  - f1_score: 68.02721088435375
+    overall_score: 100
+    precision: 100.0
+    recall: 51.54639175257733
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: (dtype(self)==dtype(out)) and (self.dtype == torch.float32)
+  - f1_score: 74.76635514018692
+    overall_score: 100
+    precision: 100.0
+    recall: 59.70149253731343

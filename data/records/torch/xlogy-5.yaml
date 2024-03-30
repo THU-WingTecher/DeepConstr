@@ -17,4 +17,37 @@ args:
   - true
 name: torch.xlogy
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: int
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Short
+      package: torch
+    txt: (dtype(self) == float32) and (dtype(out) == dtype(self))
+  - f1_score: 92.3076923076923
+    overall_score: 58.15384615384615
+    precision: 93.0
+    recall: 91.62561576354679
+- - cot: 'The error is triggered because we are trying to resize the ''out'' tensor,
+      but it is not resizable. To prevent this error, we need to ensure that the shape
+      and rank of the ''out'' tensor match the shape and rank of the operation result,
+      which is the ''self'' tensor. Therefore, the constraint to prevent the error
+      is:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: int
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 74.34944237918216
+    overall_score: 49.17472118959108
+    precision: 100.0
+    recall: 59.171597633136095

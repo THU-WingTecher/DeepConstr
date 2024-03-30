@@ -1,0 +1,53 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch._C._special.special_xlog1py
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'Based on the given runtime information, the error occurs because the size
+      of tensor `a` (9) does not match the size of tensor `b` (5) at non-singleton
+      dimension 6. To prevent this error, the constraint should be:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (9) at non-singleton
+        dimension 2
+      package: torch
+    txt: self.shape[6] == other.shape[6]
+  - f1_score: 74.90636704119851
+    overall_score: 100
+    precision: 100.0
+    recall: 59.88023952095809
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank == other.rank and all(out.shape[i] == other.shape[i] for i in range(out.rank)))
+      and (out.rank==self.rank)
+  - f1_score: 78.74015748031496
+    overall_score: 100
+    precision: 100.0
+    recall: 64.93506493506493

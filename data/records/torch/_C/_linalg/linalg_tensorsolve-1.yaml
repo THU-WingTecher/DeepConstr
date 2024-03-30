@@ -21,4 +21,20 @@ args:
   - true
 name: torch._C._linalg.linalg_tensorsolve
 package: torch
-pass_rate: 0
+pass_rate: 10.5
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dims: None
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: cannot create std::vector larger than max_size()
+      package: torch
+    txt: other.shape[0] * other.shape[1] * other.shape[2] * other.shape[3] <= out.shape[-1]
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0

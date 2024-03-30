@@ -17,4 +17,55 @@ args:
   - true
 name: torch.masked_fill
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'The error is due to the incorrect data type of the mask. The function `torch.masked_fill`
+      only supports boolean masks, but the given mask has a data type of int. To prevent
+      this error, the mask should be converted to boolean data type. The formula to
+      prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        mask: tensor
+        self: tensor
+        value: tensor
+      msg: masked_fill_ only supports boolean masks, but got mask with dtype float
+      package: torch
+    txt: mask.dtype == torch.bool
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: Based on the given runtime information, the error is triggered because the
+      value tensor has 3 dimensions, but `torch.masked_fill` only supports a 0-dimensional
+      value tensor. To prevent the error, the value tensor should have 0 dimensions.
+    length: 1
+    target:
+      choosen_dtype:
+        mask: tensor
+        self: tensor
+        value: tensor
+      msg: masked_fill_ only supports a 0-dimensional value tensor, but got tensor
+        with 3 dimension(s).
+      package: torch
+    txt: value.ndims() == 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        mask: tensor
+        self: tensor
+        value: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (9) at non-singleton
+        dimension 6
+      package: torch
+    txt: mask.dim == self.dim and mask.shape == self.shape
+  - f1_score: 99.0909090909091
+    overall_score: 61.54545454545455
+    precision: 100.0
+    recall: 98.1981981981982

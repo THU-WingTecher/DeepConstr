@@ -1,0 +1,55 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - number
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - mask
+  - value
+  required:
+  - true
+  - true
+  - true
+name: torch.masked_fill
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'Based on the given runtime information, the error can be prevented if the
+      dimensions and shape of the two tensors, `mask` and `self`, are consistent.
+      Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        mask: tensor
+        self: tensor
+        value: int
+      msg: The size of tensor a (7) must match the size of tensor b (6) at non-singleton
+        dimension 2
+      package: torch
+    txt: mask.dim == self.dim and mask.shape == self.shape
+  - f1_score: 98.28009828009829
+    overall_score: 100
+    precision: 100.0
+    recall: 96.61835748792271
+- - cot: "The error is triggered because the mask is expected to be a boolean tensor,\
+      \ but it is instead a float tensor. To prevent this error, the mask should be\
+      \ converted to a boolean tensor before using it in the `torch.masked_fill` function.\
+      \ \n\nThe condition that should be satisfied to prevent the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        mask: tensor
+        self: tensor
+        value: int
+      msg: masked_fill_ only supports boolean masks, but got mask with dtype float
+      package: torch
+    txt: mask.dtype == torch.bool
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

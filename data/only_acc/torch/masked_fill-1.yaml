@@ -1,0 +1,72 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - mask
+  - value
+  required:
+  - true
+  - true
+  - true
+name: torch.masked_fill
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'Error is triggered because the size of tensor a (8) does not match the size
+      of tensor b (9) at non-singleton dimension 1. Based on the given values, we
+      can formulate the following constraint to prevent the error:'
+    length: 1
+    target:
+      choosen_dtype:
+        mask: tensor
+        self: tensor
+        value: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (8) at non-singleton
+        dimension 1
+      package: torch
+    txt: self.shape[1] == mask.shape[1]
+  - f1_score: 75.47169811320754
+    overall_score: 100
+    precision: 100.0
+    recall: 60.60606060606061
+- - cot: Based on the given runtime information, the error is triggered because the
+      value tensor has 3 dimensions, but `torch.masked_fill` only supports a 0-dimensional
+      value tensor. To prevent the error, the value tensor should have 0 dimensions.
+    length: 1
+    target:
+      choosen_dtype:
+        mask: tensor
+        self: tensor
+        value: tensor
+      msg: masked_fill_ only supports a 0-dimensional value tensor, but got tensor
+        with 3 dimension(s).
+      package: torch
+    txt: value.ndims() == 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is due to the incorrect data type of the mask. The function `torch.masked_fill`
+      only supports boolean masks, but the given mask has a data type of int. To prevent
+      this error, the mask should be converted to boolean data type. The formula to
+      prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        mask: tensor
+        self: tensor
+        value: tensor
+      msg: masked_fill_ only supports boolean masks, but got mask with dtype float
+      package: torch
+    txt: mask.dtype == torch.bool
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

@@ -25,4 +25,25 @@ args:
   - false
 name: torch.margin_ranking_loss
 package: torch
-pass_rate: 0
+pass_rate: 47.5
+rules:
+- - cot: 'Error is triggered because the size of tensor a (9) does not match the size
+      of tensor b (8) at non-singleton dimension 6. To prevent this error, we need
+      to ensure that the dimensions and shapes of both tensors match. Therefore, the
+      constraint can be formulated as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        input1: tensor
+        input2: tensor
+        margin: float
+        reduction: int
+        target: tensor
+      msg: The size of tensor a (3) must match the size of tensor b (8) at non-singleton
+        dimension 5
+      package: torch
+    txt: input1.dim == input2.dim and input1.shape == input2.shape
+  - f1_score: 69.30091185410333
+    overall_score: 46.65045592705167
+    precision: 56.99999999999999
+    recall: 88.37209302325581

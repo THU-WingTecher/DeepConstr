@@ -13,4 +13,31 @@ args:
   - true
 name: torch._C._special.special_ndtr
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: (dtype(self) == dtype(out)) and (dtype(self) == Float)
+  - f1_score: 87.58782201405153
+    overall_score: 55.79391100702576
+    precision: 93.5
+    recall: 82.37885462555067
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 75.75757575757576
+    overall_score: 49.87878787878788
+    precision: 100.0
+    recall: 60.97560975609756

@@ -1,0 +1,91 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  - Optional[str]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - other
+  - rounding_mode
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+name: torch.div
+package: torch
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: int
+        out: tensor
+        rounding_mode: str
+        self: tensor
+      msg: div expected rounding_mode to be one of None, 'trunc', or 'floor' but found
+        'LWOo'
+      package: torch
+    txt: rounding_mode in [None, 'trunc', 'floor']
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is triggered because we are trying to resize the storage of the
+      ''out'' tensor, which is Tensor<f32>[7, 5, 8, 6, 8, 5, 8], but it is not resizable.
+      To prevent this error, the shape and rank of the ''out'' tensor should match
+      the shape and rank of the operation result, which is the ''self'' tensor with
+      shape Tensor<f32>[4, 9, 9, 9, 9, 9, 9]. Therefore, the constraint to prevent
+      the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: int
+        out: tensor
+        rounding_mode: None
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 75.90132827324477
+    overall_score: 100
+    precision: 100.0
+    recall: 61.16207951070336
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: int
+        out: tensor
+        rounding_mode: None
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: (dtype(out) == int32) and (dtype(self) == Int)
+  - f1_score: 67.79661016949153
+    overall_score: 100
+    precision: 100.0
+    recall: 51.28205128205129
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: int
+        out: tensor
+        rounding_mode: str
+        self: tensor
+      msg: ZeroDivisionError
+      package: torch
+    txt: (all(self.shape[i] != 0 for i in range(len(self.shape)))) and (other != 0)
+  - f1_score: 92.01877934272301
+    overall_score: 100
+    precision: 100.0
+    recall: 85.21739130434783

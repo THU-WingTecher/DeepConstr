@@ -1,0 +1,35 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - size
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.view_copy
+package: torch
+pass_rate: 8.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+        size: list[int]
+      msg: shape '[]' is invalid for input of size 6
+      package: torch
+    txt: len(out.shape) > 0
+  - f1_score: 17.195087117966295
+    overall_score: 8.25
+    precision: 10.5
+    recall: 47.45139253809774

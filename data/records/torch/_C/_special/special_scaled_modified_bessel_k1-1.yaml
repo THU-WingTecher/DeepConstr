@@ -13,4 +13,31 @@ args:
   - true
 name: torch._C._special.special_scaled_modified_bessel_k1
 package: torch
-pass_rate: 0
+pass_rate: 95.0
+rules:
+- - cot: 'The constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        x: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(out) == dtype(x)
+  - f1_score: 93.33333333333336
+    overall_score: 58.66666666666668
+    precision: 94.5
+    recall: 92.19512195121952
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        x: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.shape == x.shape) and (out.rank==x.rank)
+  - f1_score: 92.16589861751153
+    overall_score: 52.082949308755765
+    precision: 100.0
+    recall: 85.47008547008548

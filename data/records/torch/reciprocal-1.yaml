@@ -13,4 +13,32 @@ args:
   - true
 name: torch.reciprocal
 package: torch
-pass_rate: 0
+pass_rate: 99.5
+rules:
+- - cot: synthesized
+    length: 5
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: (((dtype(out) == int32) and (dtype(self) == dtype(out))) or ((dtype(self)==float)
+      and (dtype(out) == dtype(self)))) and (dtype(self) == Float)
+  - f1_score: 87.85046728971962
+    overall_score: 55.92523364485981
+    precision: 94.0
+    recall: 82.45614035087719
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 76.48183556405354
+    overall_score: 50.24091778202677
+    precision: 100.0
+    recall: 61.91950464396285

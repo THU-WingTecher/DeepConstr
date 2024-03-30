@@ -1,0 +1,86 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - bool
+  - bool
+  - bool
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - B
+  - upper
+  - left
+  - unitriangular
+  - out
+  required:
+  - true
+  - true
+  - true
+  - false
+  - false
+  - true
+name: torch._C._linalg.linalg_solve_triangular
+package: torch
+pass_rate: 1.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        B: tensor
+        left: bool
+        out: tensor
+        self: tensor
+        unitriangular: bool
+        upper: bool
+      msg: 'linalg.solve_triangular: A must be batches of square matrices, but they
+        are 1 by 9 matrices'
+      package: torch
+    txt: (B[-3] == B[-2])
+  - f1_score: 65.86206896551724
+    overall_score: 50.75
+    precision: 95.5
+    recall: 50.26315789473684
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        B: tensor
+        left: bool
+        out: tensor
+        self: tensor
+        unitriangular: bool
+        upper: bool
+      msg: 'linalg.solve_triangular: The input tensor B must have at least 2 dimensions.'
+      package: torch
+    txt: (self.dim >= 2) and (B.dim >= 2)
+  - f1_score: 97.323600973236
+    overall_score: 100
+    precision: 100.0
+    recall: 94.7867298578199
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        B: tensor
+        left: bool
+        out: tensor
+        self: tensor
+        unitriangular: bool
+        upper: bool
+      msg: 'linalg.solve_triangular: Incompatible shapes of A and B for the equation
+        XA = B (7x7 and 5x8)'
+      package: torch
+    txt: len(B) == len(self)
+  - f1_score: 73.5408560311284
+    overall_score: 50.25
+    precision: 94.5
+    recall: 60.19108280254777

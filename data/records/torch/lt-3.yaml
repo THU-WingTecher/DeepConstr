@@ -17,4 +17,39 @@ args:
   - true
 name: torch.lt
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank==self.rank) and (out.rank==other.rank)
+  - f1_score: 89.086859688196
+    overall_score: 50.543429844098
+    precision: 100.0
+    recall: 80.32128514056224
+- - cot: synthesized
+    length: 5
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (3) at non-singleton
+        dimension 1
+      package: torch
+    txt: (self.shape[2] == other.shape[2]) and (((all(self.shape[i] == other.shape[i]
+      or self.shape[i] == 1 or other.shape[i] == 1 for i in range(-1, -min(len(self.shape),
+      len(other.shape))-1, -1))) and (self.shape[1] == other.shape[1])) or ((self.dim
+      == other.dim and self.shape[0] == other.shape[0]) and (all(self.shape[i] ==
+      other.shape[i] or self.shape[i] == 1 or other.shape[i] == 1 for i in range(-1,
+      -min(len(self.shape), len(other.shape))-1, -1)))))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
