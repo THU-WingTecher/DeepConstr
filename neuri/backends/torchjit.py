@@ -9,7 +9,7 @@ from torch.utils.mobile_optimizer import optimize_for_mobile
 
 from neuri.backends.factory import BackendCallable, BackendFactory
 from neuri.materialize.torch import TorchModel
-
+from neuri.materialize.torch import tensor_from_numpy
 # Check https://pytorch.org/tutorials/recipes/recipes/tuning_guide.html
 # for more PyTorch-internal options.
 TORCH_JIT_OPT_MOBILE = os.getenv("TORCH_JIT_OPT_MOBILE", "0") == "1"
@@ -34,11 +34,12 @@ class TorchJITFactory(BackendFactory):
 
     @staticmethod
     def make_random_input(input_like: Dict[str, torch.Tensor], low=1, high=2) -> Dict[str, torch.Tensor]:
+        from neuri.autoinf.instrument.utils import numpy_random
         return {
-            name: (low + (high - low) * torch.rand(aten.shape, dtype=aten.dtype.torch()))
+            name: tensor_from_numpy(numpy_random(shape=aten.shape, str_dtype=str(aten.dtype)))
             for name, aten in input_like.items()
         }
-    
+
     @dispatch(TorchModel)
     def make_backend(self, model: TorchModel) -> BackendCallable:
         torch_net = model.torch_model.to(self.device).eval()

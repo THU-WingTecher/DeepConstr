@@ -72,6 +72,32 @@ class EagerModeCtx:
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         tf.config.run_functions_eagerly(self.old_mode)
 
+def tensor_from_numpy(x) : 
+    """ 
+    some dtypes are not supported by numpy, so directly gen with tf
+    """
+    if isinstance(x, np.ndarray) : 
+        return tf.convert_to_tensor(x)
+    else : 
+        shape, dtype = x
+        absdtype = DType.from_str(dtype)
+        if "bfloat" in dtype : 
+            ret = tf.random.uniform(shape, -1000_000, 1000_000, dtype=absdtype.tensorflow())
+        elif "qint" in dtype :
+            rng = 2**(8*absdtype.sizeof()-1)
+            minval = tf.constant(-rng, dtype=tf.int64)
+            maxval = tf.constant(rng - 1, dtype=tf.int64)
+            ret = tf.random.uniform(shape=shape, minval=minval, maxval=maxval, dtype=tf.int64)
+            ret = tf.cast(ret, dtype=absdtype.tensorflow())   
+        elif "uint" in dtype :
+            rng = 2**(8*absdtype.sizeof()-1)
+            maxval = tf.constant(rng - 1, dtype=tf.int64)
+            ret = tf.random.uniform(shape=shape, minval=0, maxval=maxval, dtype=tf.int64)
+            ret = tf.cast(ret, dtype=absdtype.tensorflow())    
+        else :
+            TF_LOG.error(f"Unknown dtype: {dtype = }")
+            raise NotImplementedError(dtype)
+        return ret
 
 class TFModel(Model, ABC):  # Don't directly instantiate this class
     """Wrapper class of TFNet (tf.Module)
@@ -88,33 +114,6 @@ class TFModel(Model, ABC):  # Don't directly instantiate this class
     @staticmethod
     def execute_op(inst : "OpInstance") : 
         # tensor_from_numpy = tf.convert_to_tensor 
-        def tensor_from_numpy(x) : 
-            """ 
-            some dtypes are not supported by numpy, so directly gen with tf
-            """
-            if isinstance(x, np.ndarray) : 
-                return tf.convert_to_tensor(x)
-            else : 
-                shape, dtype = x
-                absdtype = DType.from_str(dtype)
-                if "bfloat" in dtype : 
-                    ret = tf.random.uniform(shape, -1000_000, 1000_000, dtype=absdtype.tensorflow())
-                elif "qint" in dtype :
-                    rng = 2**(8*absdtype.sizeof()-1)
-                    minval = tf.constant(-rng, dtype=tf.int64)
-                    maxval = tf.constant(rng - 1, dtype=tf.int64)
-                    ret = tf.random.uniform(shape=shape, minval=minval, maxval=maxval, dtype=tf.int64)
-                    ret = tf.cast(ret, dtype=absdtype.tensorflow())   
-                elif "uint" in dtype :
-                    rng = 2**(8*absdtype.sizeof()-1)
-                    maxval = tf.constant(rng - 1, dtype=tf.int64)
-                    ret = tf.random.uniform(shape=shape, minval=0, maxval=maxval, dtype=tf.int64)
-                    ret = tf.cast(ret, dtype=absdtype.tensorflow())    
-                else :
-                    TF_LOG.error(f"Unknown dtype: {dtype = }")
-                    raise NotImplementedError(dtype)
-                return ret
-            
         is_tensor = lambda x: isinstance(x, tf.Tensor)
         output_info = inst.execute(
             symb_2_value=None,

@@ -1,5 +1,5 @@
 from typing import Dict
-
+from neuri.materialize.tensorflow import tensor_from_numpy
 import tensorflow as tf  # type: ignore
 from multipledispatch import dispatch
 
@@ -10,7 +10,6 @@ from neuri.materialize.tensorflow import (
     np_dict_from_tf,
     tf_dict_from_np,
 )
-
 
 class XLAFactory(BackendFactory):
     def __init__(self, target="cpu", optmax: bool = False):
@@ -24,6 +23,14 @@ class XLAFactory(BackendFactory):
             raise ValueError(
                 f"Unknown device: {self.target}. Only `cpu` and `cuda` are supported."
             )
+
+    @staticmethod
+    def make_random_input(input_like: Dict[str, tf.Tensor], low=1, high=2) -> Dict[str, tf.Tensor]:
+        from neuri.autoinf.instrument.utils import numpy_random
+        return {
+            name: tensor_from_numpy(numpy_random(shape=aten.shape, str_dtype=str(aten.dtype)))
+            for name, aten in input_like.items()
+        }
 
     @property
     def system_name(self) -> str:

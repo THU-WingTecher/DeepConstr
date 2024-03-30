@@ -17,6 +17,28 @@ from neuri.materialize.torch.symbolnet import SymbolNet
 from neuri.util import register_seed_setter
 from neuri.materialize.torch.code_gen import gen_code
 
+def tensor_from_numpy(x) : 
+    """ 
+    some dtypes are not supported by numpy, so directly gen with tf
+    """
+    if isinstance(x, np.ndarray) : 
+        return torch.from_numpy(x)
+    else : 
+        shape, dtype = x
+        absdtype = DType.from_str(dtype)
+        if "bfloat" in dtype : 
+            ret = torch.rand(shape, dtype=absdtype.torch())  
+        elif "qint" in dtype :
+            rng = 2**(8*absdtype.sizeof()-1)
+            ret = torch.randint(-rng, rng - 1, size=shape, dtype=absdtype.torch())
+        elif "uint" in dtype :
+            rng = 2**(8*absdtype.sizeof()-1)
+            ret = torch.randint(0, rng - 1, size=shape, dtype=absdtype.torch())
+        else :
+            TORCH_LOG.error(f"Unknown dtype: {dtype = }")
+            raise NotImplementedError(dtype)
+        return ret
+
 class TorchModel(Model): 
     package = "torch"
     gen_code = gen_code
@@ -41,27 +63,6 @@ class TorchModel(Model):
 
     @staticmethod
     def execute_op(inst : "OpInstance") : 
-        def tensor_from_numpy(x) : 
-            """ 
-            some dtypes are not supported by numpy, so directly gen with tf
-            """
-            if isinstance(x, np.ndarray) : 
-                return torch.from_numpy(x)
-            else : 
-                shape, dtype = x
-                absdtype = DType.from_str(dtype)
-                if "bfloat" in dtype : 
-                    ret = torch.rand(shape, dtype=absdtype.torch())  
-                elif "qint" in dtype :
-                    rng = 2**(8*absdtype.sizeof()-1)
-                    ret = torch.randint(-rng, rng - 1, size=shape, dtype=absdtype.torch())
-                elif "uint" in dtype :
-                    rng = 2**(8*absdtype.sizeof()-1)
-                    ret = torch.randint(0, rng - 1, size=shape, dtype=absdtype.torch())
-                else :
-                    TORCH_LOG.error(f"Unknown dtype: {dtype = }")
-                    raise NotImplementedError(dtype)
-                return ret
             
         numpy_from_tensor = lambda x: x.detach().cpu().numpy()
         is_tensor = lambda x: isinstance(x, torch.Tensor)

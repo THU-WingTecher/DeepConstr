@@ -67,8 +67,7 @@ def get_completed_list(path = "/artifact/experiments/results/completed.json") :
     
     #load csv 
     csv_paths = [
-        "/artifact/experiments/results/torch1.csv",
-        "/artifact/experiments/results/torch2.csv"
+        "/artifact/experiments/results/merged_torch.csv"
         ]
     for csv_path in csv_paths :
         with open(csv_path, "r") as f:

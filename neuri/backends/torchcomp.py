@@ -7,7 +7,7 @@ from multipledispatch import dispatch
 
 from neuri.backends.factory import BackendCallable, BackendFactory
 from neuri.materialize.torch import TorchModel
-
+from neuri.materialize.torch import tensor_from_numpy
 
 class TorchCompFactory(BackendFactory):
     def __init__(self, target="cpu", optmax: bool = False):
@@ -28,8 +28,9 @@ class TorchCompFactory(BackendFactory):
 
     @staticmethod
     def make_random_input(input_like: Dict[str, torch.Tensor], low=1, high=2) -> Dict[str, torch.Tensor]:
+        from neuri.autoinf.instrument.utils import numpy_random
         return {
-            name: (low + (high - low) * torch.rand(aten.shape, dtype=aten.dtype.torch()))
+            name: tensor_from_numpy(numpy_random(shape=aten.shape, str_dtype=str(aten.dtype)))
             for name, aten in input_like.items()
         }
     
