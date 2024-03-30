@@ -119,7 +119,7 @@ def get_constr_stats(data_list):
 
 # -> visualize distribution of length of cosntr, f1_ prec_ recall of constr, pie chart of constr type
 def viz_num_of_constr_with_pass_rate(data_list, acc_data_list, name, path = "/artifact/results/") :
-    plt.figure()
+    plt.figure(figsize=(9,12))
     for i, data_li in enumerate([data_list, acc_data_list]):
         pass_rate_num_of_constr = []
         for data in data_li:
@@ -148,20 +148,20 @@ def viz_num_of_constr_with_pass_rate(data_list, acc_data_list, name, path = "/ar
         p2 = np.poly1d(z2)
 
         # Generating points for the trend line
-        trend_line_x = np.linspace(min(num_of_constraints), max(num_of_constraints), 100)
-        trend_line_y = p2(trend_line_x)
+        # trend_line_x = np.linspace(min(num_of_constraints), max(num_of_constraints), 100)
+        # trend_line_y = p2(trend_line_x)
         # Re-plotting the scatter and the improved trend line
         plt.scatter(num_of_constraints, pass_rate, alpha=0.8, edgecolors=edge_color, linewidth=0.6, s=80, c=color, marker=marker)
-        plt.plot(trend_line_x, trend_line_y, "r-", label=label, color=line_color)
+        # plt.plot(trend_line_x, trend_line_y, "r-", label=label, color=line_color)
 
     # Adjusting y-axis to not display negative values
     plt.ylim(bottom=0)
 
     # Adding professional plot enhancements with no negative y-axis values
-    if name == "torch" :
-        plt.title('\\textit{PyTorch}')
-    else :
-        plt.title('\\textit{TensorFlow}')
+    # if name == "torch" :
+    #     plt.title('\\textit{PyTorch}')
+    # else :
+    #     plt.title('\\textit{TensorFlow}')
     plt.xlabel('\\textit{Number of Constraints}')
     plt.ylabel('\\textit{Pass Rate(\%)}')
     # plt.xticks()
@@ -185,14 +185,14 @@ def viz_constr_len(constr_len : List[int]):
     plt.show()
 
 def viz_constr_f1(constr_f1 : List[float], constr_prec, acc_f1, acc_prec , path = "/artifact/results/", name = "PyTorch"):
-    plt.figure()
+    plt.figure(figsize=(9,12))
     # PyTorch
     plt.scatter(acc_f1, acc_prec, c=colors[1], label=r'\textsc{DeepConstr$^{s}$}', alpha=0.6, edgecolors='w', linewidths=0.5)
     plt.scatter(constr_f1, constr_prec, c=colors[0], label=r'\textsc{DeepConstr}', alpha=0.6, edgecolors='w', linewidths=0.5)
-    if name == "torch" :
-        plt.title('\\textit{PyTorch}')
-    else :
-        plt.title('\\textit{TensorFlow}')
+    # if name == "torch" :
+    #     plt.title('\\textit{PyTorch}')
+    # else :
+    #     plt.title('\\textit{TensorFlow}')
 
     plt.xlabel('\\textit{Soundness}')
     plt.ylabel('\\textit{Completeness}')
