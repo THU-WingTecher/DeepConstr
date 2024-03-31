@@ -294,7 +294,7 @@ def main(cfg) :
     else :
         raise NotImplementedError
     csv_paths = [
-        "/artifact/experiments/results/20240330-235021.csv"
+        "/artifact/experiments/results/20240331-082536.csv"
         ]
     columns = []
     retrain_list = set()
@@ -322,10 +322,15 @@ def main(cfg) :
                                 # print(columns[i], row[0], os.listdir(save_path))
                                 refuzz_list.add((columns[i], row[0].replace(".models",""), "fuzz"))
                             retrain_list.add((columns[i], row[0].replace(".models",""), "cov"))
-                            
+
+    # dirs = os.listdir(os.path.join(os.getcwd(),cfg["exp"]["save_dir"]))
+    # for dir_name in dirs :
+    #     if dir_name.endswith("models") :
+    #         retrain_list.add((dir_name.split("-")[1], dir_name.split("-")[-1].replace(".models",""), "cov"))               
     retrain_list = sorted(list(retrain_list), key=lambda x: x[1])
     refuzz_list = sorted(list(refuzz_list), key=lambda x: x[1])
     print("retrain", len(retrain_list), "refuzz", len(refuzz_list))
+    print(retrain_list)
 
     # with concurrent.futures.ProcessPoolExecutor(max_workers=cfg["exp"]["parallel"]) as executor:
     #     # Pass necessary arguments to the api_worker function
@@ -335,14 +340,14 @@ def main(cfg) :
     #             result = future.result()
     #         except Exception as e:
     #             print(f"An error occured: {e}")
-    with concurrent.futures.ProcessPoolExecutor(max_workers=cfg["exp"]["parallel"]) as executor:
-        # Pass necessary arguments to the api_worker function
-        futures = [executor.submit(run, api, baseline, cfg, task) for baseline, api, task in retrain_list]
-        for future in concurrent.futures.as_completed(futures):
-            try:
-                result = future.result()
-            except Exception as e:
-                print(f"An error occured: {e}")
+    # with concurrent.futures.ProcessPoolExecutor(max_workers=cfg["exp"]["parallel"]) as executor:
+    #     # Pass necessary arguments to the api_worker function
+    #     futures = [executor.submit(run, api, baseline, cfg, task) for baseline, api, task in retrain_list]
+    #     for future in concurrent.futures.as_completed(futures):
+    #         try:
+    #             result = future.result()
+    #         except Exception as e:
+    #             print(f"An error occured: {e}")
     # print(f" Will run {cfg['exp']['parallel'] * cov_parallel * len(BASELINES)} process in parallel")
     # api_names = load_api_names_from_data(cfg["mgen"]["record_path"], cfg["mgen"]["pass_rate"])
     # print(f"From {len(api_names)} apis in total", sep=" ")
