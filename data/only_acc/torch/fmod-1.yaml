@@ -1,0 +1,17 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.fmod
+package: torch
+pass_rate: 100
+rules: []

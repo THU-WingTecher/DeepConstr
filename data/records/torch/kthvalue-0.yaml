@@ -21,4 +21,35 @@ args:
   - false
 name: torch.kthvalue
 package: torch
-pass_rate: 0
+pass_rate: 74.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        k: int
+        keepdim: bool
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 9)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 76.66666666666667
+    overall_score: 49.0
+    precision: 92.0
+    recall: 65.71428571428572
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        k: int
+        keepdim: bool
+        self: tensor
+      msg: 'kthvalue(): selected number k out of range for dimension 0'
+      package: torch
+    txt: k >= 1
+  - f1_score: 86.07594936708861
+    overall_score: 45.5
+    precision: 85.0
+    recall: 87.17948717948718

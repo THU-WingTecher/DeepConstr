@@ -13,4 +13,36 @@ args:
   - true
 name: torch.lcm
 package: torch
-pass_rate: 0
+pass_rate: 95.5
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"lcm_cpu" not implemented for ''Float'''
+      package: torch
+    txt: (dtype(self) in ["int8", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+      "uint64"]) and (dtype(self) in ["half", "int16", "int32", "int64", "uint8",
+      "uint16", "uint32", "uint64"] and dtype(other) in ["half", "int16", "int32",
+      "int64", "uint8", "uint16", "uint32", "uint64"])
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (8) at non-singleton
+        dimension 5
+      package: torch
+    txt: ((other.shape[6] == 1) or (self.size(4) == other.size(4))) or (self.shape[i]
+      == 1)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

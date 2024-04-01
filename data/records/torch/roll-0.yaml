@@ -17,4 +17,57 @@ args:
   - false
 name: torch.roll
 package: torch
-pass_rate: 0
+pass_rate: 47.5
+rules:
+- - cot: "The error occurs because the dimension provided is out of the valid range.\
+      \ The valid range for the dimension would be [-n, n-1] where n is the length\
+      \ of the shape of the tensor. In this case, the shape of the tensor is [8, 4,\
+      \ 8, 3, 8, 2], so the valid range for the dimension is [-6, 5]. \n\nTo prevent\
+      \ this error in the future and generate constraints that do not trigger it,\
+      \ we need to ensure that the \"dims\" values are always within the valid range\
+      \ for the given tensor. The constraint for the 'dims' parameter can be expressed\
+      \ as:"
+    length: 1
+    target:
+      choosen_dtype:
+        dims: list[int]
+        self: tensor
+        shifts: list[int]
+      msg: Dimension out of range (expected to be in range of [-6, 5], but got 7)
+      package: torch
+    txt: all(d >= -len(self.shape) and d < len(self.shape) for d in dims)
+  - f1_score: 39.024390243902445
+    overall_score: 31.512195121951223
+    precision: 44.0
+    recall: 35.0597609561753
+- - cot: The error is caused because the shifts and dimensions do not align. Let's
+      see what the args were. It seems shifts is [9] and dims is [2]. To prevent this
+      error, the shifts and dimensions need to have the same length. Therefore, the
+      condition should be shifts and dims have the same length.
+    length: 1
+    target:
+      choosen_dtype:
+        dims: list[int]
+        self: tensor
+        shifts: list[int]
+      msg: 'shifts and dimensions must align. shifts: 9, dims:0'
+      package: torch
+    txt: len(shifts) == len(dims)
+  - f1_score: 88.10572687224668
+    overall_score: 56.05286343612334
+    precision: 100.0
+    recall: 78.74015748031495
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dims: list[int]
+        self: tensor
+        shifts: list[int]
+      msg: '`shifts` required'
+      package: torch
+    txt: len(shifts) > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

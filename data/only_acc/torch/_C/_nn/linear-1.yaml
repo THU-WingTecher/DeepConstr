@@ -1,0 +1,59 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[Tensor]
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - weight
+  - bias
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+name: torch._C._nn.linear
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        bias: None
+        input: tensor
+        out: tensor
+        weight: tensor
+      msg: t() expects a tensor with <= 2 dimensions, but self is 3D
+      package: torch
+    txt: input.ndim() <= 2
+  - f1_score: 69.87951807228914
+    overall_score: 31.999999999999996
+    precision: 57.99999999999999
+    recall: 87.87878787878788
+- - cot: The error is triggered because the input tensor and weight tensor have 0
+      dimensions. However, both arguments need to be at least 1-dimensional for the
+      matmul operation to work. To prevent this error, we can add a constraint that
+      the number of dimensions of both input and weight tensors should be greater
+      than or equal to 1.
+    length: 1
+    target:
+      choosen_dtype:
+        bias: None
+        input: tensor
+        out: tensor
+        weight: tensor
+      msg: both arguments to matmul need to be at least 1D, but they are 0D and 2D
+      package: torch
+    txt: input.ndims() >= 1 and weight.ndims() >= 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

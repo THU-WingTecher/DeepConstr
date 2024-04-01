@@ -17,4 +17,22 @@ args:
   - false
 name: torch._C._nn.l1_loss
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'Error is triggered because the size of tensor a (3) does not match the size
+      of tensor b (4) at non-singleton dimension 6. The dimensions and shapes of a
+      and b should be checked. Therefore, the condition to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        reduction: int
+        self: tensor
+        target: tensor
+      msg: The size of tensor a (3) must match the size of tensor b (8) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.dim == target.dim and self.shape == target.shape
+  - f1_score: 98.52216748768473
+    overall_score: 61.26108374384236
+    precision: 100.0
+    recall: 97.0873786407767

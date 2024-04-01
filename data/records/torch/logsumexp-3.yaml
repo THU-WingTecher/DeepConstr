@@ -21,4 +21,20 @@ args:
   - true
 name: torch.logsumexp
 package: torch
-pass_rate: 0
+pass_rate: 54.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: list[int]
+        keepdim: bool
+        out: tensor
+        self: tensor
+      msg: output with shape [] doesn't match the broadcast shape [1, 1, 1, 1, 1]
+      package: torch
+    txt: self.dim() == 0
+  - f1_score: 79.05138339920948
+    overall_score: 100
+    precision: 100.0
+    recall: 65.359477124183

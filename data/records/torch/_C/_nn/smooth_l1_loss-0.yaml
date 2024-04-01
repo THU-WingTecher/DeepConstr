@@ -21,4 +21,24 @@ args:
   - false
 name: torch._C._nn.smooth_l1_loss
 package: torch
-pass_rate: 0
+pass_rate: 12.5
+rules:
+- - cot: 'Error is triggered because the size of tensor a (9) must match the size
+      of tensor b (2) at non-singleton dimension 5. Let''s see what the args were.
+      The tensors involved are `self` and `target`, and the dimensions in question
+      are the last dimension. Therefore, we can formulate the constraint as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        beta: float
+        reduction: int
+        self: tensor
+        target: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (6) at non-singleton
+        dimension 3
+      package: torch
+    txt: self.shape[-1] == target.shape[-1]
+  - f1_score: 73.80073800738006
+    overall_score: 100
+    precision: 100.0
+    recall: 58.47953216374269

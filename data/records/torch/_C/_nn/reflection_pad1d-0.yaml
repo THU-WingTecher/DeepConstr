@@ -13,4 +13,67 @@ args:
   - true
 name: torch._C._nn.reflection_pad1d
 package: torch
-pass_rate: 0
+pass_rate: 62.22222222222222
+rules:
+- - cot: 'The error is caused by negative dimensions in the input tensor. To prevent
+      this error, we need to ensure that all dimensions of the input tensor are non-negative.
+      We can formulate the constraint as:'
+    length: 1
+    target:
+      choosen_dtype:
+        padding: list[int]
+        self: tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(padding[i] >= 0 for i in range(len(padding)))
+  - f1_score: 75.00000000000001
+    overall_score: 49.50000000000001
+    precision: 100.0
+    recall: 60.00000000000001
+- - cot: "Based on the given runtime information, the error is triggered because the\
+      \ input tensor has a size of 0 in one of its non-batch dimensions. \n\nTo prevent\
+      \ the error, the constraint can be formulated as follows:"
+    length: 1
+    target:
+      choosen_dtype:
+        padding: list[int]
+        self: tensor
+      msg: 'Expected 2D or 3D (batch mode) tensor with possibly 0 batch size and other
+        non-zero dimensions for input, but got: [7, 0, 0]'
+      package: torch
+    txt: all(self.shape[i] != 0 for i in range(1, len(self.shape)))
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        padding: list[int]
+        self: tensor
+      msg: 'Argument #4: Padding size should be less than the corresponding input
+        dimension, but got: padding (8, 8) at dimension 1 of input [7, 8, 8, 8, 8,
+        8, 8]'
+      package: torch
+    txt: (padding[0] < self.shape[1]) and (padding[1] < self.size(1))
+  - f1_score: 87.59124087591242
+    overall_score: 55.79562043795621
+    precision: 90.0
+    recall: 85.30805687203792
+- - cot: 'The error occurs because the length of the padding size is expected to be
+      2, but it is currently 0. To prevent this error, we need to make sure that the
+      length of the padding list is always 2. The constraint for the padding size
+      can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        padding: list[int]
+        self: tensor
+      msg: 'padding size is expected to be 2, but got: 0'
+      package: torch
+    txt: len(padding) == 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

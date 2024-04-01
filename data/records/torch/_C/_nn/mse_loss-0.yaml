@@ -17,4 +17,20 @@ args:
   - false
 name: torch._C._nn.mse_loss
 package: torch
-pass_rate: 0
+pass_rate: 18.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        reduction: int
+        self: tensor
+        target: tensor
+      msg: The size of tensor a (2) must match the size of tensor b (9) at non-singleton
+        dimension 4
+      package: torch
+    txt: self.shape[2] == target.shape[2]
+  - f1_score: 77.36943907156673
+    overall_score: 100
+    precision: 100.0
+    recall: 63.09148264984227

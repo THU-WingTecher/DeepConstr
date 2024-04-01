@@ -25,4 +25,37 @@ args:
   - true
 name: torch.renorm
 package: torch
-pass_rate: 0
+pass_rate: 5.5
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        maxnorm: int
+        out: tensor
+        p: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got -3)
+      package: torch
+    txt: (dim >= -len(self.shape)) or (89 >= -len(self.shape) and 89 < len(self.shape))
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        maxnorm: int
+        out: tensor
+        p: int
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
+  - f1_score: 75.18796992481204
+    overall_score: 100
+    precision: 100.0
+    recall: 60.24096385542168

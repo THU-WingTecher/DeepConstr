@@ -13,4 +13,35 @@ args:
   - false
 name: torch._C._nn.gelu
 package: torch
-pass_rate: 0
+pass_rate: 96.5
+rules:
+- - cot: 'The error is due to the input tensor ''self'' being of type ''Int'', but
+      the GeluKernelImpl function in the torch._C._nn.gelu module does not support
+      ''Int'' data type. Therefore, the data type of ''self'' tensor should be changed
+      to a type supported by GeluKernelImpl, such as ''Float''. So, Left : self.dtype,
+      Op : !=, Right : torch.int32'
+    length: 1
+    target:
+      choosen_dtype:
+        approximate: str
+        self: tensor
+      msg: '"GeluKernelImpl" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype != torch.int32
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        approximate: str
+        self: tensor
+      msg: approximate argument must be either none or tanh.
+      package: torch
+    txt: approximate == tanh
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

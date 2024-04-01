@@ -1,0 +1,224 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - padding
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch._C._nn.reflection_pad1d
+package: torch
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        padding: list[int]
+        self: tensor
+      msg: 'padding size is expected to be 2, but got: 0'
+      package: torch
+    txt: len(padding) == 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        padding: list[int]
+        self: tensor
+      msg: 'Argument #4: Padding size should be less than the corresponding input
+        dimension, but got: padding (3, 1) at dimension 1 of input [3, 3, 8, 9, 3,
+        3, 3]'
+      package: torch
+    txt: padding[0] < self.shape[2]
+  - f1_score: 60.489510489510494
+    overall_score: 46.25
+    precision: 86.5
+    recall: 46.505376344086024
+- - cot: 'Based on the given runtime information, the error occurs because the tensor
+      `self` has no dimensions, but the function `torch._C._nn.reflection_pad1d` is
+      expecting a tensor with at least one dimension.
+
+
+      To prevent this error, the tensor `self` should have at least one dimension.
+      Therefore, the constraint can be formulated as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        padding: list[int]
+        self: tensor
+      msg: Dimension specified as 0 but tensor has no dimensions
+      package: torch
+    txt: self.ndim > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: Based on the given runtime information, the error is caused because the padding
+      values include a negative dimension, which is not allowed. To prevent this error,
+      the padding values should be corrected to have only non-negative dimensions.
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        padding: list[int]
+        self: tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: padding >= [0, 0]
+  - f1_score: 69.56521739130436
+    overall_score: 100
+    precision: 100.0
+    recall: 53.333333333333336
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        padding: list[int]
+        self: tensor
+      msg: 'Argument #4: Padding size should be less than the corresponding input
+        dimension, but got: padding (7, 2) at dimension 1 of input [8, 7, 8, 8, 8,
+        8, 9]'
+      package: torch
+    txt: (padding[0] < self.size(1)) and (padding[1] < self.shape[1])
+  - f1_score: 66.77796327212019
+    overall_score: 100
+    precision: 100.0
+    recall: 50.125313283208015
+- - cot: "The error is due to the dimension being out of the valid range. The function\
+      \ expects the dimension to be in the range of [-1, 0] but got 1. To prevent\
+      \ this error, we need to ensure that the dimension value is always within the\
+      \ valid range for the given tensor. \n\nWe can formulate the constraint as follows:"
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        padding: list[int]
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got 1)
+      package: torch
+    txt: all(d >= -len(self.shape) and d < len(self.shape) for d in padding)
+  - f1_score: 61.95286195286194
+    overall_score: 26.0
+    precision: 46.0
+    recall: 94.84536082474226
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        out: tensor
+        padding: list[int]
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got 1)
+      package: torch
+    txt: (((self.ndim >= -len(self.shape)) and (all(p >= -len(self.shape) and p <
+      len(self.shape) for p in padding))) and (all(d >= -len(self.shape) and d < len(self.shape)
+      for d in out.shape))) and (len(self.shape) > 1)
+  - f1_score: 67.35751295336787
+    overall_score: 100
+    precision: 100.0
+    recall: 50.78125
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        padding: list[int]
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank)))
+      and (out.shape == self.shape)
+  - f1_score: 74.38016528925618
+    overall_score: 100
+    precision: 100.0
+    recall: 59.210526315789465
+- - cot: Based on the given runtime information, the error occurs because the output
+      tensor 'out' has negative dimensions. To prevent this error, the dimensions
+      of the output tensor should be non-negative.
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        padding: list[int]
+        self: tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(out.shape[i] >= 0 for i in range(out.rank))
+  - f1_score: 81.2227074235808
+    overall_score: 100
+    precision: 100.0
+    recall: 68.38235294117648
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        padding: list[int]
+        self: tensor
+      msg: Expected out tensor to have dtype float, but got int instead
+      package: torch
+    txt: dtype(out) == float
+  - f1_score: 66.83182577634383
+    overall_score: 30.472527472527474
+    precision: 54.94505494505495
+    recall: 85.28157623878842
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        padding: list[int]
+        self: tensor
+      msg: Expected out tensor to have dtype int, but got float instead
+      package: torch
+    txt: (dtype(out) == int) or (out.dtype == self.dtype)
+  - f1_score: 94.85714285714286
+    overall_score: 100
+    precision: 100.0
+    recall: 90.21739130434783
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        padding: list[int]
+        self: tensor
+      msg: '"reflection_pad1d" not implemented for ''Half'''
+      package: torch
+    txt: dtype(self) != 'Half'
+  - f1_score: 97.77777777777777
+    overall_score: 100
+    precision: 100.0
+    recall: 95.65217391304348
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        padding: list[int]
+        self: tensor
+      msg: 'Expected 2D or 3D (batch mode) tensor with possibly 0 batch size and other
+        non-zero dimensions for input, but got: [0, 1]'
+      package: torch
+    txt: self.ndims() == 3
+  - f1_score: 67.78523489932887
+    overall_score: 100
+    precision: 100.0
+    recall: 51.26903553299492

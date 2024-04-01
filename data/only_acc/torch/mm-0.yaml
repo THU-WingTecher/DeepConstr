@@ -1,0 +1,43 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - mat2
+  required:
+  - true
+  - true
+name: torch.mm
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        mat2: tensor
+        self: tensor
+      msg: mat2 must be a matrix
+      package: torch
+    txt: (mat2[-1] == 1)
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        mat2: tensor
+        self: tensor
+      msg: self must be a matrix
+      package: torch
+    txt: self.dim() == 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

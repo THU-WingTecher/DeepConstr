@@ -13,4 +13,31 @@ args:
   - true
 name: torch.round
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Found dtype Float but expected Int
+      package: torch
+    txt: dtype(out) == dtype(self)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 76.33587786259541
+    overall_score: 50.167938931297705
+    precision: 100.0
+    recall: 61.72839506172839

@@ -17,4 +17,19 @@ args:
   - false
 name: torch._C._nn.linear
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        bias: None
+        input: tensor
+        weight: tensor
+      msg: both arguments to linear need to be at least 1D, but they are 0D and 2D
+      package: torch
+    txt: input.ndims() >= 1 and weight.ndims() >= 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

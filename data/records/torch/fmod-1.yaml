@@ -13,4 +13,5 @@ args:
   - true
 name: torch.fmod
 package: torch
-pass_rate: 0
+pass_rate: 99.5
+rules: []

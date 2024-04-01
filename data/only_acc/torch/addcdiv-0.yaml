@@ -1,0 +1,84 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - number
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - tensor1
+  - tensor2
+  - value
+  required:
+  - true
+  - true
+  - true
+  - false
+name: torch.addcdiv
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'The error is triggered because size of tensors at non-singleton dimension
+      5 doesn''t match. What the args were? the two tensors matching problem at non-singleton
+      dimension looks like broadcasting request. Broadcasting in tensor operations
+      requires that the trailing dimensions of the tensors are either 1 or the same.
+      We start from the last dimension because broadcasting aligns dimensions from
+      the end. Therefore, we can revise the constraints as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        tensor1: tensor
+        tensor2: tensor
+        value: int
+      msg: The size of tensor a (9) must match the size of tensor b (3) at non-singleton
+        dimension 3
+      package: torch
+    txt: all(tensor1.shape[i] == tensor2.shape[i] or tensor1.shape[i] == 1 or tensor2.shape[i]
+      == 1 for i in range(-1, -min(len(tensor1.shape), len(tensor2.shape))-1, -1))
+  - f1_score: 90.1639344262295
+    overall_score: 44.25
+    precision: 82.5
+    recall: 99.3975903614458
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        self: tensor
+        tensor1: tensor
+        tensor2: tensor
+        value: int
+      msg: The size of tensor a (2) must match the size of tensor b (9) at non-singleton
+        dimension 6
+      package: torch
+    txt: ((self.dim() == tensor2.dim() and self.shape() == tensor2.shape()) and (tensor1.dim(4)
+      == tensor2.dim(4))) and (tensor1.dim == tensor2.dim and tensor1.shape == tensor2.shape)
+  - f1_score: 70.17543859649122
+    overall_score: 100
+    precision: 100.0
+    recall: 54.05405405405405
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        tensor1: tensor
+        tensor2: tensor
+        value: int
+      msg: 'Integer division with addcdiv is no longer supported, and in a future  release
+        addcdiv will perform a true division of tensor1 and tensor2. The historic
+        addcdiv behavior can be implemented as (input + value * torch.trunc(tensor1
+        / tensor2)).to(input.dtype) for integer inputs and as (input + value * tensor1
+        / tensor2) for float inputs. The future addcdiv behavior is just the latter
+        implementation: (input + value * tensor1 / tensor2), for all dtypes.'
+      package: torch
+    txt: dtype(tensor2) != "integer"
+  - f1_score: 67.80238500851789
+    overall_score: 100
+    precision: 100.0
+    recall: 51.28865979381443

@@ -13,4 +13,34 @@ args:
   - true
 name: torch._C._nn.log_sigmoid
 package: torch
-pass_rate: 0
+pass_rate: 98.5
+rules:
+- - cot: 'The error is due to the function ''log_sigmoid_cpu'' not being implemented
+      for integer data type. The ''self'' tensor is of type int32, but the function
+      requires a float data type. Therefore, the data type of ''self'' tensor should
+      be float. So, Left : self.dtype, Op : ==, Right : torch.float32'
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: '"log_sigmoid_cpu" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype == torch.float32
+  - f1_score: 97.323600973236
+    overall_score: 60.661800486618
+    precision: 100.0
+    recall: 94.7867298578199
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
+  - f1_score: 75.75757575757576
+    overall_score: 49.87878787878788
+    precision: 100.0
+    recall: 60.97560975609756

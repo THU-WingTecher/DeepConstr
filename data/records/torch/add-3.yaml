@@ -21,4 +21,41 @@ args:
   - true
 name: torch.add
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        other: int
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self)==dtype(out)
+  - f1_score: 93.89671361502347
+    overall_score: 58.948356807511736
+    precision: 100.0
+    recall: 88.49557522123894
+- - cot: 'Based on the given runtime information, the error "Trying to resize storage
+      that is not resizable" occurs when trying to resize the ''out'' tensor. To prevent
+      this error, the shape of the ''out'' tensor should be the same as the shape
+      of the operation result, which is the ''self'' tensor in this case.
+
+
+      Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        other: int
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 74.76635514018692
+    overall_score: 49.38317757009346
+    precision: 100.0
+    recall: 59.70149253731343

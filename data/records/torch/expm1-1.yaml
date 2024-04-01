@@ -13,4 +13,35 @@ args:
   - true
 name: torch.expm1
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'The error is caused because the output tensor data type Long doesn''t match
+      with the function''s output data type Float. Let''s see the what''s args were.
+      The dtype of ''out'' is Long, but the expected dtype is Float. Therefore, we
+      should change dtype of ''out'' to Float. Left : dtype(out), op : ==, Right :
+      Float'
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Long
+      package: torch
+    txt: dtype(out)==torch.float32
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.shape == self.shape) and (out.rank==self.rank)
+  - f1_score: 95.01187648456057
+    overall_score: 53.50593824228029
+    precision: 100.0
+    recall: 90.49773755656109

@@ -17,4 +17,35 @@ args:
   - true
 name: torch._C._special.special_chebyshev_polynomial_t
 package: torch
-pass_rate: 0
+pass_rate: 24.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        n: tensor
+        out: tensor
+        x: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (9) at non-singleton
+        dimension 3
+      package: torch
+    txt: n.shape[0] == x.shape[0]
+  - f1_score: 76.48183556405354
+    overall_score: 100
+    precision: 100.0
+    recall: 61.91950464396285
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        n: tensor
+        out: tensor
+        x: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank == n.rank and all(out.shape[i] == n.shape[i] for i in range(out.rank)))
+      and (out.shape == n.shape)
+  - f1_score: 58.74301357362838
+    overall_score: 28.322916666666668
+    precision: 53.645833333333336
+    recall: 64.91051172170407

@@ -13,4 +13,18 @@ args:
   - true
 name: torch.max
 package: torch
-pass_rate: 0
+pass_rate: 96.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 67.3434856175973
+    overall_score: 45.67174280879865
+    precision: 99.5
+    recall: 50.89514066496164

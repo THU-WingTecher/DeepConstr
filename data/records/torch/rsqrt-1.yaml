@@ -13,4 +13,34 @@ args:
   - true
 name: torch.rsqrt
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: "The error is caused because the output tensor has dtype of Int, but the\
+      \ result of the function is Float which cannot be cast to Int. Therefore, the\
+      \ dtype of the output tensor should be Float. \nLeft : dtype(out), op : ==,\
+      \ right : float"
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(out)==float
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank == self.rank) and (out.shape == self.shape)
+  - f1_score: 92.16589861751153
+    overall_score: 52.082949308755765
+    precision: 100.0
+    recall: 85.47008547008548

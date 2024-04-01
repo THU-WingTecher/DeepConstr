@@ -1,0 +1,39 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - number
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - alpha
+  required:
+  - true
+  - true
+  - false
+name: torch.add
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'Error is triggered because the size of tensor a (5) must match the size
+      of tensor b (6) at non-singleton dimension 2. Let''s see what the args were.
+      The two tensors are not inconsistent. It expects to have the same dimension
+      among all tensors. Let''s formulate the constraint to prevent the error:'
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (8) must match the size of tensor b (2) at non-singleton
+        dimension 3
+      package: torch
+    txt: self.dim == other.dim and self.shape == other.shape
+  - f1_score: 94.11764705882352
+    overall_score: 100
+    precision: 100.0
+    recall: 88.88888888888889

@@ -25,4 +25,50 @@ args:
   - false
 name: torch.pairwise_distance
 package: torch
-pass_rate: 0
+pass_rate: 64.0
+rules:
+- - cot: 'Error is triggered because the size of tensor a (8) does not match the size
+      of tensor b (9) at non-singleton dimension 2. To prevent this error, the dimensions
+      of the tensors at non-singleton dimension 2 should match. Therefore, the constraint
+      can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        eps: float
+        keepdim: bool
+        p: float
+        x1: tensor
+        x2: tensor
+      msg: The size of tensor a (2) must match the size of tensor b (3) at non-singleton
+        dimension 4
+      package: torch
+    txt: x1.shape[2] == x2.shape[2]
+  - f1_score: 76.92307692307692
+    overall_score: 100
+    precision: 100.0
+    recall: 62.5
+- - cot: 'The error indicates that the ''p'' argument, which defines the type of norm
+      to be used, is not satisfying the requirement of being a non-negative integer.
+      The received ''p'' is -3, so it needs to be corrected. The error also indicates
+      that an attempt is being made to compute a norm on an empty dimension, which
+      is not allowed. Therefore, the dimensions of the input tensors ''x1'' and ''x2''
+      must also be checked to ensure they are not empty.
+
+
+      Left: p, Op: ''>='', Right: 0'
+    length: 1
+    target:
+      choosen_dtype:
+        eps: float
+        keepdim: bool
+        p: float
+        x1: tensor
+        x2: tensor
+      msg: linalg.vector_norm cannot compute the -3 norm on the dimension 6because
+        this dimension is empty and the operation does not have an identity
+      package: torch
+    txt: p >= 0
+  - f1_score: 67.00167504187604
+    overall_score: 45.50083752093802
+    precision: 100.0
+    recall: 50.377833753148614

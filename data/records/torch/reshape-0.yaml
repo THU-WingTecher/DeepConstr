@@ -13,4 +13,18 @@ args:
   - true
 name: torch.reshape
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        self: tensor
+        shape: list[int]
+      msg: shape '[]' is invalid for input of size 81
+      package: torch
+    txt: (shape == [6, 6]) and (len(shape) > 0)
+  - f1_score: 49.107142857142854
+    overall_score: 29.000000000000004
+    precision: 55.00000000000001
+    recall: 44.35483870967742

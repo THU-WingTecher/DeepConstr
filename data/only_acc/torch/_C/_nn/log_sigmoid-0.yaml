@@ -1,0 +1,28 @@
+args:
+  dtype:
+  - Tensor
+  is_pos:
+  - true
+  name:
+  - self
+  required:
+  - true
+name: torch._C._nn.log_sigmoid
+package: torch
+pass_rate: 100
+rules:
+- - cot: The error is due to the fact that the function `torch._C._nn.log_sigmoid`
+      is not implemented for the data type 'Int'. Therefore, in order to prevent the
+      error, the data type of the input tensor should be changed to a supported data
+      type such as 'Float' or 'Double'.
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+      msg: '"log_sigmoid_cpu" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype in ['Float', 'Double']
+  - f1_score: 98.76543209876544
+    overall_score: 100
+    precision: 100.0
+    recall: 97.56097560975611

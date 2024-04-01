@@ -29,4 +29,23 @@ args:
   - false
 name: torch.max_pool1d_with_indices
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        dilation: list[int]
+        kernel_size: list[int]
+        padding: list[int]
+        self: tensor
+        stride: list[int]
+      msg: 'Expected 2 to 3 dimensions, but got 7-dimensional tensor for argument
+        #1 ''self'' (while checking arguments for max_pool1d)'
+      package: torch
+    txt: self.ndim() == 3
+  - f1_score: 91.32420091324202
+    overall_score: 100
+    precision: 100.0
+    recall: 84.03361344537815

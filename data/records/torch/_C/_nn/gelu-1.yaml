@@ -17,4 +17,63 @@ args:
   - true
 name: torch._C._nn.gelu
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'The error is due to the function "GeluKernelImpl" not being implemented
+      for ''Int'' data type. To prevent this error, the data type of the input tensor
+      should be changed to float. So, Left : self.dtype, Op : ==, Right : torch.float32'
+    length: 1
+    target:
+      choosen_dtype:
+        approximate: str
+        out: tensor
+        self: tensor
+      msg: '"GeluKernelImpl" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype == torch.float32
+  - f1_score: 97.56097560975608
+    overall_score: 60.78048780487804
+    precision: 100.0
+    recall: 95.23809523809523
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        approximate: str
+        out: tensor
+        self: tensor
+      msg: Found dtype Int but expected Float
+      package: torch
+    txt: dtype(self) == dtype(out)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        approximate: str
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
+  - f1_score: 76.33587786259541
+    overall_score: 50.167938931297705
+    precision: 100.0
+    recall: 61.72839506172839
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        approximate: str
+        out: tensor
+        self: tensor
+      msg: approximate argument must be either none or tanh.
+      package: torch
+    txt: approximate == "tanh"
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

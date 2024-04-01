@@ -25,4 +25,25 @@ args:
   - true
 name: torch._C._nn.smooth_l1_loss
 package: torch
-pass_rate: 0
+pass_rate: 10.5
+rules:
+- - cot: 'Error is triggered because the size of tensor `a` (shape [1, 8, 8, 8]) doesn''t
+      match the size of tensor `b` (shape [3, 3, 3, 3, 3]) at non-singleton dimension
+      4. To prevent this error, the dimensions and shapes of `a` and `b` should be
+      consistent. Therefore, the constraint can be formulated as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        beta: float
+        out: tensor
+        reduction: int
+        self: tensor
+        target: tensor
+      msg: The size of tensor a (8) must match the size of tensor b (4) at non-singleton
+        dimension 2
+      package: torch
+    txt: self.dim == target.dim and self.shape == target.shape
+  - f1_score: 89.8876404494382
+    overall_score: 100
+    precision: 100.0
+    recall: 81.63265306122447

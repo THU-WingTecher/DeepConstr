@@ -1,0 +1,66 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - decimals
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.round
+package: torch
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        decimals: int
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 73.93715341959334
+    overall_score: 100
+    precision: 100.0
+    recall: 58.65102639296187
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        decimals: int
+        out: tensor
+        self: tensor
+      msg: Found dtype Int but expected Float
+      package: torch
+    txt: dtype(out) == dtype(self)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: The error is due to the fact that the function `torch.round` is not implemented
+      for `Int` data type. Therefore, to prevent the error, the data type of the input
+      tensor should be changed to a compatible data type such as `Float` before calling
+      `torch.round`.
+    length: 1
+    target:
+      choosen_dtype:
+        decimals: int
+        out: tensor
+        self: tensor
+      msg: '"round_cpu" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype in [torch.float16, torch.float32, torch.float64]
+  - f1_score: 95.23809523809523
+    overall_score: 100
+    precision: 100.0
+    recall: 90.9090909090909

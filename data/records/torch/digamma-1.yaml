@@ -13,4 +13,34 @@ args:
   - true
 name: torch.digamma
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'The error is caused because the output tensor has a data type of Int32,
+      but the digamma function results in a Float32 type. Therefore, the data type
+      of the output tensor should be changed from Int32 to Float32. Let''s see what
+      the args were. Therefore, Left : dtype(out), Op : ==, Right : float32.'
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(out)==torch.float32
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.shape == self.shape) and (out.rank==self.rank)
+  - f1_score: 94.7867298578199
+    overall_score: 53.39336492890995
+    precision: 100.0
+    recall: 90.09009009009009

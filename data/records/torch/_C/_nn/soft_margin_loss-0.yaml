@@ -17,4 +17,43 @@ args:
   - false
 name: torch._C._nn.soft_margin_loss
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: "Based on the given runtime information, the error occurs because the size\
+      \ of tensor `self` (with shape [3, 3]) does not match the size of tensor `target`\
+      \ (with shape [1, 5, 5, 5]) at non-singleton dimension 3. To prevent this error,\
+      \ we need to ensure that the dimensions and shapes of `self` and `target` are\
+      \ consistent. \n\nThe constraint that prevents the error can be formulated as:"
+    length: 1
+    target:
+      choosen_dtype:
+        reduction: int
+        self: tensor
+        target: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (6) at non-singleton
+        dimension 2
+      package: torch
+    txt: self.dim == target.dim and self.shape == target.shape
+  - f1_score: 99.25558312655089
+    overall_score: 100
+    precision: 100.0
+    recall: 98.52216748768474
+- - cot: 'The error is triggered because the result type Float cannot be cast to Int.
+      The dtypes of the ''self'' and ''target'' tensors are inconsistent, one is int32
+      and the other is float32. Therefore, the dtypes of ''self'' and ''target'' arguments
+      should be consistent and not integer because the function is expected to return
+      float. Also, the ''reduction'' argument should be a string, not an integer.
+      Here are the constraints:'
+    length: 1
+    target:
+      choosen_dtype:
+        reduction: int
+        self: tensor
+        target: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self)==tf.float32
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

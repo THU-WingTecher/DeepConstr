@@ -17,4 +17,56 @@ args:
   - false
 name: torch.rot90
 package: torch
-pass_rate: 0
+pass_rate: 57.99999999999999
+rules:
+- - cot: 'The error occurs because the rotation dimensions provided are the same,
+      but they should be different. Let''s see what the runtime values of ''dims''
+      were. It appears that ''dims'' is [-3, 0]. To prevent this error in the future
+      and generate constraints that do not trigger it, we need to ensure that the
+      two rotation dimensions are different. Therefore, the constraint for the ''dims''
+      parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dims: list[int]
+        k: int
+        self: tensor
+      msg: expected rotation dims to be different, but got dim0 = 0 and dim1 = 0
+      package: torch
+    txt: dims[0] != dims[1]
+  - f1_score: 90.625
+    overall_score: 57.3125
+    precision: 87.0
+    recall: 94.56521739130434
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dims: list[int]
+        k: int
+        self: tensor
+      msg: Rotation dim0 out of range, dim0 = 6
+      package: torch
+    txt: -1 >= -len(self.shape)
+  - f1_score: 51.57699443413729
+    overall_score: 37.788497217068645
+    precision: 69.5
+    recall: 41.00294985250738
+- - cot: 'The error occurs because the total number of rotation dimensions provided
+      is not equal to 2, which is the expected value. In this case, the given `dims`
+      parameter has a length of 9, which is not equal to 2. To prevent this error,
+      we need to ensure that the length of the `dims` parameter is always equal to
+      2. We can express this constraint as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dims: list[int]
+        k: int
+        self: tensor
+      msg: expected total rotation dims == 2, but got dims = 0
+      package: torch
+    txt: len(dims) == 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

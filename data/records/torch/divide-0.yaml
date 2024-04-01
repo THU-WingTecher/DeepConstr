@@ -13,4 +13,21 @@ args:
   - true
 name: torch.divide
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'Error is triggered because the size of tensor a (6) must match the size
+      of tensor b (5) at non-singleton dimension 2. Based on the given runtime information,
+      we can formulate the following constraint to prevent the error:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (5) at non-singleton
+        dimension 3
+      package: torch
+    txt: self.dim == other.dim and self.shape == other.shape
+  - f1_score: 97.21518987341771
+    overall_score: 60.60759493670886
+    precision: 96.0
+    recall: 98.46153846153845

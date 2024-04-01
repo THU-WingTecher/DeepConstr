@@ -13,4 +13,24 @@ args:
   - true
 name: torch.fmod
 package: torch
-pass_rate: 0
+pass_rate: 90.0
+rules:
+- - cot: 'Error is triggered because the two tensors have mismatched sizes at non-singleton
+      dimension 2. It seems like there''s an attempt to perform an operation that
+      requires the tensors to have matching sizes in their respective dimensions.
+      Let''s see what the args were. The tensors `other` and `self` have mismatched
+      sizes at dimension 2. Therefore, we can formulate the following constraint to
+      prevent this error:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (2) must match the size of tensor b (3) at non-singleton
+        dimension 4
+      package: torch
+    txt: all(self.shape[i] == other.shape[i] for i in range(min(len(self.shape), len(other.shape))))
+  - f1_score: 99.50248756218905
+    overall_score: 61.75124378109452
+    precision: 100.0
+    recall: 99.00990099009901

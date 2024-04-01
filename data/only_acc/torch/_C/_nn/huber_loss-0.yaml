@@ -1,0 +1,88 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - int
+  - float
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - target
+  - reduction
+  - delta
+  required:
+  - true
+  - true
+  - false
+  - false
+name: torch._C._nn.huber_loss
+package: torch
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        delta: float
+        reduction: int
+        self: tensor
+        target: tensor
+      msg: The size of tensor a (5) must match the size of tensor b (6) at non-singleton
+        dimension 2
+      package: torch
+    txt: (self.dim(6) == target.dim(6)) and (self.shape == target.shape)
+  - f1_score: 84.92569002123143
+    overall_score: 100
+    precision: 100.0
+    recall: 73.80073800738008
+- - cot: 'The error is triggered because the value of delta is -2.0, which is non-positive.
+      Huber loss does not support non-positive values for delta. To prevent the error,
+      the condition to be satisfied is:'
+    length: 1
+    target:
+      choosen_dtype:
+        delta: float
+        reduction: int
+        self: tensor
+        target: tensor
+      msg: huber_loss does not support non-positive values for delta.
+      package: torch
+    txt: delta > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        delta: float
+        reduction: int
+        self: tensor
+        target: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(target)==Int
+  - f1_score: 67.56756756756758
+    overall_score: 100
+    precision: 100.0
+    recall: 51.02040816326531
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        delta: float
+        reduction: int
+        self: tensor
+        target: tensor
+      msg: '"huber_cpu" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype == torch.float32
+  - f1_score: 94.11764705882352
+    overall_score: 100
+    precision: 100.0
+    recall: 88.88888888888889

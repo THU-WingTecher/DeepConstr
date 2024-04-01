@@ -1,0 +1,86 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.max
+package: torch
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (8) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.shape[5] == other.shape[5]
+  - f1_score: 75.046904315197
+    overall_score: 100
+    precision: 100.0
+    recall: 60.06006006006006
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank == self.rank) and (other.rank == out.rank and all(other.shape[i]
+      == out.shape[i] for i in range(other.rank)))
+  - f1_score: 75.32956685499057
+    overall_score: 100
+    precision: 100.0
+    recall: 60.42296072507553
+- - cot: 'Error is triggered because the size of tensors at non-singleton dimension
+      3 doesn''t match. What the args were? the two tensors matching problem at non-singleton
+      dimension looks like broadcasting request. Broadcasting in tensor operations
+      requires that the trailing dimensions of the tensors are either 1 or the same.
+      We start from the last dimension because broadcasting aligns dimensions from
+      the end. Therefore, we can revise the constraints as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (3) must match the size of tensor b (5) at non-singleton
+        dimension 6
+      package: torch
+    txt: all(self.shape[i] == other.shape[i] or self.shape[i] == 1 or other.shape[i]
+      == 1 for i in range(-1, -min(len(self.shape), len(other.shape))-1, -1))
+  - f1_score: 91.87935034802784
+    overall_score: 100
+    precision: 100.0
+    recall: 84.9785407725322
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: (dtype(self) == int32) and (dtype(other)==dtype(out))
+  - f1_score: 67.57215619694398
+    overall_score: 100
+    precision: 100.0
+    recall: 51.02564102564102

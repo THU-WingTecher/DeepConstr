@@ -13,4 +13,20 @@ args:
   - true
 name: torch.round
 package: torch
-pass_rate: 0
+pass_rate: 95.5
+rules:
+- - cot: 'The error is due to the fact that the function `torch.round` is not implemented
+      for integers (`Int`). To prevent this error, the input tensor should be of a
+      floating-point data type. Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        decimals: int
+        self: tensor
+      msg: '"round_cpu" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype() != torch.int
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

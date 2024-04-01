@@ -1,0 +1,67 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.divide
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'Error is triggered because the size of tensor a (9) must match the size
+      of tensor b (7) at non-singleton dimension 5. Let''s see what the args were.
+      The tensors involved are self and other. Therefore, the constraint to prevent
+      the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (8) must match the size of tensor b (9) at non-singleton
+        dimension 3
+      package: torch
+    txt: self.shape[5] == other.shape[5]
+  - f1_score: 76.04562737642586
+    overall_score: 100
+    precision: 100.0
+    recall: 61.34969325153374
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank==self.rank) and (other.rank==out.rank)
+  - f1_score: 89.48545861297539
+    overall_score: 100
+    precision: 100.0
+    recall: 80.97165991902835
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self) == dtype(other) == dtype(out) == float32
+  - f1_score: 74.21150278293136
+    overall_score: 100
+    precision: 100.0
+    recall: 58.99705014749264

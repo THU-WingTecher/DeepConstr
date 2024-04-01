@@ -1,0 +1,31 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.fmod
+package: torch
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (6) at non-singleton
+        dimension 3
+      package: torch
+    txt: self.shape[5] == other.shape[5]
+  - f1_score: 77.97270955165692
+    overall_score: 100
+    precision: 100.0
+    recall: 63.897763578274756

@@ -1,0 +1,66 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - List[int]
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - shifts
+  - dims
+  required:
+  - true
+  - true
+  - false
+name: torch.roll
+package: torch
+pass_rate: 45.5
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dims: list[int]
+        self: tensor
+        shifts: list[int]
+      msg: '`shifts` required'
+      package: torch
+    txt: len(shifts) > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: The error is caused because the shifts and dimensions do not align. Let's
+      see what the args were. It seems shifts is [9] and dims is [2]. To prevent this
+      error, the shifts and dimensions need to have the same length. Therefore, the
+      condition should be shifts and dims have the same length.
+    length: 1
+    target:
+      choosen_dtype:
+        dims: list[int]
+        self: tensor
+        shifts: list[int]
+      msg: 'shifts and dimensions must align. shifts: 9, dims:0'
+      package: torch
+    txt: len(shifts) == len(dims)
+  - f1_score: 91.53318077803203
+    overall_score: 100
+    precision: 100.0
+    recall: 84.38818565400842
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dims: list[int]
+        self: tensor
+        shifts: list[int]
+      msg: Dimension out of range (expected to be in range of [-4, 3], but got 5)
+      package: torch
+    txt: dims[i] < len(self.shape)
+  - f1_score: 38.70967741935484
+    overall_score: 27.0
+    precision: 48.0
+    recall: 32.432432432432435

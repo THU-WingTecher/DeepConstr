@@ -1,0 +1,55 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - target
+  - reduction
+  required:
+  - true
+  - true
+  - false
+name: torch._C._nn.soft_margin_loss
+package: torch
+pass_rate: 100
+rules:
+- - cot: "Based on the given runtime information, the error occurs because the size\
+      \ of tensor `self` (with shape [3, 3]) does not match the size of tensor `target`\
+      \ (with shape [1, 5, 5, 5]) at non-singleton dimension 3. To prevent this error,\
+      \ we need to ensure that the dimensions and shapes of `self` and `target` are\
+      \ consistent. \n\nThe constraint that prevents the error can be formulated as:"
+    length: 1
+    target:
+      choosen_dtype:
+        reduction: int
+        self: tensor
+        target: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (6) at non-singleton
+        dimension 2
+      package: torch
+    txt: self.dim == target.dim and self.shape == target.shape
+  - f1_score: 99.25558312655089
+    overall_score: 100
+    precision: 100.0
+    recall: 98.52216748768474
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        reduction: int
+        self: tensor
+        target: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: ((reduction == 6) and (dtype(self)==dtype(target))) and (dtype(target) ==
+      float32)
+  - f1_score: 93.24009324009324
+    overall_score: 100
+    precision: 100.0
+    recall: 87.33624454148472

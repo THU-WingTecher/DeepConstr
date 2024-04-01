@@ -1,0 +1,157 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.matmul
+package: torch
+pass_rate: 99.5
+rules:
+- - cot: 'Error is triggered because size of tensors at non-singleton dimension 2
+      doesn''t match. What the args were? The two tensors matching problem at non-singleton
+      dimension looks like broadcasting request. Broadcasting in tensor operations
+      requires that the trailing dimensions of the tensors are either 1 or the same.
+      We start from the last dimension because broadcasting aligns dimensions from
+      the end. Therefore, we can revise the constraints as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (7) at non-singleton
+        dimension 3
+      package: torch
+    txt: self.shape[-1] == other.shape[-1] or self.shape[-1] == 1 or other.shape[-1]
+      == 1
+  - f1_score: 76.48183556405354
+    overall_score: 100
+    precision: 100.0
+    recall: 61.91950464396285
+- - cot: "Based on the given runtime information, the error is due to the fact that\
+      \ both arguments to matmul need to be at least 1D, but they are 0D and 7D respectively.\
+      \ \n\nTo prevent this error, the self tensor should be at least 1D and the other\
+      \ tensor should be at least 1D. \n\nSo the constraint to prevent the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: both arguments to matmul need to be at least 1D, but they are 0D and 7D
+      package: torch
+    txt: self.dim() >= 1 and other.dim() >= 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: "Error is triggered because the size of tensors at non-singleton dimension\
+      \ 2 doesn't match. The shape of tensor a at non-singleton dimension 2 is 8,\
+      \ while the shape of tensor b at non-singleton dimension 2 is 9. To prevent\
+      \ this error, the size of tensor a at dimension 2 should match the size of tensor\
+      \ b at dimension 2. \n\nTherefore, the constraint can be formulated as:"
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (5) must match the size of tensor b (9) at non-singleton
+        dimension 4
+      package: torch
+    txt: self.shape[2] == other.shape[2]
+  - f1_score: 76.48183556405354
+    overall_score: 100
+    precision: 100.0
+    recall: 61.91950464396285
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank==self.rank) and (out.rank==other.rank)
+  - f1_score: 77.16535433070867
+    overall_score: 50.5
+    precision: 98.0
+    recall: 63.63636363636363
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: inconsistent tensor size, expected tensor [1] and src [6] to have the same
+        number of elements, but got 1 and 6 elements respectively
+      package: torch
+    txt: self.shape[0] == other.shape[0]
+  - f1_score: 74.07407407407409
+    overall_score: 100
+    precision: 100.0
+    recall: 58.82352941176471
+- - cot: The error is because the shapes of mat1 and mat2 cannot be multiplied as
+      their dimensions do not conform to matrix multiplication rules. The dimensions
+      of mat1 and mat2 are (7x9) and (7x1) respectively. According to the rules of
+      matrix multiplication, the number of columns in the first matrix should be equal
+      to the number of rows in the second matrix. In this case, the number of columns
+      of mat1 (which is 9) is not equal to the number of rows of mat2 (which is 7).
+      Therefore, the dimensions of mat1 and mat2 should be corrected. Hence, the constraints
+      will be,
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: mat1 and mat2 shapes cannot be multiplied (7x9 and 7x1)
+      package: torch
+    txt: self.shape[1] == other.shape[0]
+  - f1_score: 77.51937984496125
+    overall_score: 100
+    precision: 100.0
+    recall: 63.291139240506325
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: result dtype Float does not match input dtype Int
+      package: torch
+    txt: dtype(self) == dtype(out)
+  - f1_score: 99.25558312655089
+    overall_score: 100
+    precision: 100.0
+    recall: 98.52216748768474
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: 'dot : expected both vectors to have same dtype, but found Int and Float'
+      package: torch
+    txt: dtype(self) == dtype(other)
+  - f1_score: 99.75062344139653
+    overall_score: 100
+    precision: 100.0
+    recall: 99.50248756218907

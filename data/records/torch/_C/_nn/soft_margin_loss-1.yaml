@@ -21,4 +21,40 @@ args:
   - true
 name: torch._C._nn.soft_margin_loss
 package: torch
-pass_rate: 0
+pass_rate: 93.93939393939394
+rules:
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      size of tensor a (9) does not match the size of tensor b (8) at non-singleton
+      dimension 6. To prevent this error, the dimensions and shape of tensor a and
+      b should be consistent. Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        reduction: int
+        self: tensor
+        target: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (5) at non-singleton
+        dimension 2
+      package: torch
+    txt: out.dim == self.dim and out.shape == self.shape and self.dim == target.dim
+      and self.shape == target.shape
+  - f1_score: 75.90132827324477
+    overall_score: 100
+    precision: 100.0
+    recall: 61.16207951070336
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        reduction: int
+        self: tensor
+        target: tensor
+      msg: Found dtype Int but expected Float
+      package: torch
+    txt: (dtype(out) == dtype(target)) and (dtype(out) == dtype(self))
+  - f1_score: 99.00497512437809
+    overall_score: 100
+    precision: 100.0
+    recall: 98.02955665024629

@@ -21,4 +21,68 @@ args:
   - false
 name: torch._C._nn.huber_loss
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        delta: float
+        reduction: int
+        self: tensor
+        target: tensor
+      msg: '"huber_cpu" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype == 'Float'
+  - f1_score: 96.61835748792271
+    overall_score: 60.309178743961354
+    precision: 100.0
+    recall: 93.45794392523365
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        delta: float
+        reduction: int
+        self: tensor
+        target: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(target)==Int
+  - f1_score: 67.56756756756758
+    overall_score: 100
+    precision: 100.0
+    recall: 51.02040816326531
+- - cot: 'The error is triggered because the value of delta is -2.0, which is non-positive.
+      Huber loss does not support non-positive values for delta. To prevent the error,
+      the condition to be satisfied is:'
+    length: 1
+    target:
+      choosen_dtype:
+        delta: float
+        reduction: int
+        self: tensor
+        target: tensor
+      msg: huber_loss does not support non-positive values for delta.
+      package: torch
+    txt: delta > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        delta: float
+        reduction: int
+        self: tensor
+        target: tensor
+      msg: The size of tensor a (5) must match the size of tensor b (6) at non-singleton
+        dimension 2
+      package: torch
+    txt: (self.dim(6) == target.dim(6)) and (self.shape == target.shape)
+  - f1_score: 95.86374695863748
+    overall_score: 59.93187347931874
+    precision: 98.5
+    recall: 93.36492890995261

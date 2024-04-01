@@ -1,0 +1,121 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.lcm
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'Based on the given runtime information, the error occurs because the size
+      of the tensor "a" is 9, while the size of the tensor "b" is 3 at non-singleton
+      dimension 3. To prevent this error, the following constraint can be formulated:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (8) must match the size of tensor b (6) at non-singleton
+        dimension 2
+      package: torch
+    txt: self.shape[3] == other.shape[3]
+  - f1_score: 74.07407407407409
+    overall_score: 100
+    precision: 100.0
+    recall: 58.82352941176471
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank == self.rank) and (out.shape == self.shape)
+  - f1_score: 61.84971098265896
+    overall_score: 28.25
+    precision: 53.5
+    recall: 73.28767123287672
+- - cot: "The error occurs because the function torch.lcm does not have an implementation\
+      \ for the data type 'Float'. To prevent the error, the data type of the input\
+      \ tensors 'other' and 'self' should be one of the allowed types, which are 'half',\
+      \ 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32', 'uint64'. \n\nWrap\
+      \ the final formula with"
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: '"lcm_cpu" not implemented for ''Float'''
+      package: torch
+    txt: dtype(other) in ["half", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+      "uint64"] and dtype(self) in ["half", "int16", "int32", "int64", "uint8", "uint16",
+      "uint32", "uint64"]
+  - f1_score: 78.27788649706457
+    overall_score: 100
+    precision: 100.0
+    recall: 64.30868167202571
+- - cot: 'The error arises because the function torch.lcm is not implemented for the
+      data type ''Half''. The input tensor ''self'' is of type ''Half'' which is not
+      compatible with the function. Therefore, the data type of ''self'' should be
+      changed to one of the allowed types. Op : in, and Right : [float16, float32,
+      int8, int16, int32, int64, uint8, uint16, uint32, uint64].'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: '"lcm_cpu" not implemented for ''Half'''
+      package: torch
+    txt: dtype(self) in [float32, int8, int16, int32, int64, uint8, uint16, uint32,
+      uint64]
+  - f1_score: 84.92569002123143
+    overall_score: 100
+    precision: 100.0
+    recall: 73.80073800738008
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (all(out.shape[i]==self.shape[i] for i in range(out.rank))) and (other.rank==out.rank
+      and all(other.shape[i]==out.shape[i] for i in range(other.rank)))
+  - f1_score: 68.4931506849315
+    overall_score: 100
+    precision: 100.0
+    recall: 52.083333333333336
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: '"lcm_cpu" not implemented for ''Half'''
+      package: torch
+    txt: (dtype(self) != "Half") and (dtype(other) in ["int16", "int32", "int64",
+      "uint8", "uint16", "uint32", "uint64"])
+  - f1_score: 98.75311720698255
+    overall_score: 100
+    precision: 100.0
+    recall: 97.53694581280787

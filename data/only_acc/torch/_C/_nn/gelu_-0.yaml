@@ -1,0 +1,46 @@
+args:
+  dtype:
+  - Tensor
+  - str
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - approximate
+  required:
+  - true
+  - false
+name: torch._C._nn.gelu_
+package: torch
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        approximate: str
+        self: tensor
+      msg: approximate argument must be either none or tanh.
+      package: torch
+    txt: approximate == tanh
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: The error is due to the fact that the function `gelu_` is not implemented
+      for tensors with data type 'Int'. To prevent this error, the data type of the
+      tensor `self` should be changed to a type that is supported by the `gelu_` function,
+      such as 'Float' or 'Double'.
+    length: 1
+    target:
+      choosen_dtype:
+        approximate: str
+        self: tensor
+      msg: '"GeluKernelImpl" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype in ['Float', 'Double']
+  - f1_score: 98.28009828009829
+    overall_score: 100
+    precision: 100.0
+    recall: 96.61835748792271

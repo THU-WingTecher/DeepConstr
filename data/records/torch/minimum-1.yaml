@@ -17,4 +17,56 @@ args:
   - true
 name: torch.minimum
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: ((dtype(self)==dtype(other)) and (dtype(self)==int32)) or (dtype(out)==float32)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank==other.rank and all(out.shape[i]==other.shape[i] for i in range(out.rank)))
+      and (self.rank==other.rank)
+  - f1_score: 69.20415224913494
+    overall_score: 40.60207612456747
+    precision: 100.0
+    recall: 52.910052910052904
+- - cot: 'Based on the runtime information, the error is triggered because the size
+      of tensor a (self) at non-singleton dimension 4 (9) does not match the size
+      of tensor b (other) at the same dimension (8).
+
+
+      To prevent this error, the size of tensor a (self) should match the size of
+      tensor b (other) at non-singleton dimension 4. Therefore, the constraint can
+      be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (8) must match the size of tensor b (9) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.shape[4] == other.shape[4]
+  - f1_score: 75.61436672967864
+    overall_score: 100
+    precision: 100.0
+    recall: 60.790273556231
