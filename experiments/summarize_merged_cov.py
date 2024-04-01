@@ -213,30 +213,6 @@ if __name__ == "__main__":
         root_dir = sys.argv[1]
     else:
         root_dir = '/artifact/gen_tf/'
-    
-    pt_data_paths = [
-        "/artifact/experiments/results/merged_torch.csv",
-        "/artifact/experiments/results/torch3.csv",
-        "/artifact/experiments/results/torch4.csv"
-    ]
-    pt_neuri_data_path = "/artifact/data/torch_overall_apis.json"
-    pt_nnsmith_data_path = ""
-    tf_data_paths = [
-        "/artifact/experiments/results/merged_tf.csv"
-    ]
-    tf_neuri_data_path = "/artifact/data/tf_overall_apis.json"
-    tf_nnsmith_data_path = ""
-
-    print("neuri - pt")
-    print(check_left_api(
-        pt_neuri_data_path,
-        pt_data_paths
-    ))
-    print("neuri - tf")
-    print(check_left_api(
-        tf_neuri_data_path,
-        tf_data_paths
-    ))
 
     api_coverage_data = traverse_and_classify(root_dir)
     processed_data = process_pickle_files(api_coverage_data)

@@ -75,7 +75,7 @@ def tf_model_exec(
     #     gcda_save_path = f"{WORKSPACE}/{str(id_path)}-workspace"
     os.system(f"rm {gcda_save_path} -r")
     os.makedirs(gcda_save_path, exist_ok=True)
-    batches = batched(model_paths, n=1000)
+    batches = batched(model_paths, n=500)
     for model_paths in batches :
         trial_arguments = [
             "python3",

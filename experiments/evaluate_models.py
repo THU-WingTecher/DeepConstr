@@ -24,7 +24,7 @@ def model_exec(test_paths, model_type, backend_type, backend_target, profraw_pat
                 break
     activation_command = "source /opt/conda/etc/profile.d/conda.sh && conda activate " + "cov" + " && "
     # model_paths = model_paths[:len(model_paths)//10]
-    batches = batched(model_paths, n=1000)
+    batches = batched(model_paths, n=500)
     for model_paths in batches :
         arguments = [
             "python3",

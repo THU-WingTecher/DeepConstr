@@ -242,23 +242,24 @@ def torch_prepare(save_dir, executor):
     TRAIN_LOG.info(f"end of torch_prepare, {legal} legal methods, {illegal} illegal funcs, cur_line {i_line}, all {n_} operators")
     return tensor_methods, torch_funcs
 
-def tf_prepare(save_dir, executor):
+def tf_prepare(save_dir, executor, datapath="/artifact/data/tf_nnsmith.json"):
     legal, illegal, notfound = 0, 0, 0
     notfounds = []
     illegals = []
-    with open("/artifact/data/tf_overall_apis.json", "r") as f:
+    with open(datapath, "r") as f:
         overall_apis = yaml.safe_load(f)
     
     for api in overall_apis:
         nm_to_path = api.replace(".", "/")
-        save_path = os.path.join(save_dir, f"{nm_to_path}-{0}.yaml")
-        if not os.path.exists(save_path):
-            TRAIN_LOG.warning(f"{save_path} not found")
+        load_path = os.path.join(save_dir, f"{nm_to_path}.yaml")
+        save_path = os.path.join("cleaned", f"{nm_to_path}-{0}.yaml")
+        if not os.path.exists(load_path):
+            TRAIN_LOG.warning(f"{load_path} not found")
             notfounds.append(api)
             continue
-        with open(save_path, 'r') as f:
+        with open(load_path, 'r') as f:
             record = yaml.safe_load(f)
-            res, record = check_trainable(record, executor, save_path)
+            res, record = check_trainable(record, executor, load_path)
             if res :
                 legal+=1
                 save_record(transform_record_for_saving(record), save_path)
@@ -273,7 +274,7 @@ def tf_prepare(save_dir, executor):
 
 def check_trainable(record, executor, save_path, *args, **kwargs) : 
 
-    # record = transfer_older_record_to_newer(record)
+    record = transfer_older_record_to_newer(record)
     record['args']['dtype_obj'] = [materalize_dtypes(dtype) for dtype in record['args']['dtype']]
     record['args']['value'] = [None] * len(record['args']['name'])
     record['outputs'] = {'value': []} # Placeholder for the output values
