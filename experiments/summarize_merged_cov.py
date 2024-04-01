@@ -207,16 +207,60 @@ def save_data(final_bf, completed_data, save_dir="/artifact/experiments/results"
     final_bf.to_csv(save_path)
     revise_complete_data(complete_data_path, completed_data)
 
-if __name__ == "__main__":
-    import sys
-    if len(sys.argv) > 1:
-        root_dir = sys.argv[1]
-    else:
-        root_dir = '/artifact/gen_tf/'
+def merge_csvs(save_path, *args) :
+    # adjusted_column_names = [name + ".models" for name in json_content]
+    # extracted_columns_df_with_models = filtered_df[filtered_df.columns.intersection(adjusted_column_names)]
 
-    api_coverage_data = traverse_and_classify(root_dir)
-    processed_data = process_pickle_files(api_coverage_data)
-    aggregated_df = aggregate_summarized_data(processed_data)
-    final_bf_summary, completed_data = summarize_final_bf(aggregated_df)
-    save_data(final_bf_summary, completed_data, "/artifact/experiments/results")
+    import pandas as pd
+    dfs = []
+    for arg in args : 
+        dfs.append(pd.read_csv(arg))
+    
+    merged_df = pd.concat(dfs)
+    filtered_df = merged_df[~(merged_df == 0).any(axis=1)]
+
+    if 'constrinf' in filtered_df.columns:
+        filtered_df = filtered_df.sort_values('constrinf', ascending=False).drop_duplicates(subset='API').sort_index()
+    else:
+        # If 'constrinf' column does not exist, just remove duplicates based on all columns
+        filtered_df = filtered_df.drop_duplicates()
+
+    filtered_df.reset_index(drop=True, inplace=True)
+
+    total_rows = filtered_df.shape[0]
+    for tool in ["constrinf", "constrinf_2"] :
+        for baseline in ["neuri", "symbolic"] :
+            columns_to_compare = [baseline] if all(col in filtered_df.columns for col in [baseline]) else []
+            if tool in filtered_df.columns and columns_to_compare:
+                rows_where_constrinf_is_highest = filtered_df.apply(lambda row: row[tool] > row[columns_to_compare], axis=1).sum()
+            else:
+                rows_where_constrinf_is_highest = "Required columns are missing or incorrectly specified."
+            print("percentage_constrinf_highest of ", tool, "vs", baseline, ":", (rows_where_constrinf_is_highest / total_rows) * 100, "%")
+    
+    sorted_columns_df = filtered_df.sort_values(by="API")
+    print(sorted_columns_df.head())
+    sorted_columns_df.to_csv(save_path, index=False)
+
+# csv_paths = [
+#     "/artifact/experiments/results/merged_torch.csv",
+#     "/artifact/experiments/results/torch1.csv",
+#     "/artifact/experiments/results/torch2.csv",
+#     "/artifact/experiments/results/torch3.csv",
+#     "/artifact/experiments/results/torch4.csv",
+#     "/artifact/experiments/results/torch5.csv",
+# ]
+# merge_csvs("/artifact/experiments/results/merged_torch_v2.csv", *csv_paths)
+
+# if __name__ == "__main__":
+#     import sys
+#     if len(sys.argv) > 1:
+#         root_dir = sys.argv[1]
+#     else:
+#         root_dir = '/artifact/gen_tf/'
+
+#     api_coverage_data = traverse_and_classify(root_dir)
+#     processed_data = process_pickle_files(api_coverage_data)
+#     aggregated_df = aggregate_summarized_data(processed_data)
+#     final_bf_summary, completed_data = summarize_final_bf(aggregated_df)
+#     save_data(final_bf_summary, completed_data, "/artifact/experiments/results")
     # print(final_bf_summary)

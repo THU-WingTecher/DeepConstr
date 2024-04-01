@@ -184,7 +184,7 @@ class StatusCollect:
 def check_left_api(api_data_path, saved_data_paths) :
     with open(api_data_path, "r") as file:
         data = json.load(file)
-    
+    data = list(set(data))
     for saved_data_path in saved_data_paths :
         with open(saved_data_path, "r") as f:
             for i, line in enumerate(f.readlines()) :
@@ -196,26 +196,72 @@ def check_left_api(api_data_path, saved_data_paths) :
                     if api_name in data :
                         data.remove(api_name)
     
-    return data, len(data)
+    return data
 
+def check_record(api_names, record_dir) :
+    todo = []
+    for name in api_names :
+        path = os.path.join(record_dir, name.replace(".","/")+"-0.yaml")
+        if not os.path.exists(path) :
+            todo.append(name)
+            print(f"{path} is not exist")
+    return todo
+            
 pt_data_paths = [
-    "/artifact/experiments/results/merged_torch.csv",
-    "/artifact/experiments/results/torch3.csv",
-    "/artifact/experiments/results/torch4.csv"
+    "/artifact/experiments/results/merged_torch_v2.csv",
 ]
 pt_neuri_data_path = "/artifact/data/torch_overall_apis.json"
-pt_nnsmith_data_path = ""
+pt_nnsmith_data_path = "/artifact/data/torch_nnsmith.json"
 tf_data_paths = [
     "/artifact/experiments/results/merged_tf.csv"
 ]
 tf_neuri_data_path = "/artifact/data/tf_overall_apis.json"
-tf_nnsmith_data_path = ""
+tf_nnsmith_data_path = "/artifact/data/tf_nnsmith.json"
 
+# print("neuri - pt")
+# neuri_pt = check_left_api(
+#     pt_neuri_data_path,
+#     pt_data_paths
+# )
+# check_record(neuri_pt, "/artifact/data/records/torch")
+# print("neuri - pt")
+# neuri_pt = check_left_api(
+#     pt_neuri_data_path,
+#     pt_data_paths
+# )
+# check_record(neuri_pt, "/artifact/data/records/torch")
+
+# print(check_left_api(
+#     pt_neuri_data_path,
+#     pt_data_paths
+# ))
 print("neuri - pt")
-print(check_left_api(
+neuri_pt = check_left_api(
     pt_neuri_data_path,
     pt_data_paths
-))
+)
+
+print(check_record(neuri_pt, "/artifact/data/records"))
+print("neuri - tf")
+neuri_tf = check_left_api(
+    tf_neuri_data_path,
+    tf_data_paths
+)
+print(check_record(neuri_tf, "/artifact/data/records"))
+
+print("nnsmith - pt")
+nnsmith_pt = check_left_api(
+    pt_nnsmith_data_path,
+    pt_data_paths
+)
+
+print(check_record(nnsmith_pt, "/artifact/data/records"))
+print("nnsmith - tf")
+nnsmith_tf = check_left_api(
+    tf_nnsmith_data_path,
+    tf_data_paths
+)
+print(check_record(nnsmith_tf, "/artifact/data/records"))
 
 class TrainingLoop:
     def __init__(
@@ -311,12 +357,18 @@ class TrainingLoop:
             todo_list = check_left_api(
                     pt_neuri_data_path,
                     pt_data_paths
-                )[0]
+                ) + check_left_api(
+                    pt_nnsmith_data_path,
+                    pt_data_paths
+                )
         elif self.cfg["model"]["type"] == "tensorflow" :
             todo_list = check_left_api(
                     tf_neuri_data_path,
                     tf_data_paths
-                )[0]
+                ) + check_left_api(
+                    tf_nnsmith_data_path,
+                    tf_data_paths
+                )
         for root, _, files in os.walk(root_path):
             for file in files:
                 if file.endswith(".yaml"):
@@ -325,13 +377,16 @@ class TrainingLoop:
                     if full_name in todo_list :
                         with open(os.path.join(root, file), "r") as f:
                             record = yaml.safe_load(f)
-                            if record.get("error", None) is not None or len(record.get("rules", [])) > 0 :
+                            if record.get("name", None) in ["tf.raw_ops.GatherNd", "tf.raw_ops.Slice", "tf.raw_ops.SparseSoftmaxCrossEntropyWithLogits", "tf.raw_ops.Tile", "tf.raw_ops.TopKV2"]
+                                pass
+                            elif record.get("error", None) is not None or len(record.get("rules", [])) > 0 :
                                 continue
-                            if record.get("pass_rate", 0) >= 15 :
+                            elif record.get("pass_rate", 0) >= 15 :
                                 continue
                         record_paths.append(os.path.join(root, file))
         record_paths = sorted(record_paths, key=sort_key)
-        return sorted(record_paths, key=sort_key)
+        print(record_paths)
+        return record_paths
         ### all records of torch apis ###
         # li = []
         # root_path = self.cfg["train"]["record_path"] 
@@ -810,3 +865,4 @@ def main(cfg: DictConfig):
 
 if __name__ == "__main__":
     main()
+    # pass

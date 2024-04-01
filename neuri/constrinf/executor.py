@@ -67,13 +67,7 @@ def worker(model, record, noise=0.8, allow_zero_length_rate=0.1, allow_zero_rate
             concretized_values[key] = values[key].concretize(inst.input_symb_2_value, only_shape=True) if hasattr(values[key], 'concretize') else values[key]
     MGEN_LOG.debug(f"Concretized values of {record['name']}: {concretized_values}")
     try:
-        # Assuming record_args_info is a function to log or record argument info
-        # self.record_args_info(record, values)  # Placeholder for actual logging or recording
         res_or_bug, abs_ret_list = model.execute_op(inst)
-        # if res_or_bug == NotImplemented :
-        #     err_instance = ErrorMessage("NotImplemented", "", concretized_values, chosen_dtype, package=model.package)
-        #     err_instance.error_type = NotImplementedError
-        #     return False, err_instance
         return True, ErrorMessage(NOERR_MSG, "", concretized_values, chosen_dtype, package=model.package)  # Assuming execution success
     except Exception as e:
         error_instance = ErrorMessage(e, traceback.format_exc(), concretized_values, chosen_dtype, package=model.package)
@@ -143,9 +137,7 @@ class Executor:
         for p in processes:
             if p.is_alive():
                 p.terminate()  # Terminate process
-                # err_instance = ErrorMessage(TimeoutError(), "Process exceeded timeout.", {}, {})
-                # MGEN_LOG.error(f"TIMEOUT error in execute: Process exceeded timeout.")
-                # return_dict[processes.index(p)] = [False, err_instance]
+
         for i in range(len(return_dict)) :
             if return_dict.get(i, None) is None :
                 pass 
