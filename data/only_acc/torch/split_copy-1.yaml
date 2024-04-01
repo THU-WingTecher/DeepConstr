@@ -1,0 +1,81 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - split_size
+  - dim
+  required:
+  - true
+  - true
+  - false
+name: torch.split_copy
+package: torch
+pass_rate: 45.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+        split_size: int
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 7)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 68.10810810810811
+    overall_score: 50.25
+    precision: 94.5
+    recall: 53.239436619718305
+- - cot: The error is triggered because the split_size argument is negative. To prevent
+      this error, the split_size argument should be non-negative.
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+        split_size: int
+      msg: split expects split_size be non-negative, but got split_size=-3
+      package: torch
+    txt: split_size >= 0
+  - f1_score: 96.61835748792271
+    overall_score: 100
+    precision: 100.0
+    recall: 93.45794392523365
+- - cot: 'The error is triggered because the split_size is set to 0, but the dimension
+      size is 3. The split_size can only be 0 if the dimension size is also 0. Therefore,
+      the constraint that prevents the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+        split_size: int
+      msg: split_size can only be 0 if dimension size is 0, but got dimension size
+        of 3
+      package: torch
+    txt: (split_size == 0) == (self.shape[dim] == 0)
+  - f1_score: 72.72727272727272
+    overall_score: 100
+    precision: 100.0
+    recall: 57.14285714285714
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+        split_size: int
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 8)
+      package: torch
+    txt: dim < len(self.shape)
+  - f1_score: 56.103896103896105
+    overall_score: 30.0
+    precision: 54.0
+    recall: 58.37837837837838

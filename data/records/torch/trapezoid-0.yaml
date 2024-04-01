@@ -17,4 +17,72 @@ args:
   - false
 name: torch.trapezoid
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: "The error is triggered because the size of tensor `x` (8) does not match\
+      \ the size of tensor `y` (9) at non-singleton dimension 6. To prevent this error,\
+      \ the dimensions and shape of `x` and `y` should be compatible. \n\nThe constraint\
+      \ can be formulated as follows:"
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        x: tensor
+        y: tensor
+      msg: The size of tensor a (2) must match the size of tensor b (8) at non-singleton
+        dimension 4
+      package: torch
+    txt: x.dim() == y.dim() and x.shape == y.shape
+  - f1_score: 85.88541078087918
+    overall_score: 54.94270539043959
+    precision: 95.95959595959596
+    recall: 77.72550623849457
+- - cot: 'The error occurs because the dimension provided, dim=9, is out of the valid
+      range. To prevent this error, we need to ensure that the value of dim is always
+      within the valid range for the given tensors. If we denote the shape of the
+      tensors as x_shape and y_shape, the valid range for the dimension would be [-max(x_shape),
+      max(y_shape)-1]. The constraint for the dim parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        x: tensor
+        y: tensor
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 8)
+      package: torch
+    txt: -9 <= dim < 6
+  - f1_score: 96.37305699481865
+    overall_score: 54.18652849740933
+    precision: 93.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        x: tensor
+        y: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (8) at non-singleton
+        dimension 6
+      package: torch
+    txt: (all(x.shape[i] == y.shape[i] or x.shape[i] == 1 or y.shape[i] == 1 for i
+      in range(-1, -min(len(x.shape), len(y.shape))-1, -1))) and (all(x.shape[i] ==
+      y.shape[i] for i in range(1, len(x.shape))))
+  - f1_score: 75.8974358974359
+    overall_score: 38.5
+    precision: 74.0
+    recall: 77.89473684210526
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        x: tensor
+        y: tensor
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got -2)
+      package: torch
+    txt: dim >= -len(x.shape)
+  - f1_score: 73.84044526901671
+    overall_score: 48.920222634508356
+    precision: 99.5
+    recall: 58.70206489675517

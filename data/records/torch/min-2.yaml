@@ -17,4 +17,47 @@ args:
   - false
 name: torch.min
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        keepdim: bool
+        self: tensor
+      msg: 'min(): Expected reduction dim 0 to have non-zero size.'
+      package: torch
+    txt: (self.shape[0] != 0)
+  - f1_score: 66.77796327212019
+    overall_score: 45.388981636060095
+    precision: 100.0
+    recall: 50.125313283208015
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        keepdim: bool
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 8)
+      package: torch
+    txt: (dim >= -len(self.shape)) and (dim in [-1, 0])
+  - f1_score: 64.57925636007829
+    overall_score: 44.289628180039145
+    precision: 82.5
+    recall: 53.054662379421224
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        keepdim: bool
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got -3)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 77.94432548179873
+    overall_score: 48.5
+    precision: 91.0
+    recall: 68.16479400749064

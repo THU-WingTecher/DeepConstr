@@ -1,0 +1,88 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - int
+  - List[Tensor]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - split_size
+  - dim
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+name: torch.split_copy
+package: torch
+pass_rate: 76.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+        split_size: int
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 22)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 67.64168190127971
+    overall_score: 49.25
+    precision: 92.5
+    recall: 53.31412103746398
+- - cot: 'The error occurred because the split_size argument was passed with a negative
+      value. To prevent this error, the split_size argument should be non-negative.
+      Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+        split_size: int
+      msg: split expects split_size be non-negative, but got split_size=-2
+      package: torch
+    txt: split_size >= 0
+  - f1_score: 96.61835748792271
+    overall_score: 100
+    precision: 100.0
+    recall: 93.45794392523365
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+        split_size: int
+      msg: split_size can only be 0 if dimension size is 0, but got dimension size
+        of 8
+      package: torch
+    txt: ((self.shape[-4] == 0) and (split_size == 0 or self.shape[dim] == 0)) or
+      (split_size != 0)
+  - f1_score: 68.4931506849315
+    overall_score: 100
+    precision: 100.0
+    recall: 52.083333333333336
+- - cot: "Based on the given runtime information, the error is triggered because the\
+      \ `torch.split_copy` function expects at least a 1-dimensional tensor. To prevent\
+      \ the error, the input tensor `self` should have a dimension greater than or\
+      \ equal to 1. \n\nThe constraint to prevent the error can be formulated as:"
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+        split_size: int
+      msg: split expects at least a 1-dimensional tensor
+      package: torch
+    txt: self.dim >= 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

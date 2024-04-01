@@ -17,4 +17,50 @@ args:
   - true
 name: torch.select
 package: torch
-pass_rate: 0
+pass_rate: 89.0
+rules:
+- - cot: 'Based on the given runtime information, the constraint that would prevent
+      the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        index: int
+        self: tensor
+      msg: select() cannot be applied to a 0-dim tensor.
+      package: torch
+    txt: self.ndim > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        dim: int
+        index: int
+        self: tensor
+      msg: 'select(): index -2 out of range for tensor of size [1, 1, 1, 1, 1, 1,
+        1] at dimension 2'
+      package: torch
+    txt: (((index >= 0) and (dim < len(self.shape))) and (index >= 0 and index < self.shape[0]))
+      and (index >= -len(self.shape))
+  - f1_score: 62.39669421487604
+    overall_score: 43.198347107438025
+    precision: 75.5
+    recall: 53.16901408450705
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        index: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 8)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 85.04672897196261
+    overall_score: 54.523364485981304
+    precision: 91.0
+    recall: 79.82456140350877

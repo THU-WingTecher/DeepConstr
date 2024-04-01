@@ -25,4 +25,37 @@ args:
   - false
 name: torch.addmm
 package: torch
-pass_rate: 0
+pass_rate: 9.0
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat1: tensor
+        mat2: tensor
+        self: tensor
+      msg: mat1 must be a matrix, got 4-D tensor
+      package: torch
+    txt: (mat1.ndim == 2) and (mat2.dim == 2)
+  - f1_score: 96.38554216867469
+    overall_score: 100
+    precision: 100.0
+    recall: 93.02325581395348
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat1: tensor
+        mat2: tensor
+        self: tensor
+      msg: mat1 and mat2 shapes cannot be multiplied (3x6 and 2x8)
+      package: torch
+    txt: mat1.shape[1] == mat2.shape[0]
+  - f1_score: 95.01187648456057
+    overall_score: 100
+    precision: 100.0
+    recall: 90.49773755656109

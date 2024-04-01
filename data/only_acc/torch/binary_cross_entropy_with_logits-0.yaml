@@ -1,0 +1,212 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - target
+  - weight
+  - pos_weight
+  - reduction
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+name: torch.binary_cross_entropy_with_logits
+package: torch
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        pos_weight: None
+        reduction: int
+        self: tensor
+        target: tensor
+        weight: tensor
+      msg: output with shape [] doesn't match the broadcast shape [1, 1, 1, 1]
+      package: torch
+    txt: (self.shape == target.shape and self.dim == target.dim and self.dim == weight.dim)
+      and (len(target) == 0)
+  - f1_score: 98.01980198019803
+    overall_score: 61.00990099009901
+    precision: 99.0
+    recall: 97.05882352941177
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        pos_weight: tensor
+        reduction: int
+        self: tensor
+        target: tensor
+        weight: tensor
+      msg: output with shape [] doesn't match the broadcast shape [2, 2, 2, 2, 2,
+        2, 2]
+      package: torch
+    txt: ((target.shape == self.shape) or (self.shape[i] == 1)) and (len(pos_weight)
+      == len(self) == len(target) == 3)
+  - f1_score: 72.28520693894278
+    overall_score: 48.14260346947139
+    precision: 98.0
+    recall: 57.26033326119888
+- - cot: 'Error is triggered because the size of tensor `a` (6) must match the size
+      of tensor `b` (7) at non-singleton dimension 3. Based on the given runtime information,
+      we can formulate the constraint as:'
+    length: 1
+    target:
+      choosen_dtype:
+        pos_weight: None
+        reduction: int
+        self: tensor
+        target: tensor
+        weight: None
+      msg: The size of tensor a (7) must match the size of tensor b (9) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.shape[3] == target.shape[3]
+  - f1_score: 96.92307692307693
+    overall_score: 60.46153846153847
+    precision: 94.5
+    recall: 99.47368421052632
+- - cot: synthesized
+    length: 5
+    target:
+      choosen_dtype:
+        pos_weight: tensor
+        reduction: int
+        self: tensor
+        target: tensor
+        weight: None
+      msg: The size of tensor a (3) must match the size of tensor b (9) at non-singleton
+        dimension 6
+      package: torch
+    txt: (((all(pos_weight.shape[i] == self.shape[i] or pos_weight.shape[i] == 1 or
+      self.shape[i] == 1 for i in range(-1, -min(len(pos_weight.shape), len(self.shape))-1,
+      -1)) and all(pos_weight.shape[i] == target.shape[i] or pos_weight.shape[i] ==
+      1 or target.shape[i] == 1 for i in range(-1, -min(len(pos_weight.shape), len(target.shape))-1,
+      -1))) and (pos_weight.shape[1] == target.shape[1])) and ((pos_weight.dim ==
+      self.dim and pos_weight.shape[2] == self.shape[2]) and (self.shape[2] == target.shape[2])))
+      and (pos_weight.dim == self.dim and pos_weight.shape[0] == self.shape[0] and
+      pos_weight.shape[2] == self.shape[2] and target.dim == self.dim and target.shape
+      == self.shape)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        pos_weight: tensor
+        reduction: int
+        self: tensor
+        target: tensor
+        weight: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (9) at non-singleton
+        dimension 6
+      package: torch
+    txt: (((self.shape[i] == 1) and (all(self.shape[i] == weight.shape[i] or self.shape[i]
+      == 1 or weight.shape[i] == 1 for i in range(-1, -min(len(self.shape), len(weight.shape))-1,
+      -1)))) or (pos_weight.dim() == target.dim())) and (all(self.shape[i] == target.shape[i]
+      or self.shape[i] == 1 or target.shape[i] == 1 for i in range(-1, -min(len(self.shape),
+      len(target.shape))-1, -1)))
+  - f1_score: 98.03921568627452
+    overall_score: 100
+    precision: 100.0
+    recall: 96.15384615384615
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        pos_weight: None
+        reduction: int
+        self: tensor
+        target: tensor
+        weight: None
+      msg: output with shape [] doesn't match the broadcast shape [9, 4, 8, 7, 4,
+        9, 4]
+      package: torch
+    txt: self.shape == target.shape
+  - f1_score: 78.54251012145748
+    overall_score: 51.5
+    precision: 97.0
+    recall: 65.98639455782312
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        pos_weight: None
+        reduction: int
+        self: tensor
+        target: tensor
+        weight: None
+      msg: The size of tensor a (9) must match the size of tensor b (8) at non-singleton
+        dimension 3
+      package: torch
+    txt: (self.shape[4] == target.shape[4]) and (self.dim == target.dim)
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        pos_weight: None
+        reduction: int
+        self: tensor
+        target: tensor
+        weight: None
+      msg: output with shape [] doesn't match the broadcast shape [2, 6, 6, 6, 6,
+        6, 6]
+      package: torch
+    txt: (self.shape == target.shape) and (len(self.shape) == len(target.shape))
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        pos_weight: tensor
+        reduction: int
+        self: tensor
+        target: tensor
+        weight: None
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self) == dtype(target)
+  - f1_score: 69.10755148741418
+    overall_score: 100
+    precision: 100.0
+    recall: 52.7972027972028
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        pos_weight: None
+        reduction: int
+        self: tensor
+        target: tensor
+        weight: None
+      msg: '"log_sigmoid_cpu" not implemented for ''Int'''
+      package: torch
+    txt: dtype(target) == torch.float32
+  - f1_score: 96.61835748792271
+    overall_score: 100
+    precision: 100.0
+    recall: 93.45794392523365

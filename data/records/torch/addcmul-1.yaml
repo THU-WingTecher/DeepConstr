@@ -25,4 +25,92 @@ args:
   - true
 name: torch.addcmul
 package: torch
-pass_rate: 0
+pass_rate: 95.1219512195122
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+        tensor1: tensor
+        tensor2: tensor
+        value: int
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: ((dtype(out)==dtype(self)) or (dtype(self)==dtype(tensor2))) and (dtype(out)==dtype(tensor2))
+  - f1_score: 85.84763212079616
+    overall_score: 54.92381606039808
+    precision: 93.65079365079364
+    recall: 79.24480486568677
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+        tensor1: tensor
+        tensor2: tensor
+        value: int
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 86.25592417061613
+    overall_score: 55.12796208530806
+    precision: 100.0
+    recall: 75.83333333333333
+- - cot: "The error is triggered because the size of tensor a (4) does not match the\
+      \ size of tensor b (9) at non-singleton dimension 2. \n\nTo prevent this error,\
+      \ we can add a constraint that ensures the dimensions and shape of the tensors\
+      \ match. \n\nThe constraint can be formulated as:"
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+        tensor1: tensor
+        tensor2: tensor
+        value: int
+      msg: The size of tensor a (5) must match the size of tensor b (9) at non-singleton
+        dimension 2
+      package: torch
+    txt: self.dim == tensor1.dim and self.shape == tensor1.shape
+  - f1_score: 72.49999999999999
+    overall_score: 48.24999999999999
+    precision: 100.0
+    recall: 56.86274509803921
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+        tensor1: tensor
+        tensor2: tensor
+        value: int
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: tensor2.rank == 0
+  - f1_score: 85.71428571428571
+    overall_score: 54.857142857142854
+    precision: 100.0
+    recall: 75.0
+- - cot: synthesized
+    length: 5
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+        tensor1: tensor
+        tensor2: tensor
+        value: int
+      msg: The size of tensor a (4) must match the size of tensor b (9) at non-singleton
+        dimension 3
+      package: torch
+    txt: ((((self.dim == tensor1.dim and self.shape[1] == tensor1.shape[1]) or (tensor1.dim()
+      == tensor2.dim() and tensor1.shape[3] == tensor2.shape[3])) and (self.shape
+      == tensor2.shape)) and (tensor1.shape == tensor2.shape)) or (out.shape == self.shape)
+  - f1_score: 96.74185463659147
+    overall_score: 48.85
+    precision: 96.5
+    recall: 96.98492462311557

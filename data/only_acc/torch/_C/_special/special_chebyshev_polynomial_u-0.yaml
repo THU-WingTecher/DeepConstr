@@ -1,0 +1,32 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - false
+  - false
+  name:
+  - x
+  - n
+  required:
+  - true
+  - true
+name: torch._C._special.special_chebyshev_polynomial_u
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        n: tensor
+        x: tensor
+      msg: The size of tensor a (0) must match the size of tensor b (3) at non-singleton
+        dimension 3
+      package: torch
+    txt: n.shape[2] == x.shape[2] + 1
+  - f1_score: 73.27102803738318
+    overall_score: 100
+    precision: 100.0
+    recall: 57.817109144542776

@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - int,list[int]
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - bool
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - axis
+  - input_tensor
+  - keepdims
+  - name
+  required:
+  - false
+  - true
+  - false
+  - false
+name: tf.math.reduce_sum
+package: tensorflow
+pass_rate: 0

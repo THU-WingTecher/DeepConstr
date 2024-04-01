@@ -25,4 +25,38 @@ args:
   - true
 name: torch.prod
 package: torch
-pass_rate: 0
+pass_rate: 97.08029197080292
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        keepdim: bool
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
+  - f1_score: 71.84115523465704
+    overall_score: 47.92057761732852
+    precision: 99.5
+    recall: 56.21468926553672
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        keepdim: bool
+        out: tensor
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got -2)
+      package: torch
+    txt: (dim >= -len(self.shape) and dim < len(self.shape)) and (3 >= -len(self.shape)
+      and 3 < len(self.shape))
+  - f1_score: 79.28286852589642
+    overall_score: 51.64143426294821
+    precision: 99.5
+    recall: 65.89403973509934

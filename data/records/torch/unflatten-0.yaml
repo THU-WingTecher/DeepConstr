@@ -17,4 +17,47 @@ args:
   - true
 name: torch.unflatten
 package: torch
-pass_rate: 0
+pass_rate: 4.0
+rules:
+- - cot: 'The constraint to prevent the error can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+        sizes: list[int]
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 7)
+      package: torch
+    txt: dim >= -2 and dim < 2
+  - f1_score: 81.79959100204499
+    overall_score: 100
+    precision: 100.0
+    recall: 69.20415224913495
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+        sizes: list[int]
+      msg: 'unflatten: sizes must be non-empty'
+      package: torch
+    txt: len(sizes) > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+        sizes: list[int]
+      msg: Dimension specified as 0 but tensor has no dimensions
+      package: torch
+    txt: len(self) > 0
+  - f1_score: 97.45762711864408
+    overall_score: 60.72881355932204
+    precision: 100.0
+    recall: 95.0413223140496

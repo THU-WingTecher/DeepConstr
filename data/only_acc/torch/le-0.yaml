@@ -1,0 +1,35 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.le
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'Error is triggered because the size of tensors at non-singleton dimension
+      2 doesn''t match. What the args were? The first tensor has size 6 at dimension
+      2, while the second tensor has size 5 at dimension 2. To prevent this error,
+      we need to ensure that the sizes at non-singleton dimension 2 of both tensors
+      match. Therefore, the constraint can be formulated as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (8) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.shape[2] == other.shape[2]
+  - f1_score: 76.33587786259541
+    overall_score: 100
+    precision: 100.0
+    recall: 61.72839506172839

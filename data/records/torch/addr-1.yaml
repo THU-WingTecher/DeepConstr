@@ -29,4 +29,22 @@ args:
   - true
 name: torch.addr
 package: torch
-pass_rate: 0
+pass_rate: 4.522613065326634
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        out: tensor
+        self: tensor
+        vec1: tensor
+        vec2: tensor
+      msg: 'addr: Expected 1-D argument vec1, but got 4-D'
+      package: torch
+    txt: (vec1.ndims() == 1) and (vec2.ndims() == 1)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

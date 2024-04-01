@@ -17,4 +17,21 @@ args:
   - true
 name: torch.transpose
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim0: int
+        dim1: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-4, 3], but got 89)
+      package: torch
+    txt: (dim0 >= -2 and dim0 < 0) and ((dim0 >= -len(self.shape) and dim0 < len(self.shape))
+      and (dim1 >= -len(self.shape) and dim1 < len(self.shape)) and (dim0 * dim1 >=
+      0))
+  - f1_score: 84.46601941747574
+    overall_score: 54.23300970873787
+    precision: 87.0
+    recall: 82.0754716981132

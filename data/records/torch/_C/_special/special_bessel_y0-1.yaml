@@ -13,4 +13,35 @@ args:
   - true
 name: torch._C._special.special_bessel_y0
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'The error is caused because the output tensor type (Int32) is not compatible
+      with the function''s result type (Float32). Let''s look at the args. The output
+      tensor type is Int32, and the input tensor type is Float32. Therefore, to avoid
+      the error, the dtype of the output tensor should be compatible with the dtype
+      of the result. Left : dtype(out), Op : ==, Right : float32.'
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(out) == float32
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.shape == self.shape) and (out.rank == self.rank)
+  - f1_score: 95.69377990430624
+    overall_score: 53.84688995215312
+    precision: 100.0
+    recall: 91.74311926605505

@@ -148,7 +148,7 @@ def main(cfg) :
     else :
         raise NotImplementedError
     csv_paths = [
-        "/artifact/experiments/results/20240401-093149.csv"
+        "/artifact/experiments/results/torch5.csv"
         ]
     columns = []
     retrain_list = set()

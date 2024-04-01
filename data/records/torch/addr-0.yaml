@@ -25,4 +25,38 @@ args:
   - false
 name: torch.addr
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        self: tensor
+        vec1: tensor
+        vec2: tensor
+      msg: 'The expanded size of the tensor (3) must match the existing size (6) at
+        non-singleton dimension 1.  Target sizes: [8, 3].  Tensor sizes: [6, 6]'
+      package: torch
+    txt: (self.shape[1] == 9) and (len(vec1) == self.shape[0] and len(vec2) == self.shape[1])
+  - f1_score: 85.47008547008546
+    overall_score: 48.73504273504273
+    precision: 100.0
+    recall: 74.62686567164178
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        self: tensor
+        vec1: tensor
+        vec2: tensor
+      msg: 'addr: Expected 1-D argument vec1, but got 7-D'
+      package: torch
+    txt: (vec1.dim() == 1) and (vec2.ndims() == 1)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

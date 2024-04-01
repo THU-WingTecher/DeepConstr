@@ -13,4 +13,31 @@ args:
   - true
 name: torch.trunc
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Found dtype Int but expected Float
+      package: torch
+    txt: dtype(out) == dtype(self)
+  - f1_score: 99.75062344139653
+    overall_score: 61.875311720698264
+    precision: 100.0
+    recall: 99.50248756218907
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank==self.rank) and (out.shape == self.shape)
+  - f1_score: 92.80742459396751
+    overall_score: 52.403712296983755
+    precision: 100.0
+    recall: 86.58008658008657

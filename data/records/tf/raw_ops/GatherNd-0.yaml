@@ -1,6 +1,6 @@
 args:
   dtype:
-  - int16,int32,int64
+  - list[int]
   - str
   - int16,int32,int64
   is_pos:
@@ -19,25 +19,6 @@ name: tf.raw_ops.GatherNd
 package: tensorflow
 pass_rate: 2.0
 rules:
-- - cot: "Based on the given runtime information, the error arises because the attribute\
-      \ 'indices' is provided as a float32 tensor, but it is expected to be one of\
-      \ int16, int32, or int64. \n\nThe constraint that prevents the error is:"
-    length: 1
-    target:
-      choosen_dtype:
-        indices: tensor
-        name: str
-        params: tensor
-      msg: "Value for attr 'Tindices' of float is not in the list of allowed values:\
-        \ int16, int32, int64\n\t; NodeDef: {{node GatherNd}}; Op<name=GatherNd; signature=params:Tparams,\
-        \ indices:Tindices -> output:Tparams; attr=Tparams:type; attr=Tindices:type,allowed=[DT_INT16,\
-        \ DT_INT32, DT_INT64]> [Op:GatherNd] name: HLzh"
-      package: tensorflow
-    txt: dtype(indices) in ["int16", "int32", "int64"]
-  - f1_score: 100.0
-    overall_score: 100
-    precision: 100.0
-    recall: 100.0
 - - cot: 'Based on the given runtime information, the constraint that can prevent
       the error is as follows:'
     length: 1
@@ -103,7 +84,7 @@ rules:
         \  device='CPU'; Tparams in [DT_UINT64]; Tindices in [DT_INT64]\n  device='CPU';\
         \ Tparams in [DT_UINT64]; Tindices in [DT_INT32]\n [Op:GatherNd] name: yRiT"
       package: tensorflow
-    txt: (indices.shape[1] < params.shape.rank)
+    txt: (indices[1] < params.shape.rank)
   - f1_score: 29.520295202952035
     overall_score: 13.0
     precision: 20.0
@@ -172,83 +153,11 @@ rules:
         \  device='CPU'; Tparams in [DT_UINT64]; Tindices in [DT_INT64]\n  device='CPU';\
         \ Tparams in [DT_UINT64]; Tindices in [DT_INT32]\n [Op:GatherNd] name: mDQR"
       package: tensorflow
-    txt: indices.shape[0] == params.shape[0]
+    txt: indices[0] == params.shape[0]
   - f1_score: 28.57142857142857
     overall_score: 12.75
     precision: 19.5
     recall: 53.42465753424658
-- - cot: The error is occurring because the data types of the inputs are not compatible.
-      The indices tensor has a data type of int16, while the params tensor has a data
-      type of float32. To prevent this error, the data types of the indices and params
-      tensors should match.
-    length: 1
-    target:
-      choosen_dtype:
-        indices: tensor
-        name: str
-        params: tensor
-      msg: "Could not find device for node: {{node GatherNd}} = GatherNd[Tindices=DT_INT16,\
-        \ Tparams=DT_FLOAT]\nAll kernels registered for op GatherNd:\n  device='XLA_CPU_JIT';\
-        \ Tindices in [DT_INT32, DT_INT16, DT_INT64]; Tparams in [DT_FLOAT, DT_DOUBLE,\
-        \ DT_INT32, DT_UINT8, DT_INT16, 930109355527764061, DT_HALF, DT_UINT32, DT_UINT64,\
-        \ DT_FLOAT8_E5M2, DT_FLOAT8_E4M3FN]\n  device='XLA_GPU_JIT'; Tindices in [DT_INT32,\
-        \ DT_INT16, DT_INT64]; Tparams in [DT_FLOAT, DT_DOUBLE, DT_INT32, DT_UINT8,\
-        \ DT_INT16, 930109355527764061, DT_HALF, DT_UINT32, DT_UINT64, DT_FLOAT8_E5M2,\
-        \ DT_FLOAT8_E4M3FN]\n  device='GPU'; Tparams in [DT_COMPLEX128]; Tindices\
-        \ in [DT_INT64]\n  device='GPU'; Tparams in [DT_COMPLEX128]; Tindices in [DT_INT32]\n\
-        \  device='GPU'; Tparams in [DT_COMPLEX64]; Tindices in [DT_INT64]\n  device='GPU';\
-        \ Tparams in [DT_COMPLEX64]; Tindices in [DT_INT32]\n  device='GPU'; Tparams\
-        \ in [DT_DOUBLE]; Tindices in [DT_INT64]\n  device='GPU'; Tparams in [DT_DOUBLE];\
-        \ Tindices in [DT_INT32]\n  device='GPU'; Tparams in [DT_FLOAT]; Tindices\
-        \ in [DT_INT64]\n  device='GPU'; Tparams in [DT_FLOAT]; Tindices in [DT_INT32]\n\
-        \  device='GPU'; Tparams in [DT_BFLOAT16]; Tindices in [DT_INT64]\n  device='GPU';\
-        \ Tparams in [DT_BFLOAT16]; Tindices in [DT_INT32]\n  device='GPU'; Tparams\
-        \ in [DT_HALF]; Tindices in [DT_INT64]\n  device='GPU'; Tparams in [DT_HALF];\
-        \ Tindices in [DT_INT32]\n  device='GPU'; Tparams in [DT_INT64]; Tindices\
-        \ in [DT_INT64]\n  device='GPU'; Tparams in [DT_INT64]; Tindices in [DT_INT32]\n\
-        \  device='GPU'; Tparams in [DT_INT32]; Tindices in [DT_INT64]\n  device='GPU';\
-        \ Tparams in [DT_INT32]; Tindices in [DT_INT32]\n  device='CPU'; Tparams in\
-        \ [DT_QINT32]; Tindices in [DT_INT64]\n  device='CPU'; Tparams in [DT_QINT32];\
-        \ Tindices in [DT_INT32]\n  device='CPU'; Tparams in [DT_QUINT8]; Tindices\
-        \ in [DT_INT64]\n  device='CPU'; Tparams in [DT_QUINT8]; Tindices in [DT_INT32]\n\
-        \  device='CPU'; Tparams in [DT_QINT8]; Tindices in [DT_INT64]\n  device='CPU';\
-        \ Tparams in [DT_QINT8]; Tindices in [DT_INT32]\n  device='CPU'; Tparams in\
-        \ [DT_VARIANT]; Tindices in [DT_INT64]\n  device='CPU'; Tparams in [DT_VARIANT];\
-        \ Tindices in [DT_INT32]\n  device='CPU'; Tparams in [DT_RESOURCE]; Tindices\
-        \ in [DT_INT64]\n  device='CPU'; Tparams in [DT_RESOURCE]; Tindices in [DT_INT32]\n\
-        \  device='CPU'; Tparams in [DT_STRING]; Tindices in [DT_INT64]\n  device='CPU';\
-        \ Tparams in [DT_STRING]; Tindices in [DT_INT32]\n  device='CPU'; Tparams\
-        \ in [DT_BOOL]; Tindices in [DT_INT64]\n  device='CPU'; Tparams in [DT_BOOL];\
-        \ Tindices in [DT_INT32]\n  device='CPU'; Tparams in [DT_COMPLEX128]; Tindices\
-        \ in [DT_INT64]\n  device='CPU'; Tparams in [DT_COMPLEX128]; Tindices in [DT_INT32]\n\
-        \  device='CPU'; Tparams in [DT_COMPLEX64]; Tindices in [DT_INT64]\n  device='CPU';\
-        \ Tparams in [DT_COMPLEX64]; Tindices in [DT_INT32]\n  device='CPU'; Tparams\
-        \ in [DT_DOUBLE]; Tindices in [DT_INT64]\n  device='CPU'; Tparams in [DT_DOUBLE];\
-        \ Tindices in [DT_INT32]\n  device='CPU'; Tparams in [DT_FLOAT]; Tindices\
-        \ in [DT_INT64]\n  device='CPU'; Tparams in [DT_FLOAT]; Tindices in [DT_INT32]\n\
-        \  device='CPU'; Tparams in [DT_BFLOAT16]; Tindices in [DT_INT64]\n  device='CPU';\
-        \ Tparams in [DT_BFLOAT16]; Tindices in [DT_INT32]\n  device='CPU'; Tparams\
-        \ in [DT_HALF]; Tindices in [DT_INT64]\n  device='CPU'; Tparams in [DT_HALF];\
-        \ Tindices in [DT_INT32]\n  device='CPU'; Tparams in [DT_INT32]; Tindices\
-        \ in [DT_INT64]\n  device='CPU'; Tparams in [DT_INT32]; Tindices in [DT_INT32]\n\
-        \  device='CPU'; Tparams in [DT_INT8]; Tindices in [DT_INT64]\n  device='CPU';\
-        \ Tparams in [DT_INT8]; Tindices in [DT_INT32]\n  device='CPU'; Tparams in\
-        \ [DT_UINT8]; Tindices in [DT_INT64]\n  device='CPU'; Tparams in [DT_UINT8];\
-        \ Tindices in [DT_INT32]\n  device='CPU'; Tparams in [DT_INT16]; Tindices\
-        \ in [DT_INT64]\n  device='CPU'; Tparams in [DT_INT16]; Tindices in [DT_INT32]\n\
-        \  device='CPU'; Tparams in [DT_UINT16]; Tindices in [DT_INT64]\n  device='CPU';\
-        \ Tparams in [DT_UINT16]; Tindices in [DT_INT32]\n  device='CPU'; Tparams\
-        \ in [DT_UINT32]; Tindices in [DT_INT64]\n  device='CPU'; Tparams in [DT_UINT32];\
-        \ Tindices in [DT_INT32]\n  device='CPU'; Tparams in [DT_INT64]; Tindices\
-        \ in [DT_INT64]\n  device='CPU'; Tparams in [DT_INT64]; Tindices in [DT_INT32]\n\
-        \  device='CPU'; Tparams in [DT_UINT64]; Tindices in [DT_INT64]\n  device='CPU';\
-        \ Tparams in [DT_UINT64]; Tindices in [DT_INT32]\n [Op:GatherNd] name: pPxc"
-      package: tensorflow
-    txt: indices.dtype == params.dtype
-  - f1_score: 89.1089108910891
-    overall_score: 48.0
-    precision: 90.0
-    recall: 88.23529411764706
 - - cot: synthesized
     length: 2
     target:
@@ -299,24 +208,9 @@ rules:
         index innermost dimension length must be <= params rank; saw: 3 vs. 1 [Op:GatherNd]
         name: AFqP'
       package: tensorflow
-    txt: indices.shape[-1] <= params.shape.rank
+    txt: indices[-1] <= params.shape.rank
   - f1_score: 74.22680412371133
     overall_score: 48.0
     precision: 90.0
     recall: 63.1578947368421
-- - cot: The error occurs because the indices tensor has negative dimensions, which
-      is not allowed. To prevent this error, the constraint should be added that all
-      dimensions of the indices tensor should be non-negative.
-    length: 1
-    target:
-      choosen_dtype:
-        indices: tensor
-        name: str
-        params: tensor
-      msg: negative dimensions are not allowed
-      package: tensorflow
-    txt: all(indices.shape[i] >= 0 for i in range(indices.rank))
-  - f1_score: 88.10572687224668
-    overall_score: 100
-    precision: 100.0
-    recall: 78.74015748031495
+

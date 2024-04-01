@@ -1,0 +1,49 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  - int
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - y
+  - dx
+  - dim
+  required:
+  - true
+  - false
+  - false
+name: torch.trapezoid
+package: torch
+pass_rate: 75.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        dx: int
+        y: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got -3)
+      package: torch
+    txt: dim >= -len(y.shape)
+  - f1_score: 69.8706099815157
+    overall_score: 50.25
+    precision: 94.5
+    recall: 55.42521994134897
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        dx: int
+        y: tensor
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 8)
+      package: torch
+    txt: dim < len(y.shape)
+  - f1_score: 61.45251396648044
+    overall_score: 44.25
+    precision: 82.5
+    recall: 48.96142433234421

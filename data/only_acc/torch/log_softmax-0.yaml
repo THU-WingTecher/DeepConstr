@@ -1,0 +1,97 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - None
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - dtype
+  required:
+  - true
+  - true
+  - false
+name: torch.log_softmax
+package: torch
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 7)
+      package: torch
+    txt: (dim >= -len(self.shape)) and (dim >= -2 and dim < 2)
+  - f1_score: 71.94244604316549
+    overall_score: 100
+    precision: 100.0
+    recall: 56.17977528089888
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got 1)
+      package: torch
+    txt: dim < len(self.shape)
+  - f1_score: 68.02721088435375
+    overall_score: 100
+    precision: 100.0
+    recall: 51.54639175257733
+- - cot: 'The error is due to the fact that the `log_softmax_lastdim_kernel_impl`
+      function is not implemented for integer data types. To prevent this error, the
+      input tensor should have a data type that is supported by the `log_softmax_lastdim_kernel_impl`
+      function. So, the constraint would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        self: tensor
+      msg: '"log_softmax_lastdim_kernel_impl" not implemented for ''Int'''
+      package: torch
+    txt: dtype(self) != Int
+  - f1_score: 68.4931506849315
+    overall_score: 100
+    precision: 100.0
+    recall: 52.083333333333336
+- - cot: The error is due to the fact that the `torch.log_softmax` function does not
+      have an implementation for tensors of type `bool`. To prevent this error, the
+      input tensor (`self`) should not have a data type of `bool`.
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        self: tensor
+      msg: '"log_softmax_lastdim_kernel_impl" not implemented for ''Bool'''
+      package: torch
+    txt: self.dtype != torch.bool
+  - f1_score: 99.50248756218905
+    overall_score: 100
+    precision: 100.0
+    recall: 99.00990099009901
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        self: tensor
+      msg: '''complex32'''
+      package: torch
+    txt: ((self.dim() == -1) or (self.dim >= 1)) and (self.dtype == torch.float32
+      or self.dtype == torch.float64)
+  - f1_score: 96.85230024213074
+    overall_score: 100
+    precision: 100.0
+    recall: 93.89671361502347

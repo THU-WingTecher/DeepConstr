@@ -13,4 +13,53 @@ args:
   - true
 name: torch.dsplit
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'The error occurs because the number of sections provided is less than or
+      equal to 0, which is not allowed. To prevent this error, we need to ensure that
+      the number of sections is larger than 0. The constraint for the ''sections''
+      parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        sections: int
+        self: tensor
+      msg: number of sections must be larger than 0, got -4
+      package: torch
+    txt: sections > 0
+  - f1_score: 69.56521739130436
+    overall_score: 46.78260869565218
+    precision: 100.0
+    recall: 53.333333333333336
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        sections: int
+        self: tensor
+      msg: torch.dsplit attempted to split along dimension 2, but the size of the
+        dimension 6 is not divisible by the split_size 5!
+      package: torch
+    txt: self.shape[2] % sections == 0
+  - f1_score: 99.25558312655089
+    overall_score: 61.627791563275444
+    precision: 100.0
+    recall: 98.52216748768474
+- - cot: 'Based on the given runtime information, the error occurs because the tensor
+      `self` has only 2 dimensions, but `torch.dsplit` requires a tensor with at least
+      3 dimensions. To prevent this error, we can add a constraint that checks the
+      number of dimensions of `self` before calling `torch.dsplit`. The constraint
+      can be written as:'
+    length: 1
+    target:
+      choosen_dtype:
+        sections: int
+        self: tensor
+      msg: torch.dsplit requires a tensor with at least 3 dimension, but got a tensor
+        with 2 dimensions!
+      package: torch
+    txt: self.dim >= 3
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

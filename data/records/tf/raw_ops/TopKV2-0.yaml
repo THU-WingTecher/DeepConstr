@@ -1,8 +1,7 @@
 args:
   dtype:
   - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
-  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
-  - str
+  - int
   - bool
   is_pos:
   - false
@@ -39,22 +38,3 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 99.33774834437087
-- - cot: 'The error is triggered because k is not scalar. Let''s see what the args
-      were. k was the tensor of int32 with shape [7, 8, 7, 7]. To generate scalar,
-      it should not have any dimension. However, k had 4 dimensions. Therefore, the
-      condition to prevent the error is:'
-    length: 1
-    target:
-      choosen_dtype:
-        input: tensor
-        k: tensor
-        name: str
-        sorted: bool
-      msg: '{{function_node __wrapped__TopKV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
-        k must be scalar, got shape [7,7,8,8] [Op:TopKV2] name: CIsf'
-      package: tensorflow
-    txt: k.dim == 0
-  - f1_score: 100.0
-    overall_score: 100
-    precision: 100.0
-    recall: 100.0

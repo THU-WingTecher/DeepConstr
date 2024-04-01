@@ -25,4 +25,57 @@ args:
   - true
 name: torch.mean
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
+  - f1_score: 67.79661016949153
+    overall_score: 45.898305084745765
+    precision: 100.0
+    recall: 51.28205128205129
+- - cot: 'The error is triggered because the input dtype must be either a floating
+      point or complex dtype, but it is currently an Int dtype. To prevent this error,
+      the input dtype should be changed to a floating point or complex dtype. Therefore,
+      the constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        out: tensor
+        self: tensor
+      msg: 'mean(): could not infer output dtype. Input dtype must be either a floating
+        point or complex dtype. Got: Int'
+      package: torch
+    txt: dtype(self) in [float32, float64, complex64, complex128]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self)==dtype(out)
+  - f1_score: 77.22007722007723
+    overall_score: 50.610038610038615
+    precision: 100.0
+    recall: 62.8930817610063

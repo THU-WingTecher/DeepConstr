@@ -21,4 +21,35 @@ args:
   - false
 name: torch.sort
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        descending: bool
+        dim: int
+        self: tensor
+        stable: bool
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got 3)
+      package: torch
+    txt: dim < len(self.shape)
+  - f1_score: 69.93006993006993
+    overall_score: 46.96503496503497
+    precision: 100.0
+    recall: 53.76344086021506
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        descending: bool
+        dim: int
+        self: tensor
+        stable: bool
+      msg: Dimension out of range (expected to be in range of [-6, 5], but got 89)
+      package: torch
+    txt: (dim >= -len(self.shape)) and (dim >= -4 and dim < 4)
+  - f1_score: 79.7979797979798
+    overall_score: 51.8989898989899
+    precision: 79.0
+    recall: 80.61224489795919

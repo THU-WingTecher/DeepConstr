@@ -1,0 +1,43 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - dim
+  required:
+  - true
+  - true
+name: torch.unsqueeze
+package: torch
+pass_rate: 79.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-3, 2], but got 6)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 70.52023121387283
+    overall_score: 48.75
+    precision: 91.5
+    recall: 57.36677115987461
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-8, 7], but got 8)
+      package: torch
+    txt: dim < len(self.shape)
+  - f1_score: 62.955854126679455
+    overall_score: 44.0
+    precision: 82.0
+    recall: 51.09034267912772

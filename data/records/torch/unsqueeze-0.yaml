@@ -13,4 +13,20 @@ args:
   - true
 name: torch.unsqueeze
 package: torch
-pass_rate: 0
+pass_rate: 85.0
+rules:
+- - cot: "The error occurs because the `dim` parameter provided is out of the valid\
+      \ range. The `dim` value should be within the range of `[-len(self.shape), len(self.shape)-1]`.\
+      \ \n\nTherefore, to prevent this error, we can add the following constraint:"
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-8, 7], but got 8)
+      package: torch
+    txt: dim >= -len(self.shape) and dim < len(self.shape)
+  - f1_score: 62.99212598425197
+    overall_score: 43.496062992125985
+    precision: 80.0
+    recall: 51.948051948051955

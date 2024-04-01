@@ -1,0 +1,86 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - float
+  - float
+  - float
+  - bool
+  - int
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - anchor
+  - positive
+  - negative
+  - margin
+  - p
+  - eps
+  - swap
+  - reduction
+  required:
+  - true
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+name: torch.triplet_margin_loss
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'The error is caused because the anchor, positive, and negative tensors have
+      different numbers of dimensions. Let''s see what the args were. It seems that
+      the anchor tensor has 6 dimensions, the positive tensor has 7 dimensions, and
+      the negative tensor also has 7 dimensions. To prevent this error, the anchor,
+      positive, and negative tensors should have the same number of dimensions. So,
+      the constraint should be:'
+    length: 1
+    target:
+      choosen_dtype:
+        anchor: tensor
+        eps: float
+        margin: float
+        negative: tensor
+        p: float
+        positive: tensor
+        reduction: int
+        swap: bool
+      msg: 'The anchor, positive, and negative tensors are expected to have the same
+        number of dimensions, but got: anchor 2D, positive 3D, and negative 4D inputs'
+      package: torch
+    txt: anchor.ndim == positive.ndim and anchor.ndim == negative.ndim
+  - f1_score: 90.9090909090909
+    overall_score: 100
+    precision: 100.0
+    recall: 83.33333333333334
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        anchor: tensor
+        eps: float
+        margin: float
+        negative: tensor
+        p: float
+        positive: tensor
+        reduction: int
+        swap: bool
+      msg: The size of tensor a (5) must match the size of tensor b (8) at non-singleton
+        dimension 1
+      package: torch
+    txt: (anchor.shape[1] == negative.shape[1]) and (positive.dim == 9)
+  - f1_score: 69.80802792321118
+    overall_score: 100
+    precision: 100.0
+    recall: 53.61930294906166

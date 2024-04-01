@@ -13,4 +13,23 @@ args:
   - true
 name: torch.true_divide
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: "The error is triggered because the size of tensor a (7) does not match the\
+      \ size of tensor b (3) at non-singleton dimension 5. To prevent this error,\
+      \ we need to ensure that the dimensions and shapes of both tensors are consistent.\
+      \ \n\nLet's denote the two tensors as `self` and `other`. The constraint can\
+      \ be formulated as follows:"
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (9) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.dim() == other.dim() and self.shape() == other.shape()
+  - f1_score: 94.56264775413712
+    overall_score: 59.28132387706856
+    precision: 100.0
+    recall: 89.68609865470853

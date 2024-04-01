@@ -1,0 +1,61 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[List[int]]
+  - bool
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - keepdim
+  - out
+  required:
+  - true
+  - false
+  - false
+  - true
+name: torch.all
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      output tensor `out` is of type `f32` (float), but the `torch.all` function expects
+      the output to be a boolean tensor.
+
+
+      To prevent the error, the `out` tensor should be converted to a boolean tensor.
+      Therefore, the condition that should be added is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        keepdim: bool
+        out: tensor
+        self: tensor
+      msg: 'all only supports bool tensor for result, got: Float'
+      package: torch
+    txt: out.dtype == torch.bool
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        keepdim: bool
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 67.11635750421586
+    overall_score: 52.75
+    precision: 99.5
+    recall: 50.63613231552163

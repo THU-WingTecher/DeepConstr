@@ -13,4 +13,74 @@ args:
   - false
 name: torch.stack
 package: torch
-pass_rate: 0
+pass_rate: 77.5
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        tensors: list[tensor]
+      msg: stack expects a non-empty TensorList
+      package: torch
+    txt: len(tensors) > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        tensors: list[tensor]
+      msg: Dimension out of range (expected to be in range of [-3, 2], but got -4)
+      package: torch
+    txt: dim >= -len(tensors[0].shape)
+  - f1_score: 74.21150278293136
+    overall_score: 100
+    precision: 100.0
+    recall: 58.99705014749264
+- - cot: The error is caused because the shape of the tensor is too large. The stack
+      operation is trying to create a new tensor with shape [9, 9, 9, 9, 9, 9, 9,
+      9, 9] which is higher than acceptable limits. Therefore, the count of the tensor's
+      dimensions should be limited.
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        tensors: list[tensor]
+      msg: 'Too large tensor shape: shape = [9, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: len(tensors[0].shape) < 9
+  - f1_score: 67.62589928057554
+    overall_score: 50.0
+    precision: 94.0
+    recall: 52.80898876404495
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        tensors: list[tensor]
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got 9)
+      package: torch
+    txt: dim < len(tensors[0].shape)
+  - f1_score: 72.46376811594203
+    overall_score: 100
+    precision: 100.0
+    recall: 56.81818181818182
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        tensors: list[tensor]
+      msg: stack expects each tensor to be equal size, but got [8, 8, 7, 9, 8, 8,
+        8] at entry 0 and [8, 7, 5, 7, 7, 7, 7, 7, 7] at entry 1
+      package: torch
+    txt: tensors[0].shape == tensors[1].shape
+  - f1_score: 79.36507936507938
+    overall_score: 100
+    precision: 100.0
+    recall: 65.78947368421053

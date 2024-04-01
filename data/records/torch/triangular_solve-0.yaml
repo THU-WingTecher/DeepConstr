@@ -25,4 +25,42 @@ args:
   - false
 name: torch.triangular_solve
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'The error is triggered because of incompatible matrix sizes with A and self.
+      The last dimension of A and the second-to-last dimension of self should be the
+      same for the operation to proceed successfully. Therefore, the condition that
+      will prevent this error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        self: tensor
+        transpose: bool
+        unitriangular: bool
+        upper: bool
+      msg: 'Incompatible matrix sizes for triangular_solve: each A matrix is 0 by
+        0 but each b matrix is 2 by 2'
+      package: torch
+    txt: A[-1] == self[-2]
+  - f1_score: 73.39449541284404
+    overall_score: 100
+    precision: 100.0
+    recall: 57.971014492753625
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        A: tensor
+        self: tensor
+        transpose: bool
+        unitriangular: bool
+        upper: bool
+      msg: 'torch.triangular_solve: Expected b to have at least 2 dimensions, but
+        it has 0 dimensions instead'
+      package: torch
+    txt: (self.dim() >= 2) and (len(A) >= 2)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

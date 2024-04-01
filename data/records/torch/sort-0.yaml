@@ -17,4 +17,34 @@ args:
   - false
 name: torch.sort
 package: torch
-pass_rate: 0
+pass_rate: 99.5
+rules:
+- - cot: synthesized
+    length: 5
+    target:
+      choosen_dtype:
+        descending: bool
+        dim: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 9)
+      package: torch
+    txt: ((((dim < len(self.shape)) and (dim >= -7 and dim < 7)) and (len(self) >
+      0)) or (dim < 0)) or (dim >= -7 and dim < 7)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        descending: bool
+        dim: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 90)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 80.53097345132743
+    overall_score: 48.5
+    precision: 91.0
+    recall: 72.22222222222221

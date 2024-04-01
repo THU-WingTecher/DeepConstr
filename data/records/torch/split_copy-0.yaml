@@ -21,4 +21,69 @@ args:
   - true
 name: torch.split_copy
 package: torch
-pass_rate: 0
+pass_rate: 91.5
+rules:
+- - cot: "Based on the given runtime information, the error is triggered because the\
+      \ `torch.split_copy` function expects at least a 1-dimensional tensor. To prevent\
+      \ the error, the input tensor `self` should have a dimension greater than or\
+      \ equal to 1. \n\nThe constraint to prevent the error can be formulated as:"
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+        split_size: int
+      msg: split expects at least a 1-dimensional tensor
+      package: torch
+    txt: self.dim >= 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+        split_size: int
+      msg: split_size can only be 0 if dimension size is 0, but got dimension size
+        of 6
+      package: torch
+    txt: (split_size != 0)
+  - f1_score: 92.37875288683603
+    overall_score: 58.18937644341801
+    precision: 100.0
+    recall: 85.83690987124464
+- - cot: 'The error is due to the negative value of ''split_size''. Let''s see what
+      the args were. It appears that ''split_size'' is currently -1, which is not
+      allowed as ''split_size'' should be non-negative. Therefore, ''split_size''
+      should be corrected. It says it should be non-negative, so Operation : >= and
+      Right : 0.'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+        split_size: int
+      msg: split expects split_size be non-negative, but got split_size=-1
+      package: torch
+    txt: split_size >= 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+        split_size: int
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got 7)
+      package: torch
+    txt: dim >= -len(self.shape) and dim < len(self.shape)
+  - f1_score: 89.3719806763285
+    overall_score: 56.68599033816425
+    precision: 92.5
+    recall: 86.44859813084112

@@ -1,0 +1,89 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - output_size
+  required:
+  - true
+  - true
+name: torch.adaptive_max_pool1d
+package: torch
+pass_rate: 99.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: list[int]
+        self: tensor
+      msg: adaptive_max_pool1d() argument 'output_size' should contain one int (got
+        0)
+      package: torch
+    txt: len(output_size) == 1
+  - f1_score: 73.26007326007327
+    overall_score: 100
+    precision: 100.0
+    recall: 57.80346820809249
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: list[int]
+        self: tensor
+      msg: 'Expected 2 to 3 dimensions, but got 0-dimensional tensor for argument
+        #1 ''self'' (while checking arguments for adaptive_max_pool1d)'
+      package: torch
+    txt: self.ndims() == 3
+  - f1_score: 72.46376811594203
+    overall_score: 100
+    precision: 100.0
+    recall: 56.81818181818182
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      output_size argument of torch.adaptive_max_pool1d is set to [-3], which results
+      in trying to create a tensor with a negative dimension. To prevent this error,
+      the output_size argument should be modified to have non-negative dimensions.
+      Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: list[int]
+        self: tensor
+      msg: 'Trying to create tensor with negative dimension -3: [3, 7, 1, -3]'
+      package: torch
+    txt: all(size >= 0 for size in output_size)
+  - f1_score: 99.75062344139653
+    overall_score: 100
+    precision: 100.0
+    recall: 99.50248756218907
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: list[int]
+        self: tensor
+      msg: '"adaptive_max_pool2d" not implemented for ''Int'''
+      package: torch
+    txt: dtype(self) == float
+  - f1_score: 96.60194174757281
+    overall_score: 100
+    precision: 100.0
+    recall: 93.42723004694835
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: list[int]
+        self: tensor
+      msg: 'adaptive_max_pool1d(): Expected input to have non-zero size for non-batch
+        dimensions, but input has sizes [2, 0, 9] with dimension 1 being empty'
+      package: torch
+    txt: (self.shape[1]!=0)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

@@ -17,4 +17,69 @@ args:
   - true
 name: torch.polar
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: "Based on the given runtime information, the error is due to the mismatch\
+      \ in the data types of the 'out' tensor. The expected output data type is ComplexFloat,\
+      \ but the actual data type is ComplexDouble. To prevent this error, the data\
+      \ type of the 'out' tensor should be ComplexFloat. \n\nTherefore, the constraint\
+      \ to prevent the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        abs: tensor
+        angle: tensor
+        out: tensor
+      msg: Expected object of scalar type ComplexFloat but got scalar type Float for
+        argument 'out'
+      package: torch
+    txt: dtype(out) == torch.complex64
+  - f1_score: 91.79487179487178
+    overall_score: 47.75
+    precision: 89.5
+    recall: 94.21052631578947
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        abs: tensor
+        angle: tensor
+        out: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (3) at non-singleton
+        dimension 4
+      package: torch
+    txt: abs.shape[4] == angle.shape[4]
+  - f1_score: 72.20216606498195
+    overall_score: 100
+    precision: 100.0
+    recall: 56.49717514124294
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        abs: tensor
+        angle: tensor
+        out: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == angle.rank and all(out.shape[i] == angle.shape[i] for i in range(out.rank))
+  - f1_score: 80.16032064128257
+    overall_score: 100
+    precision: 100.0
+    recall: 66.88963210702342
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        abs: tensor
+        angle: tensor
+        out: tensor
+      msg: Expected object of scalar type ComplexFloat but got scalar type ComplexDouble
+        for argument 'out'
+      package: torch
+    txt: (dtype(out) == ComplexFloat) and (out.dtype == abs.dtype)
+  - f1_score: 93.0232558139535
+    overall_score: 100
+    precision: 100.0
+    recall: 86.95652173913044

@@ -25,4 +25,21 @@ args:
   - true
 name: torch.var
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        keepdim: bool
+        out: tensor
+        self: tensor
+        unbiased: bool
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self) == int32
+  - f1_score: 67.22689075630252
+    overall_score: 100
+    precision: 100.0
+    recall: 50.632911392405056

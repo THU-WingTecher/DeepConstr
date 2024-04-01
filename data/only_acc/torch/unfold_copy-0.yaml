@@ -1,0 +1,107 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - int
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dimension
+  - size
+  - step
+  required:
+  - true
+  - true
+  - true
+  - true
+name: torch.unfold_copy
+package: torch
+pass_rate: 87.5
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dimension: int
+        self: tensor
+        size: int
+        step: int
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 21)
+      package: torch
+    txt: dimension >= -len(self.shape)
+  - f1_score: 79.20353982300885
+    overall_score: 47.75
+    precision: 89.5
+    recall: 71.03174603174604
+- - cot: The error is triggered because the provided size (32) for unfolding the tensor
+      exceeds its maximum size at the specified dimension (0), which is 1. Therefore,
+      the constraint that prevents this error should ensure that the provided size
+      doesn't exceed the size of the tensor at the specified dimension.
+    length: 1
+    target:
+      choosen_dtype:
+        dimension: int
+        self: tensor
+        size: int
+        step: int
+      msg: maximum size for tensor at dimension 0 is 1 but size is 4
+      package: torch
+    txt: size <= self.shape[dimension]
+  - f1_score: 72.42647058823529
+    overall_score: 52.25
+    precision: 98.5
+    recall: 57.26744186046512
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        dimension: int
+        self: tensor
+        size: int
+        step: int
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got 9)
+      package: torch
+    txt: (((dimension < len(self.shape)) and (dimension >= -len(self.shape) + 1))
+      and (6 < len(self.shape))) and (dimension < 6)
+  - f1_score: 84.56659619450318
+    overall_score: 100
+    precision: 100.0
+    recall: 73.26007326007326
+- - cot: 'Based on the given runtime information, the error occurs because the value
+      of the "step" parameter in the torch.unfold_copy function is -1, but it should
+      be greater than 0. Therefore, the constraint to prevent this error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dimension: int
+        self: tensor
+        size: int
+        step: int
+      msg: step is 0 but must be > 0
+      package: torch
+    txt: step > 0
+  - f1_score: 98.28009828009829
+    overall_score: 100
+    precision: 100.0
+    recall: 96.61835748792271
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dimension: int
+        self: tensor
+        size: int
+        step: int
+      msg: Storage size calculation overflowed with sizes=[1, 8, 14, 5, 1, 4, 2, -4]
+        and strides=[2880, 360, 40, 8, 8, 2, 1, 40]
+      package: torch
+    txt: (self.size(-2) > 0) and (size > 0)
+  - f1_score: 68.73920552677029
+    overall_score: 100
+    precision: 100.0
+    recall: 52.368421052631575

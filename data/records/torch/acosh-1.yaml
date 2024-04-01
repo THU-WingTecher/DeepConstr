@@ -13,4 +13,36 @@ args:
   - true
 name: torch.acosh
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: "The error is triggered because the function torch.acosh is attempting to\
+      \ cast a Float result into an Int type, which is not feasible. The output type\
+      \ should be consistent with the result type. In this case, the output type is\
+      \ Int, but the result of torch.acosh is Float. Therefore, the output type should\
+      \ be Float. \n\nSo, the condition that will make the error disappear is:\nLeft\
+      \ : dtype(out), op : ==, Right : float"
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(out)==float
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank == self.rank) and (out.shape == self.shape)
+  - f1_score: 94.11764705882352
+    overall_score: 53.05882352941176
+    precision: 100.0
+    recall: 88.88888888888889

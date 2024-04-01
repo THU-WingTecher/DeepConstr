@@ -13,4 +13,22 @@ args:
   - true
 name: torch.eq
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: "The error is triggered because the size of tensor a (9) must match the size\
+      \ of tensor b (7) at non-singleton dimension 6. To prevent this error, we need\
+      \ to ensure that the dimensions and shape of tensor a and tensor b are consistent.\
+      \ \n\nThe constraint can be formulated as follows:"
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (3) must match the size of tensor b (9) at non-singleton
+        dimension 4
+      package: torch
+    txt: self.dim == other.dim and self.shape == other.shape
+  - f1_score: 96.18320610687022
+    overall_score: 60.09160305343511
+    precision: 94.5
+    recall: 97.92746113989637

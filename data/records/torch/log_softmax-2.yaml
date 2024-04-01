@@ -21,4 +21,69 @@ args:
   - true
 name: torch.log_softmax
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'The error is due to the function "log_softmax_lastdim_kernel_impl" not being
+      implemented for tensors of type ''Int''. Therefore, to prevent this error, the
+      data type of the input tensor ''self'' should be changed to a type that is supported
+      by the function, such as ''Float''. So, Left : dtype(self), Op : ==, Right :
+      ''Float''.'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        out: tensor
+        self: tensor
+      msg: '"log_softmax_lastdim_kernel_impl" not implemented for ''Int'''
+      package: torch
+    txt: dtype(self) == 'Float'
+  - f1_score: 97.08737864077668
+    overall_score: 60.54368932038834
+    precision: 100.0
+    recall: 94.33962264150942
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        out: tensor
+        self: tensor
+      msg: Expected out tensor to have dtype float, but got int instead
+      package: torch
+    txt: dtype(out) == dtype(self)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
+  - f1_score: 73.29650092081032
+    overall_score: 48.64825046040516
+    precision: 99.5
+    recall: 58.01749271137027
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        out: tensor
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 39)
+      package: torch
+    txt: (dim >= -len(self.shape) and dim < len(self.shape)) and (-6 <= dim < 6)
+  - f1_score: 82.18029350104823
+    overall_score: 53.09014675052411
+    precision: 98.0
+    recall: 70.7581227436823

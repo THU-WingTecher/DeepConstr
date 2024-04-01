@@ -9,4 +9,31 @@ args:
   - true
 name: torch.cartesian_prod
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        tensors: list[tensor]
+      msg: Expect a 1D vector, but got shape [0, 0]
+      package: torch
+    txt: len(tensors) == 1 and len(tensors[0].shape) == 1
+  - f1_score: 95.23809523809523
+    overall_score: 59.61904761904761
+    precision: 100.0
+    recall: 90.9090909090909
+- - cot: The error is triggered because the function `torch.cartesian_prod` expects
+      a non-empty list of tensors as input. To prevent this error, we can add a constraint
+      to ensure that the input list of tensors is not empty.
+    length: 1
+    target:
+      choosen_dtype:
+        tensors: list[tensor]
+      msg: meshgrid expects a non-empty TensorList
+      package: torch
+    txt: len(tensors) > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

@@ -17,4 +17,37 @@ args:
   - false
 name: torch.trapz
 package: torch
-pass_rate: 0
+pass_rate: 81.0
+rules:
+- - cot: 'To prevent the error, we need to ensure that the value of the "dim" parameter
+      is within the valid range for the given input tensors. The valid range for the
+      dimension would be [-7, 6]. Therefore, the constraint for the "dim" parameter
+      can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        x: tensor
+        y: tensor
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 7)
+      package: torch
+    txt: dim >= -len(x.shape) and dim < len(x.shape)
+  - f1_score: 82.25806451612902
+    overall_score: 53.12903225806451
+    precision: 76.5
+    recall: 88.95348837209302
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        x: tensor
+        y: tensor
+      msg: The size of tensor a (8) must match the size of tensor b (5) at non-singleton
+        dimension 5
+      package: torch
+    txt: x.dim == y.dim and x.shape == y.shape
+  - f1_score: 74.76635514018692
+    overall_score: 49.38317757009346
+    precision: 100.0
+    recall: 59.70149253731343

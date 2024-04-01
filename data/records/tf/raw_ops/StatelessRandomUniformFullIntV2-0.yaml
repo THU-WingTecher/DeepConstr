@@ -2,7 +2,6 @@ args:
   dtype:
   - int
   - int
-  - int32,int64,uint32,uint64
   - int
   - str
   - int
@@ -12,18 +11,15 @@ args:
   - false
   - false
   - false
-  - false
   name:
   - alg
   - counter
-  - dtype
   - key
   - name
   - shape
   required:
   - true
   - true
-  - false
   - true
   - false
   - true

@@ -17,4 +17,19 @@ args:
   - true
 name: torch.select
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        dim: str
+        index: int
+        self: tensor
+      msg: Name 'ZXiy' not found in Tensor[None, None, None, None].
+      package: torch
+    txt: ((index < self.dim()) or (dim in valid_dimensions)) and (index >= 0)
+  - f1_score: 66.88963210702342
+    overall_score: 100
+    precision: 100.0
+    recall: 50.25125628140703

@@ -37,4 +37,49 @@ args:
   - false
 name: torch.triplet_margin_loss
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        anchor: tensor
+        eps: float
+        margin: float
+        negative: tensor
+        p: float
+        positive: tensor
+        reduction: int
+        swap: bool
+      msg: The size of tensor a (4) must match the size of tensor b (5) at non-singleton
+        dimension 1
+      package: torch
+    txt: (anchor.shape == positive.shape) or (anchor.shape[3] == negative.shape[3])
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: The error is caused because the anchor, positive, and negative tensors have
+      different numbers of dimensions. Let's see what the args were. The anchor tensor
+      has 0 dimensions, the positive tensor has 5 dimensions, and the negative tensor
+      has 7 dimensions. Therefore, the number of dimensions for anchor, positive,
+      and negative tensors should be the same.
+    length: 1
+    target:
+      choosen_dtype:
+        anchor: tensor
+        eps: float
+        margin: float
+        negative: tensor
+        p: float
+        positive: tensor
+        reduction: int
+        swap: bool
+      msg: 'The anchor, positive, and negative tensors are expected to have the same
+        number of dimensions, but got: anchor 7D, positive 4D, and negative 0D inputs'
+      package: torch
+    txt: anchor.rank == positive.rank == negative.rank
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

@@ -13,4 +13,5 @@ args:
   - true
 name: torch.min
 package: torch
-pass_rate: 0
+pass_rate: 95.5
+rules: []

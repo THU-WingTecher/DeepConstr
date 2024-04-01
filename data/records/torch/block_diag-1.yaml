@@ -12,4 +12,5 @@ args:
   - true
 name: torch.block_diag
 package: torch
-pass_rate: 0
+pass_rate: 86.5
+rules: []

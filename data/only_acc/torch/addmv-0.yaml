@@ -1,0 +1,85 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - number
+  - number
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - mat
+  - vec
+  - beta
+  - alpha
+  required:
+  - true
+  - true
+  - true
+  - false
+  - false
+name: torch.addmv
+package: torch
+pass_rate: 98.98477157360406
+rules:
+- - cot: 'The error message suggests that the function torch.addmv expects a 1-D tensor
+      (vector) for ''self'' and ''vec'' parameters and a 2-D tensor (matrix) for ''mat''
+      parameter. But it received a 2-D tensor for ''self'', a 4-D tensor for ''vec'',
+      and a 3-D tensor for ''mat''. To avoid this error, we need to ensure that ''self''
+      and ''vec'' parameters are 1-D tensors and ''mat'' parameter is a 2-D tensor.
+
+
+      Therefore, the formulated conditions are:'
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat: tensor
+        self: tensor
+        vec: tensor
+      msg: vector + matrix @ vector expected, got 7, 7, 7
+      package: torch
+    txt: len(mat.shape) == 2 and len(self.shape) == 1 and len(vec.shape) == 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat: tensor
+        self: tensor
+        vec: tensor
+      msg: size mismatch, got input (8), mat (9x5), vec (7)
+      package: torch
+    txt: ((mat.dim == 2) and (mat.shape[0] == self.shape[0])) and (mat.dim == 2 and
+      vec.dim == 1 and mat.shape[1] == vec.shape[0])
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat: tensor
+        self: tensor
+        vec: tensor
+      msg: expected scalar type Float but found Int
+      package: torch
+    txt: (dtype(vec) == Int) or (mat.dtype == self.dtype == vec.dtype == Float)
+  - f1_score: 96.35036496350365
+    overall_score: 100
+    precision: 100.0
+    recall: 92.95774647887325

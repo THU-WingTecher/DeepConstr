@@ -13,4 +13,21 @@ args:
   - true
 name: torch.le
 package: torch
-pass_rate: 0
+pass_rate: 99.0
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (7) at non-singleton
+        dimension 3
+      package: torch
+    txt: ((all(self.shape[i] == other.shape[i] or self.shape[i] == 1 or other.shape[i]
+      == 1 for i in range(-1, -min(len(self.shape), len(other.shape))-1, -1))) and
+      (self.shape[i] == 1)) and (self.size() == other.size())
+  - f1_score: 98.74055415617129
+    overall_score: 61.37027707808564
+    precision: 98.0
+    recall: 99.49238578680203

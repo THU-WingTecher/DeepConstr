@@ -13,4 +13,19 @@ args:
   - true
 name: torch.ldexp
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (3) must match the size of tensor b (8) at non-singleton
+        dimension 3
+      package: torch
+    txt: self.dim == other.dim and self.shape == other.shape
+  - f1_score: 97.51243781094527
+    overall_score: 60.756218905472636
+    precision: 98.0
+    recall: 97.02970297029702

@@ -13,4 +13,32 @@ args:
   - true
 name: torch._C._special.special_bessel_j0
 package: torch
-pass_rate: 0
+pass_rate: 93.0
+rules:
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: (((dtype(out) == dtype(self)) and (dtype(out)==float32)) or (dtype(out) ==
+      int32)) or (dtype(out) == 'Float')
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.shape == self.shape) and (out.rank == self.rank)
+  - f1_score: 96.61835748792271
+    overall_score: 54.309178743961354
+    precision: 100.0
+    recall: 93.45794392523365

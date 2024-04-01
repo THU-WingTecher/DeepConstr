@@ -21,4 +21,88 @@ args:
   - true
 name: torch.unfold_copy
 package: torch
-pass_rate: 0
+pass_rate: 98.0
+rules:
+- - cot: 'The error is triggered because the size of the dimension specified (dimension
+      2) is negative (-3). To prevent this error, the size of the dimension should
+      be greater than or equal to 0. Therefore, the constraint that prevents the error
+      is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dimension: int
+        self: tensor
+        size: int
+        step: int
+      msg: Storage size calculation overflowed with sizes=[8, 1, 11, 1, 8, 5, 6, -1]
+        and strides=[2160, 2160, 240, 240, 30, 6, 1, 240]
+      package: torch
+    txt: size >= 0
+  - f1_score: 94.56264775413712
+    overall_score: 59.28132387706856
+    precision: 100.0
+    recall: 89.68609865470853
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dimension: int
+        self: tensor
+        size: int
+        step: int
+      msg: step is 0 but must be > 0
+      package: torch
+    txt: step > 0
+  - f1_score: 99.25187032418953
+    overall_score: 61.62593516209476
+    precision: 100.0
+    recall: 98.51485148514853
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        dimension: int
+        self: tensor
+        size: int
+        step: int
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got 9)
+      package: torch
+    txt: (((dimension < len(self.shape)) and (dimension >= -len(self.shape) + 1))
+      and (6 < len(self.shape))) and (dimension < 6)
+  - f1_score: 87.71929824561404
+    overall_score: 46.85964912280702
+    precision: 100.0
+    recall: 78.125
+- - cot: The error is triggered because the provided size (32) for unfolding the tensor
+      exceeds its maximum size at the specified dimension (0), which is 1. Therefore,
+      the constraint that prevents this error should ensure that the provided size
+      doesn't exceed the size of the tensor at the specified dimension.
+    length: 1
+    target:
+      choosen_dtype:
+        dimension: int
+        self: tensor
+        size: int
+        step: int
+      msg: maximum size for tensor at dimension 0 is 1 but size is 4
+      package: torch
+    txt: size <= self.shape[dimension]
+  - f1_score: 93.26923076923076
+    overall_score: 58.63461538461538
+    precision: 97.0
+    recall: 89.81481481481481
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dimension: int
+        self: tensor
+        size: int
+        step: int
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 21)
+      package: torch
+    txt: dimension >= -len(self.shape)
+  - f1_score: 79.20353982300885
+    overall_score: 47.75
+    precision: 89.5
+    recall: 71.03174603174604

@@ -1,0 +1,40 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[List[int]]
+  - bool
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - unbiased
+  - keepdim
+  required:
+  - true
+  - false
+  - false
+  - false
+name: torch.var
+package: torch
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        keepdim: bool
+        self: tensor
+        unbiased: bool
+      msg: std and var only support floating point and complex dtypes
+      package: torch
+    txt: self.dtype == torch.complex128
+  - f1_score: 67.00167504187604
+    overall_score: 100
+    precision: 100.0
+    recall: 50.377833753148614

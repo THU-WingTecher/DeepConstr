@@ -1,0 +1,69 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - diagonal
+  - out
+  required:
+  - true
+  - false
+  - true
+name: torch.tril
+package: torch
+pass_rate: 100
+rules:
+- - cot: '`out` tensor is trying to resize its storage, but it is not resizable. To
+      prevent the error, the shape and rank of `out` tensor should be the same as
+      the shape and rank of the operation result, which is `self`. Therefore, the
+      constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        diagonal: int
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 73.80073800738006
+    overall_score: 100
+    precision: 100.0
+    recall: 58.47953216374269
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      input tensor `self` does not have at least 2 dimensions. To prevent this error,
+      the constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        diagonal: int
+        out: tensor
+        self: tensor
+      msg: 'tril: input tensor must have at least 2 dimensions'
+      package: torch
+    txt: self.dim >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 5
+    target:
+      choosen_dtype:
+        diagonal: int
+        out: tensor
+        self: tensor
+      msg: Expected out tensor to have dtype int, but got float instead
+      package: torch
+    txt: (((dtype(out) == int) or (dtype(out) == float)) and (out.dtype == self.dtype))
+      and ((dtype(out) == float) or (dtype(out) == int32))
+  - f1_score: 99.49999999999999
+    overall_score: 100
+    precision: 100.0
+    recall: 99.0049751243781

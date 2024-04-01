@@ -306,7 +306,7 @@ def main(cfg) :
     print(api_names)          
     print(f"Test {len(api_names)} apis in total", sep=" ")
     # api_names = load_api_names_from_json("/artifact/tests/test.json")
-    # parallel_eval(api_names, BASELINES, cfg, task="fuzz")
-    # parallel_eval(api_names, BASELINES, cfg, task="cov")
+    parallel_eval(api_names, BASELINES, cfg, task="fuzz")
+    parallel_eval(api_names, BASELINES, cfg, task="cov")
 if __name__ == "__main__":
     main()

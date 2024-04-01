@@ -13,4 +13,21 @@ args:
   - true
 name: torch.pixel_shuffle
 package: torch
-pass_rate: 0
+pass_rate: 7.5
+rules:
+- - cot: 'The error is triggered because the input tensor has 0 dimensions, but the
+      function expects the input to have at least 3 dimensions. Therefore, the constraint
+      to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        upscale_factor: int
+      msg: pixel_shuffle expects input to have at least 3 dimensions, but got input
+        with 2 dimension(s)
+      package: torch
+    txt: self.rank >= 3
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

@@ -17,4 +17,19 @@ args:
   - false
 name: torch._C._nn.softplus
 package: torch
-pass_rate: 0
+pass_rate: 97.5
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        beta: int
+        self: tensor
+        threshold: int
+      msg: '"softplus_cpu" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype != torch.int
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

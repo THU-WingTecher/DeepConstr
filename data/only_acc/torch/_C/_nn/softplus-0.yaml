@@ -1,0 +1,38 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  - number
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - beta
+  - threshold
+  required:
+  - true
+  - false
+  - false
+name: torch._C._nn.softplus
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'The error is caused by providing an input tensor of type ''Int'' to the
+      softplus function, which is not supported. To prevent this error, the input
+      tensor should be of a floating-point type. Therefore, the constraint that prevents
+      the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        beta: int
+        self: tensor
+        threshold: int
+      msg: '"softplus_cpu" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype() in [torch.float32, torch.float64]
+  - f1_score: 98.28009828009829
+    overall_score: 100
+    precision: 100.0
+    recall: 96.61835748792271

@@ -17,4 +17,19 @@ args:
   - false
 name: torch.trapz
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        dx: float
+        y: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 82)
+      package: torch
+    txt: -len(y.shape) <= dim < len(y.shape) and dim >= -2 and dim <= 1
+  - f1_score: 84.23645320197045
+    overall_score: 54.118226600985224
+    precision: 85.5
+    recall: 83.00970873786407

@@ -13,4 +13,22 @@ args:
   - true
 name: torch.logical_or
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: "The error is triggered because the size of tensor a (3) does not match the\
+      \ size of tensor b (2) at non-singleton dimension 6. \n\nTo prevent this error,\
+      \ we can add a constraint that ensures the dimensions and shape of both tensors\
+      \ are consistent. \n\nThe constraint can be formulated as:"
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (8) must match the size of tensor b (2) at non-singleton
+        dimension 4
+      package: torch
+    txt: self.dim == other.dim and self.shape == other.shape
+  - f1_score: 95.97989949748742
+    overall_score: 59.98994974874371
+    precision: 95.5
+    recall: 96.46464646464646

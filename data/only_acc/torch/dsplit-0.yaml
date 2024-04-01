@@ -1,0 +1,73 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - sections
+  required:
+  - true
+  - true
+name: torch.dsplit
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'Based on the given runtime information, the error occurs because the tensor
+      `self` has only 2 dimensions, but `torch.dsplit` requires a tensor with at least
+      3 dimensions. To prevent this error, we can add a constraint that checks the
+      number of dimensions of `self` before calling `torch.dsplit`. The constraint
+      can be written as:'
+    length: 1
+    target:
+      choosen_dtype:
+        sections: int
+        self: tensor
+      msg: torch.dsplit requires a tensor with at least 3 dimension, but got a tensor
+        with 2 dimensions!
+      package: torch
+    txt: self.dim >= 3
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      size of dimension 2 (8) is not divisible by the split size (92) in the torch.dsplit
+      operation. To prevent this error, we need to ensure that the size of dimension
+      2 is divisible by the split_size.
+
+
+      Therefore, the constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        sections: int
+        self: tensor
+      msg: torch.dsplit attempted to split along dimension 2, but the size of the
+        dimension 8 is not divisible by the split_size 7!
+      package: torch
+    txt: self.size(2) % 92 == 0
+  - f1_score: 90.17132551848512
+    overall_score: 50.61904761904761
+    precision: 95.23809523809523
+    recall: 85.6164383561644
+- - cot: 'The error occurs because the number of sections provided is less than or
+      equal to 0. Let''s see what the args were. It related with arg_name ''sections=-2'',
+      which is less than 0. To prevent this error in the future and generate constraints
+      that do not trigger it, we need to ensure that the "sections" value is always
+      larger than 0. The constraint for the ''sections'' parameter can be expressed
+      as:'
+    length: 1
+    target:
+      choosen_dtype:
+        sections: int
+        self: tensor
+      msg: number of sections must be larger than 0, got -1
+      package: torch
+    txt: sections > 0
+  - f1_score: 69.72477064220182
+    overall_score: 100
+    precision: 100.0
+    recall: 53.52112676056338

@@ -13,4 +13,21 @@ args:
   - false
 name: torch.var
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'The error is caused because the torch.var function only supports floating
+      point and complex dtypes, but the input tensor has dtype i32. To prevent the
+      error, the input tensor should have a floating point or complex dtype. Therefore,
+      the constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        unbiased: bool
+      msg: std and var only support floating point and complex dtypes
+      package: torch
+    txt: self.dtype in [torch.float32, torch.float64, torch.complex64, torch.complex128]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

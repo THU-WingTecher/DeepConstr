@@ -21,4 +21,37 @@ args:
   - true
 name: torch.amax
 package: torch
-pass_rate: 0
+pass_rate: 66.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: list[int]
+        keepdim: bool
+        out: tensor
+        self: tensor
+      msg: Expected the dtype for input and out to match, but got Int for input's
+        dtype and Float for out's dtype.
+      package: torch
+    txt: dtype(self) == dtype(out)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: list[int]
+        keepdim: bool
+        out: tensor
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-5, 4], but got 36)
+      package: torch
+    txt: (all(d >= -len(self.shape) and d < len(self.shape) for d in dim)) and (out.dtype
+      == self.dtype)
+  - f1_score: 73.47931873479318
+    overall_score: 39.25
+    precision: 75.5
+    recall: 71.56398104265404

@@ -1,0 +1,87 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.true_divide
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'The error is triggered because the size of tensor `a` (4) does not match
+      the size of tensor `b` (9) at non-singleton dimension 1. To prevent this error,
+      we can formulate the constraint as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (5) must match the size of tensor b (9) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.shape[1] == other.shape[1]
+  - f1_score: 74.21150278293136
+    overall_score: 100
+    precision: 100.0
+    recall: 58.99705014749264
+- - cot: 'The error message indicates that we are trying to resize the ''out'' tensor,
+      which is not resizable. To prevent this error, we need to ensure that the shape
+      and rank of the ''out'' tensor match the shape and rank of the operation result
+      (in this case, the ''self'' tensor).
+
+
+      Therefore, the condition to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 36.4063417498532
+    overall_score: 18.57788944723618
+    precision: 31.155778894472363
+    recall: 43.78531073446328
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: ((out.rank == self.rank) and (out.shape == other.shape)) and (out.rank==other.rank
+      and all(out.shape[i]==other.shape[i] for i in range(out.rank)))
+  - f1_score: 67.56756756756758
+    overall_score: 100
+    precision: 100.0
+    recall: 51.02040816326531
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: ((dtype(other) == dtype(out))) and (dtype(other) == float32)
+  - f1_score: 86.95652173913044
+    overall_score: 100
+    precision: 100.0
+    recall: 76.92307692307692

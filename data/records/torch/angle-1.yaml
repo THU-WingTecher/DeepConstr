@@ -13,4 +13,35 @@ args:
   - true
 name: torch.angle
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'The error occurs because the output tensor type Int32 cannot accept the
+      result of torch.angle, which is of type Float32. Let''s see what the args were.
+      The dtype of ''out'' is ''Int32'' and dtype of ''self'' is ''Float32''. Therefore,
+      the dtype of ''out'' should be ''Float32''. Left : dtype(out), Op : ==, Right
+      : float'
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(out)==torch.float32
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
+  - f1_score: 75.0
+    overall_score: 49.5
+    precision: 67.5
+    recall: 84.375

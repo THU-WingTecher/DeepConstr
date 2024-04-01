@@ -1,0 +1,64 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - int
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - y
+  - x
+  - dim
+  required:
+  - true
+  - true
+  - false
+name: torch.trapz
+package: torch
+pass_rate: 91.0
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        x: tensor
+        y: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 2)
+      package: torch
+    txt: (dim >= -len(x.shape)) or (dim >= -len(y.shape))
+  - f1_score: 75.44910179640719
+    overall_score: 48.75
+    precision: 94.5
+    recall: 62.7906976744186
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        x: tensor
+        y: tensor
+      msg: The size of tensor a (8) must match the size of tensor b (5) at non-singleton
+        dimension 5
+      package: torch
+    txt: x.dim == y.dim and x.shape == y.shape
+  - f1_score: 91.74311926605505
+    overall_score: 100
+    precision: 100.0
+    recall: 84.74576271186442
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        x: tensor
+        y: tensor
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 7)
+      package: torch
+    txt: (dim < len(x.shape)) or (8 >= -len(x.shape) and 8 < len(x.shape))
+  - f1_score: 82.77404921700224
+    overall_score: 47.75
+    precision: 92.5
+    recall: 74.89878542510121

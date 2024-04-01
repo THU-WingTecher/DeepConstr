@@ -21,4 +21,26 @@ args:
   - false
 name: torch.index_put
 package: torch
-pass_rate: 0
+pass_rate: 0.5
+rules:
+- - cot: "The error is triggered because the shape of the value tensor [3, 3, 3, 3]\
+      \ cannot be broadcasted to the shape of the indexing result [1, 1]. \n\nTo prevent\
+      \ this error, we need to ensure that the trailing dimensions of the value tensor\
+      \ and the indexing result tensor are either the same or one of them is 1. We\
+      \ can formulate this constraint as follows:"
+    length: 1
+    target:
+      choosen_dtype:
+        accumulate: bool
+        indices: list[tensor]
+        self: tensor
+        values: tensor
+      msg: 'shape mismatch: value tensor of shape [3, 3, 3, 3] cannot be broadcast
+        to indexing result of shape [1, 1]'
+      package: torch
+    txt: all(self.shape[i] == values.shape[i] or self.shape[i] == 1 or values.shape[i]
+      == 1 for i in range(-1, -min(len(self.shape), len(values.shape))-1, -1))
+  - f1_score: 91.30434782608695
+    overall_score: 50.25
+    precision: 94.5
+    recall: 88.3177570093458

@@ -17,4 +17,40 @@ args:
   - false
 name: torch.trapezoid
 package: torch
-pass_rate: 0
+pass_rate: 87.5
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        dx: int
+        y: tensor
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 9)
+      package: torch
+    txt: dim < len(y.shape)
+  - f1_score: 59.4392523364486
+    overall_score: 41.719626168224295
+    precision: 79.5
+    recall: 47.462686567164184
+- - cot: "The error occurs because the dimension provided is out of the valid range.\
+      \ The valid range for the dimension would be [-n, n-1], where n is the length\
+      \ of the dimension in the given tensor. The dimension that triggered the error\
+      \ is 9, but the valid range for the dimension is [-7, 6]. To prevent this error\
+      \ in the future and generate constraints that do not trigger it, we need to\
+      \ ensure that the \"dim\" value is always within the valid range for the given\
+      \ tensor. \n\nLet's denote the shape of the tensor as `shape`. The constraint\
+      \ for the `dim` parameter can be expressed as:"
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        dx: int
+        y: tensor
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 9)
+      package: torch
+    txt: dim >= -7 and dim < 7
+  - f1_score: 76.62835249042146
+    overall_score: 50.31417624521073
+    precision: 100.0
+    recall: 62.111801242236034

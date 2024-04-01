@@ -17,4 +17,38 @@ args:
   - false
 name: torch.flatten
 package: torch
-pass_rate: 0
+pass_rate: 76.0
+rules:
+- - cot: "Based on the given runtime information, the error is caused because the\
+      \ value of `start_dim` is greater than the value of `end_dim`. The function\
+      \ `torch.flatten` requires that `start_dim` should come before `end_dim` in\
+      \ order to correctly flatten the tensor. \n\nTo prevent the error, the constraint\
+      \ should be formulated as:"
+    length: 1
+    target:
+      choosen_dtype:
+        end_dim: int
+        self: tensor
+        start_dim: int
+      msg: 'flatten() has invalid args: start_dim cannot come after end_dim'
+      package: torch
+    txt: start_dim < end_dim
+  - f1_score: 56.37342908438061
+    overall_score: 40.1867145421903
+    precision: 78.5
+    recall: 43.977591036414566
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        end_dim: int
+        self: tensor
+        start_dim: int
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got -3)
+      package: torch
+    txt: (((start_dim >= -len(self.shape)) and (start_dim <= end_dim)) and (-2 <=
+      end_dim < 1)) and (end_dim >= -len(self.shape) and end_dim < len(self.shape))
+  - f1_score: 79.89276139410188
+    overall_score: 51.94638069705094
+    precision: 74.5
+    recall: 86.1271676300578

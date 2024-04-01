@@ -17,4 +17,83 @@ args:
   - false
 name: torch.log_softmax
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: The error is triggered because the input tensor has a complex data type (complex32),
+      but the torch.log_softmax function only supports tensors with real data types.
+      To prevent the error, we can add a constraint that ensures the input tensor
+      has a real data type.
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        self: tensor
+      msg: '''complex32'''
+      package: torch
+    txt: self.dtype == torch.float32
+  - f1_score: 99.25558312655089
+    overall_score: 61.627791563275444
+    precision: 100.0
+    recall: 98.52216748768474
+- - cot: The error is due to the fact that the `torch.log_softmax` function does not
+      have an implementation for tensors of type `bool`. To prevent this error, the
+      input tensor (`self`) should not have a data type of `bool`.
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        self: tensor
+      msg: '"log_softmax_lastdim_kernel_impl" not implemented for ''Bool'''
+      package: torch
+    txt: self.dtype != torch.bool
+  - f1_score: 99.50248756218905
+    overall_score: 100
+    precision: 100.0
+    recall: 99.00990099009901
+- - cot: 'The error is due to the fact that the `log_softmax_lastdim_kernel_impl`
+      function is not implemented for integer data types. To prevent this error, the
+      input tensor should have a data type that is supported by the `log_softmax_lastdim_kernel_impl`
+      function. So, the constraint would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        self: tensor
+      msg: '"log_softmax_lastdim_kernel_impl" not implemented for ''Int'''
+      package: torch
+    txt: dtype(self) != Int
+  - f1_score: 68.4931506849315
+    overall_score: 100
+    precision: 100.0
+    recall: 52.083333333333336
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got 1)
+      package: torch
+    txt: dim < len(self.shape)
+  - f1_score: 68.02721088435375
+    overall_score: 100
+    precision: 100.0
+    recall: 51.54639175257733
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 9)
+      package: torch
+    txt: (dim >= -len(self.shape) + 1) and (dim < 7)
+  - f1_score: 83.0
+    overall_score: 53.5
+    precision: 83.0
+    recall: 83.0

@@ -2,8 +2,8 @@ args:
   dtype:
   - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
   - str
-  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
-  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - list[int]
+  - list[int]
   is_pos:
   - false
   - false
@@ -22,50 +22,4 @@ args:
 name: tf.raw_ops.StatelessMultinomial
 package: tensorflow
 pass_rate: 0.0
-rules:
-- - cot: "Based on the given runtime information, the error occurs because the attribute\
-      \ 'seed' is provided as a float tensor, but it is expected to be one of the\
-      \ allowed types: int32 or int64. \n\nTo prevent this error, the dtype of the\
-      \ 'seed' tensor should be corrected to either int32 or int64. \n\nThe constraint\
-      \ that prevents the error is:"
-    length: 1
-    target:
-      choosen_dtype:
-        logits: tensor
-        name: str
-        num_samples: tensor
-        seed: tensor
-      msg: "Value for attr 'Tseed' of float is not in the list of allowed values:\
-        \ int32, int64\n\t; NodeDef: {{node StatelessMultinomial}}; Op<name=StatelessMultinomial;\
-        \ signature=logits:T, num_samples:int32, seed:Tseed -> output:output_dtype;\
-        \ attr=T:type,allowed=[DT_FLOAT, DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16,\
-        \ DT_INT8, DT_INT64, DT_BFLOAT16, DT_UINT16, DT_HALF, DT_UINT32, DT_UINT64];\
-        \ attr=Tseed:type,default=DT_INT64,allowed=[DT_INT32, DT_INT64]; attr=output_dtype:type,default=DT_INT64,allowed=[DT_INT32,\
-        \ DT_INT64]> [Op:StatelessMultinomial] name: AAkR"
-      package: tensorflow
-    txt: dtype(seed) in ["int32", "int64"]
-  - f1_score: 100.0
-    overall_score: 100
-    precision: 100.0
-    recall: 100.0
-- - cot: 'Based on the given runtime information, the error occurs because the function
-      `StatelessMultinomial` expects the input `num_samples` to be an `int32` tensor,
-      but it is provided as a `float` tensor. To prevent this error, the data type
-      of the `num_samples` tensor should be changed to `int32`. Therefore, the constraint
-      that would prevent the error is:'
-    length: 1
-    target:
-      choosen_dtype:
-        logits: tensor
-        name: str
-        num_samples: tensor
-        seed: tensor
-      msg: 'cannot compute StatelessMultinomial as input #1(zero-based) was expected
-        to be a int32 tensor but is a float tensor [Op:StatelessMultinomial] name:
-        IVII'
-      package: tensorflow
-    txt: dtype(num_samples) == int32
-  - f1_score: 98.6842105263158
-    overall_score: 100
-    precision: 100.0
-    recall: 97.40259740259741
+rules: []

@@ -1,0 +1,55 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - keepdim
+  required:
+  - true
+  - true
+  - false
+name: torch.median
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'Based on the given runtime information, the error occurred because the dimension
+      provided (dim=3) is out of the valid range. To prevent this error in the future
+      and generate constraints that do not trigger it, we need to ensure that the
+      "dim" value is always within the valid range for the given tensor.
+
+
+      The constraint for the ''dim'' parameter can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        keepdim: bool
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-3, 2], but got 3)
+      package: torch
+    txt: dim >= -2 and dim < 0
+  - f1_score: 86.20689655172413
+    overall_score: 100
+    precision: 100.0
+    recall: 75.75757575757575
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        keepdim: bool
+        self: tensor
+      msg: 'median(): Expected reduction dim 1 to have non-zero size.'
+      package: torch
+    txt: (self.shape[1] != 0) and (self.shape[dim] != 0)
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0

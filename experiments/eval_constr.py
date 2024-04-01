@@ -105,6 +105,12 @@ def get_constr_stats(data_list):
     constr_prec = []
     constr_recall = []
     for data in data_list:
+        # if any([rule[0]["cot"] in ["synthesized", "divided"] for rule in data["rules"]]):
+        #     constr_stats["synthesized"] += 1
+        # else :
+        #     # for r in data["rules"] :
+        #     #     print(r[0]["cot"])
+        #     constr_stats["naive"] += 1
         for rule in data["rules"]:
             if "synthesized" == rule[0]["cot"] or "divided" == rule[0]["cot"]:
                 constr_stats["synthesized"] += 1
@@ -115,10 +121,12 @@ def get_constr_stats(data_list):
             constr_prec.append(rule[1]["precision"])
             constr_recall.append(rule[1]["recall"])
     return constr_stats, constr_len, constr_operator, constr_f1, constr_prec, constr_recall
-
+def mean(numbers):
+    return sum(numbers) / len(numbers)
+import statistics
 # -> visualize distribution of length of cosntr, f1_ prec_ recall of constr, pie chart of constr type
 def viz_num_of_constr_with_pass_rate(data_list, acc_data_list, name, path = "/artifact/results/") :
-    plt.figure(figsize=(9,12))
+    plt.figure(figsize=(9,9))
     for i, data_li in enumerate([data_list, acc_data_list]):
         pass_rate_num_of_constr = []
         for data in data_li:
@@ -126,19 +134,24 @@ def viz_num_of_constr_with_pass_rate(data_list, acc_data_list, name, path = "/ar
                 (data["pass_rate"], len(data["rules"]))
             )
         if i == 0 :
+            print("tool", name)
             edge_color = 'black'
             line_color = 'blue'
             marker = 'x'
             color = 'blue'
             label = r'\textsc{DeepConstr}'
         else :
+            print("toolacc", name)
             edge_color = 'black'
             marker = 'x'
             color = 'red'
             line_color = 'red'
             label = r'\textsc{DeepConstr$^{s}$}'
         pass_rate, num_of_constraints = zip(*pass_rate_num_of_constr)
-
+        print("mean passrate", mean(pass_rate))
+        print("median passrate", statistics.median(pass_rate))
+        print("mean num_of_constraints", mean(num_of_constraints))
+        print("median num_of_constraints", statistics.median(num_of_constraints))
         # Convert to numpy arrays for easier manipulation
         pass_rate = np.array(pass_rate)
         
@@ -184,7 +197,7 @@ def viz_constr_len(constr_len : List[int]):
     plt.show()
 
 def viz_constr_f1(constr_f1 : List[float], constr_prec, acc_f1, acc_prec , path = "/artifact/results/", name = "PyTorch"):
-    plt.figure(figsize=(9,12))
+    plt.figure(figsize=(9,9))
     # PyTorch
     plt.scatter(acc_f1, acc_prec, c=colors[1], label=r'\textsc{DeepConstr$^{s}$}', alpha=0.6, edgecolors='w', linewidths=0.5)
     plt.scatter(constr_f1, constr_prec, c=colors[0], label=r'\textsc{DeepConstr}', alpha=0.6, edgecolors='w', linewidths=0.5)

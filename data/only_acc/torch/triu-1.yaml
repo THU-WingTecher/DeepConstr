@@ -1,0 +1,66 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - diagonal
+  - out
+  required:
+  - true
+  - false
+  - true
+name: torch.triu
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'The error is triggered because we are trying to resize the `out` tensor
+      which is not resizable. To prevent this error, we need to ensure that the shape
+      of the `out` tensor matches the shape of the operation result, which is determined
+      by the shape of the `self` tensor. Therefore, the constraint should be:'
+    length: 1
+    target:
+      choosen_dtype:
+        diagonal: int
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.shape == self.shape
+  - f1_score: 40.390879478827365
+    overall_score: 18.5
+    precision: 31.0
+    recall: 57.943925233644855
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        diagonal: int
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==self.rank
+  - f1_score: 86.0215053763441
+    overall_score: 100
+    precision: 100.0
+    recall: 75.47169811320755
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        diagonal: int
+        out: tensor
+        self: tensor
+      msg: Expected out tensor to have dtype int, but got float instead
+      package: torch
+    txt: (dtype(out) == int) and (out.dtype == self.dtype)
+  - f1_score: 82.9875518672199
+    overall_score: 100
+    precision: 100.0
+    recall: 70.92198581560284

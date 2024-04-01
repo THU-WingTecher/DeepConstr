@@ -13,4 +13,5 @@ args:
   - false
 name: torch.mean
 package: torch
-pass_rate: 0
+pass_rate: 96.5
+rules: []

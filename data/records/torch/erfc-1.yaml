@@ -13,4 +13,31 @@ args:
   - true
 name: torch.erfc
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: (dtype(out) == dtype(self)) and (dtype(self) == Float)
+  - f1_score: 93.82716049382717
+    overall_score: 58.91358024691358
+    precision: 95.0
+    recall: 92.6829268292683
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.shape == self.shape) and (out.rank==self.rank)
+  - f1_score: 94.56264775413712
+    overall_score: 53.28132387706856
+    precision: 100.0
+    recall: 89.68609865470853

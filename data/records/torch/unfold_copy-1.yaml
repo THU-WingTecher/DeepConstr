@@ -25,4 +25,126 @@ args:
   - true
 name: torch.unfold_copy
 package: torch
-pass_rate: 0
+pass_rate: 90.40404040404042
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dimension: int
+        out: tensor
+        self: tensor
+        size: int
+        step: int
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.shape[0] == self.shape[dimension-1]
+  - f1_score: 63.70929074613654
+    overall_score: 43.854645373068266
+    precision: 91.7948717948718
+    recall: 48.783484191648895
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dimension: int
+        out: tensor
+        self: tensor
+        size: int
+        step: int
+      msg: Expected out tensor to have dtype float, but got int instead
+      package: torch
+    txt: out.dtype == dtype(self)
+  - f1_score: 94.25837320574163
+    overall_score: 59.12918660287082
+    precision: 100.0
+    recall: 89.14027149321268
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      size argument has a negative value (-4) in the dimensions. To prevent this error,
+      the size argument should be a positive value or zero.
+
+
+      Wrap the final formula with'
+    length: 1
+    target:
+      choosen_dtype:
+        dimension: int
+        out: tensor
+        self: tensor
+        size: int
+        step: int
+      msg: Storage size calculation overflowed with sizes=[7, 8, 2, 7, 7, 5, -3] and
+        strides=[17640, 2205, 2205, 35, 5, 1, 245]
+      package: torch
+    txt: size >= 0
+  - f1_score: 94.76190476190477
+    overall_score: 59.38095238095239
+    precision: 100.0
+    recall: 90.04524886877829
+- - cot: The error is triggered because the step value is -3, but it must be greater
+      than 0. To prevent this error, the step value should be greater than 0. The
+      constraint can be formulated as
+    length: 1
+    target:
+      choosen_dtype:
+        dimension: int
+        out: tensor
+        self: tensor
+        size: int
+        step: int
+      msg: step is -3 but must be > 0
+      package: torch
+    txt: step > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dimension: int
+        out: tensor
+        self: tensor
+        size: int
+        step: int
+      msg: Dimension out of range (expected to be in range of [-6, 5], but got 9)
+      package: torch
+    txt: dimension < len(self.shape)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        dimension: int
+        out: tensor
+        self: tensor
+        size: int
+        step: int
+      msg: maximum size for tensor at dimension 0 is 2 but size is 3
+      package: torch
+    txt: (((size <= 4) and (self.dim == 6)) and (size <= self.size(0))) and (size
+      <= self.shape[dimension])
+  - f1_score: 73.60594795539032
+    overall_score: 48.80297397769516
+    precision: 99.0
+    recall: 58.57988165680473
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dimension: int
+        out: tensor
+        self: tensor
+        size: int
+        step: int
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 10)
+      package: torch
+    txt: dimension >= -len(self.shape)
+  - f1_score: 78.80085653104926
+    overall_score: 49.0
+    precision: 92.0
+    recall: 68.91385767790263

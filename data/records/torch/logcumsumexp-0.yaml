@@ -13,4 +13,51 @@ args:
   - true
 name: torch.logcumsumexp
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'The error is caused by the presence of negative dimensions in the input
+      tensor. To prevent this error, we need to ensure that all dimensions of the
+      input tensor are non-negative.
+
+
+      Wrap the final formula with'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(dim >= 0 for dim in self.shape)
+  - f1_score: 81.6326530612245
+    overall_score: 52.81632653061225
+    precision: 100.0
+    recall: 68.96551724137932
+- - cot: The error is due to passing an integer tensor as input to the torch.logcumsumexp
+      function. This function does not support integer tensors. The tensor should
+      be a floating point tensor. So, the dtype of the tensor 'self' should be float.
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+      msg: '"logcumsumexp_out_cpu" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype == torch.float
+  - f1_score: 99.00990099009901
+    overall_score: 61.504950495049506
+    precision: 100.0
+    recall: 98.0392156862745
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 15)
+      package: torch
+    txt: (dim >= -len(self.shape)) and (dim <= 0)
+  - f1_score: 68.11881188118811
+    overall_score: 46.059405940594054
+    precision: 86.0
+    recall: 56.393442622950815
