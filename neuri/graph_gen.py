@@ -1215,7 +1215,9 @@ class ConstrInf(NeuriR):
         default_dtype_constr = True
         record = self.pick_next_record()
         for i_arg, arg_name, in enumerate(record['args']['name']) :
-            if len(record['args']['dtype_obj'][i_arg]) > 0 :
+            if record['args']['dtype_obj'][i_arg] is None :
+                continue
+            elif len(record['args']['dtype_obj'][i_arg]) > 0 :
                 chosen_dtype[arg_name] = random.choice(record['args']['dtype_obj'][i_arg])
             else :
                 chosen_dtype[arg_name] = record['args']['dtype_obj'][i_arg]

@@ -14,7 +14,7 @@ def onnx2external_data_dir(onnx_file):
 # save directory : torchcomp-fuzz-0221
 """ API TEST
 python experiments/evaluate_apis.py \
-exp.save_dir=gen_torch2 mgen.record_path=$(pwd)/data/records/torch/ mgen.pass_rate=0.05 model.type=torch backend.type=torchjit fuzz.time=10m exp.parallel=15 mgen.noise=0.8
+exp.save_dir=gen_torch4 mgen.record_path=$(pwd)/data/records/torch/ mgen.pass_rate=0.05 model.type=torch backend.type=torchjit fuzz.time=10m exp.parallel=15 mgen.noise=0.8
 """
 """ API TEST
 python experiments/evaluate_apis.py exp.save_dir=gen_tf2 mgen.record_path=/artifact/data/records/tf/ mgen.pass_rate=0.05 model.type=tensorflow backend.type=xla fuzz.time=10m exp.parallel=5 mgen.noise=0.8

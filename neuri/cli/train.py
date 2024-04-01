@@ -67,7 +67,9 @@ def get_completed_list(path = "/artifact/experiments/results/completed.json") :
     
     #load csv 
     csv_paths = [
-        "/artifact/experiments/results/merged_torch.csv"
+        "/artifact/experiments/results/merged_torch.csv",
+        "/artifact/experiments/results/torch3.csv",
+        "/artifact/experiments/results/torch4.csv",
         "/artifact/experiments/results/merged_tf.csv"
         ]
     for csv_path in csv_paths :
@@ -75,7 +77,7 @@ def get_completed_list(path = "/artifact/experiments/results/completed.json") :
             for i, line in enumerate(f.readlines()) :
                 if i==0 : continue # head 
                 data.add(line.split(",")[0].replace(".models",""))
-    return list(data)
+    return list(set(data))
 
 def save_record(record: dict, path: str) -> None:
     """
@@ -178,6 +180,43 @@ class StatusCollect:
             f"tgen={tgen:.1f}ms, tsmt={tsmt:.1f}ms, trun={trun:.1f}ms, tsave={tsave:.1f}ms"
         )
 
+
+def check_left_api(api_data_path, saved_data_paths) :
+    with open(api_data_path, "r") as file:
+        data = json.load(file)
+    
+    for saved_data_path in saved_data_paths :
+        with open(saved_data_path, "r") as f:
+            for i, line in enumerate(f.readlines()) :
+                if i==0 :
+                    pass
+                else :
+                    columns = line.split(",")
+                    api_name = columns[0].replace(".models","")
+                    if api_name in data :
+                        data.remove(api_name)
+    
+    return data, len(data)
+
+pt_data_paths = [
+    "/artifact/experiments/results/merged_torch.csv",
+    "/artifact/experiments/results/torch3.csv",
+    "/artifact/experiments/results/torch4.csv"
+]
+pt_neuri_data_path = "/artifact/data/torch_overall_apis.json"
+pt_nnsmith_data_path = ""
+tf_data_paths = [
+    "/artifact/experiments/results/merged_tf.csv"
+]
+tf_neuri_data_path = "/artifact/data/tf_overall_apis.json"
+tf_nnsmith_data_path = ""
+
+print("neuri - pt")
+print(check_left_api(
+    pt_neuri_data_path,
+    pt_data_paths
+))
+
 class TrainingLoop:
     def __init__(
         self,
@@ -267,13 +306,23 @@ class TrainingLoop:
                 train_list = json.load(f)
         
         root_path = self.cfg["train"]["record_path"] 
-        completed_list = get_completed_list()
+        # completed_list = get_completed_list()
+        if self.cfg["model"]["type"] == "torch" :
+            todo_list = check_left_api(
+                    pt_neuri_data_path,
+                    pt_data_paths
+                )[0]
+        elif self.cfg["model"]["type"] == "tensorflow" :
+            todo_list = check_left_api(
+                    tf_neuri_data_path,
+                    tf_data_paths
+                )[0]
         for root, _, files in os.walk(root_path):
             for file in files:
                 if file.endswith(".yaml"):
                     name = file.split(".")[0].split("-")[0]
                     full_name = ".".join(os.path.join(root, file).replace('/','.').split('-')[0].split('.')[2:])
-                    if full_name in train_list and full_name not in completed_list :
+                    if full_name in todo_list :
                         with open(os.path.join(root, file), "r") as f:
                             record = yaml.safe_load(f)
                             if record.get("error", None) is not None or len(record.get("rules", [])) > 0 :

@@ -183,6 +183,7 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov"):
     :param config: Configuration parameters for the fuzzing process.
     :param max_retries: Maximum number of retries in case of failure.
     """
+    tries = 0
     print(f"Running {task} API {api_name} with baseline {baseline}")
     test_pool = [FIXED_FUNC, api_name]
     test_pool_modified = '-'.join(test_pool)
@@ -196,15 +197,12 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov"):
         Executes a given command and prints its output in real-time.
         """
         print("Running\n", command)
-        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-        import time; time.sleep(10)
-        # Print output as it's generated
-        while True:
-            output = process.stdout.readline()
-            if output == '' and process.poll() is not None:
-                break
-            if output:
-                print(output.strip())
+        p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        p.communicate()
+        exit_code = p.returncode
+        if exit_code != 0:
+            return 
+    
     if config['model']['type'] == "tensorflow":
         if baseline == "constrinf":
             RECORD = config["mgen"]["record_path"]
@@ -226,11 +224,13 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov"):
                    f"fuzz.root=$(pwd)/{config['exp']['save_dir']}/{config['model']['type']}-{baseline}-n{max_nodes}-{test_pool_modified} " \
                    f"fuzz.save_test={save_path} " \
                    f"model.type={config['model']['type']} backend.type={config['backend']['type']} filter.type=\"[nan,dup,inf]\" " \
-                   f"debug.viz=true hydra.verbose=fuzz fuzz.resume=false " \
+                    f"debug.viz=true hydra.verbose=fuzz fuzz.resume=true " \
                    f"mgen.method={baseline.split('_')[0]} mgen.max_nodes={max_nodes} mgen.test_pool=\"{test_pool}\""
 
     if task == "fuzz":
+        # while tries < 30:
         execute_command(fuzz_command)
+            # tries += 1
     elif task == "cov":
         print(f"Collect Cov for {api_name} with baseline {baseline}")
         print("Activate Conda env -cov")
@@ -294,27 +294,19 @@ def main(cfg) :
         raise NotImplementedError
     print(f" Will run {cfg['exp']['parallel'] * cov_parallel * len(BASELINES)} process in parallel")
     api_names = load_api_names_from_data(cfg["mgen"]["record_path"], cfg["mgen"]["pass_rate"])
+    api_names = set(api_names)
     print(f"From {len(api_names)} apis in total", sep=" ")
     completed = get_completed_list()
+    print(completed)
     for name in completed :
         if name in api_names :
             api_names.remove(name)
-    # for dir_name in os.listdir(os.path.join(os.getcwd(),cfg["exp"]["save_dir"])) :
-    #     if dir_name.endswith("models") :
-    #         test_list = os.listdir(os.path.join(os.getcwd(),cfg["exp"]["save_dir"],dir_name))
-    #         baseline, name = parse_directory_name(dir_name)
-    #         name = name.replace('.models','')
-    #         if test_list and max(map(float, test_list)) > 500 :
-    #             print(len(test_list), sep="")
-    #             if name in api_names :
-    #                 print(f"Remove {name} from test list")
-    #                 api_names.remove(name)
-    #         else :
-    #             print(f"keep test {name}")
-                
+
+    # api_names = api_names[:100]     
+    print(api_names)          
     print(f"Test {len(api_names)} apis in total", sep=" ")
     # api_names = load_api_names_from_json("/artifact/tests/test.json")
     # parallel_eval(api_names, BASELINES, cfg, task="fuzz")
-    parallel_eval(api_names, BASELINES, cfg, task="cov")
+    # parallel_eval(api_names, BASELINES, cfg, task="cov")
 if __name__ == "__main__":
     main()

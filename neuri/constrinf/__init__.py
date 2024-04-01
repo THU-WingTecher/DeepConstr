@@ -13,7 +13,7 @@ uncompatiable_api_marks = ["tensor element", "bug", "no function"]
 
 def record_args_info(record, values) : 
     for i_arg, arg_name, in enumerate(record['args']['name']) :
-        record['args']['value'][i_arg] = values[arg_name]
+        record['args']['value'][i_arg] = values.get(arg_name, None)
 
 def is_special_apis(record) : 
     if record.get("skipped", False) :
