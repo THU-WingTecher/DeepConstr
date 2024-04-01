@@ -1011,7 +1011,7 @@ def materalize_dtypes(dtypes : str, merge_tensor : bool = True) -> List[Any] :
             else :
                 final.append(abs)
         else :
-            pass
+            final.append(abs)
     if len(to_merge) > 0 :
         final.append(AbsTensor(possible_dtypes=to_merge))
     if len(final) == 0 :
