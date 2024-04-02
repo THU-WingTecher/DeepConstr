@@ -86,8 +86,9 @@ Q : try to make constraints {correct_discription} so that it can make the whole 
             new = self.Q_history.pop(0)
         self.Q_history.append(new)
         synthesizer.set_target(new)
-        target_str+= f"""({func_name}({formatted_dict(new.get_values_map(), sep="=", split=", ")}) -> {new.get_core_msg()}"""
-        target_str+= "\nWrap the final formula with ```.\nAnswers :"
+        # target_str+= f"""({func_name}({formatted_dict(new.get_values_map(), sep="=", split=", ")}) -> {new.get_core_msg()}"""
+        target_str+= f"""({func_name}({formatted_dict(new.get_dtypes_map(), sep="=", split=", ")}) -> {new.get_core_msg()}"""
+        target_str+= f"\nWrap the final formula with ```. Correctly match the variable names : {list(new.get_dtypes_map().keys())}\nAnswers :"
         return target_str
     
     def gen_infer_history(self, ans_history : str) : 
