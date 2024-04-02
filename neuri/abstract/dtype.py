@@ -372,7 +372,7 @@ class AbsIter():
     def get_arg_dtype(self) : 
         return self.arg_type
     def __repr__(self) -> str:
-        return f"List:{self.arg_type}:{self.length}"
+        return f"List[{self.arg_type}]"
     def to_str(self) -> str:
         return f"list[{self.arg_type.to_str()}]"
     def z3(self) -> "z3.Dtype" :
@@ -547,9 +547,8 @@ class AbsTensor:
         return hash((tuple(self.shape), self.dtype))
 
     def __repr__(self) -> str:
-
         if self.dtype is None :
-            return f"Tensor<null[{str(len(self.possible_dtypes))}]>{str(self.shape)}"
+            return f"Tensor{str(self.shape)}"
         else :
             return f"Tensor<{self.dtype.short()}>{str(self.shape)}"
 
@@ -894,6 +893,7 @@ STR_TO_ABS = {
     'torch.tensors': AbsTensor(),
     'longtensor': AbsTensor(),
     'sequence of Tensors':  AbsTensor.to_iter(),
+    'tensors':  AbsTensor.to_iter(),
     'list[tensor]':  AbsTensor.to_iter(),
     'sequence[tensor]':  AbsTensor.to_iter(),
     'sequences[tensor]':  AbsTensor.to_iter(),

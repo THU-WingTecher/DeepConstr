@@ -37,7 +37,10 @@ def get_dtype_z3_obj(arg, is_tensor_dtype=False) :
     # if is_tensor_dtype and hasattr(dtypeobj, "z3_const") :
     #     if dtypeobj.z3_const() is not None :
     #         return [dtype.z3_const() for dtype in dtypeobj.z3_const()]
-    return dtypeobj.z3_const()
+    try :
+        return dtypeobj.z3_const()
+    except :
+        return None # it is not dtype obj
 
 def merge_constr(*args, conn : Literal["and", "or"] = "and") : 
     res = []
@@ -435,8 +438,11 @@ class Ast2z3(SMTFuncs) :
         return result
     
     def gen_z3_obj_from_all_defined_field(self, val, arg_map, ret_wrapper=True, no_const=False) :
+        dtypeobj = None
         if not self.is_in_argnames(val) and is_dtype_constant(val) : # TODO : very inefficient(every conversion need to check)
-            return get_dtype_z3_obj(val)
+            dtypeobj = get_dtype_z3_obj(val)
+        if dtypeobj is not None :
+            return dtypeobj 
         else : 
             return self.gen_z3_obj(
                             val,
@@ -527,9 +533,9 @@ class Ast2z3(SMTFuncs) :
         elif isinstance(node, (ast.List, ast.Tuple)):
             return [self._convert(elem, arg_map, *args, **kwargs) for elem in node.elts]
         elif isinstance(node, ast.Name):
-            return self.gen_z3_obj_from_all_defined_field(node.id, arg_map, ret_wrapper=True)
+            return self.gen_z3_obj_from_all_defined_field(node.id, arg_map, ret_wrapper=True, *args, **kwargs)
         elif isinstance(node, ast.Constant):
-            return self.gen_z3_obj_from_all_defined_field(node.value, arg_map, ret_wrapper=True)
+            return self.gen_z3_obj_from_all_defined_field(node.value, arg_map, ret_wrapper=True, *args, **kwargs)
         elif isinstance(node, ast.Num):
             return node.n
         else:

@@ -11,7 +11,7 @@ from neuri.logger import SMT_LOG
 from neuri.abstract.dtype import AbsTensor 
 from typing import Callable, Dict, Any, List, Literal, Optional, Tuple, Union
 from neuri.constrinf.smt_funcs import TensorZ3, Z3DTYPE, BOOL_POOLS, MAX_ARR_LEN, MAX_VALUE, MIN_VALUE, OP_POOLS, check_numel_constr, \
-    length_default_constraints, length_not_zero_constraints, pos_max_constraints
+    length_constr, pos_max_constraints, MAX_TENSOR_LIST_RANK
 import operator
 from neuri.abstract.op import __MAX_RANK__
 assert MAX_ARR_LEN > __MAX_RANK__, f"MAX_ARR_LEN should be greater than __MAX_RANK__"
@@ -31,6 +31,17 @@ DEFAULT_DTYPE_CONSTR : Dict[str, z3.ExprRef] = {
     "torch" : partial(gen_dtype_constraints, not_supported_dtypes=DTYPE_NOT_SUPPORTED.get("torch")),
     "tensorflow" : partial(gen_dtype_constraints, not_supported_dtypes=DTYPE_NOT_SUPPORTED.get("tensorflow")),
 }
+
+z3.set_param(
+    "smt.phase_selection",
+    5,
+    "smt.arith.random_initial_value",
+    True,
+    "sat.phase",
+    "random",
+    "memory_max_size",
+    50 * 1024,  # MB
+)
 
 def tensor_default_constr(
         tensor_shape,
@@ -289,12 +300,14 @@ def process_len(
     noises = []
     for arg_name, arg_type in args_types.items() : 
         if isinstance(arg_type, (AbsTensor, AbsIter)) :
+            is_tensor_list = isinstance(arg_type, AbsIter) and isinstance(arg_type.get_arg_dtype(), AbsTensor)
             args_lengths[arg_name] = None
+            min_val = 1 if should_generate_noise(allow_zero_length_rate) else 0
+            max_val = MAX_TENSOR_LIST_RANK if is_tensor_list else None
             ## gen default constr 
             len_sym = arg_type.z3()(arg_name).rank
-            len_constr = length_default_constraints(len_sym) \
-                            if should_generate_noise(allow_zero_length_rate) \
-                            else length_not_zero_constraints(len_sym)
+
+            len_constr = length_constr(len_sym, max_val, min_val)
             constrs.append(len_constr)
             ## gen noise 
             if arg_name not in names and should_generate_noise(noise) :
@@ -431,6 +444,7 @@ def _gen_val(
                 args_values[arg_name] = random_gen(args_types[arg_name], args_lengths.get(arg_name))
     else : 
         args_values = None
+    SMT_LOG.debug(f"args_values: {args_values}")
     return args_values
 
 def is_solver_solvable(solver: z3.Solver) -> bool:

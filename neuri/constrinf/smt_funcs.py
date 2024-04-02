@@ -69,9 +69,10 @@ TensorArr = DeclareArr(TensorZ3)
 ARRTYPES = [IntArr, FloatArr, StrArr, BoolArr, ComplexArr, TensorArr]
 
 MAX_ARR_LEN = 7
+MAX_TENSOR_LIST_RANK = 4
 MAX_SHAPE_SUM = 2 * 1024**2 / 16
 MIN_VALUE = -4
-MAX_VALUE = 9
+MAX_VALUE = 7
 
 OP_POOLS = [
            op.lt,
@@ -82,10 +83,11 @@ OP_POOLS = [
 # NEG_OPS = [ast.NotIn, ast.IsNot, ast.NotEq]
 BOOL_POOLS = [op.ne, op.eq,]
 
-def length_default_constraints(length) : 
-    return z3.And(length >= 0, length <= MAX_ARR_LEN)
-def length_not_zero_constraints(length) : 
-    return z3.And(length > 0, length <= MAX_ARR_LEN)
+def length_constr(length, max_len = None, min_len = None) : 
+    if max_len is None : max_len = MAX_ARR_LEN
+    if min_len is None : min_len = 0
+    return z3.And(length >= min_len, length <= max_len)
+
 def pos_max_constraints(z3obj, len_var, include_zero) : 
     if isinstance(len_var, int) :
         length = len_var
