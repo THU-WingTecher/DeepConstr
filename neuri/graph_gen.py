@@ -62,7 +62,7 @@ class BaseGen:
         max_elem_per_tensor=2**16,
         dtype_choices=None,
     ):
-        # assert len(opset) > 0, "opset must not be empty"
+        assert len(opset) > 0, "opset must not be empty"
         if seed is not None:
             set_seed(seed)
 
@@ -120,16 +120,7 @@ class BaseGen:
         )
         self.monotonic_placeholder_id += 1
         return ph
-    
-    def make_concrete_placeholder(self, shape : List[int], dtype : str) -> Placeholder:
-        ph = Placeholder(
-            AbsTensor(
-                shape=shape,
-                dtype=dtype
-            )
-        )
-        return ph
-    
+
     def make_random_concrete_placeholder(self, rank, dtype=None):
         l, r = self.concr_ph_dim_rng
         shape = []
@@ -208,7 +199,7 @@ class BaseGen:
         self.try_insert_node_type(node_t)
 
     def abstract_gen(self, max_node_size=10, max_gen_millisec=2000):
-        # z3.set_param("timeout", max_gen_millisec // 3)
+        z3.set_param("timeout", max_gen_millisec // 3)
 
         assert max_node_size > 0, "max_node_size must be positive"
 
@@ -817,7 +808,7 @@ class NeuriR(ConcolicGen):
     def __init__(
         self,
         opset,
-        record_finder: Union[OpRecordFinder, List[Dict]], # ConstrGen -> List[Dict]
+        record_finder: OpRecordFinder,
         seed=None,
         init_fp=False,
         **kwargs,
@@ -829,9 +820,7 @@ class NeuriR(ConcolicGen):
         # remove records whose tensors violate tensor_type_constraints
         # FIXME: Strictly apply tensor_type_constraints to filter unapplicable tensors.
         self.record_finder = record_finder
-        self.init_first_node(init_fp)
 
-    def init_first_node(self, init_fp=False) : 
         # Insert the first node.
         self.forward_insert_node(
             self.make_random_concrete_placeholder(
@@ -1138,7 +1127,7 @@ class Neuri(NeuriR):
 
         return False
 
-class ConstrInf(NeuriR):
+class ConstrInf(BaseGen):
     """Complete Constraint-Solving based Generation"""
     def __init__(
         self,
@@ -1152,7 +1141,10 @@ class ConstrInf(NeuriR):
         num_of_try : int = 3,
         **kwargs
     ):
-        NeuriR.__init__(self, opset, record_finder, seed, **kwargs)
+        BaseGen.__init__(self, opset, seed, **kwargs)
+        if seed is not None:
+            set_z3_state(seed)
+        self.record_finder = record_finder
         self.model = model
         self.noise = noise
         self.allow_zero_length_rate = allow_zero_length_rate
@@ -1191,7 +1183,16 @@ class ConstrInf(NeuriR):
     
     def is_inited(self) : 
         return len(self.ir.vars) > 0
-    
+
+    def make_concrete_placeholder(self, shape : List[int], dtype : str) -> Placeholder:
+        ph = Placeholder(
+            AbsTensor(
+                shape=shape,
+                dtype=dtype
+            )
+        )
+        return ph
+
     def make_random_concrete_placeholder(self, rank, dtype=None):
         shape = [random.randint(1, MAX_VALUE) for _ in range(rank)]
         dtype = random.choice(DTYPE_ALL[self.model.package])
@@ -1295,7 +1296,7 @@ class ConstrInf(NeuriR):
                 self.ir.remove_unused(temp_var)
                 self.placeholders.remove(temp_var.retval())
             
-            self.save_err_msg(traceback.format_exc())
+            # self.save_err_msg(traceback.format_exc())
 
         return False
     
@@ -1332,6 +1333,9 @@ class ConstrInf(NeuriR):
         self.forward_insert_node(node, input_vars)
         
         return True
+
+    def make_concrete(self) -> GraphIR:
+        return self.ir
 
 class NeuriI(Neuri):
     def try_insert(self):
