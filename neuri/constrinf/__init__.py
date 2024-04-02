@@ -38,49 +38,6 @@ def _process_record(file_path: str, test_pool: list = []) -> dict:
     if record.get('rules', None) is None :
         record['rules'] = []
     return record
-    
-def process_record(file_path: str, test_pool: list = []) -> dict:
-    """
-    Process a single file and return the configuration as a record dictionary.
-    """
-    from neuri.abstract.dtype import materalize_dtypes  # Assumed to be a necessary import
-    # Assuming load_yaml is defined elsewhere or is a known function for loading YAML files
-    record = {}
-    cfg = load_yaml(file_path)
-    if test_pool and cfg["title"] not in test_pool:
-        return None
-
-    for key, item in cfg.items():
-        record[key] = item
-        if key == "title":
-            record['name'] = cfg[key]
-        elif key == "pass_rate":
-            record['pass_rate'] = cfg[key]
-        elif key == "constraints":
-            record['args'] = {'name': [arg_name for arg_name in cfg[key].keys()],
-                              'is_pos': [cfg[key][arg_name].get('is_pos', False) for arg_name in cfg[key].keys()],
-                              'value': [None] * len(cfg[key].keys()),
-                              'dtype': [None] * len(cfg[key].keys())}
-        elif key == "rules":
-            record['rules'] = cfg['rules']
-        else:
-            record[key] = cfg[key]
-
-    record['outputs'] = {'value': []} # Placeholder for the output values
-
-    if cfg.get('constraints') is not None:
-        for i_name, name in enumerate(record['args']['name']):
-            dtype = materalize_dtypes(cfg['constraints'][name]['dtype'])
-            record['args']['dtype'][i_name] = dtype
-            if dtype is None:
-                record['args']['name'].pop(i_name)
-                record['args']['dtype'].pop(i_name)
-        if len(record['args']['name']) > 0:
-            return record
-    else:
-        AUTOINF_LOG.warning(f"no dtype info in {file_path}")
-        return None
-
 # Step 2: Define the traversal function
 
 def gen_inst_with_records(data_dir: str, test_pool: list = []):

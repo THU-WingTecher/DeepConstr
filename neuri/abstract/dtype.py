@@ -953,9 +953,9 @@ def materalize_dtype(target_str : str) -> Any :
     if lowered in STR_TO_ABS.keys() :
         materalized = STR_TO_ABS[lowered]
         return materalized
-    else :
-        LOGGER.debug(f"Unsupported type {target_str}, may be literal arg")
-        return target_str
+    # else :
+    #     LOGGER.debug(f"Unsupported type {target_str}, may be literal arg")
+    #     return target_str
 
 
 def materalize_dtypes(dtypes : str, merge_tensor : bool = True) -> List[Any] :
@@ -1015,7 +1015,7 @@ def materalize_dtypes(dtypes : str, merge_tensor : bool = True) -> List[Any] :
     if len(to_merge) > 0 :
         final.append(AbsTensor(possible_dtypes=to_merge))
     if len(final) == 0 :
-        return None
+        return [AbsDType.none]
     else :
         LOGGER.debug(f"[merged] from {dtypes} To {final}")
         return final
