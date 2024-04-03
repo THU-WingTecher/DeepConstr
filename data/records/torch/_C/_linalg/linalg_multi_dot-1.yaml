@@ -33,3 +33,29 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        tensors: list[tensor]
+      msg: 'multi_dot(): the first tensor must be 1D or 2D but got 9D'
+      package: torch
+    txt: tensors[0].dim() == 2
+  - f1_score: 59.347181008902076
+    overall_score: 28.0
+    precision: 50.0
+    recall: 72.99270072992701
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        tensors: list[tensor]
+      msg: 'multi_dot(): the last tensor must be 1D or 2D but got 9D'
+      package: torch
+    txt: tensors[-1].dim() == 2
+  - f1_score: 50.83932853717027
+    overall_score: 29.5
+    precision: 53.0
+    recall: 48.84792626728111

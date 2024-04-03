@@ -1,0 +1,51 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.logical_xor
+package: torch
+pass_rate: 13.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (3) at non-singleton
+        dimension 3
+      package: torch
+    txt: self.shape[6] == other.shape[6]
+  - f1_score: 74.6268656716418
+    overall_score: 100
+    precision: 100.0
+    recall: 59.523809523809526
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: ((out.shape == self.shape) and (out.rank == self.rank and all(out.shape[i]
+      == self.shape[i] for i in range(out.rank)))) and (out.shape == other.shape)
+  - f1_score: 81.99052132701422
+    overall_score: 44.25
+    precision: 86.5
+    recall: 77.92792792792793

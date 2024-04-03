@@ -21,4 +21,60 @@ args:
   - false
 name: tf.transpose
 package: tensorflow
-pass_rate: 0
+pass_rate: 85.48387096774194
+rules:
+- - cot: 'The error is caused by a missing argument in the function call. The argument
+      ''perm'' is missing, which is a list of integers. Therefore, the constraint
+      to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        conjugate: bool
+        name: str
+        perm: list[int]
+      msg: '{{function_node __wrapped__Transpose_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        0 is missing from {2,2,2,2,2,2,2}. [Op:Transpose]'
+      package: tensorflow
+    txt: len(perm) == 2
+  - f1_score: 56.99539263324857
+    overall_score: 40.497696316624285
+    precision: 77.0
+    recall: 45.24161637155762
+- - cot: 'The error occurs because the value of ''perm'' is out of the valid range.
+      The valid range for ''perm'' is [0, len(a.shape)), where ''a'' is the input
+      tensor. To prevent this error in the future and generate constraints that do
+      not trigger it, we need to ensure that the values in ''perm'' are always within
+      the valid range for the given tensor. The constraint for the ''perm'' parameter
+      can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        conjugate: bool
+        name: str
+        perm: list[int]
+      msg: '{{function_node __wrapped__Transpose_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        -2 is out of range [0 .. 2) [Op:Transpose]'
+      package: tensorflow
+    txt: all(d >= 0 and d < len(a.shape) for d in perm)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        a: tensor
+        conjugate: bool
+        name: str
+        perm: list[int]
+      msg: '{{function_node __wrapped__Transpose_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        transpose expects a vector of size 7. But input(1) is a vector of size 0 [Op:Transpose]'
+      package: tensorflow
+    txt: (a.size(0) == 6) and (len(perm) == len(a.shape))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

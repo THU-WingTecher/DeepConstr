@@ -17,4 +17,65 @@ args:
   - true
 name: torch._C._special.special_hermite_polynomial_h
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        n: tensor
+        out: tensor
+        x: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: (((dtype(out)==dtype(x)) or (dtype(out) == int32)) or (dtype(out) == Int))
+      and (dtype(out)==torch.float32)
+  - f1_score: 96.38554216867469
+    overall_score: 51.192771084337345
+    precision: 100.0
+    recall: 93.02325581395348
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        n: tensor
+        out: tensor
+        x: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: ((out.rank == x.rank and all(out.shape[i] == x.shape[i] for i in range(out.rank)))
+      and (out.rank==6)) and (all(n.shape[i]==out.shape[i] for i in range(n.rank)))
+  - f1_score: 90.73634204275534
+    overall_score: 57.36817102137767
+    precision: 95.5
+    recall: 86.42533936651583
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        n: tensor
+        out: tensor
+        x: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (all(out.shape[i]==x.shape[i] for i in range(out.rank))) and (all(out.shape[i]==x.shape[i]
+      for i in range(x.rank)))
+  - f1_score: 54.40028180590618
+    overall_score: 29.749999999999996
+    precision: 56.49999999999999
+    recall: 52.45103588814673
+- - cot: The constraint that prevents the error is
+    length: 1
+    target:
+      choosen_dtype:
+        n: tensor
+        out: tensor
+        x: tensor
+      msg: The size of tensor a (3) must match the size of tensor b (7) at non-singleton
+        dimension 6
+      package: torch
+    txt: x.shape[2] == n.shape[2]
+  - f1_score: 76.04562737642586
+    overall_score: 100
+    precision: 100.0
+    recall: 61.34969325153374

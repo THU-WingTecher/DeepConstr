@@ -1,0 +1,53 @@
+args:
+  dtype:
+  - str
+  - bfloat16,float16,float32,float64,int8,uint8,int16,uint16,int32,uint32,int64,uint64
+  - bfloat16,float16,float32,float64,int8,uint8,int16,uint16,int32,uint32,int64,uint64
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - name
+  - x
+  - y
+  required:
+  - false
+  - true
+  - true
+name: tf.maximum
+package: tensorflow
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: '{{function_node __wrapped__Maximum_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [4,6,2,2,3,3,1] vs. [5,1,6,2,2,3,2] [Op:Maximum] name:
+        ldQW'
+      package: tensorflow
+    txt: (x.shape == y.shape) and (len(x) == len(y))
+  - f1_score: 86.20689655172413
+    overall_score: 100
+    precision: 100.0
+    recall: 75.75757575757575
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: 'cannot compute Maximum as input #1(zero-based) was expected to be a float
+        tensor but is a int32 tensor [Op:Maximum] name: wwsD'
+      package: tensorflow
+    txt: dtype(x) == dtype(y)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

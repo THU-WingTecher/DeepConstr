@@ -1,0 +1,122 @@
+args:
+  dtype:
+  - float16,bfloat16,float32,float64
+  - int32,int64
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - features
+  - labels
+  - name
+  required:
+  - true
+  - true
+  - false
+name: tf.raw_ops.SparseSoftmaxCrossEntropyWithLogits
+package: tensorflow
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        features: tensor
+        labels: tensor
+        name: str
+      msg: "Value for attr 'Tlabels' of float is not in the list of allowed values:\
+        \ int32, int64\n\t; NodeDef: {{node SparseSoftmaxCrossEntropyWithLogits}};\
+        \ Op<name=SparseSoftmaxCrossEntropyWithLogits; signature=features:T, labels:Tlabels\
+        \ -> loss:T, backprop:T; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16, DT_FLOAT,\
+        \ DT_DOUBLE]; attr=Tlabels:type,default=DT_INT64,allowed=[DT_INT32, DT_INT64]>\
+        \ [Op:SparseSoftmaxCrossEntropyWithLogits] name: THlj"
+      package: tensorflow
+    txt: (dtype(labels) in ["int32", "int64"]) and (dtype(features) in ["half", "bfloat16",
+      "float", "double"])
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        features: tensor
+        labels: tensor
+        name: str
+      msg: '{{function_node __wrapped__SparseSoftmaxCrossEntropyWithLogits_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        logits must be 2-D, but got shape [3,3,3,3,3] [Op:SparseSoftmaxCrossEntropyWithLogits]
+        name: DDgD'
+      package: tensorflow
+    txt: (features.dim == 2) and (labels.shape.rank == 1)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error occurs because the first dimension of the ''features'' tensor
+      and the ''labels'' tensor do not match. According to the error message, the
+      ''features'' tensor has a shape of [6,3] and the ''labels'' tensor has a shape
+      of [7]. The first dimension of both tensors should be the same.
+
+
+      Therefore, the condition to prevent the error would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        features: tensor
+        labels: tensor
+        name: str
+      msg: '{{function_node __wrapped__SparseSoftmaxCrossEntropyWithLogits_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        logits and labels must have the same first dimension, got logits shape [3,5]
+        and labels shape [7] [Op:SparseSoftmaxCrossEntropyWithLogits] name: bLbH'
+      package: tensorflow
+    txt: features.shape[0] == labels.shape[0]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: "Based on the given runtime information, the error occurs because the label\
+      \ value of -796927 is outside the valid range of [0, 7). The label values provided\
+      \ are -575035, 448297, -796927, 165676. To prevent this error in the future,\
+      \ we need to ensure that the label values are within the valid range for the\
+      \ given tensor. If we denote the shape of the tensor as n, the valid range for\
+      \ the labels would be [0, n-1]. \n\nThe constraint for the label values can\
+      \ be expressed as:"
+    length: 1
+    target:
+      choosen_dtype:
+        features: tensor
+        labels: tensor
+        name: str
+      msg: '{{function_node __wrapped__SparseSoftmaxCrossEntropyWithLogits_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Received a label value of -656305 which is outside the valid range of [0,
+        7).  Label values: -509782 -239610 -656305 [Op:SparseSoftmaxCrossEntropyWithLogits]
+        name: tFdx'
+      package: tensorflow
+    txt: all(l >= 0 and l < len(labels.shape) for l in labels)
+  - f1_score: 99.66777408637873
+    overall_score: 100
+    precision: 100.0
+    recall: 99.33774834437087
+- - cot: The error is raised because the logits input tensor to the SparseSoftmaxCrossEntropyWithLogits
+      function has no classes. The logits tensor should have at least one class, meaning
+      that the second dimension of the tensor should be greater than 0. Hence, the
+      constraint to prevent this error would be that the second dimension of the logits
+      tensor (features) should be greater than 0.
+    length: 1
+    target:
+      choosen_dtype:
+        features: tensor
+        labels: tensor
+        name: str
+      msg: '{{function_node __wrapped__SparseSoftmaxCrossEntropyWithLogits_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Must have at least one class, but got logits shape [0,0] [Op:SparseSoftmaxCrossEntropyWithLogits]
+        name: lZWt'
+      package: tensorflow
+    txt: features.shape[1] > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

@@ -13,4 +13,44 @@ args:
   - false
 name: torch.pdist
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        p: float
+        self: tensor
+      msg: pdist only supports floating-point dtypes
+      package: torch
+    txt: self.dtype == torch.float32
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        p: float
+        self: tensor
+      msg: pdist only supports non-negative p values
+      package: torch
+    txt: p >= 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        p: float
+        self: tensor
+      msg: 'pdist only supports 2D tensors, got: 0D'
+      package: torch
+    txt: self.dim() == 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

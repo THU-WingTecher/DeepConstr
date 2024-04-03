@@ -17,4 +17,38 @@ args:
   - true
 name: tf.math.logical_xor
 package: tensorflow
-pass_rate: 0
+pass_rate: 87.33333333333333
+rules:
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: '{{function_node __wrapped__LogicalOr_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [5,1,5,0,2,7,0] vs. [1,7,7,1,4,1,1] [Op:LogicalOr]'
+      package: tensorflow
+    txt: (((x.shape[i] == 1) and (all(x.shape[i] == y.shape[i] or x.shape[i] == 1
+      or y.shape[i] == 1 for i in range(x.rank)))) or (len(x.shape) == len(y.shape)
+      and all(x.shape[i] == y.shape[i] or x.shape[i] == 1 or y.shape[i] == 1 for i
+      in range(-1, -min(len(x.shape), len(y.shape))-1, -1)))) and (x.shape == y.shape)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: 'cannot compute LogicalOr as input #0(zero-based) was expected to be a
+        bool tensor but is a float tensor [Op:LogicalOr]'
+      package: tensorflow
+    txt: (dtype(x) == dtype(y)) and (dtype(x) == bool)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

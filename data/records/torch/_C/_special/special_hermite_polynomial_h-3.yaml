@@ -17,22 +17,8 @@ args:
   - true
 name: torch._C._special.special_hermite_polynomial_h
 package: torch
-pass_rate: 100
+pass_rate: 91.0
 rules:
-- - cot: synthesized
-    length: 2
-    target:
-      choosen_dtype:
-        n: tensor
-        out: tensor
-        x: int
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: (out.shape == n.shape) and (out.rank==n.rank)
-  - f1_score: 93.45794392523364
-    overall_score: 100
-    precision: 100.0
-    recall: 87.71929824561403
 - - cot: Based on the given runtime information, the error occurs because the result
       type of `special_hermite_polynomial_h` function is Float, but it cannot be cast
       to the desired output type Int. To prevent this error, the output tensor `out`
@@ -50,3 +36,19 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 100.0
+- - cot: '`out` tensor should have the same number of dimensions as the `n` tensor,
+      and the shape of each dimension in `out` should be equal to or greater than
+      the corresponding dimension in `n` tensor.'
+    length: 1
+    target:
+      choosen_dtype:
+        n: tensor
+        out: tensor
+        x: int
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.ndim == n.ndim and all(out.shape[i] >= n.shape[i] for i in range(n.ndim))
+  - f1_score: 86.58008658008657
+    overall_score: 55.290043290043286
+    precision: 100.0
+    recall: 76.33587786259541

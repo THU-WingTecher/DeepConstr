@@ -1,0 +1,47 @@
+args:
+  dtype:
+  - int
+  - bool
+  - str
+  - bool
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - axis
+  - exclusive
+  - name
+  - reverse
+  - x
+  required:
+  - true
+  - false
+  - false
+  - false
+  - true
+name: tf.raw_ops.Cumprod
+package: tensorflow
+pass_rate: 94.0
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        axis: int
+        exclusive: bool
+        name: str
+        reverse: bool
+        x: tensor
+      msg: '{{function_node __wrapped__Cumprod_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        ScanOp: Expected scan axis in the range [-2, 2), but got 6 [Op:Cumprod] name:
+        KEfm'
+      package: tensorflow
+    txt: (axis >= -len(x.shape) and axis < len(x.shape)) and (5 < len(x.shape))
+  - f1_score: 78.67036011080333
+    overall_score: 48.833333333333336
+    precision: 94.66666666666667
+    recall: 67.29857819905213

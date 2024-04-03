@@ -13,5 +13,18 @@ args:
   - true
 name: torch.Tensor.reshape_as
 package: torch
-pass_rate: 7.333333333333333
-rules: []
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: shape '[1, 1, 7, 6, 6, 2, 1]' is invalid for input of size 1
+      package: torch
+    txt: (self.shape == other.shape) and ((len(self.shape) == len(other.shape)))
+  - f1_score: 97.04433497536945
+    overall_score: 51.522167487684726
+    precision: 98.5
+    recall: 95.63106796116504

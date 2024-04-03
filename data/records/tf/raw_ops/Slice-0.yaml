@@ -21,7 +21,7 @@ args:
   - true
 name: tf.raw_ops.Slice
 package: tensorflow
-pass_rate: 0.0
+pass_rate: 2.666666666666667
 rules:
 - - cot: divided
     length: 1
@@ -41,3 +41,21 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 50.0
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        begin: list[int]
+        input: tensor
+        name: str
+        size: list[int]
+      msg: '{{function_node __wrapped__Slice_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Expected begin and size arguments to be 1-D tensors of size 3, but got shapes
+        [2] and [0] instead. [Op:Slice]'
+      package: tensorflow
+    txt: (((len(begin) == 3) or (len(size)==len(input.shape))) or (len(begin) == 4))
+      and (len(begin)==len(input.shape))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

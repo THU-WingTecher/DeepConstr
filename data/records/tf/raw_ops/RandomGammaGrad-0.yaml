@@ -17,4 +17,57 @@ args:
   - true
 name: tf.raw_ops.RandomGammaGrad
 package: tensorflow
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        alpha: tensor
+        name: str
+        sample: tensor
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: float,\
+        \ double\n\t; NodeDef: {{node RandomGammaGrad}}; Op<name=RandomGammaGrad;\
+        \ signature=alpha:T, sample:T -> output:T; attr=T:type,allowed=[DT_FLOAT,\
+        \ DT_DOUBLE]> [Op:RandomGammaGrad] name: TTMu"
+      package: tensorflow
+    txt: (dtype(sample) in ["float", "double"]) and (alpha.dtype in ["float32", "float64"])
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the constraint that can prevent
+      the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: tensor
+        name: str
+        sample: tensor
+      msg: 'cannot compute RandomGammaGrad as input #1(zero-based) was expected to
+        be a float tensor but is a half tensor [Op:RandomGammaGrad] name: Jnaf'
+      package: tensorflow
+    txt: dtype(sample) == dtype(alpha)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        alpha: tensor
+        name: str
+        sample: tensor
+      msg: '{{function_node __wrapped__RandomGammaGrad_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [7,8,7,6] vs. [9,9,9,9,9] [Op:RandomGammaGrad] name:
+        YEYy'
+      package: tensorflow
+    txt: (all(alpha.shape[i] == sample.shape[i] or alpha.shape[i] == 1 or sample.shape[i]
+      == 1 for i in range(-1, -min(len(alpha.shape), len(sample.shape))-1, -1))) and
+      (len(alpha.shape) == len(sample.shape) and all(alpha.shape[i] == sample.shape[i]
+      for i in range(len(alpha.shape))))
+  - f1_score: 94.23728813559322
+    overall_score: 59.11864406779661
+    precision: 92.66666666666666
+    recall: 95.86206896551724

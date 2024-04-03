@@ -1,0 +1,115 @@
+args:
+  dtype:
+  - float32,float64
+  - str
+  - float32,float64
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - a
+  - name
+  - x
+  required:
+  - true
+  - false
+  - true
+name: tf.raw_ops.IgammaGradA
+package: tensorflow
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        a: tensor
+        name: str
+        x: tensor
+      msg: '{{function_node __wrapped__IgammaGradA_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [1,6] vs. [9,5,5] [Op:IgammaGradA] name: SdJi'
+      package: tensorflow
+    txt: (len(a) == len(x)) and (all(a.shape[i] == x.shape[i] or a.shape[i] == 1 or
+      x.shape[i] == 1 for i in range(-1, -min(len(a.shape), len(x.shape))-1, -1)))
+  - f1_score: 87.46355685131195
+    overall_score: 100
+    precision: 100.0
+    recall: 77.720207253886
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        name: str
+        x: tensor
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: float,\
+        \ double\n\t; NodeDef: {{node IgammaGradA}}; Op<name=IgammaGradA; signature=a:T,\
+        \ x:T -> z:T; attr=T:type,allowed=[DT_FLOAT, DT_DOUBLE]> [Op:IgammaGradA]\
+        \ name: dGpS"
+      package: tensorflow
+    txt: len(a) > 0
+  - f1_score: 65.1685393258427
+    overall_score: 51.333333333333336
+    precision: 96.66666666666667
+    recall: 49.15254237288135
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        a: tensor
+        name: str
+        x: tensor
+      msg: '{{function_node __wrapped__IgammaGradA_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [8] vs. [7] [Op:IgammaGradA] name: nwBl'
+      package: tensorflow
+    txt: (len(a) == len(x)) and (all(a.shape[i] == x.shape[i] for i in range(a.rank)))
+  - f1_score: 95.81993569131832
+    overall_score: 100
+    precision: 100.0
+    recall: 91.9753086419753
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        a: tensor
+        name: str
+        x: tensor
+      msg: 'cannot compute IgammaGradA as input #1(zero-based) was expected to be
+        a float tensor but is a int32 tensor [Op:IgammaGradA] name: sAGM'
+      package: tensorflow
+    txt: (dtype(x) == float) and (dtype(x) == dtype(a))
+  - f1_score: 83.56545961002784
+    overall_score: 100
+    precision: 100.0
+    recall: 71.77033492822966
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        name: str
+        x: tensor
+      msg: "Value for attr 'T' of half is not in the list of allowed values: float,\
+        \ double\n\t; NodeDef: {{node IgammaGradA}}; Op<name=IgammaGradA; signature=a:T,\
+        \ x:T -> z:T; attr=T:type,allowed=[DT_FLOAT, DT_DOUBLE]> [Op:IgammaGradA]\
+        \ name: BJIz"
+      package: tensorflow
+    txt: dtype(x) in ["float32", "float64"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        name: str
+        x: tensor
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(dim >= 0 for dim in x.shape)
+  - f1_score: 96.46302250803858
+    overall_score: 100
+    precision: 100.0
+    recall: 93.16770186335404

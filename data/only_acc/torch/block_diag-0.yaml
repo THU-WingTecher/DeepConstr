@@ -1,0 +1,38 @@
+args:
+  dtype:
+  - List[Tensor]
+  is_pos:
+  - tensors
+  name:
+  - tensors
+  required:
+  - true
+name: torch.block_diag
+package: torch
+pass_rate: 90.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        tensors: List[Tensor]
+      msg: expected Tensor as element 0 in argument 0, but got list
+      package: torch
+    txt: len(tensors) > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        tensors: list[tensor]
+      msg: 'torch.block_diag: Input tensors must have 2 or fewer dimensions. Input
+        0 has 7 dimensions'
+      package: torch
+    txt: tensors[0].dim <= 2
+  - f1_score: 91.30434782608695
+    overall_score: 45.0
+    precision: 84.0
+    recall: 100.0

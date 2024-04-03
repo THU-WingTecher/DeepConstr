@@ -1,0 +1,133 @@
+args:
+  dtype:
+  - int
+  - int
+  - uint8,int8,int32,int64
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - axis
+  - depth
+  - indices
+  - name
+  - off_value
+  - on_value
+  required:
+  - false
+  - true
+  - true
+  - false
+  - true
+  - true
+name: tf.raw_ops.OneHot
+package: tensorflow
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        depth: int
+        indices: tensor
+        name: str
+        off_value: tensor
+        on_value: tensor
+      msg: "Value for attr 'TI' of float is not in the list of allowed values: uint8,\
+        \ int8, int32, int64\n\t; NodeDef: {{node OneHot}}; Op<name=OneHot; signature=indices:TI,\
+        \ depth:int32, on_value:T, off_value:T -> output:T; attr=axis:int,default=-1;\
+        \ attr=T:type; attr=TI:type,default=DT_INT64,allowed=[DT_UINT8, DT_INT8, DT_INT32,\
+        \ DT_INT64]> [Op:OneHot] name: oKTT"
+      package: tensorflow
+    txt: dtype(indices) in [uint8, int8, int32, int64]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        axis: int
+        depth: int
+        indices: tensor
+        name: str
+        off_value: tensor
+        on_value: tensor
+      msg: '{{function_node __wrapped__OneHot_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Expected axis to be -1 or between [0, 3).  But received: 80 [Op:OneHot] name:
+        ToTs'
+      package: tensorflow
+    txt: (0 <= axis) and (-1 <= axis < 3)
+  - f1_score: 71.25890736342043
+    overall_score: 100
+    precision: 100.0
+    recall: 55.35055350553506
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        axis: int
+        depth: int
+        indices: tensor
+        name: str
+        off_value: tensor
+        on_value: tensor
+      msg: '{{function_node __wrapped__OneHot_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        on_value must be a scalar, but got: [7,9,9,9] [Op:OneHot] name: jSuP'
+      package: tensorflow
+    txt: (on_value.dim == 0) and (off_value.dim == 0)
+  - f1_score: 97.40259740259741
+    overall_score: 100
+    precision: 100.0
+    recall: 94.9367088607595
+- - cot: 'The error is triggered because the depth argument of the OneHot function
+      is set to -1, which is not a valid value. The depth must be non-negative. Therefore,
+      the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        depth: int
+        indices: tensor
+        name: str
+        off_value: tensor
+        on_value: tensor
+      msg: '{{function_node __wrapped__OneHot_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        depth must be non-negative, got: -1 [Op:OneHot] name: HPmR'
+      package: tensorflow
+    txt: (depth >= 0)
+  - f1_score: 92.30769230769229
+    overall_score: 100
+    precision: 100.0
+    recall: 85.71428571428571
+- - cot: 'Based on the given runtime information, the error occurs because the function
+      expects the input tensor `off_value` to be a float tensor, but it is instead
+      an int32 tensor. To prevent this error, the data type of the `off_value` tensor
+      should be changed to float. Therefore, the constraint that should be applied
+      is:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        depth: int
+        indices: tensor
+        name: str
+        off_value: tensor
+        on_value: tensor
+      msg: 'cannot compute OneHot as input #3(zero-based) was expected to be a float
+        tensor but is a int32 tensor [Op:OneHot] name: fODb'
+      package: tensorflow
+    txt: dtype(off_value) == float32
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

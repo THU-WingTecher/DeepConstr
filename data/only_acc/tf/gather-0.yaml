@@ -1,0 +1,96 @@
+args:
+  dtype:
+  - int
+  - int
+  - int
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - axis
+  - batch_dims
+  - indices
+  - name
+  - params
+  - validate_indices
+  required:
+  - false
+  - false
+  - true
+  - false
+  - true
+  - false
+name: tf.gather
+package: tensorflow
+pass_rate: 79.33333333333333
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        axis: int
+        batch_dims: int
+        indices: int
+        name: str
+        params: tensor
+        validate_indices: bool
+      msg: '{{function_node __wrapped__GatherV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Shape must be at least rank 4 but is rank 2 [Op:GatherV2] name: UvyL'
+      package: tensorflow
+    txt: (rank(params) >= 3) and ((axis < params.rank))
+  - f1_score: 63.26034063260341
+    overall_score: 44.833333333333336
+    precision: 86.66666666666667
+    recall: 49.80842911877395
+- - cot: 'The error occurs because the value of `batch_dims` is out of the valid range.
+      The valid range for `batch_dims` is [0, 0], but the provided value is 2. To
+      prevent this error, we need to ensure that the `batch_dims` value is always
+      within the valid range.
+
+
+      The constraint for the `batch_dims` parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        batch_dims: int
+        indices: int
+        name: str
+        params: tensor
+        validate_indices: bool
+      msg: '{{function_node __wrapped__GatherV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Expected batch_dims in the range [0, 0], but got 7 [Op:GatherV2] name: aFLm'
+      package: tensorflow
+    txt: batch_dims >= 0 and batch_dims <= 0
+  - f1_score: 81.52173913043478
+    overall_score: 100
+    precision: 100.0
+    recall: 68.80733944954129
+- - cot: 'The error is triggered because the value of indices is -3, which is not
+      within the valid range [0, 6) for the given tensor dimensions. To prevent this
+      error, the value of indices should be within the valid range. So, the condition
+      would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        batch_dims: int
+        indices: int
+        name: str
+        params: tensor
+        validate_indices: bool
+      msg: '{{function_node __wrapped__GatherV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        indices = 4 is not in [0, 1) [Op:GatherV2] name: dgJU'
+      package: tensorflow
+    txt: 0 <= indices < 6
+  - f1_score: 83.8150289017341
+    overall_score: 51.333333333333336
+    precision: 96.66666666666667
+    recall: 73.9795918367347

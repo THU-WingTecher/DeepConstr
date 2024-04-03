@@ -13,4 +13,37 @@ args:
   - false
 name: tf.raw_ops.RGBToHSV
 package: tensorflow
-pass_rate: 0
+pass_rate: 2.666666666666667
+rules:
+- - cot: The error is triggered because the input tensor must have 3 channels, but
+      it only has 1 channel. To prevent the error, the number of channels in the input
+      tensor should be 3.
+    length: 1
+    target:
+      choosen_dtype:
+        images: tensor
+        name: str
+      msg: '{{function_node __wrapped__RGBToHSV_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        input must have 3 channels but input only has 1 channels. [Op:RGBToHSV] name:
+        xdMB'
+      package: tensorflow
+    txt: images.shape[-1] == 3
+  - f1_score: 92.59259259259261
+    overall_score: 100
+    precision: 100.0
+    recall: 86.20689655172414
+- - cot: 'The error is caused because the input tensor "images" must be at least 1-dimensional.
+      To prevent this error, the constraint should be:'
+    length: 1
+    target:
+      choosen_dtype:
+        images: tensor
+        name: str
+      msg: '{{function_node __wrapped__RGBToHSV_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        input must be at least 1D[] [Op:RGBToHSV] name: somU'
+      package: tensorflow
+    txt: (len(images.shape) >= 1)
+  - f1_score: 97.02127659574468
+    overall_score: 100
+    precision: 100.0
+    recall: 94.21487603305786

@@ -1,0 +1,105 @@
+args:
+  dtype:
+  - Tensor
+  - float
+  - bool
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - tol
+  - hermitian
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+name: torch._C._linalg.linalg_matrix_rank
+package: torch
+pass_rate: 98.21428571428571
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        out: tensor
+        self: tensor
+        tol: float
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 72.46376811594203
+    overall_score: 100
+    precision: 100.0
+    recall: 56.81818181818182
+- - cot: 'The error is indicating that the input tensor ''self'' must have at least
+      2 dimensions. Therefore, we can formulate a constraint as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        out: tensor
+        self: tensor
+        tol: float
+      msg: 'torch.linalg.matrix_rank: The input tensor input must have at least 2
+        dimensions.'
+      package: torch
+    txt: self.dim() >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the constraint to prevent the error
+      is:'
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        out: tensor
+        self: tensor
+        tol: float
+      msg: 'linalg.eigh: A must be batches of square matrices, but they are 3 by 1
+        matrices'
+      package: torch
+    txt: self.size(-1) == self.size(-2)
+  - f1_score: 78.68852459016394
+    overall_score: 100
+    precision: 100.0
+    recall: 64.86486486486487
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        out: tensor
+        self: tensor
+        tol: float
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(out.shape[i] >= 0 for i in range(len(out.shape)))
+  - f1_score: 93.91304347826087
+    overall_score: 100
+    precision: 100.0
+    recall: 88.52459016393443
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        out: tensor
+        self: tensor
+        tol: float
+      msg: 'linalg.svd: Expected a floating point or complex tensor as input. Got
+        Int'
+      package: torch
+    txt: dtype(self) in [torch.float32, torch.float64, torch.complex64, torch.complex128]
+  - f1_score: 80.08849557522124
+    overall_score: 100
+    precision: 100.0
+    recall: 66.78966789667896

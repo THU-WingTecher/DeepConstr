@@ -1,0 +1,77 @@
+args:
+  dtype:
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - name
+  - x
+  - y
+  required:
+  - false
+  - true
+  - true
+name: tf.raw_ops.Xdivy
+package: tensorflow
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: '{{function_node __wrapped__Xdivy_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [5,5] vs. [8,8,8] [Op:Xdivy] name: GZzn'
+      package: tensorflow
+    txt: ((x.shape == y.shape) and (all(x.shape[i] == y.shape[i] or x.shape[i] ==
+      1 or y.shape[i] == 1 for i in range(-1, -min(len(x.shape), len(y.shape))-1,
+      -1)))) and (len(x) == len(y))
+  - f1_score: 96.15384615384615
+    overall_score: 100
+    precision: 100.0
+    recall: 92.59259259259258
+- - cot: 'Based on the given runtime information, the error arises because the function
+      `tf.raw_ops.Xdivy` is trying to perform the `Xdivy` operation on a float tensor
+      and an int32 tensor. However, both tensors in the generated args must have the
+      same data type.
+
+
+      To prevent this error, we can formulate the following constraint:'
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: 'cannot compute Xdivy as input #1(zero-based) was expected to be a float
+        tensor but is a int32 tensor [Op:Xdivy] name: PMZm'
+      package: tensorflow
+    txt: dtype(y) == dtype(x)
+  - f1_score: 68.18181818181819
+    overall_score: 100
+    precision: 100.0
+    recall: 51.724137931034484
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: half,\
+        \ bfloat16, float, double, complex64, complex128\n\t; NodeDef: {{node Xdivy}};\
+        \ Op<name=Xdivy; signature=x:T, y:T -> z:T; attr=T:type,allowed=[DT_HALF,\
+        \ DT_BFLOAT16, DT_FLOAT, DT_DOUBLE, DT_COMPLEX64, DT_COMPLEX128]> [Op:Xdivy]\
+        \ name: xHdc"
+      package: tensorflow
+    txt: dtype(y) in ["half", "bfloat16", "float", "double", "complex64", "complex128"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

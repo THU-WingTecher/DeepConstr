@@ -17,4 +17,36 @@ args:
   - true
 name: torch.logit
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: The error is triggered because the result type Float can't be cast to the
+      desired output type Int. The `torch.logit` function is trying to output a Float
+      tensor, but it's being asked to store the results in an Int tensor. Hence, the
+      datatype of the output tensor should be Float.
+    length: 1
+    target:
+      choosen_dtype:
+        eps: float
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(out)==torch.float32
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        eps: None
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 74.85714285714286
+    overall_score: 49.42857142857143
+    precision: 65.5
+    recall: 87.33333333333334

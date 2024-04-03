@@ -17,7 +17,7 @@ args:
   - true
 name: torch.logcumsumexp
 package: torch
-pass_rate: 86.4321608040201
+pass_rate: 98.49246231155779
 rules:
 - - cot: divided
     length: 1
@@ -47,20 +47,58 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 57.636887608069166
-- - cot: divided
+- - cot: 'Based on given values, Error is triggered because the ''dim'' parameter
+      in the torch.logcumsumexp function is expected to be within the range of the
+      tensor''s dimensions. Let''s see what the args were. It seems ''dim'' is 0 and
+      the tensor''s dimension is also 0, which is not valid. Therefore, the ''dim''
+      parameter should be less than the tensor''s dimension.
+
+
+      The constraint that prevents the error can be formulated as follows:'
     length: 1
     target:
       choosen_dtype:
         dim: int
         out: tensor
         self: tensor
-      msg: Dimension out of range (expected to be in range of [-1, 0], but got 1)
+      msg: '''complex32'''
       package: torch
-    txt: dim < len(self.shape)
-  - f1_score: 82.32848232848232
-    overall_score: 52.5
-    precision: 99.0
-    recall: 70.46263345195729
+    txt: 0 <= dim < self.dim()
+  - f1_score: 65.6140350877193
+    overall_score: 44.80701754385965
+    precision: 93.5
+    recall: 50.54054054054055
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        out: tensor
+        self: tensor
+      msg: '"logcumsumexp_out_cpu" not implemented for ''Bool'''
+      package: torch
+    txt: (self.dtype != torch.bool) and (out.dtype != torch.bool)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: "The error is due to the mismatch in the data types of the 'out' tensor and\
+      \ the expected output data type. The 'out' tensor is of type int32, but the\
+      \ function expects a float data type. Therefore, the data type of the 'out'\
+      \ tensor should be float. \n\nThe formula to prevent the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        out: tensor
+        self: tensor
+      msg: '"logcumsumexp_out_cpu" not implemented for ''Int'''
+      package: torch
+    txt: dtype(out) == float32
+  - f1_score: 97.08737864077668
+    overall_score: 60.54368932038834
+    precision: 100.0
+    recall: 94.33962264150942
 - - cot: ''
     length: 1
     target:
@@ -75,36 +113,3 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 100.0
-- - cot: 'The error is due to the function "logcumsumexp_out_cpu" not being implemented
-      for tensors of type ''Int''. To prevent this error, the data type of the input
-      tensor should be changed to a floating-point type. So, Left : dtype(self), Op
-      : !=, Right : Int.'
-    length: 1
-    target:
-      choosen_dtype:
-        dim: int
-        out: tensor
-        self: tensor
-      msg: '"logcumsumexp_out_cpu" not implemented for ''Int'''
-      package: torch
-    txt: dtype(self) != Int
-  - f1_score: 69.32409012131716
-    overall_score: 100
-    precision: 100.0
-    recall: 53.05039787798409
-- - cot: The error is due to the function "torch.logcumsumexp" not being implemented
-      for the data type 'Bool'. To prevent this error, the input tensor should have
-      a data type other than 'Bool'.
-    length: 1
-    target:
-      choosen_dtype:
-        dim: int
-        out: tensor
-        self: tensor
-      msg: '"logcumsumexp_out_cpu" not implemented for ''Bool'''
-      package: torch
-    txt: self.dtype != torch.bool
-  - f1_score: 98.03921568627452
-    overall_score: 100
-    precision: 100.0
-    recall: 96.15384615384615

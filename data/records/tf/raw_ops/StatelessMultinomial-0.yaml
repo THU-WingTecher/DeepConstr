@@ -2,7 +2,7 @@ args:
   dtype:
   - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
   - str
-  - list[int]
+  - int
   - list[int]
   is_pos:
   - false
@@ -22,4 +22,42 @@ args:
 name: tf.raw_ops.StatelessMultinomial
 package: tensorflow
 pass_rate: 0.0
-rules: []
+rules:
+- - cot: The error is triggered because the seed does not have the correct shape.
+      The seed is expected to be a tensor of shape [2], but instead it has a shape
+      of [1]. Therefore, the constraint that would prevent the error would be that
+      the length of the seed array should be 2.
+    length: 1
+    target:
+      choosen_dtype:
+        logits: tensor
+        name: str
+        num_samples: list[int]
+        seed: list[int]
+      msg: '{{function_node __wrapped__StatelessMultinomial_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        seed must have shape [2], not [0] [Op:StatelessMultinomial]'
+      package: tensorflow
+    txt: len(seed) == 2
+  - f1_score: 99.66777408637873
+    overall_score: 100
+    precision: 100.0
+    recall: 99.33774834437087
+- - cot: "The error is triggered because the shape of the logits tensor is [7, 8,\
+      \ 8, 8, 8, 8, 9], which is not a matrix. To prevent this error, the shape of\
+      \ the logits tensor should be a matrix with dimensions [n, m], where n and m\
+      \ are positive integers. \n\nThe constraint to prevent the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        logits: tensor
+        name: str
+        num_samples: list[int]
+        seed: list[int]
+      msg: '{{function_node __wrapped__StatelessMultinomial_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        logits should be a matrix, got shape [3,3,3,3] [Op:StatelessMultinomial]'
+      package: tensorflow
+    txt: logits.shape.rank == 2
+  - f1_score: 97.71986970684038
+    overall_score: 100
+    precision: 100.0
+    recall: 95.54140127388536

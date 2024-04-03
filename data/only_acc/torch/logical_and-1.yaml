@@ -1,0 +1,54 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.logical_and
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'Error is triggered because the size of tensor a (9) must match the size
+      of tensor b (8) at non-singleton dimension 6. Let''s see what the args were.
+      The tensors in question are self and other. Therefore, the constraint to prevent
+      the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (8) must match the size of tensor b (9) at non-singleton
+        dimension 4
+      package: torch
+    txt: self.shape[6] == other.shape[6]
+  - f1_score: 74.21150278293136
+    overall_score: 100
+    precision: 100.0
+    recall: 58.99705014749264
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank)))
+      and (out.rank==other.rank)
+  - f1_score: 79.20792079207922
+    overall_score: 100
+    precision: 100.0
+    recall: 65.57377049180329

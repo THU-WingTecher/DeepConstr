@@ -1,0 +1,92 @@
+args:
+  dtype:
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - clip_value_max
+  - clip_value_min
+  - name
+  - t
+  required:
+  - true
+  - true
+  - false
+  - true
+name: tf.clip_by_value
+package: tensorflow
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        clip_value_max: tensor
+        clip_value_min: tensor
+        name: str
+        t: tensor
+      msg: '{{function_node __wrapped__Maximum_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [2,9,9,9,9,9,9] vs. [3,7,6,1,9] [Op:Maximum]'
+      package: tensorflow
+    txt: ((all(t.shape[i] == clip_value_max.shape[i] or t.shape[i] == 1 for i in range(-1,
+      -min(len(t.shape), len(clip_value_max.shape))-1, -1))) and (len(t) == len(clip_value_max)))
+      and (clip_value_max.shape[i] == 1)
+  - f1_score: 91.74311926605505
+    overall_score: 100
+    precision: 100.0
+    recall: 84.74576271186442
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        clip_value_max: tensor
+        clip_value_min: tensor
+        name: str
+        t: tensor
+      msg: Shapes () and (7, 1, 6) are incompatible
+      package: tensorflow
+    txt: (len(clip_value_max) == len(t) and clip_value_max.shape == t.shape) and (all(clip_value_min.shape[i]
+      == t.shape[i] for i in range(clip_value_min.rank)))
+  - f1_score: 90.9090909090909
+    overall_score: 100
+    precision: 100.0
+    recall: 83.33333333333334
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        clip_value_max: tensor
+        clip_value_min: tensor
+        name: str
+        t: tensor
+      msg: 'cannot compute Minimum as input #1(zero-based) was expected to be a int32
+        tensor but is a float tensor [Op:Minimum]'
+      package: tensorflow
+    txt: (((dtype(clip_value_min) == float) or (dtype(clip_value_max) == dtype(t)))
+      and (dtype(t) == int32)) and (dtype(clip_value_min) == dtype(t))
+  - f1_score: 69.44444444444444
+    overall_score: 100
+    precision: 100.0
+    recall: 53.191489361702125
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        clip_value_max: tensor
+        clip_value_min: tensor
+        name: str
+        t: tensor
+      msg: Shapes () and (2, 9, 9, 6, 5, 8, 8) are incompatible
+      package: tensorflow
+    txt: (len(clip_value_max) == len(clip_value_min) == len(t) == 0) and (all(clip_value_min.shape[i]
+      == t.shape[i] for i in range(7)))
+  - f1_score: 80.2139037433155
+    overall_score: 100
+    precision: 100.0
+    recall: 66.96428571428571

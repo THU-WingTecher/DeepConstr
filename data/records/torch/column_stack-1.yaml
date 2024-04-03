@@ -13,4 +13,18 @@ args:
   - true
 name: torch.column_stack
 package: torch
-pass_rate: 0
+pass_rate: 15.5
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        tensors: list[tensor]
+      msg: column_stack expects a non-empty TensorList
+      package: torch
+    txt: len(tensors) > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

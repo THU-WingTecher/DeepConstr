@@ -17,4 +17,55 @@ args:
   - true
 name: tf.multiply
 package: tensorflow
-pass_rate: 0
+pass_rate: 96.66666666666667
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(dim >= 0 for dim in x.shape)
+  - f1_score: 97.26027397260275
+    overall_score: 60.63013698630137
+    precision: 100.0
+    recall: 94.66666666666667
+- - cot: 'Based on the given runtime information, the error occurs because the function
+      tf.multiply is trying to perform a multiplication operation on a float tensor
+      and an int32 tensor. To prevent this error, we need to ensure that the data
+      types of both tensors are the same. Therefore, the constraint that needs to
+      be added is:'
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: 'cannot compute Mul as input #1(zero-based) was expected to be a int32
+        tensor but is a float tensor [Op:Mul] name: lBlO'
+      package: tensorflow
+    txt: dtype(y) == dtype(x)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: '{{function_node __wrapped__Mul_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [6,5,5] vs. [0,6,7,6] [Op:Mul] name: lCKb'
+      package: tensorflow
+    txt: ((len(x) == len(y)) and (all(x.shape[i] == y.shape[i] or x.shape[i] == 1
+      or y.shape[i] == 1 for i in range(-1, -min(len(x.shape), len(y.shape))-1, -1))))
+      and (x.shape[i] == 1)
+  - f1_score: 94.48275862068965
+    overall_score: 59.241379310344826
+    precision: 91.33333333333333
+    recall: 97.85714285714285

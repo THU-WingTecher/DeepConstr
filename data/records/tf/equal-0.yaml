@@ -17,4 +17,74 @@ args:
   - true
 name: tf.equal
 package: tensorflow
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: '{{function_node __wrapped__Equal_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Broadcast between [6,6,6,1,7,7] and [6,6,6,1,7,7,1] is not supported yet.
+        [Op:Equal] name: aHQI'
+      package: tensorflow
+    txt: 1 in y.shape
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: The error is caused because negative dimensions are not allowed for tf.equal
+      function. It seems that the dimensions of either x or y are negative. Therefore,
+      the dimensions of x and y should be all non-negative.
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in x.shape) and all(i >= 0 for i in y.shape)
+  - f1_score: 69.76744186046513
+    overall_score: 46.88372093023256
+    precision: 100.0
+    recall: 53.57142857142857
+- - cot: 'Based on the given runtime information, the error arises because the function
+      is trying to perform an operation on an int32 tensor and a float tensor. However,
+      both tensors in the generated args must have the same data type. Therefore,
+      the constraint that needs to be applied to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: 'cannot compute Equal as input #1(zero-based) was expected to be a float
+        tensor but is a int32 tensor [Op:Equal] name: EvgX'
+      package: tensorflow
+    txt: dtype(x) == dtype(y)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is caused because the shapes of x and y are inconsistent. Let''s
+      see what the args were. It seems shape of x and y are not same. Therefore, len(x),
+      x.shape, and len(y), y.shape should be corrected. It says should be same with
+      x and y. Therefore, Op : ==, and Right : len(x), x.shape, len(y), and y.shape'
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: '{{function_node __wrapped__Equal_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [7,2,5,7,2,6,7] vs. [1,7,3,7,2,7,7] [Op:Equal] name:
+        TWxE'
+      package: tensorflow
+    txt: all(x.shape[i]==y.shape[i] for i in range(len(x)))
+  - f1_score: 96.15384615384615
+    overall_score: 60.07692307692307
+    precision: 100.0
+    recall: 92.59259259259258

@@ -21,4 +21,22 @@ args:
   - false
 name: tf.math.reduce_sum
 package: tensorflow
-pass_rate: 0
+pass_rate: 88.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        input_tensor: tensor
+        keepdims: bool
+        name: str
+      msg: '{{function_node __wrapped__Sum_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Invalid reduction dimension (51 for input with 2 dimension(s) [Op:Sum] name:
+        JamY'
+      package: tensorflow
+    txt: (5 < input_tensor.rank) and (axis < input_tensor.rank)
+  - f1_score: 95.83333333333333
+    overall_score: 59.916666666666664
+    precision: 92.0
+    recall: 100.0

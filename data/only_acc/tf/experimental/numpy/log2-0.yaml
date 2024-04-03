@@ -1,0 +1,30 @@
+args:
+  dtype:
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  is_pos:
+  - false
+  name:
+  - x
+  required:
+  - true
+name: tf.experimental.numpy.log2
+package: tensorflow
+pass_rate: 95.33333333333334
+rules:
+- - cot: 'Based on the given error message, the error occurs because the EagerTensor
+      object does not have the ''astype'' attribute. To prevent this error, the input
+      tensor ''x'' should be converted to a different data type that supports the
+      ''astype'' attribute. Hence, the constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        x: tensor
+      msg: "EagerTensor object has no attribute 'astype'. \n        If you are looking\
+        \ for numpy-related methods, please run the following:\n        from tensorflow.python.ops.numpy_ops\
+        \ import np_config\n        np_config.enable_numpy_behavior()\n      "
+      package: tensorflow
+    txt: x.dtype != tf.float64
+  - f1_score: 65.47085201793722
+    overall_score: 51.66666666666667
+    precision: 97.33333333333334
+    recall: 49.32432432432432

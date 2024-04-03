@@ -1,0 +1,54 @@
+args:
+  dtype:
+  - str
+  - bfloat16,float16,float32,float64,int8,uint8,int16,uint16,int32,uint32,int64,uint64
+  - bfloat16,float16,float32,float64,int8,uint8,int16,uint16,int32,uint32,int64,uint64
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - name
+  - x
+  - y
+  required:
+  - false
+  - true
+  - true
+name: tf.minimum
+package: tensorflow
+pass_rate: 100
+rules:
+- - cot: len(x) should be equal to len(y), and for each dimension i, x.shape[i] should
+      be equal to y.shape[i].
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: '{{function_node __wrapped__Minimum_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [4,7,6,2,7,1,1] vs. [6,1,2,7,2,4,3] [Op:Minimum] name:
+        qPDG'
+      package: tensorflow
+    txt: len(x) == len(y) and all(x.shape[i] == y.shape[i] for i in range(x.rank))
+  - f1_score: 78.94736842105264
+    overall_score: 100
+    precision: 100.0
+    recall: 65.21739130434783
+- - cot: 'Based on the given runtime information, the constraint that would prevent
+      the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: 'cannot compute Minimum as input #1(zero-based) was expected to be a float
+        tensor but is a int32 tensor [Op:Minimum] name: uQug'
+      package: tensorflow
+    txt: dtype(x) == dtype(y)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

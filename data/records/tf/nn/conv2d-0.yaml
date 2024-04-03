@@ -33,4 +33,5 @@ args:
   - true
 name: tf.nn.conv2d
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules: []

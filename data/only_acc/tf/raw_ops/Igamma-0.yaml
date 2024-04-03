@@ -1,0 +1,92 @@
+args:
+  dtype:
+  - bfloat16,float16,float32,float64
+  - str
+  - bfloat16,float16,float32,float64
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - a
+  - name
+  - x
+  required:
+  - true
+  - false
+  - true
+name: tf.raw_ops.Igamma
+package: tensorflow
+pass_rate: 82.0
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        a: tensor
+        name: str
+        x: tensor
+      msg: '{{function_node __wrapped__Igamma_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [8,7,8,8,1,1] vs. [5,5,5,5,5,5,5] [Op:Igamma] name: GEdI'
+      package: tensorflow
+    txt: (len(a) == len(x)) and (all(a.shape[i] == x.shape[i] or a.shape[i] == 1 or
+      x.shape[i] == 1 for i in range(-1, -min(len(a.shape), len(x.shape))-1, -1)))
+  - f1_score: 90.9090909090909
+    overall_score: 100
+    precision: 100.0
+    recall: 83.33333333333334
+- - cot: "Based on the given runtime information, the error arises because the attribute\
+      \ of 'a' is int32, but it is expected to be one of bfloat16, half, float, double.\
+      \ The tensor 'a' is provided as int32, which is not compatible. So, the dtype(a)\
+      \ should be corrected to match one of the allowed types. \n\nOp : tf.raw_ops.Igamma\n\
+      Left : dtype(a)\nRight : [bfloat16, half, float, double]"
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        name: str
+        x: tensor
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: bfloat16,\
+        \ half, float, double\n\t; NodeDef: {{node Igamma}}; Op<name=Igamma; signature=a:T,\
+        \ x:T -> z:T; attr=T:type,allowed=[DT_BFLOAT16, DT_HALF, DT_FLOAT, DT_DOUBLE]>\
+        \ [Op:Igamma] name: xirk"
+      package: tensorflow
+    txt: dtype(a) in [bfloat16, half, float, double]
+  - f1_score: 99.66777408637873
+    overall_score: 100
+    precision: 100.0
+    recall: 99.33774834437087
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        a: tensor
+        name: str
+        x: tensor
+      msg: 'cannot compute Igamma as input #1(zero-based) was expected to be a double
+        tensor but is a float tensor [Op:Igamma] name: vBTM'
+      package: tensorflow
+    txt: (dtype(x) == double) and (dtype(x) == dtype(a))
+  - f1_score: 67.87330316742081
+    overall_score: 100
+    precision: 100.0
+    recall: 51.36986301369863
+- - cot: 'Based on the given runtime information, the error occurs because the dimensions
+      of tensor ''x'' are negative, which is not allowed. To prevent this error, the
+      dimensions of tensor ''x'' should be non-negative.
+
+
+      Condition:'
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        name: str
+        x: tensor
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(x.shape[i] >= 0 for i in range(x.rank))
+  - f1_score: 94.46254071661238
+    overall_score: 100
+    precision: 100.0
+    recall: 89.50617283950618

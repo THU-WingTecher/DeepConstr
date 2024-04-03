@@ -45,4 +45,180 @@ args:
   - false
 name: tf.raw_ops.Conv2DBackpropInput
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter: tensor
+        input_sizes: int
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+        use_cudnn_on_gpu: bool
+      msg: "Value for attr 'padding' of \"guZY\" is not in the list of allowed values:\
+        \ \"SAME\", \"VALID\", \"EXPLICIT\"\n\t; NodeDef: {{node Conv2DBackpropInput}};\
+        \ Op<name=Conv2DBackpropInput; signature=input_sizes:int32, filter:T, out_backprop:T\
+        \ -> output:T; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16, DT_FLOAT, DT_DOUBLE,\
+        \ DT_INT32]; attr=strides:list(int); attr=use_cudnn_on_gpu:bool,default=true;\
+        \ attr=padding:string,allowed=[\"SAME\", \"VALID\", \"EXPLICIT\"]; attr=explicit_paddings:list(int),default=[];\
+        \ attr=data_format:string,default=\"NHWC\",allowed=[\"NHWC\", \"NCHW\"]; attr=dilations:list(int),default=[1,\
+        \ 1, 1, 1]> [Op:Conv2DBackpropInput] name: Bggd"
+      package: tensorflow
+    txt: (padding in ["SAME", "VALID", "EXPLICIT"]) and (data_format in ["NHWC", "NCHW"])
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter: tensor
+        input_sizes: int
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+        use_cudnn_on_gpu: bool
+      msg: '{{function_node __wrapped__Conv2DBackpropInput_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Conv2DCustomBackpropInputOp only supports NHWC. [Op:Conv2DBackpropInput] name:
+        eIvC'
+      package: tensorflow
+    txt: data_format != "NCHW"
+  - f1_score: 97.40259740259741
+    overall_score: 100
+    precision: 100.0
+    recall: 94.9367088607595
+- - cot: 'To prevent the error, the sliding window strides field must specify 4 dimensions.
+      The input tensor `strides` should have a rank of 4. Therefore, the constraint
+      is:'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter: tensor
+        input_sizes: int
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+        use_cudnn_on_gpu: bool
+      msg: '{{function_node __wrapped__Conv2DBackpropInput_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Sliding window strides field must specify 4 dimensions [Op:Conv2DBackpropInput]
+        name: qCWJ'
+      package: tensorflow
+    txt: strides.rank == 4
+  - f1_score: 97.40259740259741
+    overall_score: 100
+    precision: 100.0
+    recall: 94.9367088607595
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter: tensor
+        input_sizes: int
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+        use_cudnn_on_gpu: bool
+      msg: '{{function_node __wrapped__Conv2DBackpropInput_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Current implementation does not yet support strides in the batch and depth
+        dimensions. [Op:Conv2DBackpropInput] name: oQOi'
+      package: tensorflow
+    txt: ((strides[1] == 1)) and (strides[0] == 1 and strides[3] == 1)
+  - f1_score: 99.00990099009901
+    overall_score: 100
+    precision: 100.0
+    recall: 98.0392156862745
+- - cot: The error is triggered because the dilations field in the sliding window
+      must specify 4 dimensions, but it is currently empty. Therefore, the constraint
+      should be that the dilations field should have a length of 4.
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter: tensor
+        input_sizes: int
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+        use_cudnn_on_gpu: bool
+      msg: '{{function_node __wrapped__Conv2DBackpropInput_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Sliding window dilations field must specify 4 dimensions [Op:Conv2DBackpropInput]
+        name: Czal'
+      package: tensorflow
+    txt: len(dilations) == 4
+  - f1_score: 84.17721518987341
+    overall_score: 100
+    precision: 100.0
+    recall: 72.67759562841529
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter: tensor
+        input_sizes: int
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+        use_cudnn_on_gpu: bool
+      msg: '{{function_node __wrapped__Conv2DBackpropInput_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Current implementation does not yet support dilations in the batch and depth
+        dimensions. [Op:Conv2DBackpropInput] name: yUJN'
+      package: tensorflow
+    txt: (dilations[0] == 1) and (dilations[3] == 1)
+  - f1_score: 85.40925266903915
+    overall_score: 100
+    precision: 100.0
+    recall: 74.53416149068323
+- - cot: 'The error is due to the use of an unsupported dilation rate in the CPU implementation.
+      The dilation rate was set to -2, which is not only larger than 1, but also negative.
+      The CPU implementation only supports dilation rates of 1. Therefore, the dilation
+      rates in the ''dilations'' argument should be corrected. It needs to be 1 for
+      the CPU implementation to work. So, the Left : dilations, should be corrected
+      to 1. Therefore, Op : ''=='', and Right : 1.'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        explicit_paddings: list[int]
+        filter: tensor
+        input_sizes: int
+        name: str
+        out_backprop: tensor
+        padding: str
+        strides: list[int]
+        use_cudnn_on_gpu: bool
+      msg: '{{function_node __wrapped__Conv2DBackpropInput_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Current CPU implementations do not yet support dilation rates larger than
+        1. [Op:Conv2DBackpropInput] name: cJKd'
+      package: tensorflow
+    txt: all(i == 1 for i in dilations)
+  - f1_score: 82.43243243243244
+    overall_score: 100
+    precision: 100.0
+    recall: 70.11494252873564

@@ -17,4 +17,5 @@ args:
   - true
 name: tf.raw_ops.Reshape
 package: tensorflow
-pass_rate: 0
+pass_rate: 36.666666666666664
+rules: []

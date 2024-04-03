@@ -1,0 +1,71 @@
+args:
+  dtype:
+  - List[Tensor]
+  - bool
+  - float
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - sequences
+  - batch_first
+  - padding_value
+  required:
+  - true
+  - false
+  - false
+name: torch._C._nn.pad_sequence
+package: torch
+pass_rate: 100
+rules:
+- - cot: The error is due to an empty list provided to the 'sequences' parameter.
+      The pad_sequence function expects 'sequences' to be a non-empty list of tensors
+      with shape (max_len, batch_size) or (batch_size, max_len) based on 'batch_first'
+      parameter. Therefore, to prevent this error, the 'sequences' argument should
+      be a non-empty list of tensors.
+    length: 1
+    target:
+      choosen_dtype:
+        batch_first: bool
+        padding_value: float
+        sequences: list[tensor]
+      msg: received an empty list of sequences
+      package: torch
+    txt: len(sequences) > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Error is triggered because the size of tensor a (7) does not match the size
+      of tensor b (9) at non-singleton dimension 8. Let''s see what the arguments
+      were. The mismatch happens at dimension 8, which is the last dimension. Therefore,
+      the constraint to prevent this error would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        batch_first: bool
+        padding_value: float
+        sequences: list[tensor]
+      msg: The size of tensor a (7) must match the size of tensor b (9) at non-singleton
+        dimension 8
+      package: torch
+    txt: sequences[0].size(8) == sequences[1].size(8)
+  - f1_score: 79.20792079207922
+    overall_score: 100
+    precision: 100.0
+    recall: 65.57377049180329
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        batch_first: bool
+        padding_value: float
+        sequences: list[tensor]
+      msg: 'Too large tensor shape: shape = [7, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: sequences.dim() <= 2
+  - f1_score: 77.66990291262135
+    overall_score: 100
+    precision: 100.0
+    recall: 63.49206349206349

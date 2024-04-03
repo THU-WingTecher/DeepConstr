@@ -21,4 +21,42 @@ args:
   - true
 name: tf.raw_ops.NotEqual
 package: tensorflow
-pass_rate: 0
+pass_rate: 98.66666666666667
+rules:
+- - cot: 'Based on the given runtime information, the error occurs because the function
+      is trying to perform the NotEqual operation on an int32 tensor and a float tensor.
+      However, both tensors must have the same data type. Therefore, the constraint
+      to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        incompatible_shape_error: bool
+        name: str
+        x: tensor
+        y: tensor
+      msg: 'cannot compute NotEqual as input #1(zero-based) was expected to be a int32
+        tensor but is a float tensor [Op:NotEqual] name: PEXb'
+      package: tensorflow
+    txt: dtype(y) == dtype(x)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        incompatible_shape_error: bool
+        name: str
+        x: tensor
+        y: tensor
+      msg: '{{function_node __wrapped__NotEqual_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [5,5,5,5,5,5,5] vs. [8,7,6,1,5,7,7] [Op:NotEqual] name:
+        ZRsK'
+      package: tensorflow
+    txt: (all(x.shape[i] == y.shape[i] for i in range(y.rank))) and (x.shape[i] ==
+      1)
+  - f1_score: 79.14438502673796
+    overall_score: 51.57219251336898
+    precision: 98.66666666666667
+    recall: 66.07142857142857

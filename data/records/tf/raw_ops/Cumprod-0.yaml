@@ -25,6 +25,24 @@ args:
   - true
 name: tf.raw_ops.Cumprod
 package: tensorflow
-pass_rate: 0.0
-rules: []
-
+pass_rate: 99.33333333333333
+rules:
+- - cot: synthesized
+    length: 5
+    target:
+      choosen_dtype:
+        axis: int
+        exclusive: bool
+        name: str
+        reverse: bool
+        x: tensor
+      msg: '{{function_node __wrapped__Cumprod_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        ScanOp: Expected scan axis in the range [-2, 2), but got 59 [Op:Cumprod] name:
+        oKeu'
+      package: tensorflow
+    txt: ((((axis >= -len(x.shape))) and (9 >= -len(x.shape))) and (axis == 0)) or
+      ((-len(x.shape) <= axis < len(x.shape)) and (-2 <= axis < 2))
+  - f1_score: 83.9506172839506
+    overall_score: 53.9753086419753
+    precision: 90.66666666666666
+    recall: 78.16091954022988

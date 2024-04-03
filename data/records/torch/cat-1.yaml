@@ -13,4 +13,20 @@ args:
   - true
 name: torch.cat
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'Error is triggered because the list of tensors is empty. The expected constraint
+      is that the list of tensors should not be empty. Therefore, the constraint can
+      be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: str
+        tensors: list[tensor]
+      msg: expected a non-empty list of Tensors
+      package: torch
+    txt: len(tensors) > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

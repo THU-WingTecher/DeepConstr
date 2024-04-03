@@ -1,0 +1,60 @@
+args:
+  dtype:
+  - int,list[int]
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - bool
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - axis
+  - input_tensor
+  - keepdims
+  - name
+  required:
+  - false
+  - true
+  - false
+  - false
+name: tf.math.reduce_min
+package: tensorflow
+pass_rate: 94.66666666666667
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        axis: int
+        input_tensor: tensor
+        keepdims: bool
+        name: str
+      msg: '{{function_node __wrapped__Min_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Invalid reduction dimension (11 for input with 2 dimension(s) [Op:Min] name:
+        ZUeP'
+      package: tensorflow
+    txt: (((axis < input_tensor.rank)) and ((8 < input_tensor.rank))) or ((axis >=
+      -input_tensor.rank))
+  - f1_score: 96.90721649484536
+    overall_score: 48.0
+    precision: 94.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        axis: int
+        input_tensor: tensor
+        keepdims: bool
+        name: str
+      msg: '{{function_node __wrapped__Min_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Invalid reduction dimension (7 for input with 7 dimension(s) [Op:Min] name:
+        VOnl'
+      package: tensorflow
+    txt: ((7 < input_tensor.rank)) or ((axis < input_tensor.rank))
+  - f1_score: 95.83333333333333
+    overall_score: 47.5
+    precision: 92.0
+    recall: 100.0

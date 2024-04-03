@@ -13,7 +13,7 @@ args:
   - true
 name: torch.permute
 package: torch
-pass_rate: 70.5
+pass_rate: 51.5
 rules:
 - - cot: 'The error occurs because the length of the desired permutation (dims) does
       not match the number of dimensions in the input tensor. Therefore, to prevent

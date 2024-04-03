@@ -13,4 +13,36 @@ args:
   - true
 name: torch._C._special.special_modified_bessel_i1
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: The error is occurring because the output tensor's data type is set to Int
+      while the function torch._C._special.special_modified_bessel_i1 returns a Float.
+      To prevent this error, the output tensor's data type should be Float.
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: out.dtype == torch.float
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: The error is due to the mismatch in shape and rank between the 'out' tensor
+      and the 'self' tensor. The function is trying to resize the 'out' tensor to
+      match the 'self' tensor but the 'out' tensor is not resizable. Therefore, the
+      'out' tensor shape and rank should be same as 'self' tensor.
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.shape == self.shape and out.rank == self.rank
+  - f1_score: 89.28571428571429
+    overall_score: 56.642857142857146
+    precision: 100.0
+    recall: 80.64516129032259

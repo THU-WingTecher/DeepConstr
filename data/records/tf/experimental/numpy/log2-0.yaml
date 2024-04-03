@@ -9,4 +9,5 @@ args:
   - true
 name: tf.experimental.numpy.log2
 package: tensorflow
-pass_rate: 0
+pass_rate: 96.0
+rules: []

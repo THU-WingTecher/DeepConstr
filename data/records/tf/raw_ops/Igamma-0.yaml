@@ -17,4 +17,70 @@ args:
   - true
 name: tf.raw_ops.Igamma
 package: tensorflow
-pass_rate: 0
+pass_rate: 6.7114093959731544
+rules:
+- - cot: Based on the given runtime information, the error is caused by negative dimensions
+      in the tensors 'a' and 'x'. The constraint to prevent this error is to ensure
+      that all dimensions of 'a' and 'x' are non-negative.
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        name: str
+        x: tensor
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(dim >= 0 for dim in a.shape) and all(dim >= 0 for dim in x.shape)
+  - f1_score: 95.73770491803279
+    overall_score: 59.868852459016395
+    precision: 100.0
+    recall: 91.82389937106919
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        name: str
+        x: tensor
+      msg: 'cannot compute Igamma as input #1(zero-based) was expected to be a double
+        tensor but is a float tensor [Op:Igamma] name: OFyI'
+      package: tensorflow
+    txt: dtype(x) == dtype(a)
+  - f1_score: 98.0132450331126
+    overall_score: 61.0066225165563
+    precision: 100.0
+    recall: 96.1038961038961
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        name: str
+        x: tensor
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: bfloat16,\
+        \ half, float, double\n\t; NodeDef: {{node Igamma}}; Op<name=Igamma; signature=a:T,\
+        \ x:T -> z:T; attr=T:type,allowed=[DT_BFLOAT16, DT_HALF, DT_FLOAT, DT_DOUBLE]>\
+        \ [Op:Igamma] name: ODWA"
+      package: tensorflow
+    txt: dtype(x) in ["bfloat16", "half", "float", "double"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        name: str
+        x: tensor
+      msg: '{{function_node __wrapped__Igamma_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [9,8,8,8,8,8,8] vs. [9,3,9,8,8,8,8] [Op:Igamma] name:
+        CuEu'
+      package: tensorflow
+    txt: len(a) == len(x) and all(a.shape[i] == x.shape[i] for i in range(a.rank))
+  - f1_score: 85.32423208191128
+    overall_score: 54.66211604095564
+    precision: 83.33333333333334
+    recall: 87.41258741258741

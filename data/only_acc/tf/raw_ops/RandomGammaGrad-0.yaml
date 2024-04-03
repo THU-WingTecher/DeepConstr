@@ -1,0 +1,70 @@
+args:
+  dtype:
+  - float32,float64
+  - str
+  - float32,float64
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - alpha
+  - name
+  - sample
+  required:
+  - true
+  - false
+  - true
+name: tf.raw_ops.RandomGammaGrad
+package: tensorflow
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        alpha: tensor
+        name: str
+        sample: tensor
+      msg: '{{function_node __wrapped__RandomGammaGrad_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [1,6] vs. [3,7,7,7] [Op:RandomGammaGrad] name: sfMS'
+      package: tensorflow
+    txt: ((len(alpha) == len(sample)) or (all(alpha.shape[i] == sample.shape[i] or
+      alpha.shape[i] == 1 or sample.shape[i] == 1 for i in range(-1, -4, -1)))) and
+      (alpha.shape == sample.shape)
+  - f1_score: 92.30769230769229
+    overall_score: 100
+    precision: 100.0
+    recall: 85.71428571428571
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: tensor
+        name: str
+        sample: tensor
+      msg: 'cannot compute RandomGammaGrad as input #1(zero-based) was expected to
+        be a float tensor but is a int32 tensor [Op:RandomGammaGrad] name: QGKN'
+      package: tensorflow
+    txt: dtype(sample) == dtype(alpha)
+  - f1_score: 68.80733944954127
+    overall_score: 100
+    precision: 100.0
+    recall: 52.44755244755245
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        alpha: tensor
+        name: str
+        sample: tensor
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: float,\
+        \ double\n\t; NodeDef: {{node RandomGammaGrad}}; Op<name=RandomGammaGrad;\
+        \ signature=alpha:T, sample:T -> output:T; attr=T:type,allowed=[DT_FLOAT,\
+        \ DT_DOUBLE]> [Op:RandomGammaGrad] name: TTMu"
+      package: tensorflow
+    txt: (dtype(sample) in ["float", "double"]) and (alpha.dtype in ["float32", "float64"])
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

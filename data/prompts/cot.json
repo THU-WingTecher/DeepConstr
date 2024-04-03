@@ -51,6 +51,10 @@
       "answers": "all({arg1_name}.shape[i] == {arg2_name}.shape[i] or {arg1_name}.shape[i] == 1 or {arg2_name}.shape[i] == 1 for i in range(-1, -min(len({arg1_name}.shape), len({arg2_name}.shape))-1, -1))",
       "cot": "Error is triggered because size of tensors at non-singleton dimension 5 doesn't match. What the args were? the two tensors matching problem at non-singleton dimension looks like broadcasting request. Broadcasting in tensor operations requires that the trailing dimensions of the tensors are either 1 or the same. We start from the last dimension because broadcasting aligns dimensions from the end. Therefore, we can revise the constraints as follows:"
     },
+    "Input tensors must have 2 or fewer dimensions. Input 1 has 6 dimensions": {
+      "answers": "all({arg}[i].dim < 2 for i in range(len({arg})))",
+      "cot": "Error is triggered because size of tensors at non-singleton dimension 5 doesn't match. What the args were? the two tensors matching problem at non-singleton dimension looks like broadcasting request. Broadcasting in tensor operations requires that the trailing dimensions of the tensors are either 1 or the same. We start from the last dimension because broadcasting aligns dimensions from the end. Therefore, we can revise the constraints as follows:"
+    },
     "Trying to resize storage that is not resizable": {
       "answers": "{arg1_name}.rank=={arg2_name}.rank and all({arg1_name}.shape[i]=={arg2_name}.shape[i] for i in range({arg1_name}.rank))",
       "cot": "Error is triggered because of we are trying to resize storageLet's see what the args were. I guess the storage indicates 'out' tensor. so, it means that 'out' tensor shape should be matched with the operation results. in this operation, the result shape is input.shape. Therefore, left : out.shape, out.rank op : == right : input.shape, input.rank"

@@ -25,4 +25,47 @@ args:
   - true
 name: tf.nn.atrous_conv2d
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'The error is triggered because the ''num_spatial_dims'', which is inferred
+      from the input ''filters'', is not 1, 2, or 3. In this context, ''num_spatial_dims''
+      is 4. The ''filters'' input is expected to have a rank of ''num_spatial_dims''
+      + 2. Therefore, we should ensure that the rank of ''filters'' is either 3, 4
+      or 5. We can formulate the constraints as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        filters: tensor
+        name: str
+        padding: str
+        rate: int
+        value: tensor
+      msg: '`num_spatial_dims` must be 1, 2, or 3. Received: num_spatial_dims=4.'
+      package: tensorflow
+    txt: 3 <= filters.dim <= 5
+  - f1_score: 96.7741935483871
+    overall_score: 100
+    precision: 100.0
+    recall: 93.75
+- - cot: 'The error is due to the number of input channels not being divisible by
+      the number of output filters. The input has 4 channels but the filters have
+      6 output filters. Therefore, the number of input channels should be divisible
+      by the number of output filters to prevent this error. Therefore, Left: value.shape[-1],
+      Op: %, and Right: filters.shape[-2] should be 0.'
+    length: 1
+    target:
+      choosen_dtype:
+        filters: tensor
+        name: str
+        padding: str
+        rate: int
+        value: tensor
+      msg: 'The number of input channels is not divisible by the corresponding number
+        of output filters. Received: input.shape=(3, 2, 2, 3, 2, 5, 3) with 3 channels
+        and filters.shape=(4, 6, 6, 2) with 6 output filters.'
+      package: tensorflow
+    txt: value.shape[-1] % filters.shape[-2] == 0
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0

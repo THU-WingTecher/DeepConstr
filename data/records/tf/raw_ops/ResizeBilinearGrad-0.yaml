@@ -25,4 +25,158 @@ args:
   - true
 name: tf.raw_ops.ResizeBilinearGrad
 package: tensorflow
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'original_image dimensions must be positive. Therefore, the constraint can
+      be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        grads: tensor
+        half_pixel_centers: bool
+        name: str
+        original_image: tensor
+      msg: '{{function_node __wrapped__ResizeBilinearGrad_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        original dimensions must be positive [Op:ResizeBilinearGrad] name: WtYJ'
+      package: tensorflow
+    txt: (i > 0 for i in original_image.shape)
+  - f1_score: 86.86868686868686
+    overall_score: 100
+    precision: 100.0
+    recall: 76.78571428571428
+- - cot: "Based on the given runtime information, the error is caused by the resized\
+      \ dimensions being non-positive. To prevent this error, we need to ensure that\
+      \ the resized dimensions are positive.\n\nThe resized dimensions are determined\
+      \ by the shape of the `grads` tensor, which has shape `[6, 0, 0, 8]`. In this\
+      \ case, the second and third dimensions are both 0, which is causing the error.\n\
+      \nTo prevent this error, we can add a constraint to ensure that the second and\
+      \ third dimensions of the `grads` tensor are positive. \n\nThe constraint can\
+      \ be formulated as:"
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        grads: tensor
+        half_pixel_centers: bool
+        name: str
+        original_image: tensor
+      msg: '{{function_node __wrapped__ResizeBilinearGrad_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        resized dimensions must be positive [Op:ResizeBilinearGrad] name: PWQy'
+      package: tensorflow
+    txt: grads.shape[1] > 0 and grads.shape[2] > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: Based on the given runtime information, the error arises because the attribute
+      'original_image' is provided as int32, but it is expected to be one of float,
+      bfloat16, half, double. Therefore, the attribute 'original_image' should be
+      corrected to match one of the allowed types.
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        grads: tensor
+        half_pixel_centers: bool
+        name: str
+        original_image: tensor
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: float,\
+        \ bfloat16, half, double\n\t; NodeDef: {{node ResizeBilinearGrad}}; Op<name=ResizeBilinearGrad;\
+        \ signature=grads:float, original_image:T -> output:T; attr=T:type,allowed=[DT_FLOAT,\
+        \ DT_BFLOAT16, DT_HALF, DT_DOUBLE]; attr=align_corners:bool,default=false;\
+        \ attr=half_pixel_centers:bool,default=false> [Op:ResizeBilinearGrad] name:\
+        \ ETeW"
+      package: tensorflow
+    txt: dtype(original_image) in ["float", "bfloat16", "half", "double"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the given error message, the error occurs because the input tensor
+      `grads` is expected to be a float tensor, but it is actually an int32 tensor.
+      To prevent this error, the data type of tensor `grads` should be changed to
+      float. Therefore, the constraint that prevents the error is:
+
+
+      `dtype(grads) == float32`
+
+
+      Wrap the final formula with `'
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        grads: tensor
+        half_pixel_centers: bool
+        name: str
+        original_image: tensor
+      msg: 'cannot compute ResizeBilinearGrad as input #0(zero-based) was expected
+        to be a float tensor but is a int32 tensor [Op:ResizeBilinearGrad] name: fpeZ'
+      package: tensorflow
+    txt: dtype(grads) == float32
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the error message states that if
+      `half_pixel_centers` is set to `True`, then `align_corners` must be set to `False`.
+      Therefore, we can formulate the constraint as:'
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        grads: tensor
+        half_pixel_centers: bool
+        name: str
+        original_image: tensor
+      msg: '{{function_node __wrapped__ResizeBilinearGrad_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        If half_pixel_centers is True, align_corners must be False. [Op:ResizeBilinearGrad]
+        name: AGhH'
+      package: tensorflow
+    txt: half_pixel_centers == False or align_corners == False
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: The constraint that prevents the error is that the original_image tensor
+      must be 4-dimensional.
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        grads: tensor
+        half_pixel_centers: bool
+        name: str
+        original_image: tensor
+      msg: '{{function_node __wrapped__ResizeBilinearGrad_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        original_image must be 4-dimensional[4,4,4,4,4,4,4] [Op:ResizeBilinearGrad]
+        name: sUiD'
+      package: tensorflow
+    txt: original_image.dim == 4
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is due to the ''grads'' input being more than 4-dimensional. The
+      ''grads'' tensor is expected to be 4-dimensional, but it received a tensor with
+      5 dimensions. Therefore, the left : grads.rank, which is the rank of tensor
+      grads, should be corrected. It says that should be 4 for the operation, so Op
+      : ==, and Right : 4.'
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        grads: tensor
+        half_pixel_centers: bool
+        name: str
+        original_image: tensor
+      msg: '{{function_node __wrapped__ResizeBilinearGrad_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        input_grad must be 4-dimensional[5,3,4,3,3,3] [Op:ResizeBilinearGrad] name:
+        MquI'
+      package: tensorflow
+    txt: grads.rank == 4
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

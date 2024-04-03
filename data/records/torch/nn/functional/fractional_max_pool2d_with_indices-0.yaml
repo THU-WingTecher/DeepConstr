@@ -30,4 +30,22 @@ args:
 name: torch.nn.functional.fractional_max_pool2d_with_indices
 package: torch
 pass_rate: 0.0
-rules: []
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        _random_samples: None
+        input: tensor
+        kernel_size: list[int]
+        output_ratio: list[float]
+        output_size: list[int]
+        return_indices: bool
+      msg: 'fractional_max_pool2d: kernel_size must either be a single Int or tuple
+        of Ints'
+      package: torch
+    txt: (len(kernel_size) == 1) and (len(kernel_size) == len(input.shape))
+  - f1_score: 96.61835748792271
+    overall_score: 100
+    precision: 100.0
+    recall: 93.45794392523365

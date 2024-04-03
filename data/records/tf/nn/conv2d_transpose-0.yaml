@@ -1,12 +1,12 @@
 args:
   dtype:
-  - Literal["NHWC", "NCHW"]
+  - str
   - list[int]
   - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
   - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
   - str
   - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
-  - Literal["SAME", "VALID"]
+  - str
   - list[int]
   is_pos:
   - false
@@ -37,4 +37,187 @@ args:
   - true
 name: tf.nn.conv2d_transpose
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        filters: tensor
+        input: tensor
+        name: str
+        output_shape: tensor
+        padding: str
+        strides: list[int]
+      msg: 'strides should be of length 1, 2 or 4. Received: strides=[] of length
+        0'
+      package: tensorflow
+    txt: len(strides) == 4
+  - f1_score: 96.75324675324676
+    overall_score: 100
+    precision: 100.0
+    recall: 93.71069182389938
+- - cot: The error message indicates that the 'dilations' argument should be a list
+      of length 1, 2, or 4. However, the received 'dilations' argument is an empty
+      list of length 0. To prevent this error, the 'dilations' argument should be
+      a list of length 1, 2, or 4.
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        filters: tensor
+        input: tensor
+        name: str
+        output_shape: tensor
+        padding: str
+        strides: list[int]
+      msg: 'dilations should be of length 1, 2 or 4. Received: dilations=[] of length
+        0'
+      package: tensorflow
+    txt: len(dilations) in [1, 2, 4]
+  - f1_score: 97.45454545454544
+    overall_score: 100
+    precision: 100.0
+    recall: 95.0354609929078
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        filters: tensor
+        input: tensor
+        name: str
+        output_shape: tensor
+        padding: str
+        strides: list[int]
+      msg: "Value for attr 'data_format' of \"ReDU\" is not in the list of allowed\
+        \ values: \"NHWC\", \"NCHW\"\n\t; NodeDef: {{node Conv2DBackpropInput}}; Op<name=Conv2DBackpropInput;\
+        \ signature=input_sizes:int32, filter:T, out_backprop:T -> output:T; attr=T:type,allowed=[DT_HALF,\
+        \ DT_BFLOAT16, DT_FLOAT, DT_DOUBLE, DT_INT32]; attr=strides:list(int); attr=use_cudnn_on_gpu:bool,default=true;\
+        \ attr=padding:string,allowed=[\"SAME\", \"VALID\", \"EXPLICIT\"]; attr=explicit_paddings:list(int),default=[];\
+        \ attr=data_format:string,default=\"NHWC\",allowed=[\"NHWC\", \"NCHW\"]; attr=dilations:list(int),default=[1,\
+        \ 1, 1, 1]> [Op:Conv2DBackpropInput]"
+      package: tensorflow
+    txt: (data_format in ["NHWC", "NCHW"]) and (padding in ["SAME", "VALID", "EXPLICIT"])
+  - f1_score: 94.04388714733541
+    overall_score: 100
+    precision: 100.0
+    recall: 88.75739644970415
+- - cot: 'Based on the given runtime information, the error occurs because the function
+      tf.nn.conv2d_transpose is expecting an int32 tensor as the input, but it is
+      receiving a float tensor instead.
+
+
+      To prevent this error, the input tensor should be converted to an int32 data
+      type. Therefore, the constraint that should be added is:'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        filters: tensor
+        input: tensor
+        name: str
+        output_shape: tensor
+        padding: str
+        strides: list[int]
+      msg: 'cannot compute Conv2DBackpropInput as input #0(zero-based) was expected
+        to be a int32 tensor but is a float tensor [Op:Conv2DBackpropInput]'
+      package: tensorflow
+    txt: dtype(input) == int32
+  - f1_score: 50.71428571428571
+    overall_score: 26.666666666666668
+    precision: 47.333333333333336
+    recall: 54.61538461538461
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        filters: tensor
+        input: tensor
+        name: str
+        output_shape: tensor
+        padding: str
+        strides: list[int]
+      msg: 'cannot compute Conv2DBackpropInput as input #0(zero-based) was expected
+        to be a int32 tensor but is a float tensor [Op:Conv2DBackpropInput]'
+      package: tensorflow
+    txt: ((dtype(input) == int32) and (dtype(filters) == int32)) and (dtype(input)==dtype(output_shape))
+  - f1_score: 81.09589041095892
+    overall_score: 100
+    precision: 100.0
+    recall: 68.20276497695853
+- - cot: 'The error is triggered because the function `tf.nn.conv2d_transpose` only
+      supports the data format NHWC. Based on the given runtime information, the constraint
+      that can prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        filters: tensor
+        input: tensor
+        name: str
+        output_shape: tensor
+        padding: str
+        strides: list[int]
+      msg: '{{function_node __wrapped__Conv2DBackpropInput_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Conv2DCustomBackpropInputOp only supports NHWC. [Op:Conv2DBackpropInput]'
+      package: tensorflow
+    txt: data_format == 'NHWC'
+  - f1_score: 77.77777777777777
+    overall_score: 100
+    precision: 100.0
+    recall: 63.63636363636363
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        filters: tensor
+        input: tensor
+        name: str
+        output_shape: tensor
+        padding: str
+        strides: list[int]
+      msg: '{{function_node __wrapped__Conv2DBackpropInput_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Current implementation does not yet support strides in the batch and depth
+        dimensions. [Op:Conv2DBackpropInput]'
+      package: tensorflow
+    txt: (((strides[0] == 1) or (strides[0] == 1 and strides[1] == 1)) and (all(s
+      == 1 for s in strides[1:3]))) and (strides[0] == 1 and strides[3] == 1)
+  - f1_score: 84.08408408408408
+    overall_score: 100
+    precision: 100.0
+    recall: 72.53886010362694
+- - cot: The error is due to the fact that the current CPU implementations do not
+      support dilation rates larger than 1. From the args, the dilation rates were
+      given as a list of integers. Therefore, to prevent this error, all the elements
+      in dilations should be equal to or less than 1.
+    length: 1
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        filters: tensor
+        input: tensor
+        name: str
+        output_shape: tensor
+        padding: str
+        strides: list[int]
+      msg: '{{function_node __wrapped__Conv2DBackpropInput_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Current CPU implementations do not yet support dilation rates larger than
+        1. [Op:Conv2DBackpropInput]'
+      package: tensorflow
+    txt: all(i <= 1 for i in dilations)
+  - f1_score: 48.36109618484685
+    overall_score: 27.509803921568626
+    precision: 49.01960784313725
+    recall: 47.720042417815485

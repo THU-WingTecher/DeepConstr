@@ -1,0 +1,123 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - vec2
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.outer
+package: torch
+pass_rate: 97.36842105263158
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+        vec2: tensor
+      msg: 'outer: Expected 1-D argument self, but got 2-D'
+      package: torch
+    txt: (self.ndims() == 1) and (vec2.ndims() == 1)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+        vec2: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (all(out.shape[i]==self.shape[i] for i in range(out.rank))) or (out.rank==2)
+  - f1_score: 79.57559681697612
+    overall_score: 39.0
+    precision: 75.0
+    recall: 84.7457627118644
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+        vec2: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank)))
+      or (all(out.shape[i] == vec2.shape[i] for i in range(out.rank)))
+  - f1_score: 61.38011899074999
+    overall_score: 33.95614035087719
+    precision: 64.91228070175438
+    recall: 58.21252059308073
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+        vec2: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: ((out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank)))
+      or (out.shape[0] == self.shape[0] and out.shape[1] == vec2.shape[0])) or (out.rank==2)
+  - f1_score: 31.62719633307869
+    overall_score: 11.344827586206897
+    precision: 20.689655172413794
+    recall: 67.09886547811993
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+        vec2: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: ((all(out.shape[i]==self.shape[i] for i in range(out.rank))) or (out.shape[0]
+      == self.shape[0] and out.shape[0] == vec2.shape[0])) or (out.rank==2 and out.shape[0]==self.shape[0]
+      and out.shape[1]==vec2.shape[0])
+  - f1_score: 55.05251720391163
+    overall_score: 22.839080459770116
+    precision: 43.67816091954023
+    recall: 74.43682664054847
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+        vec2: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==2 and all(out.shape[i]==self.shape[i]*vec2.shape[i] for i in range(out.rank))
+  - f1_score: 81.46077232220863
+    overall_score: 52.21875
+    precision: 98.4375
+    recall: 69.47839046199702
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+        vec2: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: (((dtype(self) == float32)) or (dtype(self) == dtype(vec2))) and (dtype(out)==dtype(self))
+  - f1_score: 78.26086956521738
+    overall_score: 100
+    precision: 100.0
+    recall: 64.28571428571428

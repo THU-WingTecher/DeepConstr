@@ -1,0 +1,261 @@
+args:
+  dtype:
+  - int
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - block_size
+  - data_format
+  - input
+  - name
+  required:
+  - true
+  - false
+  - true
+  - false
+name: tf.nn.space_to_depth
+package: tensorflow
+pass_rate: 51.006711409395976
+rules:
+- - cot: 'The error is due to the incorrect value for ''data_format'' from the input
+      arguments. The value provided is "FGmz" which is not in the allowed values:
+      "NHWC", "NCHW", "NCHW_VECT_C". Therefore, the constraint to prevent the error
+      is:'
+    length: 1
+    target:
+      choosen_dtype:
+        block_size: int
+        data_format: str
+        input: tensor
+        name: str
+      msg: "Value for attr 'data_format' of \"cFUR\" is not in the list of allowed\
+        \ values: \"NHWC\", \"NCHW\", \"NCHW_VECT_C\"\n\t; NodeDef: {{node SpaceToDepth}};\
+        \ Op<name=SpaceToDepth; signature=input:T -> output:T; attr=T:type; attr=block_size:int,min=2;\
+        \ attr=data_format:string,default=\"NHWC\",allowed=[\"NHWC\", \"NCHW\", \"\
+        NCHW_VECT_C\"]> [Op:SpaceToDepth] name: FlgI"
+      package: tensorflow
+    txt: data_format in ["NHWC", "NCHW", "NCHW_VECT_C"]
+  - f1_score: 92.59259259259261
+    overall_score: 100
+    precision: 100.0
+    recall: 86.20689655172414
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        block_size: int
+        data_format: str
+        input: tensor
+        name: str
+      msg: "Could not find device for node: {{node SpaceToDepth}} = SpaceToDepth[T=DT_FLOAT,\
+        \ block_size=2, data_format=\"NCHW\"]\nAll kernels registered for op SpaceToDepth:\n\
+        \  device='XLA_CPU_JIT'; T in [DT_FLOAT, DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16,\
+        \ 930109355527764061, DT_HALF, DT_UINT32, DT_UINT64, DT_FLOAT8_E5M2, DT_FLOAT8_E4M3FN]\n\
+        \  device='XLA_GPU_JIT'; T in [DT_FLOAT, DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16,\
+        \ 930109355527764061, DT_HALF, DT_UINT32, DT_UINT64, DT_FLOAT8_E5M2, DT_FLOAT8_E4M3FN]\n\
+        \  device='GPU'; T in [DT_UINT8]\n  device='GPU'; T in [DT_QINT8]\n  device='GPU';\
+        \ T in [DT_BFLOAT16]\n  device='GPU'; T in [DT_HALF]\n  device='GPU'; T in\
+        \ [DT_FLOAT]\n  device='CPU'; T in [DT_QINT8]; data_format in [\"NHWC\"]\n\
+        \  device='CPU'; T in [DT_VARIANT]; data_format in [\"NHWC\"]\n  device='CPU';\
+        \ T in [DT_RESOURCE]; data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_STRING];\
+        \ data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_BOOL]; data_format in\
+        \ [\"NHWC\"]\n  device='CPU'; T in [DT_COMPLEX128]; data_format in [\"NHWC\"\
+        ]\n  device='CPU'; T in [DT_COMPLEX64]; data_format in [\"NHWC\"]\n  device='CPU';\
+        \ T in [DT_DOUBLE]; data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_FLOAT];\
+        \ data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_BFLOAT16]; data_format\
+        \ in [\"NHWC\"]\n  device='CPU'; T in [DT_HALF]; data_format in [\"NHWC\"\
+        ]\n  device='CPU'; T in [DT_INT32]; data_format in [\"NHWC\"]\n  device='CPU';\
+        \ T in [DT_INT8]; data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_UINT8];\
+        \ data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_INT16]; data_format\
+        \ in [\"NHWC\"]\n  device='CPU'; T in [DT_UINT16]; data_format in [\"NHWC\"\
+        ]\n  device='CPU'; T in [DT_UINT32]; data_format in [\"NHWC\"]\n  device='CPU';\
+        \ T in [DT_INT64]; data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_UINT64];\
+        \ data_format in [\"NHWC\"]\n [Op:SpaceToDepth] name: oGSA"
+      package: tensorflow
+    txt: (block_size > 0) or (data_format in ['NHWC', 'NCHW'])
+  - f1_score: 61.75115207373272
+    overall_score: 46.166666666666664
+    precision: 89.33333333333333
+    recall: 47.183098591549296
+- - cot: The error is due to the value of 'block_size' being 1, which is less than
+      the minimum allowed value. To prevent the error, the value of 'block_size' should
+      be greater than or equal to the minimum allowed value.
+    length: 1
+    target:
+      choosen_dtype:
+        block_size: int
+        data_format: str
+        input: tensor
+        name: str
+      msg: "Value for attr 'block_size' of 0 must be at least minimum 2\n\t; NodeDef:\
+        \ {{node SpaceToDepth}}; Op<name=SpaceToDepth; signature=input:T -> output:T;\
+        \ attr=T:type; attr=block_size:int,min=2; attr=data_format:string,default=\"\
+        NHWC\",allowed=[\"NHWC\", \"NCHW\", \"NCHW_VECT_C\"]> [Op:SpaceToDepth] name:\
+        \ amBy"
+      package: tensorflow
+    txt: block_size >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: The error is likely caused by the incorrect value for the 'data_format' argument.
+      The data_format should be either "NCHW" or "NHWC", but in the given runtime
+      information, it is specified as 'NCHW'. Therefore, the constraint to prevent
+      the error is to ensure that the 'data_format' argument is either "NCHW" or "NHWC".
+    length: 1
+    target:
+      choosen_dtype:
+        block_size: int
+        data_format: str
+        input: tensor
+        name: str
+      msg: "Could not find device for node: {{node SpaceToDepth}} = SpaceToDepth[T=DT_FLOAT,\
+        \ block_size=2, data_format=\"NCHW_VECT_C\"]\nAll kernels registered for op\
+        \ SpaceToDepth:\n  device='XLA_CPU_JIT'; T in [DT_FLOAT, DT_DOUBLE, DT_INT32,\
+        \ DT_UINT8, DT_INT16, 930109355527764061, DT_HALF, DT_UINT32, DT_UINT64, DT_FLOAT8_E5M2,\
+        \ DT_FLOAT8_E4M3FN]\n  device='XLA_GPU_JIT'; T in [DT_FLOAT, DT_DOUBLE, DT_INT32,\
+        \ DT_UINT8, DT_INT16, 930109355527764061, DT_HALF, DT_UINT32, DT_UINT64, DT_FLOAT8_E5M2,\
+        \ DT_FLOAT8_E4M3FN]\n  device='GPU'; T in [DT_UINT8]\n  device='GPU'; T in\
+        \ [DT_QINT8]\n  device='GPU'; T in [DT_BFLOAT16]\n  device='GPU'; T in [DT_HALF]\n\
+        \  device='GPU'; T in [DT_FLOAT]\n  device='CPU'; T in [DT_QINT8]; data_format\
+        \ in [\"NHWC\"]\n  device='CPU'; T in [DT_VARIANT]; data_format in [\"NHWC\"\
+        ]\n  device='CPU'; T in [DT_RESOURCE]; data_format in [\"NHWC\"]\n  device='CPU';\
+        \ T in [DT_STRING]; data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_BOOL];\
+        \ data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_COMPLEX128]; data_format\
+        \ in [\"NHWC\"]\n  device='CPU'; T in [DT_COMPLEX64]; data_format in [\"NHWC\"\
+        ]\n  device='CPU'; T in [DT_DOUBLE]; data_format in [\"NHWC\"]\n  device='CPU';\
+        \ T in [DT_FLOAT]; data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_BFLOAT16];\
+        \ data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_HALF]; data_format in\
+        \ [\"NHWC\"]\n  device='CPU'; T in [DT_INT32]; data_format in [\"NHWC\"]\n\
+        \  device='CPU'; T in [DT_INT8]; data_format in [\"NHWC\"]\n  device='CPU';\
+        \ T in [DT_UINT8]; data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_INT16];\
+        \ data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_UINT16]; data_format\
+        \ in [\"NHWC\"]\n  device='CPU'; T in [DT_UINT32]; data_format in [\"NHWC\"\
+        ]\n  device='CPU'; T in [DT_INT64]; data_format in [\"NHWC\"]\n  device='CPU';\
+        \ T in [DT_UINT64]; data_format in [\"NHWC\"]\n [Op:SpaceToDepth] name: Urxc"
+      package: tensorflow
+    txt: data_format in ["NCHW", "NHWC"]
+  - f1_score: 70.12987012987013
+    overall_score: 30.0
+    precision: 54.0
+    recall: 100.0
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        block_size: int
+        data_format: str
+        input: tensor
+        name: str
+      msg: "Could not find device for node: {{node SpaceToDepth}} = SpaceToDepth[T=DT_FLOAT,\
+        \ block_size=2, data_format=\"NCHW\"]\nAll kernels registered for op SpaceToDepth:\n\
+        \  device='XLA_CPU_JIT'; T in [DT_FLOAT, DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16,\
+        \ 930109355527764061, DT_HALF, DT_UINT32, DT_UINT64, DT_FLOAT8_E5M2, DT_FLOAT8_E4M3FN]\n\
+        \  device='XLA_GPU_JIT'; T in [DT_FLOAT, DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16,\
+        \ 930109355527764061, DT_HALF, DT_UINT32, DT_UINT64, DT_FLOAT8_E5M2, DT_FLOAT8_E4M3FN]\n\
+        \  device='GPU'; T in [DT_UINT8]\n  device='GPU'; T in [DT_QINT8]\n  device='GPU';\
+        \ T in [DT_BFLOAT16]\n  device='GPU'; T in [DT_HALF]\n  device='GPU'; T in\
+        \ [DT_FLOAT]\n  device='CPU'; T in [DT_QINT8]; data_format in [\"NHWC\"]\n\
+        \  device='CPU'; T in [DT_VARIANT]; data_format in [\"NHWC\"]\n  device='CPU';\
+        \ T in [DT_RESOURCE]; data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_STRING];\
+        \ data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_BOOL]; data_format in\
+        \ [\"NHWC\"]\n  device='CPU'; T in [DT_COMPLEX128]; data_format in [\"NHWC\"\
+        ]\n  device='CPU'; T in [DT_COMPLEX64]; data_format in [\"NHWC\"]\n  device='CPU';\
+        \ T in [DT_DOUBLE]; data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_FLOAT];\
+        \ data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_BFLOAT16]; data_format\
+        \ in [\"NHWC\"]\n  device='CPU'; T in [DT_HALF]; data_format in [\"NHWC\"\
+        ]\n  device='CPU'; T in [DT_INT32]; data_format in [\"NHWC\"]\n  device='CPU';\
+        \ T in [DT_INT8]; data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_UINT8];\
+        \ data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_INT16]; data_format\
+        \ in [\"NHWC\"]\n  device='CPU'; T in [DT_UINT16]; data_format in [\"NHWC\"\
+        ]\n  device='CPU'; T in [DT_UINT32]; data_format in [\"NHWC\"]\n  device='CPU';\
+        \ T in [DT_INT64]; data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_UINT64];\
+        \ data_format in [\"NHWC\"]\n [Op:SpaceToDepth] name: Ezlt"
+      package: tensorflow
+    txt: (((len(input.shape) >= 3)) or ((block_size <= min(input.shape)))) and (data_format
+      in ["NHWC", "NCHW"])
+  - f1_score: 59.214501510574024
+    overall_score: 33.666666666666664
+    precision: 65.33333333333333
+    recall: 54.143646408839786
+- - cot: The error is triggered because the input tensor has a rank of 2 instead of
+      4, which is required by the tf.nn.space_to_depth function. To prevent this error,
+      the constraint should be that the rank of the input tensor should be equal to
+      4.
+    length: 1
+    target:
+      choosen_dtype:
+        block_size: int
+        data_format: str
+        input: tensor
+        name: str
+      msg: '{{function_node __wrapped__SpaceToDepth_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Input rank should be 4 instead of 1 [Op:SpaceToDepth] name: frTF'
+      package: tensorflow
+    txt: input.rank == 4
+  - f1_score: 76.72634271099744
+    overall_score: 100
+    precision: 100.0
+    recall: 62.24066390041494
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        block_size: int
+        data_format: str
+        input: tensor
+        name: str
+      msg: "Could not find device for node: {{node SpaceToDepth}} = SpaceToDepth[T=DT_FLOAT,\
+        \ block_size=9, data_format=\"NCHW\"]\nAll kernels registered for op SpaceToDepth:\n\
+        \  device='XLA_CPU_JIT'; T in [DT_FLOAT, DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16,\
+        \ 930109355527764061, DT_HALF, DT_UINT32, DT_UINT64, DT_FLOAT8_E5M2, DT_FLOAT8_E4M3FN]\n\
+        \  device='XLA_GPU_JIT'; T in [DT_FLOAT, DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16,\
+        \ 930109355527764061, DT_HALF, DT_UINT32, DT_UINT64, DT_FLOAT8_E5M2, DT_FLOAT8_E4M3FN]\n\
+        \  device='GPU'; T in [DT_UINT8]\n  device='GPU'; T in [DT_QINT8]\n  device='GPU';\
+        \ T in [DT_BFLOAT16]\n  device='GPU'; T in [DT_HALF]\n  device='GPU'; T in\
+        \ [DT_FLOAT]\n  device='CPU'; T in [DT_QINT8]; data_format in [\"NHWC\"]\n\
+        \  device='CPU'; T in [DT_VARIANT]; data_format in [\"NHWC\"]\n  device='CPU';\
+        \ T in [DT_RESOURCE]; data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_STRING];\
+        \ data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_BOOL]; data_format in\
+        \ [\"NHWC\"]\n  device='CPU'; T in [DT_COMPLEX128]; data_format in [\"NHWC\"\
+        ]\n  device='CPU'; T in [DT_COMPLEX64]; data_format in [\"NHWC\"]\n  device='CPU';\
+        \ T in [DT_DOUBLE]; data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_FLOAT];\
+        \ data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_BFLOAT16]; data_format\
+        \ in [\"NHWC\"]\n  device='CPU'; T in [DT_HALF]; data_format in [\"NHWC\"\
+        ]\n  device='CPU'; T in [DT_INT32]; data_format in [\"NHWC\"]\n  device='CPU';\
+        \ T in [DT_INT8]; data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_UINT8];\
+        \ data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_INT16]; data_format\
+        \ in [\"NHWC\"]\n  device='CPU'; T in [DT_UINT16]; data_format in [\"NHWC\"\
+        ]\n  device='CPU'; T in [DT_UINT32]; data_format in [\"NHWC\"]\n  device='CPU';\
+        \ T in [DT_INT64]; data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_UINT64];\
+        \ data_format in [\"NHWC\"]\n [Op:SpaceToDepth] name: zluS"
+      package: tensorflow
+    txt: ((7 % block_size == 0)) and (block_size > 0)
+  - f1_score: 57.32899022801303
+    overall_score: 30.833333333333332
+    precision: 58.666666666666664
+    recall: 56.05095541401274
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        block_size: int
+        data_format: str
+        input: tensor
+        name: str
+      msg: '{{function_node __wrapped__SpaceToDepth_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Image width 2 and height 7 should be divisible by block_size: 7 [Op:SpaceToDepth]
+        name: oDCt'
+      package: tensorflow
+    txt: ((input.shape[2] % block_size) == 0) and (input.shape[1] % block_size ==
+      0)
+  - f1_score: 82.1917808219178
+    overall_score: 100
+    precision: 100.0
+    recall: 69.76744186046511

@@ -12,5 +12,18 @@ args:
   - true
 name: torch.block_diag
 package: torch
-pass_rate: 86.5
-rules: []
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: Tensor
+        tensors: List[Tensor]
+      msg: expected Tensor as element 0 in argument 0, but got list
+      package: torch
+    txt: len(tensors) > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

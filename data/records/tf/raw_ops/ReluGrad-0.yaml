@@ -17,4 +17,24 @@ args:
   - false
 name: tf.raw_ops.ReluGrad
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'Based on the given runtime information, the error arises because the function
+      is trying to perform the ReluGrad operation on a float tensor and an int32 tensor.
+      However, both tensors in the generated args must have the same data type. Let''s
+      see what the args were. The ''features'' tensor is float32, but the ''gradients''
+      tensor is int32. Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        features: tensor
+        gradients: tensor
+        name: str
+      msg: 'cannot compute ReluGrad as input #1(zero-based) was expected to be a float
+        tensor but is a int32 tensor [Op:ReluGrad] name: jDhH'
+      package: tensorflow
+    txt: dtype(gradients) == dtype(features)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

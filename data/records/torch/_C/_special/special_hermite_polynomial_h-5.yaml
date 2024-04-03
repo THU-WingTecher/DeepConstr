@@ -17,4 +17,54 @@ args:
   - true
 name: torch._C._special.special_hermite_polynomial_h
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: Based on the given runtime information, the error occurs because the dimensions
+      of the output tensor 'out' are negative. To prevent this error, the dimensions
+      of 'out' must be non-negative.
+    length: 1
+    target:
+      choosen_dtype:
+        n: int
+        out: tensor
+        x: tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(out.shape[i] >= 0 for i in range(out.rank))
+  - f1_score: 95.63106796116506
+    overall_score: 100
+    precision: 100.0
+    recall: 91.62790697674417
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        n: int
+        out: tensor
+        x: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: (((dtype(x) == float32) and (len(out) > 0)) and (dtype(out) == dtype(x)))
+      and (n >= 0)
+  - f1_score: 90.1077375122429
+    overall_score: 57.05386875612145
+    precision: 95.83333333333334
+    recall: 85.02772643253235
+- - cot: The error is triggered because we are attempting to resize a tensor that
+      is not resizable. It appears that this 'out' tensor must match the shape of
+      the operation result. In this operation, the result shape is likely based on
+      the 'x' tensor's shape. Therefore, the 'out' tensor's rank and shape must match
+      those of the 'x' tensor.
+    length: 1
+    target:
+      choosen_dtype:
+        n: int
+        out: tensor
+        x: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==x.rank and all(out.shape[i]==x.shape[i] for i in range(out.rank))
+  - f1_score: 75.91836734693878
+    overall_score: 49.95918367346939
+    precision: 93.0
+    recall: 64.13793103448275

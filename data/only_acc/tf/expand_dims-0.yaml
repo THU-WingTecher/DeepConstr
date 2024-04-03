@@ -1,0 +1,37 @@
+args:
+  dtype:
+  - int
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - axis
+  - input
+  - name
+  required:
+  - true
+  - true
+  - false
+name: tf.expand_dims
+package: tensorflow
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        axis: int
+        input: tensor
+        name: str
+      msg: '{{function_node __wrapped__ExpandDims_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Tried to expand dim index 52 for tensor with 7 dimensions. [Op:ExpandDims]
+        name: OKOa'
+      package: tensorflow
+    txt: (axis < input.rank) and ((axis >= 0))
+  - f1_score: 72.28915662650601
+    overall_score: 100
+    precision: 100.0
+    recall: 56.60377358490566

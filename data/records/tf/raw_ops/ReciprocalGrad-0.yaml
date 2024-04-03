@@ -17,4 +17,37 @@ args:
   - true
 name: tf.raw_ops.ReciprocalGrad
 package: tensorflow
-pass_rate: 0
+pass_rate: 96.66666666666667
+rules:
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dy: tensor
+        name: str
+        y: tensor
+      msg: 'cannot compute ReciprocalGrad as input #1(zero-based) was expected to
+        be a float tensor but is a int32 tensor [Op:ReciprocalGrad] name: EgAy'
+      package: tensorflow
+    txt: dtype(dy)==dtype(y)
+  - f1_score: 95.54140127388534
+    overall_score: 59.77070063694267
+    precision: 100.0
+    recall: 91.46341463414635
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dy: tensor
+        name: str
+        y: tensor
+      msg: '{{function_node __wrapped__ReciprocalGrad_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        The two arguments to a cwise op must have same number of elements, got 122500
+        and 117649 [Op:ReciprocalGrad] name: iNmk'
+      package: tensorflow
+    txt: (dy.shape == y.shape) and ((len(dy) == len(y)))
+  - f1_score: 96.15384615384615
+    overall_score: 54.07692307692307
+    precision: 100.0
+    recall: 92.59259259259258

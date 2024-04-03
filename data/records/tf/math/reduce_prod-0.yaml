@@ -21,4 +21,25 @@ args:
   - false
 name: tf.math.reduce_prod
 package: tensorflow
-pass_rate: 0
+pass_rate: 84.66666666666667
+rules:
+- - cot: 'The error is due to an invalid reduction dimension. The function is trying
+      to reduce on dimension 9, but the input tensor only has 2 dimensions, indexed
+      from 0. So, the maximum valid dimension for reduction would be 1. Therefore,
+      the condition to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        input_tensor: tensor
+        keepdims: bool
+        name: str
+      msg: '{{function_node __wrapped__Prod_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Invalid reduction dimension (67 for input with 4 dimension(s) [Op:Prod] name:
+        GukZ'
+      package: tensorflow
+    txt: (axis < input_tensor.rank)
+  - f1_score: 86.79245283018868
+    overall_score: 41.333333333333336
+    precision: 76.66666666666667
+    recall: 100.0

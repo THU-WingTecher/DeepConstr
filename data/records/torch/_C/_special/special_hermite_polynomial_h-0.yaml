@@ -13,4 +13,19 @@ args:
   - true
 name: torch._C._special.special_hermite_polynomial_h
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        n: tensor
+        x: tensor
+      msg: The size of tensor a (8) must match the size of tensor b (9) at non-singleton
+        dimension 6
+      package: torch
+    txt: n.shape[2] == x.shape[2]
+  - f1_score: 95.2618453865337
+    overall_score: 59.63092269326685
+    precision: 95.5
+    recall: 95.02487562189056

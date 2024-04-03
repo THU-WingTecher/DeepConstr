@@ -33,4 +33,24 @@ args:
   - true
 name: tf.nn.depthwise_conv2d
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        data_format: str
+        dilations: list[int]
+        filter: tensor
+        input: tensor
+        name: str
+        padding: str
+        strides: list[int]
+      msg: list index out of range
+      package: tensorflow
+    txt: (len(input) > 0) or (len(strides) == len(input.shape) and len(dilations)
+      == len(input.shape))
+  - f1_score: 67.56756756756758
+    overall_score: 100
+    precision: 100.0
+    recall: 51.02040816326531

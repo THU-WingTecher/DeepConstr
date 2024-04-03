@@ -17,4 +17,38 @@ args:
   - true
 name: tf.reshape
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        shape: tensor
+        tensor: tensor
+      msg: "Value for attr 'Tshape' of float is not in the list of allowed values:\
+        \ int32, int64\n\t; NodeDef: {{node Reshape}}; Op<name=Reshape; signature=tensor:T,\
+        \ shape:Tshape -> output:T; attr=T:type; attr=Tshape:type,default=DT_INT32,allowed=[DT_INT32,\
+        \ DT_INT64]> [Op:Reshape] name: NYLP"
+      package: tensorflow
+    txt: dtype(shape) == "int64"
+  - f1_score: 98.6842105263158
+    overall_score: 100
+    precision: 100.0
+    recall: 97.40259740259741
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        shape: tensor
+        tensor: tensor
+      msg: '{{function_node __wrapped__Reshape_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Input to reshape is a tensor with 1 values, but the requested shape has 407312
+        [Op:Reshape] name: qGve'
+      package: tensorflow
+    txt: len(shape) == 0
+  - f1_score: 43.75
+    overall_score: 31.000000000000004
+    precision: 56.00000000000001
+    recall: 35.8974358974359

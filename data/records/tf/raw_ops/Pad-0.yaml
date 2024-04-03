@@ -17,4 +17,22 @@ args:
   - true
 name: tf.raw_ops.Pad
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        name: str
+        paddings: tensor
+      msg: "Value for attr 'Tpaddings' of float is not in the list of allowed values:\
+        \ int32, int64\n\t; NodeDef: {{node Pad}}; Op<name=Pad; signature=input:T,\
+        \ paddings:Tpaddings -> output:T; attr=T:type; attr=Tpaddings:type,default=DT_INT32,allowed=[DT_INT32,\
+        \ DT_INT64]> [Op:Pad] name: VCMz"
+      package: tensorflow
+    txt: dtype(paddings) in ["int32", "int64"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

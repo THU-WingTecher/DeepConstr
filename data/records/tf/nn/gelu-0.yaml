@@ -17,4 +17,22 @@ args:
   - false
 name: tf.nn.gelu
 package: tensorflow
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'The error is due to the data type of the ''features'' tensor which should
+      be a floating point tensor. But here, ''features'' tensor has an integer data
+      type. Therefore, the constraint to prevent this error can be defined as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        approximate: bool
+        features: tensor
+        name: str
+      msg: '`features.dtype` must be a floating point tensor.Received:features.dtype=<dtype:
+        ''int32''>'
+      package: tensorflow
+    txt: features.dtype in [tf.float16, tf.float32, tf.float64]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

@@ -9,4 +9,34 @@ args:
   - true
 name: torch.column_stack
 package: torch
-pass_rate: 0
+pass_rate: 77.64705882352942
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        tensors: list[tensor]
+      msg: column_stack expects a non-empty TensorList
+      package: torch
+    txt: len(tensors) > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is triggered because the tensors given to `torch.column_stack`
+      have different numbers of dimensions (6 and 2). It expects all tensors to have
+      the same number of dimensions. Let''s see what the arguments were. It seems
+      the dimensions of some of the tensors in the `tensors` list are different. To
+      prevent the error, we need to ensure that all tensors in the list have the same
+      number of dimensions. Therefore, the condition should be:'
+    length: 1
+    target:
+      choosen_dtype:
+        tensors: list[tensor]
+      msg: 'Tensors must have same number of dimensions: got 6 and 2'
+      package: torch
+    txt: all(tensors[i].dim() == tensors[0].dim() for i in range(1, len(tensors)))
+  - f1_score: 67.34006734006734
+    overall_score: 45.67003367003367
+    precision: 100.0
+    recall: 50.76142131979695

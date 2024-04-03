@@ -1,0 +1,80 @@
+args:
+  dtype:
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - condition
+  - name
+  - x
+  - y
+  required:
+  - true
+  - false
+  - false
+  - false
+name: tf.where
+package: tensorflow
+pass_rate: 97.95918367346938
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        condition: tensor
+        name: str
+        x: tensor
+        y: tensor
+      msg: 'cannot compute SelectV2 as input #0(zero-based) was expected to be a bool
+        tensor but is a float tensor [Op:SelectV2] name: rQpT'
+      package: tensorflow
+    txt: (dtype(condition) == bool) and (dtype(x) == dtype(y))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 5
+    target:
+      choosen_dtype:
+        condition: tensor
+        name: str
+        x: tensor
+        y: tensor
+      msg: '{{function_node __wrapped__SelectV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        condition [], then [5,4,7,5,2,5], and else [1,5,2,5,5,5,5] must be broadcastable
+        [Op:SelectV2] name: WrQG'
+      package: tensorflow
+    txt: (((condition.shape == y.shape) and (condition.shape[i] == y.shape[i])) and
+      (condition.shape[i] == 1)) and ((condition.shape == x.shape) and (all(condition.shape[i]
+      == x.shape[i] or condition.shape[i] == y.shape[i] or x.shape[i] == 1 or y.shape[i]
+      == 1 for i in range(-1, -min(len(condition.shape), len(x.shape), len(y.shape))-1,
+      -1))))
+  - f1_score: 99.00990099009901
+    overall_score: 100
+    precision: 100.0
+    recall: 98.0392156862745
+- - cot: 'The error is caused because negative dimensions are not allowed in a tensor.
+      This error could be due to negative values being passed in the shape of the
+      tensors. Therefore, all dimensions in the shape of the tensors ''condition'',
+      ''x'', and ''y'' should be non-negative. We can revise the constraints as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        condition: tensor
+        name: str
+        x: tensor
+        y: tensor
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(dim >= 0 for dim in x.shape)
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0

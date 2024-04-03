@@ -21,4 +21,49 @@ args:
   - false
 name: tf.math.reduce_min
 package: tensorflow
-pass_rate: 0
+pass_rate: 95.33333333333334
+rules:
+- - cot: '(tf.math.reduce_min(axis=7, input_tensor=Tensor<f32>[1, 1, 1, 1, 1, 1, 1],
+      keepdims=False, name=sCfZ) -> Invalid reduction dimension (7 for input with
+      7 dimension(s) [Op:Min] name: sCfZ)
+
+      The error can be prevented if the reduction dimension (axis) is less than the
+      number of dimensions in the input tensor. In this case, the input tensor has
+      7 dimensions, so the reduction dimension should be less than 7. Therefore, the
+      condition to prevent the error is:
+
+      (axis < input_tensor.rank)'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        input_tensor: tensor
+        keepdims: bool
+        name: str
+      msg: '{{function_node __wrapped__Min_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Invalid reduction dimension (8 for input with 7 dimension(s) [Op:Min] name:
+        QjTw'
+      package: tensorflow
+    txt: (axis < input_tensor.rank)
+  - f1_score: 93.61702127659575
+    overall_score: 58.808510638297875
+    precision: 88.0
+    recall: 100.0
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        axis: int
+        input_tensor: tensor
+        keepdims: bool
+        name: str
+      msg: '{{function_node __wrapped__Min_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Invalid reduction dimension (11 for input with 2 dimension(s) [Op:Min] name:
+        ZUeP'
+      package: tensorflow
+    txt: (((axis < input_tensor.rank)) and ((8 < input_tensor.rank))) or ((axis >=
+      -input_tensor.rank))
+  - f1_score: 96.90721649484536
+    overall_score: 52.45360824742268
+    precision: 94.0
+    recall: 100.0

@@ -29,4 +29,70 @@ args:
   - false
 name: tf.gather
 package: tensorflow
-pass_rate: 0
+pass_rate: 75.33333333333333
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        axis: int
+        batch_dims: int
+        indices: int
+        name: str
+        params: tensor
+        validate_indices: bool
+      msg: '{{function_node __wrapped__GatherV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        indices = -4 is not in [0, 1) [Op:GatherV2] name: pkSL'
+      package: tensorflow
+    txt: (0 <= indices < params.shape[axis]) and ((indices < 1))
+  - f1_score: 90.15873015873017
+    overall_score: 57.07936507936508
+    precision: 94.66666666666667
+    recall: 86.06060606060605
+- - cot: 'The error occurs because the value of `batch_dims` is out of the valid range.
+      The valid range for `batch_dims` is [0, 0], but the provided value is 2. To
+      prevent this error, we need to ensure that the `batch_dims` value is always
+      within the valid range.
+
+
+      The constraint for the `batch_dims` parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        batch_dims: int
+        indices: int
+        name: str
+        params: tensor
+        validate_indices: bool
+      msg: '{{function_node __wrapped__GatherV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Expected batch_dims in the range [0, 0], but got 7 [Op:GatherV2] name: aFLm'
+      package: tensorflow
+    txt: batch_dims >= 0 and batch_dims <= 0
+  - f1_score: 91.46341463414635
+    overall_score: 57.73170731707317
+    precision: 100.0
+    recall: 84.26966292134831
+- - cot: 'The error is caused because the axis rank is greater than the rank of the
+      input tensor. The ''params'' tensor has rank 7, but the ''axis'' parameter is
+      set to 9 which requires the tensor rank to be at least 10. Therefore, the Left
+      : rank(params), which is the rank of tensor params, should be corrected. It
+      says that should be greater than or equal to the axis, so Op : >=, and Right
+      : axis.'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        batch_dims: int
+        indices: int
+        name: str
+        params: tensor
+        validate_indices: bool
+      msg: '{{function_node __wrapped__GatherV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Shape must be at least rank 10 but is rank 7 [Op:GatherV2] name: KULl'
+      package: tensorflow
+    txt: rank(params) >= axis
+  - f1_score: 68.67469879518073
+    overall_score: 46.337349397590366
+    precision: 76.0
+    recall: 62.637362637362635

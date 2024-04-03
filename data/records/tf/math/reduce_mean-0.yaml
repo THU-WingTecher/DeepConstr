@@ -21,4 +21,22 @@ args:
   - false
 name: tf.math.reduce_mean
 package: tensorflow
-pass_rate: 0
+pass_rate: 29.333333333333332
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        axis: int
+        input_tensor: tensor
+        keepdims: bool
+        name: str
+      msg: '{{function_node __wrapped__Mean_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Invalid reduction dimension (16 for input with 2 dimension(s) [Op:Mean] name:
+        LzjI'
+      package: tensorflow
+    txt: ((8 < input_tensor.rank)) or ((axis < input_tensor.rank))
+  - f1_score: 71.79487179487181
+    overall_score: 29.500000000000004
+    precision: 56.00000000000001
+    recall: 100.0

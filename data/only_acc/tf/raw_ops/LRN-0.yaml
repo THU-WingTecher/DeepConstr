@@ -1,0 +1,124 @@
+args:
+  dtype:
+  - float
+  - float
+  - float
+  - int
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - alpha
+  - beta
+  - bias
+  - depth_radius
+  - input
+  - name
+  required:
+  - false
+  - false
+  - false
+  - false
+  - true
+  - false
+name: tf.raw_ops.LRN
+package: tensorflow
+pass_rate: 31.333333333333336
+rules:
+- - cot: 'The error occurs because the input tensor is not 4-dimensional. To prevent
+      this error, the input tensor must have 4 dimensions. Therefore, the constraint
+      is:'
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: float
+        beta: float
+        bias: float
+        depth_radius: int
+        input: tensor
+        name: str
+      msg: '{{function_node __wrapped__LRN_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        in must be 4-dimensional [Op:LRN] name: cmoW'
+      package: tensorflow
+    txt: input.dim == 4
+  - f1_score: 89.28571428571429
+    overall_score: 100
+    precision: 100.0
+    recall: 80.64516129032259
+- - cot: 'The error is due to the depth_radius being negative. In the tf.raw_ops.LRN
+      function, depth_radius must be a non-negative integer. In this case, depth_radius
+      was -3. Therefore, the Left : depth_radius should be corrected. It should be
+      greater than or equal to 0, so Op : ''>='', Right : 0.'
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: float
+        beta: float
+        bias: float
+        depth_radius: int
+        input: tensor
+        name: str
+      msg: '{{function_node __wrapped__LRN_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        depth_radius = -3 larger than int max [Op:LRN] name: ABCV'
+      package: tensorflow
+    txt: depth_radius >= 0
+  - f1_score: 98.36065573770492
+    overall_score: 100
+    precision: 100.0
+    recall: 96.77419354838709
+- - cot: "The error message states that the value for attribute 'T' is not in the\
+      \ list of allowed values. The allowed values for 'T' are 'half', 'bfloat16',\
+      \ 'float32', 'float64', 'int32', 'int64', 'uint8', 'uint16'. \n\nIn the given\
+      \ runtime information, the input tensor has a data type of 'double' (float64).\
+      \ To prevent the error, the data type of the input tensor should be one of the\
+      \ allowed types mentioned above. \n\nTherefore, the constraint to prevent the\
+      \ error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: float
+        beta: float
+        bias: float
+        depth_radius: int
+        input: tensor
+        name: str
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: half,\
+        \ bfloat16, float\n\t; NodeDef: {{node LRN}}; Op<name=LRN; signature=input:T\
+        \ -> output:T; attr=depth_radius:int,default=5; attr=bias:float,default=1;\
+        \ attr=alpha:float,default=1; attr=beta:float,default=0.5; attr=T:type,default=DT_FLOAT,allowed=[DT_HALF,\
+        \ DT_BFLOAT16, DT_FLOAT]> [Op:LRN]"
+      package: tensorflow
+    txt: dtype(input) in ['half', 'bfloat16', 'float32', 'float64', 'int32', 'int64',
+      'uint8', 'uint16']
+  - f1_score: 96.55172413793103
+    overall_score: 49.666666666666664
+    precision: 93.33333333333333
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        alpha: float
+        beta: float
+        bias: float
+        depth_radius: int
+        input: tensor
+        name: str
+      msg: "Could not find device for node: {{node LRN}} = LRN[T=DT_BFLOAT16, alpha=9,\
+        \ beta=9, bias=-2, depth_radius=0]\nAll kernels registered for op LRN:\n \
+        \ device='XLA_CPU_JIT'; T in [DT_FLOAT, DT_BFLOAT16, DT_HALF]\n  device='XLA_GPU_JIT';\
+        \ T in [DT_FLOAT, DT_BFLOAT16, DT_HALF]\n  device='GPU'; T in [DT_FLOAT]\n\
+        \  device='CPU'; T in [DT_HALF]\n  device='CPU'; T in [DT_FLOAT]\n [Op:LRN]\
+        \ name: SINk"
+      package: tensorflow
+    txt: (depth_radius > 0) and (alpha > 0)
+  - f1_score: 41.80327868852459
+    overall_score: 18.5
+    precision: 34.0
+    recall: 54.25531914893617

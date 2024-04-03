@@ -17,4 +17,37 @@ args:
   - false
 name: tf.raw_ops.Qr
 package: tensorflow
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        full_matrices: bool
+        input: tensor
+        name: str
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: double,\
+        \ float, half, complex64, complex128\n\t; NodeDef: {{node Qr}}; Op<name=Qr;\
+        \ signature=input:T -> q:T, r:T; attr=full_matrices:bool,default=false; attr=T:type,allowed=[DT_DOUBLE,\
+        \ DT_FLOAT, DT_HALF, DT_COMPLEX64, DT_COMPLEX128]> [Op:Qr] name: IRMt"
+      package: tensorflow
+    txt: dtype(input) in ["double", "float", "half", "complex64", "complex128"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        full_matrices: bool
+        input: tensor
+        name: str
+      msg: '{{function_node __wrapped__Qr_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Input tensor 0 must have rank >= 2, got 0 [Op:Qr] name: UoKw'
+      package: tensorflow
+    txt: input.rank >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

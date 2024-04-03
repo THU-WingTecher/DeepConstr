@@ -17,4 +17,21 @@ args:
   - false
 name: tf.squeeze
 package: tensorflow
-pass_rate: 0
+pass_rate: 21.333333333333336
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        input: tensor
+        name: str
+      msg: '{{function_node __wrapped__Squeeze_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Tried to squeeze dim index 27 for tensor with 0 dimensions. [Op:Squeeze] name:
+        Llqa'
+      package: tensorflow
+    txt: (axis < input.rank)
+  - f1_score: 54.36893203883495
+    overall_score: 21.666666666666668
+    precision: 37.333333333333336
+    recall: 100.0

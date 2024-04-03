@@ -1,0 +1,76 @@
+args:
+  dtype:
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - axis
+  - name
+  - tensor
+  required:
+  - true
+  - false
+  - true
+name: tf.raw_ops.ReverseV2
+package: tensorflow
+pass_rate: 100
+rules:
+- - cot: 'Based on the given runtime information, the error arises because the attribute
+      ''axis'' is provided as a float32 tensor, but it is expected to be one of int32
+      or int64. Therefore, the condition to prevent this error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: tensor
+        name: str
+        tensor: tensor
+      msg: "Value for attr 'Tidx' of float is not in the list of allowed values: int32,\
+        \ int64\n\t; NodeDef: {{node ReverseV2}}; Op<name=ReverseV2; signature=tensor:T,\
+        \ axis:Tidx -> output:T; attr=Tidx:type,default=DT_INT32,allowed=[DT_INT32,\
+        \ DT_INT64]; attr=T:type,allowed=[DT_UINT8, DT_INT8, DT_UINT16, DT_INT16,\
+        \ DT_INT32, 5951096766385938332, DT_FLOAT, DT_DOUBLE, DT_COMPLEX64, DT_COMPLEX128,\
+        \ DT_STRING]> [Op:ReverseV2] name: YpCE"
+      package: tensorflow
+    txt: dtype(axis) in ["int32", "int64"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is caused because the ''axis'' tensor passed to the ReverseV2
+      operation has 2 dimensions instead of 1. To prevent this error, the ''axis''
+      tensor should be a 1-dimensional tensor. Therefore, the constraint can be written
+      as:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: tensor
+        name: str
+        tensor: tensor
+      msg: '{{function_node __wrapped__ReverseV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        ''dims'' must be 1-dimension, not 6 [Op:ReverseV2] name: lEag'
+      package: tensorflow
+    txt: axis.shape.rank == 1
+  - f1_score: 95.84664536741214
+    overall_score: 100
+    precision: 100.0
+    recall: 92.02453987730061
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        axis: tensor
+        name: str
+        tensor: tensor
+      msg: '{{function_node __wrapped__ReverseV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        ''axis''[0] = 418315 is out of valid range [0, 3 [Op:ReverseV2] name: FzFx'
+      package: tensorflow
+    txt: ((all(a >= 0 and a < len(tensor.shape) for a in axis)) or (-646577 < len(tensor.shape)))
+      and (axis[i] >= 0)
+  - f1_score: 98.36065573770492
+    overall_score: 100
+    precision: 100.0
+    recall: 96.77419354838709

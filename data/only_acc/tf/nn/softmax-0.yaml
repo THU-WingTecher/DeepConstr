@@ -1,0 +1,57 @@
+args:
+  dtype:
+  - int
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - axis
+  - logits
+  - name
+  required:
+  - false
+  - true
+  - false
+name: tf.nn.softmax
+package: tensorflow
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        axis: int
+        logits: tensor
+        name: str
+      msg: '`dim` must be in the range [-2, 2) where 2 is the number of dimensions
+        in the input. Received: dim=6'
+      package: tensorflow
+    txt: (axis >= -len(logits.shape) and axis < len(logits.shape)) and (axis >= -7
+      and axis < 7)
+  - f1_score: 77.92207792207793
+    overall_score: 100
+    precision: 100.0
+    recall: 63.829787234042556
+- - cot: 'Based on the given runtime information, the error arises because the attribute
+      ''logits'' is of type int32, but it is expected to be one of half, bfloat16,
+      float, double. The tensor ''logits'' is provided as int32, which is not compatible.
+      So, the condition that prevents the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        logits: tensor
+        name: str
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: half,\
+        \ bfloat16, float, double\n\t; NodeDef: {{node Softmax}}; Op<name=Softmax;\
+        \ signature=logits:T -> softmax:T; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16,\
+        \ DT_FLOAT, DT_DOUBLE]> [Op:Softmax] name: epwC"
+      package: tensorflow
+    txt: dtype(logits) in ["half", "bfloat16", "float", "double"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

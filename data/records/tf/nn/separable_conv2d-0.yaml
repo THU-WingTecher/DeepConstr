@@ -1,11 +1,11 @@
 args:
   dtype:
-  - Literal['NHWC', 'NCHW']
+  - str
   - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
   - list[int]
   - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
   - str
-  - Literal['SAME', 'VALID']
+  - str
   - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
   - list[int]
   is_pos:
@@ -37,4 +37,24 @@ args:
   - true
 name: tf.nn.separable_conv2d
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        data_format: str
+        depthwise_filter: tensor
+        dilations: list[int]
+        input: tensor
+        name: str
+        padding: str
+        pointwise_filter: tensor
+        strides: list[int]
+      msg: Shape (3, 2, 1, 1, 1, 2, 1) must have rank 4
+      package: tensorflow
+    txt: (input.dim == 4) and (len(pointwise_filter.shape) == 4)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

@@ -1,0 +1,61 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - out
+  required:
+  - true
+  - true
+name: torch._C._special.special_entr
+package: torch
+pass_rate: 100
+rules:
+- - cot: '`out` tensor shape should be matched with the operation results. In this
+      operation, the result shape is `self.shape`. Therefore, the constraint to prevent
+      the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 74.6268656716418
+    overall_score: 100
+    precision: 100.0
+    recall: 59.523809523809526
+- - cot: 'The error is triggered because the result type Float cannot be cast to the
+      desired output type Long. To prevent this error, the dtypes of the input tensors
+      should be consistent with the desired output type. The constraint to prevent
+      the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Long
+      package: torch
+    txt: dtype(self) == dtype(out) == torch.float64
+  - f1_score: 67.56756756756758
+    overall_score: 100
+    precision: 100.0
+    recall: 51.02040816326531
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(out.shape[i] > 0 for i in range(out.rank))
+  - f1_score: 81.13590263691684
+    overall_score: 100
+    precision: 100.0
+    recall: 68.25938566552901

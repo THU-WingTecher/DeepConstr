@@ -17,4 +17,37 @@ args:
   - true
 name: tf.raw_ops.LowerBound
 package: tensorflow
-pass_rate: 0
+pass_rate: 26.0
+rules:
+- - cot: The constraint that prevents the error is
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        sorted_inputs: tensor
+        values: tensor
+      msg: '{{function_node __wrapped__LowerBound_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Leading dim_size of both tensors must match. [Op:LowerBound] name: ICTw'
+      package: tensorflow
+    txt: sorted_inputs.shape[0] == values.shape[0]
+  - f1_score: 62.09150326797384
+    overall_score: 34.666666666666664
+    precision: 63.33333333333333
+    recall: 60.89743589743589
+- - cot: 'The error is triggered because the sorted_inputs argument must be a matrix.
+      To prevent the error, the sorted_inputs argument should have a rank of 2 or
+      higher. Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        sorted_inputs: tensor
+        values: tensor
+      msg: '{{function_node __wrapped__LowerBound_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        sorted input argument must be a matrix [Op:LowerBound] name: YdeO'
+      package: tensorflow
+    txt: sorted_inputs.rank >= 2
+  - f1_score: 96.46302250803858
+    overall_score: 100
+    precision: 100.0
+    recall: 93.16770186335404

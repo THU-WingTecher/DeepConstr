@@ -21,4 +21,23 @@ args:
   - true
 name: tf.raw_ops.InTopKV2
 package: tensorflow
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        k: tensor
+        name: str
+        predictions: tensor
+        targets: tensor
+      msg: "Value for attr 'T' of float is not in the list of allowed values: int32,\
+        \ int64\n\t; NodeDef: {{node InTopKV2}}; Op<name=InTopKV2; signature=predictions:float,\
+        \ targets:T, k:T -> precision:bool; attr=T:type,default=DT_INT32,allowed=[DT_INT32,\
+        \ DT_INT64]> [Op:InTopKV2] name: vuDF"
+      package: tensorflow
+    txt: dtype(targets) in ["int32", "int64"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

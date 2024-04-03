@@ -1,0 +1,56 @@
+args:
+  dtype:
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - features
+  - gradients
+  - name
+  required:
+  - true
+  - true
+  - false
+name: tf.raw_ops.ReluGrad
+package: tensorflow
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        features: tensor
+        gradients: tensor
+        name: str
+      msg: '{{function_node __wrapped__ReluGrad_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Inputs to operation ReluGrad of type ReluGrad must have the same size and
+        shape.  Input 0: [8,8,8,8] != input 1: [2,2,2] [Op:ReluGrad] name: YTGk'
+      package: tensorflow
+    txt: features.dim == gradients.dim and features.shape == gradients.shape
+  - f1_score: 97.08737864077668
+    overall_score: 100
+    precision: 100.0
+    recall: 94.33962264150942
+- - cot: 'Based on the given runtime information, the error arises because the function
+      is trying to perform the ReluGrad operation on a float tensor and an int32 tensor.
+      However, both tensors in the generated args must have the same data type. Let''s
+      see what the args were. The ''features'' tensor is float32, but the ''gradients''
+      tensor is int32. Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        features: tensor
+        gradients: tensor
+        name: str
+      msg: 'cannot compute ReluGrad as input #1(zero-based) was expected to be a float
+        tensor but is a int32 tensor [Op:ReluGrad] name: jDhH'
+      package: tensorflow
+    txt: dtype(gradients) == dtype(features)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

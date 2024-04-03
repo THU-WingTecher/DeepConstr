@@ -17,4 +17,40 @@ args:
   - false
 name: tf.raw_ops.Relu6Grad
 package: tensorflow
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        features: tensor
+        gradients: tensor
+        name: str
+      msg: 'cannot compute Relu6Grad as input #1(zero-based) was expected to be a
+        int32 tensor but is a float tensor [Op:Relu6Grad] name: hqay'
+      package: tensorflow
+    txt: (dtype(gradients) == float) and (dtype(gradients) == dtype(features))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Error is triggered because the two tensors have different sizes and shapes.
+      Let''s see what the args were. It seems the dimensions and shapes of features
+      and gradients are inconsistent. Therefore, we can formulate the constraint as
+      follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        features: tensor
+        gradients: tensor
+        name: str
+      msg: '{{function_node __wrapped__Relu6Grad_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Inputs to operation Relu6Grad of type Relu6Grad must have the same size and
+        shape.  Input 0: [7,5,3,5,5,5] != input 1: [8,3,5,3] [Op:Relu6Grad] name:
+        ZOLz'
+      package: tensorflow
+    txt: features.dim == gradients.dim and features.shape == gradients.shape
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

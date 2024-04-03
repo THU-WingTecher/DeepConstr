@@ -21,4 +21,85 @@ args:
   - true
 name: torch._C._linalg.linalg_matrix_rank
 package: torch
-pass_rate: 0
+pass_rate: 89.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        out: tensor
+        self: tensor
+        tol: float
+      msg: 'linalg.svd: Expected a floating point or complex tensor as input. Got
+        Int'
+      package: torch
+    txt: dtype(self) in [torch.float32, torch.float64, torch.complex64, torch.complex128]
+  - f1_score: 80.08849557522124
+    overall_score: 100
+    precision: 100.0
+    recall: 66.78966789667896
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        out: tensor
+        self: tensor
+        tol: float
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(out.shape[i] >= 0 for i in range(len(out.shape)))
+  - f1_score: 92.38095238095238
+    overall_score: 58.19047619047619
+    precision: 100.0
+    recall: 85.84070796460176
+- - cot: 'Based on the given runtime information, the constraint to prevent the error
+      is:'
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        out: tensor
+        self: tensor
+        tol: float
+      msg: 'linalg.eigh: A must be batches of square matrices, but they are 3 by 1
+        matrices'
+      package: torch
+    txt: self.size(-1) == self.size(-2)
+  - f1_score: 77.14285714285715
+    overall_score: 50.57142857142858
+    precision: 100.0
+    recall: 62.7906976744186
+- - cot: 'The error is indicating that the input tensor ''self'' must have at least
+      2 dimensions. Therefore, we can formulate a constraint as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        out: tensor
+        self: tensor
+        tol: float
+      msg: 'torch.linalg.matrix_rank: The input tensor input must have at least 2
+        dimensions.'
+      package: torch
+    txt: self.dim() >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        out: tensor
+        self: tensor
+        tol: float
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: all(self.shape[i]==out.shape[i] for i in range(self.rank))
+  - f1_score: 75.86206896551724
+    overall_score: 49.93103448275862
+    precision: 93.5
+    recall: 63.82252559726962
