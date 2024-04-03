@@ -52,7 +52,7 @@ def collect_cov(root, model_type, backend_type, batch_size=100, backend_target="
         batch_exec = torch_batch_exec
     
     for batch in batches:
-        batch_exec(batch, time2path, cov_save, model_type, backend_type, backend_target)
+        batch_exec(batch, time2path, cov_save, model_type, backend_type, backend_target, root)
 
 def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov"):
     """
@@ -148,11 +148,12 @@ def main(cfg) :
     else :
         raise NotImplementedError
     csv_paths = [
-        "/artifact/experiments/results/torch5.csv"
+        "/artifact/experiments/results/20240404-015759.csv"
         ]
     columns = []
     retrain_list = set()
     refuzz_list = set()
+
     for csv_path in csv_paths :
         with open(csv_path, "r") as f:
             for i, line in enumerate(f.readlines()) :
@@ -178,18 +179,15 @@ def main(cfg) :
                                 # print(columns[i], row[0], os.listdir(save_path))
                                 refuzz_list.add((columns[i], row[0].replace(".models",""), "fuzz"))
                             retrain_list.add((columns[i], row[0].replace(".models",""), "cov"))
+
     # for dir_name in os.listdir(os.path.join(os.getcwd(),cfg["exp"]["save_dir"])) :
     #     if dir_name.endswith("models") :
     #         test_list = os.listdir(os.path.join(os.getcwd(),cfg["exp"]["save_dir"],dir_name))
     #         baseline, name = parse_directory_name(dir_name)
     #         name = name.replace('.models','')
 
-    #         if "coverage" in test_list or max(map(float, test_list)) > 500 :
+    #         if len(test_list)>0 and( "coverage" in test_list or max(map(float, test_list)) > 500 ):
     #             pass
-    #             # print(len(test_list), sep="")
-    #             # if name in api_names :
-    #             #     print(f"Remove {name} from test list")
-    #             #     api_names.remove(name)
     #         else :
     #             print(max(map(float, test_list)) if test_list else 0)
     #             refuzz_list.add((baseline, name, "fuzz"))

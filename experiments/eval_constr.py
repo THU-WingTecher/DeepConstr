@@ -14,9 +14,9 @@ BIGGER_SIZE = 17
 plt.rc("font", size=SMALL_SIZE)  # controls default text sizes
 plt.rc("axes", titlesize=MEDIUM_SIZE)  # fontsize of the axes title
 plt.rc("axes", labelsize=MEDIUM_SIZE)  # fontsize of the x and y labels
-plt.rc("xtick", labelsize=MEDIUM_SIZE)  # fontsize of the tick labels
-plt.rc("ytick", labelsize=MEDIUM_SIZE)  # fontsize of the tick labels
-plt.rc("legend", fontsize=MEDIUM_SIZE - 1)  # legend fontsize
+plt.rc("xtick", labelsize=23)  # fontsize of the tick labels
+plt.rc("ytick", labelsize=23)  # fontsize of the tick labels
+plt.rc("legend", fontsize=BIGGER_SIZE - 1)  # legend fontsize
 plt.rc("figure", titlesize=BIGGER_SIZE)  # fontsize of the figure title
 
 MIN_FAC = 0.85
@@ -126,7 +126,8 @@ def mean(numbers):
 import statistics
 # -> visualize distribution of length of cosntr, f1_ prec_ recall of constr, pie chart of constr type
 def viz_num_of_constr_with_pass_rate(data_list, acc_data_list, name, path = "/artifact/results/") :
-    plt.figure(figsize=(9,9))
+    plt.figure(figsize=(6,6))
+
     for i, data_li in enumerate([data_list, acc_data_list]):
         pass_rate_num_of_constr = []
         for data in data_li:
@@ -150,8 +151,8 @@ def viz_num_of_constr_with_pass_rate(data_list, acc_data_list, name, path = "/ar
         pass_rate, num_of_constraints = zip(*pass_rate_num_of_constr)
         print("mean passrate", mean(pass_rate))
         print("median passrate", statistics.median(pass_rate))
-        print("mean num_of_constraints", mean(num_of_constraints))
-        print("median num_of_constraints", statistics.median(num_of_constraints))
+        # print("mean num_of_constraints", mean(num_of_constraints))
+        # print("median num_of_constraints", statistics.median(num_of_constraints))
         # Convert to numpy arrays for easier manipulation
         pass_rate = np.array(pass_rate)
         
@@ -178,7 +179,6 @@ def viz_num_of_constr_with_pass_rate(data_list, acc_data_list, name, path = "/ar
     plt.ylabel('\\textit{Pass Rate(\%)}')
     # plt.xticks()
     # plt.yticks()
-    plt.legend()
 
     plt.grid(True, which='both', linestyle='--', linewidth=0.5)
     plt.minorticks_on()
@@ -197,17 +197,29 @@ def viz_constr_len(constr_len : List[int]):
     plt.show()
 
 def viz_constr_f1(constr_f1 : List[float], constr_prec, acc_f1, acc_prec , path = "/artifact/results/", name = "PyTorch"):
+
     plt.figure(figsize=(9,9))
+    plt.legend(loc='lower right')
     # PyTorch
-    plt.scatter(acc_f1, acc_prec, c=colors[1], label=r'\textsc{DeepConstr$^{s}$}', alpha=0.6, edgecolors='w', linewidths=0.5)
-    plt.scatter(constr_f1, constr_prec, c=colors[0], label=r'\textsc{DeepConstr}', alpha=0.6, edgecolors='w', linewidths=0.5)
+    plt.scatter(acc_prec, acc_f1, alpha=0.8, edgecolors='black', label=r'\textsc{DeepConstr$^{s}$}', linewidth=0.6, s=80, c='blue', marker='x')
+    plt.scatter(constr_prec, constr_f1, alpha=0.8, edgecolors='black', label=r'\textsc{DeepConstr}', linewidth=0.6, s=80, c='red', marker='+')
+    # plt.scatter(acc_prec, acc_f1, alpha=0.8, edgecolors='black', label=r'\textsc{DeepConstr$^{s}$}', linewidth=0.6, s=80, c='blue', marker='o')
+    # plt.scatter(constr_prec, constr_f1, alpha=0.8, edgecolors='black', label=r'\textsc{DeepConstr}', linewidth=0.6, s=80, c='red', marker='o')
+    print("mean acc_prec", mean(acc_prec))
+    print("median acc_prec", statistics.median(acc_prec))
+    print("mean acc_f1", mean(acc_f1))
+    print("median acc_f1", statistics.median(acc_f1))
+    print("mean constr_prec", mean(constr_prec))
+    print("median constr_prec", statistics.median(constr_prec))
+    print("mean constr_f1", mean(constr_f1))
+    print("median constr_f1", statistics.median(constr_f1))
     # if name == "torch" :
     #     plt.title('\\textit{PyTorch}')
     # else :
     #     plt.title('\\textit{TensorFlow}')
 
-    plt.xlabel('\\textit{Soundness}')
-    plt.ylabel('\\textit{Completeness}')
+    plt.xlabel('\\textit{Soundness}', fontsize=20)
+    plt.ylabel('\\textit{Completeness}', fontsize=20)
     plt.legend()
     plt.xticks(range(0, 101, 10))
     plt.yticks(range(0, 101, 10))

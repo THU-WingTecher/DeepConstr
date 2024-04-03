@@ -207,60 +207,167 @@ def save_data(final_bf, completed_data, save_dir="/artifact/experiments/results"
     final_bf.to_csv(save_path)
     revise_complete_data(complete_data_path, completed_data)
 
-def merge_csvs(save_path, *args) :
-    # adjusted_column_names = [name + ".models" for name in json_content]
-    # extracted_columns_df_with_models = filtered_df[filtered_df.columns.intersection(adjusted_column_names)]
-
-    import pandas as pd
+def merge_csvs(*csv_paths, save_path=None):
     dfs = []
-    for arg in args : 
+    for arg in csv_paths : 
         dfs.append(pd.read_csv(arg))
     
     merged_df = pd.concat(dfs)
-    filtered_df = merged_df[~(merged_df == 0).any(axis=1)]
+    # filtered_df = merged_df[~(merged_df == 0).any(axis=1)]
 
-    if 'constrinf' in filtered_df.columns:
-        filtered_df = filtered_df.sort_values('constrinf', ascending=False).drop_duplicates(subset='API').sort_index()
+    if 'constrinf' in merged_df.columns:
+        filtered_df = merged_df.sort_values('constrinf', ascending=False).drop_duplicates(subset='API').sort_index()
     else:
         # If 'constrinf' column does not exist, just remove duplicates based on all columns
-        filtered_df = filtered_df.drop_duplicates()
+        filtered_df = merged_df.drop_duplicates()
 
     filtered_df.reset_index(drop=True, inplace=True)
+    filtered_df = filtered_df.sort_values(by="API")
+    if save_path is not None :
+        filtered_df.to_csv(save_path, index=False)
+    return filtered_df
 
-    total_rows = filtered_df.shape[0]
+
+def check_left_api(api_data_path, saved_data_paths) :
+    with open(api_data_path, "r") as file:
+        data = json.load(file)
+    data = list(set(data))
+    for saved_data_path in saved_data_paths :
+        with open(saved_data_path, "r") as f:
+            for i, line in enumerate(f.readlines()) :
+                if i==0 :
+                    pass
+                else :
+                    columns = line.split(",")
+                    api_name = columns[0].replace(".models","")
+                    if api_name in data :
+                        data.remove(api_name)
+    
+    return data
+
+def check_record(api_names, record_dir) :
+    todo = []
+    for name in api_names :
+        path = os.path.join(record_dir, name.replace(".","/")+"-0.yaml")
+        if not os.path.exists(path) :
+            todo.append(name)
+            print(f"{path} is not exist")
+    return todo
+            
+pt_data_paths = [
+    "/artifact/experiments/results/merged_torch_v2.csv",
+]
+pt_neuri_data_path = "/artifact/data/torch_overall_apis.json"
+pt_nnsmith_data_path = "/artifact/data/torch_nnsmith.json"
+tf_data_paths = [
+    "/artifact/experiments/results/merged_tf_v2.csv"
+]
+tf_neuri_data_path = "/artifact/data/tf_overall_apis.json"
+tf_nnsmith_data_path = "/artifact/data/tf_nnsmith.json"
+
+def exclude_intestable() :
+    neuri_pt = check_left_api(
+        pt_neuri_data_path,
+        pt_data_paths
+    )
+
+    neuri_pt_rec = check_record(neuri_pt, "/artifact/data/records")
+    neuri_tf = check_left_api(
+        tf_neuri_data_path,
+        tf_data_paths
+    )
+    neuri_tf_rec = check_record(neuri_tf, "/artifact/data/records")
+
+    nnsmith_pt = check_left_api(
+        pt_nnsmith_data_path,
+        pt_data_paths
+    )
+
+    nnsmith_pt_rec = check_record(nnsmith_pt, "/artifact/data/records")
+    nnsmith_tf = check_left_api(
+        tf_nnsmith_data_path,
+        tf_data_paths
+    )
+    nnsmith_tf_rec = check_record(nnsmith_tf, "/artifact/data/records")
+    return list(set(neuri_pt_rec + neuri_tf_rec + nnsmith_pt_rec + nnsmith_tf_rec))
+
+def gen_table4(df, nnsmith_path, neuri_path) :
+
+    with open(nnsmith_path, 'r') as file:
+        apis = json.load(file)
+    nnsmith_columns = [name + ".models" for name in apis]
+    with open(neuri_path, 'r') as file:
+        apis = json.load(file)
+    neuri_columns = [name + ".models" for name in apis]
+    nnsmith_none, neuri_none = [], []
+    print(len(nnsmith_columns), len(list(set(nnsmith_columns + neuri_columns))))
+    for col in nnsmith_columns:
+        if col not in df.API.values:
+            nnsmith_none.append(col.replace(".models", ''))
+            df.loc[len(df)] = [col, 0, 0, 0, 0, 0, 0, 0, 0]  # Or another default value as appropriate
+    for col in neuri_columns:
+        if col not in df.API.values:
+            neuri_none.append(col.replace(".models", ''))
+            df.loc[len(df)] = [col, 0, 0, 0, 0, 0, 0, 0, 0]  # Or another default value as appropriate
     for tool in ["constrinf", "constrinf_2"] :
         for baseline in ["neuri", "symbolic"] :
-            columns_to_compare = [baseline] if all(col in filtered_df.columns for col in [baseline]) else []
-            if tool in filtered_df.columns and columns_to_compare:
-                rows_where_constrinf_is_highest = filtered_df.apply(lambda row: row[tool] > row[columns_to_compare], axis=1).sum()
-            else:
-                rows_where_constrinf_is_highest = "Required columns are missing or incorrectly specified."
-            print("percentage_constrinf_highest of ", tool, "vs", baseline, ":", (rows_where_constrinf_is_highest / total_rows) * 100, "%")
-    
-    sorted_columns_df = filtered_df.sort_values(by="API")
-    print(sorted_columns_df.head())
-    sorted_columns_df.to_csv(save_path, index=False)
+            columns_to_compare = [baseline] if all(col in df.columns for col in [baseline]) else []
+            if baseline == "symbolic":
+                total_rows = len(nnsmith_columns)
+                added = len(nnsmith_none)
+                extracted_columns_df_with_models = df[df['API'].isin(nnsmith_columns)]
+                rows_where_constrinf_is_highest = extracted_columns_df_with_models.apply(lambda row: row[tool] > row[columns_to_compare], axis=1).sum()
+            else :
+                added = len(neuri_none)
+                total_rows = df.shape[0]
+                extracted_columns_df_with_models = df[df['API'].isin(nnsmith_columns+neuri_columns)]
+                rows_where_constrinf_is_highest = extracted_columns_df_with_models.apply(lambda row: row[tool] > row[columns_to_compare], axis=1).sum()
+            print("percentage_constrinf_highest of ", tool, "vs", baseline, ":", (rows_where_constrinf_is_highest / total_rows) * 100, "%", (rows_where_constrinf_is_highest))
+            print("percentage_constrinf_highest of(with out NaN) ", added, tool, "vs", baseline, ":", (rows_where_constrinf_is_highest / (total_rows-added)) * 100, "%")
+            print("total rows", total_rows)
+    for col in df.columns:
+        if col == "API":
+            continue
+        print(col)
+        print(df[df[col] != 0][col].mean())
+        # print("avg value cov_with_zero", df['Branch Coverage'].mean())
+    # print("avg value cov_without_zero", df['Branch Coverage'].mean())
+    # print("nnsmith_none: ", nnsmith_none)
+    # print("neuri_none: ", neuri_none)
+    # sorted_columns_df = filtered_df.sort_values(by="API")
+    # print(sorted_columns_df.head())
+    # sorted_columns_df.to_csv(save_path, index=False)
 
+# print("torch")
 # csv_paths = [
-#     "/artifact/experiments/results/merged_torch.csv",
-#     "/artifact/experiments/results/torch1.csv",
-#     "/artifact/experiments/results/torch2.csv",
-#     "/artifact/experiments/results/torch3.csv",
-#     "/artifact/experiments/results/torch4.csv",
-#     "/artifact/experiments/results/torch5.csv",
+#     "/artifact/experiments/results/merged_torch_v2.csv",
 # ]
-# merge_csvs("/artifact/experiments/results/merged_torch_v2.csv", *csv_paths)
+# df = merge_csvs(*csv_paths)
+# gen_table4(
+#     df,  
+#     nnsmith_path="/artifact/data/torch_nnsmith.json",
+#     neuri_path="/artifact/data/torch_overall_apis.json")
+# print("tf")
+# csv_paths = [
+#     "/artifact/experiments/results/merged_tf_v2.csv",
+#     "/artifact/experiments/results/20240402-235616.csv"
+# ]
+# df = merge_csvs(*csv_paths)
+# gen_table4(
+#     df,
+#     "/artifact/data/tf_nnsmith.json",
+#     "/artifact/data/tf_overall_apis.json")
 
-# if __name__ == "__main__":
-#     import sys
-#     if len(sys.argv) > 1:
-#         root_dir = sys.argv[1]
-#     else:
-#         root_dir = '/artifact/gen_tf/'
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) > 1:
+        root_dir = sys.argv[1]
+    else:
+        root_dir = '/artifact/gen_tf/'
 
-#     api_coverage_data = traverse_and_classify(root_dir)
-#     processed_data = process_pickle_files(api_coverage_data)
-#     aggregated_df = aggregate_summarized_data(processed_data)
-#     final_bf_summary, completed_data = summarize_final_bf(aggregated_df)
-#     save_data(final_bf_summary, completed_data, "/artifact/experiments/results")
-    # print(final_bf_summary)
+    api_coverage_data = traverse_and_classify(root_dir)
+    processed_data = process_pickle_files(api_coverage_data)
+    aggregated_df = aggregate_summarized_data(processed_data)
+    final_bf_summary, completed_data = summarize_final_bf(aggregated_df)
+    save_data(final_bf_summary, completed_data, "/artifact/experiments/results")
+    print(final_bf_summary)
