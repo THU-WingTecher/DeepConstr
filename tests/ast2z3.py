@@ -91,17 +91,21 @@ def main(cfg: DictConfig):
     # executor.execute(
     #     1, constrs, record=record
     # )
-    arg_names = ['a', 'b','c','d']
+    arg_names = ['a', 'b','c','d','tensors']
     dtypes = [
         [AbsTensor()],
         [AbsTensor()],
         [AbsTensor.to_iter()],
         [AbsDType.str],
+        [AbsTensor.to_iter()]
         ]
     test_constraints = [
         # "all(a.shape[i] == b.shape[i] or a.shape[i] == 1 or b.shape[i] == 1 for i in range(-1, -min(len(a.shape), len(b.shape))-1, -1))",
         # "len(set(a.shape)) == len(a.shape)",
-        "a.dim == b.dim and a.shape == b.shape",
+        # "a.dim == b.dim and a.shape == b.shape",
+        "len(tensors) > 1",
+        "all(tensors[i].ndim <= 2 for i in range(len(tensors)))",
+        # "all(tensors[i].dim() >1 for i in range(1, len(tensors)))"
         # "dtype(a) == uint32"
         # "max(set(a.shape)) == 5",
         # "1 not in a.shape",
@@ -122,7 +126,7 @@ def main(cfg: DictConfig):
     ]
     for i in range(10) :
         constrs = test_with_given_constraints(test_constraints, arg_names, dtypes)
-        test_smt(arg_names, [d[0] for d in dtypes], constrs, noise_prob=0.3)
+        test_smt(arg_names, [d[0] for d in dtypes], constrs, noise_prob=0.0)
 
 
 if __name__ == "__main__" :

@@ -17,7 +17,7 @@ args:
   - true
 name: torch.stack
 package: torch
-pass_rate: 3.5000000000000004
+pass_rate: 0.0
 rules:
 - - cot: 'The constraint that prevents the error is:'
     length: 1

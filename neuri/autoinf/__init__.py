@@ -253,8 +253,8 @@ def make_record_finder(
     for inst, records in gen_inst_records:
         total_rec += len(records)
 
-        if test_pool and inst.name not in test_pool :
-                continue 
+        if test_pool and (inst.name not in test_pool or inst.name in ["torch.sin, tf.cos"]) :
+            continue 
         if special_filter(inst): # exclude errotic cases
             skipped_special += len(records)
             continue

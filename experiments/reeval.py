@@ -8,7 +8,7 @@ import subprocess
 import threading
 import multiprocessing
 from experiments.evaluate_models import model_exec, batched
-from experiments.evaluate_apis import activate_conda_environment, process_profraw, process_lcov, tf_batch_exec, torch_batch_exec
+from experiments.evaluate_apis import activate_conda_environment, process_profraw, process_lcov, tf_batch_exec, torch_batch_exec, load_api_names_from_data
 from experiments.evaluate_tf_models import tf_model_exec, clear_gcda
 from neuri.logger import DTEST_LOG
 
@@ -130,30 +130,10 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov"):
     else :
         raise NotImplementedError
 
-@hydra.main(version_base=None, config_path="../neuri/config", config_name="main")
-def main(cfg) : 
-    from neuri.cli.train import get_completed_list
-    from experiments.summarize_merged_cov import parse_directory_name
-    # from experiments.summarize_merged_cov import parse_directory_name
-
-    """
-    totally, cfg['exp']['parallel'] * cov_parallel * len(BASELINES) process will be craeted
-    """
-    #load csv 
-    global FIXED_FUNC
-    if cfg["model"]["type"] == "torch" :
-        FIXED_FUNC = "torch.sin"
-    elif cfg["model"]["type"] == "tensorflow" :
-        FIXED_FUNC = "tf.cos"
-    else :
-        raise NotImplementedError
-    csv_paths = [
-        "/artifact/experiments/results/20240404-015759.csv"
-        ]
+def load_from_csvs(csv_path) :   
     columns = []
     retrain_list = set()
-    refuzz_list = set()
-
+    refuzz_list = set() 
     for csv_path in csv_paths :
         with open(csv_path, "r") as f:
             for i, line in enumerate(f.readlines()) :
@@ -165,49 +145,97 @@ def main(cfg) :
                 row = line.split(",")
                 for i, col in enumerate(row) :
                     if col.replace(".","").isdigit() :
-                        is_dicol = float(col.strip())
-                        if is_dicol <= 0.0 :
-                            api_name = row[0].replace(".models","")
-                            test_pool = [FIXED_FUNC, api_name]
-                            test_pool_modified = '-'.join(test_pool)
-                            if cfg['mgen']['max_nodes'] is not None :
-                                max_nodes = cfg['mgen']['max_nodes']
-                            else :
-                                max_nodes = 3
-                            save_path = f"{os.getcwd()}/{cfg['exp']['save_dir']}/{cfg['model']['type']}-{columns[i]}-n{max_nodes}-{test_pool_modified}.models"
-                            if len(os.listdir(save_path)) <= 1 :
-                                # print(columns[i], row[0], os.listdir(save_path))
-                                refuzz_list.add((columns[i], row[0].replace(".models",""), "fuzz"))
-                            retrain_list.add((columns[i], row[0].replace(".models",""), "cov"))
+                        col = float(col.strip())
+                        if columns[i] == "symbolic.1" :
+                            if col < 500 :
+                                refuzz_list.add(("symbolic-cinit", row[0].replace(".models",""), "fuzz"))
+                                retrain_list.add(("symbolic-cinit", row[0].replace(".models",""), "cov"))
+                        else :
+                            if col < 30 :
+                                refuzz_list.add((columns[i].replace(".1",""), row[0].replace(".models",""), "fuzz"))
+                                retrain_list.add((columns[i].replace(".1",""), row[0].replace(".models",""), "cov"))
+                    if col <= 0.0 :
+                        api_name = row[0].replace(".models","")
+                        test_pool = [FIXED_FUNC, api_name]
+                        test_pool_modified = '-'.join(test_pool)
+                        if cfg['mgen']['max_nodes'] is not None :
+                            max_nodes = cfg['mgen']['max_nodes']
+                        else :
+                            max_nodes = 3
+                        save_path = f"{os.getcwd()}/{cfg['exp']['save_dir']}/{cfg['model']['type']}-{columns[i]}-n{max_nodes}-{test_pool_modified}.models"
+                        if len(os.listdir(save_path)) <= 1 :
+                            # print(columns[i], row[0], os.listdir(save_path))
+                            refuzz_list.add((columns[i], row[0].replace(".models",""), "fuzz"))
+                        retrain_list.add((columns[i], row[0].replace(".models",""), "cov"))
+    return retrain_list, refuzz_list
 
-    # for dir_name in os.listdir(os.path.join(os.getcwd(),cfg["exp"]["save_dir"])) :
-    #     if dir_name.endswith("models") :
-    #         test_list = os.listdir(os.path.join(os.getcwd(),cfg["exp"]["save_dir"],dir_name))
-    #         baseline, name = parse_directory_name(dir_name)
-    #         name = name.replace('.models','')
+def load_from_dirs(cfg) :
+    columns = []
+    retrain_list = set()
+    refuzz_list = set() 
+    for dir_name in os.listdir(os.path.join(os.getcwd(),cfg["exp"]["save_dir"])) :
+        if dir_name.endswith("models") :
+            test_list = os.listdir(os.path.join(os.getcwd(),cfg["exp"]["save_dir"],dir_name))
+            baseline, name = parse_directory_name(dir_name)
+            name = name.replace('.models','')
 
-    #         if len(test_list)>0 and( "coverage" in test_list or max(map(float, test_list)) > 500 ):
-    #             pass
-    #         else :
-    #             print(max(map(float, test_list)) if test_list else 0)
-    #             refuzz_list.add((baseline, name, "fuzz"))
-    #             print(f"keep test {name}, {baseline}")
-    #         retrain_list.add((baseline, name, "cov"))
+            if len(test_list)>0 and( "coverage" in test_list or max(map(float, test_list)) > 500 ):
+                pass
+            else :
+                print(max(map(float, test_list)) if test_list else 0)
+                refuzz_list.add((baseline, name, "fuzz"))
+                print(f"keep test {name}, {baseline}")
+            retrain_list.add((baseline, name, "cov"))
+    return retrain_list, refuzz_list
+
+@hydra.main(version_base=None, config_path="../neuri/config", config_name="main")
+def main(cfg) : 
+    from neuri.cli.train import get_completed_list
+    from experiments.summarize_merged_cov import parse_directory_name
+    # from experiments.summarize_merged_cov import parse_directory_name
+
+    """
+    totally, cfg['exp']['parallel'] * cov_parallel * len(BASELINES) process will be craeted
+    """
+    retrain_list = set()
+    refuzz_list = set()
+    global FIXED_FUNC
+    if cfg["model"]["type"] == "torch" :
+        FIXED_FUNC = "torch.sin"
+    elif cfg["model"]["type"] == "tensorflow" :
+        FIXED_FUNC = "tf.cos"
+    else :
+        raise NotImplementedError
+    csv_paths = [
+        # "/artifact/experiments/results/merged_tf_v3.csv",
+        "/artifact/experiments/results/merged_torch_v3.csv"
+        ]
+    # retrain_list, refuzz_list = load_from_csvs(csv_paths)
+    # retrain_list, refuzz_list = load_from_dirs(cfg)
+
+    with open("/artifact/data/torch_overall_apis.json", "r") as f :
+        api_names = json.load(f)
+    api_names = load_api_names_from_data(cfg["mgen"]["record_path"], cfg["mgen"]["pass_rate"])
+    api_names = list(set(api_names))[:100]
+    for baseline in ["constrinf", "neuri"] :
+        for api_name in api_names :
+            retrain_list.add((baseline, api_name, "cov"))
+            refuzz_list.add((baseline, api_name, "fuzz"))
+
              
     retrain_list = sorted(list(retrain_list), key=lambda x: x[1])
     refuzz_list = sorted(list(refuzz_list), key=lambda x: x[1])
     print(retrain_list)
     print(refuzz_list)
     print("retrain", len(retrain_list), "refuzz", len(refuzz_list))
-
-    # with concurrent.futures.ProcessPoolExecutor(max_workers=cfg["exp"]["parallel"]) as executor:
-    #     # Pass necessary arguments to the api_worker function
-    #     futures = [executor.submit(run, api, baseline, cfg, task) for baseline, api, task in refuzz_list]
-    #     for future in concurrent.futures.as_completed(futures):
-    #         try:
-    #             result = future.result()
-    #         except Exception as e:
-    #             print(f"An error occured: {e}")
+    with concurrent.futures.ProcessPoolExecutor(max_workers=cfg["exp"]["parallel"]) as executor:
+        # Pass necessary arguments to the api_worker function
+        futures = [executor.submit(run, api, baseline, cfg, task) for baseline, api, task in refuzz_list]
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                result = future.result()
+            except Exception as e:
+                print(f"An error occured: {e}")
     with concurrent.futures.ProcessPoolExecutor(max_workers=cfg["exp"]["parallel"]) as executor:
         # Pass necessary arguments to the api_worker function
         futures = [executor.submit(run, api, baseline, cfg, task) for baseline, api, task in retrain_list]

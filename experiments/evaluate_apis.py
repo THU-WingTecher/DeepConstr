@@ -12,7 +12,7 @@ from experiments.evaluate_tf_models import tf_model_exec, clear_gcda
 from neuri.logger import DTEST_LOG
 # Load the JSON file
 
-BASELINES = ["symbolic-cinit", "neuri", "constrinf", "constrinf_2"]
+BASELINES = ["constrinf", "constrinf_2"] #["symbolic-cinit", "neuri", "constrinf", "constrinf_2"]
 FIXED_FUNC = None #"torch.sin"#"tf.cos"#"torch.sin"
 cov_parallel = 1
 
@@ -274,7 +274,7 @@ def load_api_names_from_data(record_path, pass_rate) :
 def load_api_names_from_json(path) :
     with open(path, 'r') as file:
         api_sets = json.load(file)
-    return api_sets
+    return list(set(api_sets))
 # Run the script for each API set
 
 @hydra.main(version_base=None, config_path="../neuri/config", config_name="main")
@@ -292,22 +292,20 @@ def main(cfg) :
         FIXED_FUNC = "tf.cos"
     else :
         raise NotImplementedError
-    # print(f" Will run {cfg['exp']['parallel'] * cov_parallel * len(BASELINES)} process in parallel")
-    # api_names = load_api_names_from_data(cfg["mgen"]["record_path"], cfg["mgen"]["pass_rate"])
-    # api_names = set(api_names)
-    # print(f"From {len(api_names)} apis in total", sep=" ")
-
-    # api_names = api_names[:100]     
-    # api_names = list(set(['tf.keras.layers.Relu', 'tf.keras.layers.LeakyReLU', 'tf.sigmoid', 'tf.cos', 'tf.tan', 'tf.where', 'tf.multiply', 'tf.divide', 'tf.maximum', 'tf.minimum', 'tf.equal', 'tf.less', 'tf.logical_or', 'tf.math.logical_xor', 'tf.pow', 'tf.math.ceil', 'tf.round', 'tf.sqrt', 'tf.experimental.numpy.log2', 'tf.negative', 'tf.keras.layers.BatchNormalization', 'tf.reshape', 'tf.transpose', 'tf.keras.layers.Dense', 'tf.nn.conv2d', 'tf.nn.atrous_conv2d', 'tf.nn.depthwise_conv2d', 'tf.nn.separable_conv2d', 'tf.nn.conv2d_transpose', 'tf.squeeze', 'tf.expand_dims', 'tf.math.argmin', 'tf.experimental.numpy.tril', 'tf.concat', 'tf.cast', 'tf.reverse', 'tf.linalg.cholesky', 'tf.linalg.eigh', 'tf.matmul', 'tf.raw_ops.Xlog1py', 'tf.raw_ops.AddN', 'tf.raw_ops.Identity', 'tf.raw_ops.LessEqual', 'tf.raw_ops.Log', 'tf.raw_ops.MaxPoolV2', 'tf.raw_ops.NonMaxSuppressionV3', 'tf.raw_ops.Conv2D', 'tf.raw_ops.SelfAdjointEigV2', 'tf.raw_ops.InTopKV2', 'tf.raw_ops.PadV2', 'tf.raw_ops.LowerBound', 'tf.raw_ops.ResizeBilinear', 'tf.raw_ops.ArgMin', 'tf.raw_ops.Mean', 'tf.raw_ops.Max', 'tf.raw_ops.Imag', 'tf.raw_ops.Pack', 'tf.raw_ops.MirrorPad', 'tf.raw_ops.StatelessRandomUniformFullIntV2', 'tf.raw_ops.AvgPool', 'tf.raw_ops.Angle', 'tf.raw_ops.Shape', 'tf.raw_ops.MaxPool', 'tf.raw_ops.Conv3DBackpropInputV2', 'tf.raw_ops.SelectV2', 'tf.raw_ops.QuantizeAndDequantizeV4', 'tf.raw_ops.TopKV2', 'tf.raw_ops.DepthwiseConv2dNative', 'tf.raw_ops.ConcatV2', 'tf.raw_ops.ResizeNearestNeighbor', 'tf.raw_ops.Conv2DBackpropFilter', 'tf.raw_ops.Where', 'tf.raw_ops.BroadcastArgs', 'tf.raw_ops.Complex', 'tf.raw_ops.RandomGammaGrad', 'tf.raw_ops.MatrixDiagV3', 'tf.raw_ops.FusedBatchNorm', 'tf.raw_ops.Any', 'tf.raw_ops.ExpandDims', 'tf.raw_ops.Unique', 'tf.raw_ops.AvgPool3D', 'tf.raw_ops.Lgamma', 'tf.raw_ops.ListDiff', 'tf.raw_ops.GatherV2', 'tf.raw_ops.Conv2DBackpropInput', 'tf.raw_ops.Cumsum', 'tf.raw_ops.ExtractImagePatches', 'tf.raw_ops.Bincount', 'tf.raw_ops.Xlogy', 'tf.raw_ops.IgammaGradA', 'tf.raw_ops.All', 'tf.raw_ops.Log1p', 'tf.raw_ops.ShapeN', 'tf.raw_ops.ReluGrad', 'tf.raw_ops.Roll', 'tf.raw_ops.MatrixDiagPartV3', 'tf.raw_ops.Igamma', 'tf.raw_ops.PlaceholderWithDefault', 'tf.raw_ops.StatelessMultinomial', 'tf.raw_ops.DepthwiseConv2dNativeBackpropInput', 'tf.raw_ops.DepthwiseConv2dNativeBackpropFilter', 'tf.raw_ops.MaxPool3D', 'tf.raw_ops.MaxPoolGrad', 'tf.raw_ops.Zeta', 'tf.raw_ops.MaxPool3DGrad', 'tf.raw_ops.Real', 'tf.raw_ops.MaxPool3DGradGrad', 'tf.raw_ops.TensorStridedSliceUpdate', 'tf.raw_ops.IdentityN', 'tf.raw_ops.Conv3D', 'tf.raw_ops.BatchMatMulV3', 'tf.raw_ops.RealDiv', 'tf.raw_ops.SparseToDense', 'tf.raw_ops.SpaceToDepth', 'tf.raw_ops.MatrixSetDiagV3', 'tf.raw_ops.ConjugateTranspose', 'tf.raw_ops.Pad', 'tf.raw_ops.ZerosLike', 'tf.raw_ops.MaxPoolGradGrad', 'tf.raw_ops.StatelessRandomUniformFullInt', 'tf.raw_ops.Tile', 'tf.raw_ops.TensorScatterUpdate', 'tf.raw_ops.Einsum']))
-    api_names = list(set(['torch.nn.ReLU', 'torch.nn.GELU', 'torch.nn.LeakyReLU', 'torch.nn.PReLU', 'torch.logical_and', 'torch.logical_or', 'torch.logical_xor', 'torch.nn.Softmax', 'torch.nn.MaxPool2d', 'torch.nn.AvgPool2d', 'torch.nn.ConstantPad2d', 'torch.nn.ReflectionPad2d', 'torch.nn.ReplicationPad2d', 'torch.nn.BatchNorm2d', 'torch.nn.Conv1d', 'torch.nn.Conv2d', 'torch.reshape', 'torch.nn.functional.interpolate', 'torch.triu', 'torch.nn.Linear', 'torch.cat']+['torch.nn.functional.hinge_embedding_loss', 'torch.searchsorted', 'torch.conv2d', 'torch.triangular_solve', 'torch.mv', 'torch._C._nn.fractional_max_pool3d', 'torch.Tensor.random_', 'torch.column_stack', 'torch._C._special.special_erfcx', 'torch.angle', 'torch.nn.functional.fractional_max_pool2d_with_indices', 'torch.ormqr', 'torch.Tensor.copy_', 'torch.symeig', 'torch._C._linalg.linalg_cross', 'torch.polygamma', 'torch._C._special.special_hermite_polynomial_h', 'torch._C._nn.max_pool3d_with_indices', 'torch.bilinear', 'torch._C._special.special_modified_bessel_k0', 'torch.Tensor.select', 'torch.rand_like', 'torch._C._special.special_polygamma', 'torch.unbind', 'torch._C._special.special_modified_bessel_i1', 'torch._C._linalg.linalg_householder_product', 'torch.nn.functional.grid_sample', 'torch.Tensor.uniform_', 'torch.nn.functional.fractional_max_pool3d_with_indices', 'torch.nn.functional.cross_entropy', 'torch.Tensor.unbind', 'torch.index_put', 'torch.pixel_shuffle', 'torch.Tensor.new_empty_strided', 'torch.slice_scatter', 'torch.einsum', 'torch.randn_like', 'torch._C._nn.linear', 'torch.randint_like', 'torch.hstack', 'torch.permute', 'torch.avg_pool1d', 'torch._C._linalg.linalg_multi_dot', 'torch.lu_solve', 'torch.logcumsumexp', 'torch.conv_transpose3d', 'torch.polar', 'torch._C._linalg.linalg_lu_solve', 'torch.as_strided_scatter', 'torch.all', 'torch.Tensor.sum_to_size', 'torch.conv_transpose2d', 'torch.baddbmm', 'torch.istft', 'torch.Tensor.normal_', 'torch.pixel_unshuffle', 'torch.max_pool1d', 'torch.amax', 'torch.nn.functional.embedding', 'torch.broadcast_tensors', 'torch.nn.functional.feature_alpha_dropout', 'torch.Tensor.stft', 'torch.outer', 'torch.Tensor.contiguous', 'torch.addr', 'torch.split', 'torch.Tensor.split', 'torch.nn.functional.dropout1d', 'torch.triplet_margin_loss', 'torch.meshgrid', 'torch.nn.functional.unfold', 'torch.nn.functional.max_pool1d_with_indices', 'torch.logdet', 'torch.dropout', 'torch.conv1d', 'torch.nn.functional.dropout2d', 'torch.addmm', 'torch.nn.functional.multi_head_attention_forward', 'torch.addmv', 'torch.native_dropout', 'torch.nn.functional.pad', 'torch.nn.functional.glu', 'torch.stack', 'torch._C._nn.flatten_dense_tensors', 'torch.native_batch_norm', 'torch._C._nn.unflatten_dense_tensors', 'torch.max_pool1d_with_indices', 'torch.true_divide', 'torch.aminmax', 'torch.cholesky_solve', 'torch.cartesian_prod', 'torch.Tensor.requires_grad_', 'torch.gather', 'torch.Tensor.index_fill', 'torch.max_pool3d', 'torch.Tensor.logical_and_', 'torch.logical_not', 'torch.max_pool2d', 'torch.addbmm', 'torch.nn.functional.dropout', 'torch.conv_transpose1d', 'torch.diagonal_scatter', 'torch._C._special.special_entr', 'torch.nn.functional.max_pool3d_with_indices', 'torch._C._nn.fractional_max_pool2d', 'torch.pdist', 'torch._C._nn.pad_sequence', 'torch.empty_like', 'torch.vstack', 'torch.nn.functional.dropout3d', 'torch._C._special.special_modified_bessel_i0', 'torch.block_diag', 'torch.logit', 'torch.Tensor.new_empty', 'torch.amin', 'torch.dstack', 'torch.pinverse']))
-    completed = exclude_intestable()
-    print(completed)
-    for name in completed :
-        if name in api_names :
-            api_names.remove(name)
-    print(api_names)          
+    print(f" Will run {cfg['exp']['parallel'] * cov_parallel * len(BASELINES)} process in parallel")
+    with open("/artifact/data/torch_overall_apis.json", "r") as f :
+        api_names = json.load(f)
+    api_names = load_api_names_from_data(cfg["mgen"]["record_path"], cfg["mgen"]["pass_rate"])
+    api_names = list(set(api_names))
+    # completed = exclude_intestable()
+    # print(completed)
+    # for name in completed :
+    #     if name in api_names :
+    #         api_names.remove(name)
+    # print(api_names)          
+    # api_names = load_api_names_from_json("/artifact/data/torch_overall_apis.json")
+    api_names = api_names[:400]
     print(f"Test {len(api_names)} apis in total", sep=" ")
-    # api_names = load_api_names_from_json("/artifact/tests/test.json")
     parallel_eval(api_names, BASELINES, cfg, task="fuzz")
     # parallel_eval(api_names, BASELINES, cfg, task="cov")
 if __name__ == "__main__":

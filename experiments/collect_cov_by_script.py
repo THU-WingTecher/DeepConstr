@@ -76,10 +76,10 @@ def batched(iterable, n=1):
 def model_exec(
     test_paths, output_path, id_path, package
 ):  
-    script_name = "model.py"
+    script_name = "prog.py"
     model_paths = [f"{os.path.join(test_path,script_name)}" for test_path in test_paths]
 
-    # print(len(model_paths))
+    print(len(model_paths))
     if package != "torch" :
         gcda_save_path = f"{id_path}-workspace"
         os.system(f"rm {gcda_save_path} -r")

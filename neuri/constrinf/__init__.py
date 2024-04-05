@@ -74,7 +74,7 @@ def make_record_finder(
     for record in gen_inst_records:
         total_rec+=1
         if test_pool :
-            if record['name'] not in test_pool :
+            if record['name'] not in test_pool or record['name'] in ["torch.sin", "tf.cos"] :
                 continue 
         else : # when test_pool is defined; we don't check others
             if is_special_apis(record) :

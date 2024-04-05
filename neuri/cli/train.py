@@ -67,10 +67,8 @@ def get_completed_list(path = "/artifact/experiments/results/completed.json") :
     
     #load csv 
     csv_paths = [
-        "/artifact/experiments/results/merged_torch.csv",
-        "/artifact/experiments/results/torch3.csv",
-        "/artifact/experiments/results/torch4.csv",
-        "/artifact/experiments/results/merged_tf.csv"
+        "/artifact/experiments/results/merged_torch_v2.csv",
+        "/artifact/experiments/results/merged_tf_v2.csv"
         ]
     for csv_path in csv_paths :
         with open(csv_path, "r") as f:
@@ -213,7 +211,7 @@ pt_data_paths = [
 pt_neuri_data_path = "/artifact/data/torch_overall_apis.json"
 pt_nnsmith_data_path = "/artifact/data/torch_nnsmith.json"
 tf_data_paths = [
-    "/artifact/experiments/results/merged_tf.csv"
+    "/artifact/experiments/results/merged_tf_v2.csv"
 ]
 tf_neuri_data_path = "/artifact/data/tf_overall_apis.json"
 tf_nnsmith_data_path = "/artifact/data/tf_nnsmith.json"
@@ -352,9 +350,9 @@ class TrainingLoop:
                 train_list = json.load(f)
         
         root_path = self.cfg["train"]["record_path"] 
-        # completed_list = get_completed_list()
+        completed_list = get_completed_list()
         if self.cfg["model"]["type"] == "torch" :
-            todo_list = check_left_api(
+            train_list = check_left_api(
                     pt_neuri_data_path,
                     pt_data_paths
                 ) + check_left_api(
@@ -362,7 +360,7 @@ class TrainingLoop:
                     pt_data_paths
                 )
         elif self.cfg["model"]["type"] == "tensorflow" :
-            todo_list = check_left_api(
+            train_list = check_left_api(
                     tf_neuri_data_path,
                     tf_data_paths
                 ) + check_left_api(
@@ -374,10 +372,10 @@ class TrainingLoop:
                 if file.endswith(".yaml"):
                     name = file.split(".")[0].split("-")[0]
                     full_name = ".".join(os.path.join(root, file).replace('/','.').split('-')[0].split('.')[2:])
-                    if full_name in todo_list :
+                    if full_name in train_list :
                         with open(os.path.join(root, file), "r") as f:
                             record = yaml.safe_load(f)
-                            if record.get("name", None) in ["tf.raw_ops.GatherNd", "tf.raw_ops.Slice", "tf.raw_ops.SparseSoftmaxCrossEntropyWithLogits", "tf.raw_ops.Tile", "tf.raw_ops.TopKV2"]
+                            if record.get("name", None) in ["tf.raw_ops.Pad", "tf.raw_ops.StatelessMultinomial", "torch.block_diag"] :
                                 pass
                             elif record.get("error", None) is not None or len(record.get("rules", [])) > 0 :
                                 continue

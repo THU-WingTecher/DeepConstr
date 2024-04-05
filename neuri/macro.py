@@ -17,7 +17,7 @@ python experiments/evaluate_apis.py \
 exp.save_dir=gen_torch4 mgen.record_path=$(pwd)/data/records/torch/ mgen.pass_rate=0.05 model.type=torch backend.type=torchjit fuzz.time=10m exp.parallel=15 mgen.noise=0.8
 """
 """ API TEST
-python experiments/evaluate_apis.py exp.save_dir=gen_tf2 mgen.record_path=/artifact/data/records/tf/ mgen.pass_rate=0.05 model.type=tensorflow backend.type=xla fuzz.time=10m exp.parallel=5 mgen.noise=0.8
+python experiments/evaluate_apis.py exp.save_dir=gen_tf3 mgen.record_path=/artifact/data/records/tf/ mgen.pass_rate=0.05 model.type=tensorflow backend.type=xla fuzz.time=10m exp.parallel=5 mgen.noise=0.8
 """
 
 """ FUZZING 
@@ -39,4 +39,11 @@ PYTHONPATH=/artifact/neuri/:/artifact/:$PYTHONPATH python neuri/cli/train.py tra
 tf
 
 PYTHONPATH=/artifact/neuri/:/artifact/:$PYTHONPATH python neuri/cli/train.py train.record_path=data/records/tf backend.type=xla model.type=tensorflow hydra.verbose=train train.resume=false train.parallel=1 train.eval_asset=150 temp.start=0 temp.end=50 train.list=/artifact/data/tf_overall_apis.json
+"""
+
+"""process prfraw
+python experiments/process_profraws.py --root $(pwd)/experiments/torch_default  \
+                                       --llvm-config-path $(which llvm-config-14) \
+                                       --instrumented-libs "$(pwd)/build/pytorch-cov/build/lib/libtorch_cpu.so" "$(pwd)/build/pytorch-cov/build/lib/libtorch.so" \
+                                        --batch-size 1 --parallel $(nproc)
 """

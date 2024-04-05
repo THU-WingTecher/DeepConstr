@@ -33,7 +33,7 @@ temp:
 mgen: # model gen.
   max_nodes: 5
   pass_rate: 0.8 # 0 ~ 1 
-  timeout_ms: 100000 #10000
+  timeout_ms: 1000000 #10000
   vulops: False
   method: "constrinf"
   save: "neuri_output"
@@ -42,7 +42,7 @@ mgen: # model gen.
   record_path: null # path to load records for ConcolicGenWithRecords
   test_pool: []
   noise: 0.15 # 0 ~ 1
-  allow_zero_length_rate: 0.1 # 0 ~ 1
+  allow_zero_length_rate: 0.04 # 0 ~ 1
   allow_zero_rate: 0.1 # 0 ~ 1
   num_of_try: 1 ## num_of_try * noise will be the number of trials for each input
 # backend config
