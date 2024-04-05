@@ -57,7 +57,7 @@ args:
   - false
   name:
   - self
-  - naive
+  - LLM
   required:
   - true
   - true
@@ -69,12 +69,12 @@ rules:
     length: 1
     target:
       choosen_dtype:
-        naive: tensor
+        LLM: tensor
         self: tensor
       msg: The size of tensor a (2) must match the size of tensor b (9) at non-singleton
         dimension 5
       package: torch
-    txt: self.shape[5] == naive.shape[5]
+    txt: self.shape[5] == LLM.shape[5]
   - f1_score: 69.06077348066299
     overall_score: 100
     precision: 100.0
@@ -83,11 +83,11 @@ rules:
     length: 1
     target:
       choosen_dtype:
-        naive: tensor
+        LLM: tensor
         self: tensor
       msg: 'Too large tensor shape: shape = [6, 9, 7, 8, 9, 9, 9, 9, 9]'
       package: torch
-    txt: self.shape == naive.shape
+    txt: self.shape == LLM.shape
   - f1_score: 67.79661016949153
     overall_score: 100
     precision: 100.0
@@ -96,8 +96,8 @@ rules:
 """
 def get_constr_stats(data_list):
     constr_stats = {
-        "synthesized": 0,
-        "naive": 0
+        "processed": 0,
+        "LLM": 0
     }
     constr_len = []
     constr_operator = {}
@@ -105,17 +105,17 @@ def get_constr_stats(data_list):
     constr_prec = []
     constr_recall = []
     for data in data_list:
-        # if any([rule[0]["cot"] in ["synthesized", "divided"] for rule in data["rules"]]):
-        #     constr_stats["synthesized"] += 1
+        # if any([rule[0]["cot"] in ["processed", "divided"] for rule in data["rules"]]):
+        #     constr_stats["processed"] += 1
         # else :
         #     # for r in data["rules"] :
         #     #     print(r[0]["cot"])
-        #     constr_stats["naive"] += 1
+        #     constr_stats["LLM"] += 1
         for rule in data["rules"]:
-            if "synthesized" == rule[0]["cot"] or "divided" == rule[0]["cot"]:
-                constr_stats["synthesized"] += 1
+            if "processed" == rule[0]["cot"] or "divided" == rule[0]["cot"]:
+                constr_stats["processed"] += 1
             else :
-                constr_stats["naive"] += 1
+                constr_stats["LLM"] += 1
             constr_len.append(rule[0].get("length", 1))
             constr_f1.append(rule[1]["f1_score"])
             constr_prec.append(rule[1]["precision"])
@@ -125,94 +125,49 @@ def mean(numbers):
     return sum(numbers) / len(numbers)
 import statistics
 # -> visualize distribution of length of cosntr, f1_ prec_ recall of constr, pie chart of constr type
-def viz_num_of_constr_with_pass_rate(data_list, acc_data_list, name, path = "/artifact/results/") :
-    plt.figure(figsize=(6,6))
-
+def viz_passrate(data_list, acc_data_list, name, path = "/artifact/results/") :
+    all = []
     for i, data_li in enumerate([data_list, acc_data_list]):
         pass_rate_num_of_constr = []
         for data in data_li:
             pass_rate_num_of_constr.append(
                 (data["pass_rate"], len(data["rules"]))
             )
-        if i == 0 :
-            print("tool", name)
-            edge_color = 'black'
-            line_color = 'blue'
-            marker = 'x'
-            color = 'blue'
-            label = r'\textsc{DeepConstr}'
-        else :
-            print("toolacc", name)
-            edge_color = 'black'
-            marker = 'x'
-            color = 'red'
-            line_color = 'red'
-            label = r'\textsc{DeepConstr$^{s}$}'
         pass_rate, num_of_constraints = zip(*pass_rate_num_of_constr)
+        all.extend(pass_rate)
         print("mean passrate", mean(pass_rate))
         print("median passrate", statistics.median(pass_rate))
-        # print("mean num_of_constraints", mean(num_of_constraints))
-        # print("median num_of_constraints", statistics.median(num_of_constraints))
-        # Convert to numpy arrays for easier manipulation
-        pass_rate = np.array(pass_rate)
-        
-        num_of_constraints = np.array(num_of_constraints)
-        z2 = np.polyfit(num_of_constraints, pass_rate, 2)
-        p2 = np.poly1d(z2)
 
-        # Generating points for the trend line
-        # trend_line_x = np.linspace(min(num_of_constraints), max(num_of_constraints), 100)
-        # trend_line_y = p2(trend_line_x)
-        # Re-plotting the scatter and the improved trend line
-        plt.scatter(num_of_constraints, pass_rate, alpha=0.8, edgecolors=edge_color, linewidth=0.6, s=80, c=color, marker=marker)
-        # plt.plot(trend_line_x, trend_line_y, "r-", label=label, color=line_color)
-
-    # Adjusting y-axis to not display negative values
-    plt.ylim(bottom=0)
-
-    # Adding professional plot enhancements with no negative y-axis values
-    # if name == "torch" :
-    #     plt.title('\\textit{PyTorch}')
-    # else :
-    #     plt.title('\\textit{TensorFlow}')
-    plt.xlabel('\\textit{Number of Constraints}')
-    plt.ylabel('\\textit{Pass Rate(\%)}')
-    # plt.xticks()
-    # plt.yticks()
-
-    plt.grid(True, which='both', linestyle='--', linewidth=0.5)
-    plt.minorticks_on()
-
-    # Show the adjusted plot
-    plt.savefig(path + f"5_constr_pass_rate_{name}.pdf")
-    plt.savefig(path + f"5_constr_pass_rate_{name}.png")
+    print("overall passrate")
+    print("mean passrate", mean(all))
+    print("median passrate", statistics.median(all))
 
 def viz_gen_way_of_constrs(constr_stats):
+    print("### GEN WAY OF CONSTRAINS ###")
     print(constr_stats)
-    # for key in constr_stats.keys():
-    #     print("key", constr_stats[key] / sum(constr_stats.values()))
+    print("### GEN WAY OF CONSTRAINS ###")
 
 def viz_constr_len(constr_len : List[int]):
     plt.hist(constr_len, bins=range(1, max(constr_len) + 1))
     plt.show()
 
-def viz_constr_f1(constr_f1 : List[float], constr_prec, acc_f1, acc_prec , path = "/artifact/results/", name = "PyTorch"):
+def viz_constr_f1(constr_recall : List[float], constr_prec, acc_recall, acc_prec , path = "/artifact/results/", name = "PyTorch"):
 
     plt.figure(figsize=(9,9))
     plt.legend(loc='lower right')
     # PyTorch
-    plt.scatter(acc_prec, acc_f1, alpha=0.8, edgecolors='black', label=r'\textsc{DeepConstr$^{s}$}', linewidth=0.6, s=80, c='blue', marker='x')
-    plt.scatter(constr_prec, constr_f1, alpha=0.8, edgecolors='black', label=r'\textsc{DeepConstr}', linewidth=0.6, s=80, c='red', marker='+')
-    # plt.scatter(acc_prec, acc_f1, alpha=0.8, edgecolors='black', label=r'\textsc{DeepConstr$^{s}$}', linewidth=0.6, s=80, c='blue', marker='o')
-    # plt.scatter(constr_prec, constr_f1, alpha=0.8, edgecolors='black', label=r'\textsc{DeepConstr}', linewidth=0.6, s=80, c='red', marker='o')
+    plt.scatter(acc_prec, acc_recall, alpha=0.8, edgecolors='black', label=r'\textsc{DeepConstr$^{s}$}', linewidth=0.6, s=80, c='blue', marker='x')
+    plt.scatter(constr_prec, constr_recall, alpha=0.8, edgecolors='black', label=r'\textsc{DeepConstr}', linewidth=0.6, s=80, c='red', marker='+')
+    # plt.scatter(acc_prec, acc_recall, alpha=0.8, edgecolors='black', label=r'\textsc{DeepConstr$^{s}$}', linewidth=0.6, s=80, c='blue', marker='o')
+    # plt.scatter(constr_prec, constr_recall, alpha=0.8, edgecolors='black', label=r'\textsc{DeepConstr}', linewidth=0.6, s=80, c='red', marker='o')
     print("mean acc_prec", mean(acc_prec))
     print("median acc_prec", statistics.median(acc_prec))
-    print("mean acc_f1", mean(acc_f1))
-    print("median acc_f1", statistics.median(acc_f1))
+    print("mean acc_recall", mean(acc_recall))
+    print("median acc_recall", statistics.median(acc_recall))
     print("mean constr_prec", mean(constr_prec))
     print("median constr_prec", statistics.median(constr_prec))
-    print("mean constr_f1", mean(constr_f1))
-    print("median constr_f1", statistics.median(constr_f1))
+    print("mean constr_recall", mean(constr_recall))
+    print("median constr_recall", statistics.median(constr_recall))
     # if name == "torch" :
     #     plt.title('\\textit{PyTorch}')
     # else :
@@ -231,6 +186,16 @@ if __name__ == "__main__" :
     record_dir = "/artifact/data/"
     frameworks = ["torch", "tf"]
     kinds = ["records", "only_acc"]
+
+    for framework in frameworks:
+        data = []
+        path = os.path.join(record_dir, "records", framework)
+        acc_path = os.path.join(record_dir, "only_acc", framework)
+        data_list = load_data(path)
+        acc_data_list = load_data(acc_path)
+        constr_stats, constr_len, constr_operator, constr_f1, constr_prec, constr_recall = get_constr_stats(data_list)
+        acc_constr_stats, acc_constr_len, acc_constr_operator, acc_constr_f1, acc_constr_prec, acc_constr_recall = get_constr_stats(acc_data_list)
+
     for framework in frameworks:
         data = []
         path = os.path.join(record_dir, "records", framework)
@@ -244,5 +209,5 @@ if __name__ == "__main__" :
         print("only_acc")
         viz_gen_way_of_constrs(acc_constr_stats)
         viz_constr_f1(constr_recall, constr_prec, acc_constr_recall, acc_constr_prec, name=framework)
-        viz_num_of_constr_with_pass_rate(data_list, acc_data_list, name=framework)
+        viz_passrate(data_list, acc_data_list, name=framework)
         # print(pass_rate_num_of_constr)

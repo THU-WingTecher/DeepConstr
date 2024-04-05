@@ -11,6 +11,7 @@ from experiments.evaluate_models import model_exec, batched
 from experiments.evaluate_apis import activate_conda_environment, process_profraw, process_lcov, tf_batch_exec, torch_batch_exec, load_api_names_from_data
 from experiments.evaluate_tf_models import tf_model_exec, clear_gcda
 from neuri.logger import DTEST_LOG
+import multiprocessing as mp
 
 # Load the JSON file
 
@@ -78,11 +79,16 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov"):
         Executes a given command and prints its output in real-time.
         """
         print("Running\n", command)
-        p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-        p.communicate()
-        exit_code = p.returncode
-        if exit_code != 0:
-            return 
+        with subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True) as p:
+            for line in p.stdout:
+                print(line, end='')
+            p.wait(timeout=60*11)
+            exit_code = p.returncode
+            if exit_code != 0:
+                print(f"Command failed with exit code {exit_code}")
+            else:
+                print("Command executed successfully!")
+
     if config['model']['type'] == "tensorflow":
         if baseline == "constrinf":
             RECORD = config["mgen"]["record_path"]
@@ -108,9 +114,8 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov"):
                    f"mgen.method={baseline.split('_')[0]} mgen.max_nodes={max_nodes} mgen.test_pool=\"{test_pool}\""
 
     if task == "fuzz":
-        # while tries < 3:
         execute_command(fuzz_command)
-            # tries += 1
+
     elif task == "cov":
         print(f"Collect Cov for {api_name} with baseline {baseline}")
         print("Activate Conda env -cov")
@@ -169,6 +174,16 @@ def load_from_csvs(csv_path) :
                         retrain_list.add((columns[i], row[0].replace(".models",""), "cov"))
     return retrain_list, refuzz_list
 
+def gen_save_path(api_name, baseline, cfg) :
+    test_pool = [FIXED_FUNC, api_name]
+    test_pool_modified = '-'.join(test_pool)
+    if cfg['mgen']['max_nodes'] is not None :
+        max_nodes = cfg['mgen']['max_nodes']
+    else :
+        max_nodes = 5
+    save_path = f"{os.getcwd()}/{cfg['exp']['save_dir']}/{cfg['model']['type']}-{baseline}-n{max_nodes}-{test_pool_modified}.models"
+    return save_path
+
 def load_from_dirs(cfg) :
     columns = []
     retrain_list = set()
@@ -187,6 +202,30 @@ def load_from_dirs(cfg) :
                 print(f"keep test {name}, {baseline}")
             retrain_list.add((baseline, name, "cov"))
     return retrain_list, refuzz_list
+
+def need_to_collect_cov(api_name, base_line, cfg) : 
+    save_path = gen_save_path(api_name, base_line, cfg)
+    cov_dir_path = os.path.join(save_path, "coverage", "merged_cov.pkl")
+    return not os.path.exists(cov_dir_path)
+
+def need_to_gen_testcases(api_name, base_line, cfg) : 
+    save_path = gen_save_path(api_name, base_line, cfg)
+    if os.path.exists(save_path) :
+        test_list = os.listdir(save_path)
+        if "coverage" in test_list : return False
+        if test_list : 
+            if max(map(float, test_list)) > 500 : return False
+    return True
+
+def wrapper(args):
+    try:
+        # Unpack arguments
+        baseline, api, task, cfg = args
+        # Run the target function
+        return run(api, baseline, cfg, task)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None  # You can return a default val
 
 @hydra.main(version_base=None, config_path="../neuri/config", config_name="main")
 def main(cfg) : 
@@ -213,37 +252,37 @@ def main(cfg) :
     # retrain_list, refuzz_list = load_from_csvs(csv_paths)
     # retrain_list, refuzz_list = load_from_dirs(cfg)
 
-    with open("/artifact/data/torch_overall_apis.json", "r") as f :
-        api_names = json.load(f)
+    # with open("/artifact/data/torch_overall_apis.json", "r") as f :
+    #     api_names = json.load(f)
     api_names = load_api_names_from_data(cfg["mgen"]["record_path"], cfg["mgen"]["pass_rate"])
-    api_names = list(set(api_names))[:100]
-    for baseline in ["constrinf", "neuri"] :
+    api_names = list(set(api_names))
+    for baseline in ["constrinf"] :
         for api_name in api_names :
-            retrain_list.add((baseline, api_name, "cov"))
-            refuzz_list.add((baseline, api_name, "fuzz"))
+            if need_to_collect_cov(api_name, baseline, cfg) :
+                retrain_list.add((baseline, api_name, "cov", cfg))
+            if need_to_gen_testcases(api_name, baseline, cfg) :
+                refuzz_list.add((baseline, api_name, "fuzz", cfg))
 
              
     retrain_list = sorted(list(retrain_list), key=lambda x: x[1])
     refuzz_list = sorted(list(refuzz_list), key=lambda x: x[1])
-    print(retrain_list)
-    print(refuzz_list)
-    print("retrain", len(retrain_list), "refuzz", len(refuzz_list))
-    with concurrent.futures.ProcessPoolExecutor(max_workers=cfg["exp"]["parallel"]) as executor:
-        # Pass necessary arguments to the api_worker function
-        futures = [executor.submit(run, api, baseline, cfg, task) for baseline, api, task in refuzz_list]
-        for future in concurrent.futures.as_completed(futures):
-            try:
-                result = future.result()
-            except Exception as e:
-                print(f"An error occured: {e}")
-    with concurrent.futures.ProcessPoolExecutor(max_workers=cfg["exp"]["parallel"]) as executor:
-        # Pass necessary arguments to the api_worker function
-        futures = [executor.submit(run, api, baseline, cfg, task) for baseline, api, task in retrain_list]
-        for future in concurrent.futures.as_completed(futures):
-            try:
-                result = future.result()
-            except Exception as e:
-                print(f"An error occured: {e}")
+    # print(retrain_list)
+    # print(refuzz_list)
+    all_tasks = refuzz_list + retrain_list
+    print("retrain", len(retrain_list), "refuzz", len(refuzz_list), all_tasks[:20])
+
+    with mp.Pool(processes=cfg["exp"]["parallel"]) as pool:
+        # Use starmap to pass the arguments from each tuple in refuzz_list to the wrapper function
+        results = pool.map(wrapper, refuzz_list)
+    # with concurrent.futures.ProcessPoolExecutor(max_workers=cfg["exp"]["parallel"]) as executor:
+    #     # Pass necessary arguments to the api_worker function
+    #     futures = [executor.submit(run, api, baseline, cfg, task) for baseline, api, task in refuzz_list]
+    #     for future in concurrent.futures.as_completed(futures):
+    #         try:
+    #             result = future.result()
+    #         except Exception as e:
+    #             print(f"An error occured: {e}")
+
 
 if __name__ == "__main__":
     main()

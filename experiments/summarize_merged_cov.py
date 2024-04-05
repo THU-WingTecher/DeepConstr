@@ -228,7 +228,6 @@ def merge_csvs(*csv_paths, save_path=None):
         filtered_df.to_csv(save_path, index=False)
     return filtered_df
 
-
 def check_left_api(api_data_path, saved_data_paths) :
     with open(api_data_path, "r") as file:
         data = json.load(file)
@@ -293,8 +292,7 @@ def exclude_intestable() :
     return list(set(neuri_pt_rec + neuri_tf_rec + nnsmith_pt_rec + nnsmith_tf_rec))
 
 def gen_table4(df, nnsmith_path, neuri_path, type="torch") :
-    default_var = 36322 if type=="torch" else 8974
-    #torch 36322 # tf 8974.0
+
     with open(nnsmith_path, 'r') as file:
         apis = json.load(file)
     nnsmith_columns = [name + ".models" for name in apis]
@@ -308,35 +306,23 @@ def gen_table4(df, nnsmith_path, neuri_path, type="torch") :
         if col not in df.API.values:
             nnsmith_none.append(col.replace(".models", ''))
             df.loc[len(df)] = [col, 0, 0, 0, 0, 0, 0, 0, 0]  # Or another default value as appropriate
-    for col in neuri_columns:
-        if col not in df.API.values:
-            neuri_none.append(col.replace(".models", ''))
-            df.loc[len(df)] = [col, 0, 0, 0, 0, 0, 0, 0, 0]  # Or another default value as appropriate
+    # for col in neuri_columns:
+    #     if col not in df.API.values:
+    #         neuri_none.append(col.replace(".models", ''))
+    #         df.loc[len(df)] = [col, 0, 0, 0, 0, 0, 0, 0, 0]  # Or another default value as appropriate
     for tool in ["constrinf"] :
         for baseline in ["neuri", "symbolic", "constrinf_2"] :
             columns_to_compare = [baseline] if all(col in df.columns for col in [baseline]) else []
             if baseline == "symbolic":
                 total_rows = len(nnsmith_columns)
                 added = len(nnsmith_none)
+                extracted_columns_df_with_models = df[df['API'].isin(nnsmith_columns)]
             else :
                 total_rows = df.shape[0]
                 added = len(neuri_none)
-            adjusted_df = df[columns_to_compare + [tool]].apply(lambda x: x - default_var)
-            # Calculating differences
-            differences = adjusted_df.apply(lambda row: row[tool] - row[baseline], axis=1)
-            # Calculating ratio of improvement
-            ratios = differences / adjusted_df[baseline].replace(0, 1)  # Avoid division by zero
-            improvement = ratios.mean() * 100  # Converting ratio to percentage
-            improvements.append((tool, baseline, improvement))
-    improvements_df = pd.DataFrame(improvements, columns=['Tool', 'Baseline', 'Improvement %'])
-
-# Statistical Overview
-    statistical_overview = improvements_df.describe()
-    print(statistical_overview.head())
-            # extracted_columns_df_with_models = df[df['API'].isin(nnsmith_columns)]
-            # rows_where_constrinf_is_highest = extracted_columns_df_with_models.apply(lambda row: row[tool] > row[columns_to_compare], axis=1).sum()
-            # print(rows_where_constrinf_is_highest)
-            # print("rows_where_constrinf_is_highest", tool, "vs", baseline, ":", "highest", rows_where_constrinf_is_highest, "intersected", total_rows - added)
+                extracted_columns_df_with_models = df[df['API'].isin(neuri_columns)]
+            rows_where_constrinf_is_highest = extracted_columns_df_with_models.apply(lambda row: row[tool] > row[columns_to_compare], axis=1).sum()
+            print("rows_where_constrinf_is_highest", tool, "vs", baseline, ":", "highest", rows_where_constrinf_is_highest, "intersected", total_rows - added)
     for col in df.columns:
         if col == "API":
             continue
@@ -365,14 +351,35 @@ if __name__ == "__main__":
     csv_paths = [
         "/artifact/experiments/results/merged_torch_v3.csv",
     ]
-    orig_df = merge_csvs(*csv_paths)
-    api_coverage_data = traverse_and_classify(root_dir)
-    processed_data = process_pickle_files(api_coverage_data)
-    aggregated_df = aggregate_summarized_data(processed_data)
-    merge_with_original_data(orig_df, aggregated_df)
+    # orig_df = merge_csvs(*csv_paths)
+    # api_coverage_data = traverse_and_classify(root_dir)
+    # processed_data = process_pickle_files(api_coverage_data)
+    # aggregated_df = aggregate_summarized_data(processed_data)
+    # merge_with_original_data(orig_df, aggregated_df)
     # final_bf_summary, completed_data = summarize_final_bf(aggregated_df)
     # save_data(final_bf_summary, completed_data, "/artifact/experiments/results")
     # print(final_bf_summary)
+
+    print("torch")
+    csv_paths = [
+        "/artifact/experiments/results/final_torch.csv",
+    ]
+    df = merge_csvs(*csv_paths)
+    gen_table4(
+        df,  
+        "/artifact/data/torch_nnsmith.json",
+        "/artifact/data/torch_neuri.json",
+        type="torch")
+    print("tf")
+    csv_paths = [
+        "/artifact/experiments/results/final_tf.csv",
+    ]
+    df = merge_csvs(*csv_paths, save_path="/artifact/experiments/results/merged_tf_v3.csv")
+    gen_table4(
+        df,
+        "/artifact/data/tf_nnsmith.json",
+        "/artifact/data/tf_neuri.json",
+        type="tf")
 
     # print("torch")
     # df = merge_csvs(*csv_paths)

@@ -297,6 +297,9 @@ def main(cfg) :
         api_names = json.load(f)
     api_names = load_api_names_from_data(cfg["mgen"]["record_path"], cfg["mgen"]["pass_rate"])
     api_names = list(set(api_names))
+    with open("/artifact/data/tf_supported.json", "w") as f :
+        json.dump(api_names, f)
+    print(len(api_names))
     # completed = exclude_intestable()
     # print(completed)
     # for name in completed :
@@ -304,9 +307,9 @@ def main(cfg) :
     #         api_names.remove(name)
     # print(api_names)          
     # api_names = load_api_names_from_json("/artifact/data/torch_overall_apis.json")
-    api_names = api_names[:400]
-    print(f"Test {len(api_names)} apis in total", sep=" ")
-    parallel_eval(api_names, BASELINES, cfg, task="fuzz")
+    # api_names = api_names[400:]
+    # print(f"Test {len(api_names)} apis in total", sep=" ")
+    # parallel_eval(api_names, BASELINES, cfg, task="fuzz")
     # parallel_eval(api_names, BASELINES, cfg, task="cov")
 if __name__ == "__main__":
     main()
