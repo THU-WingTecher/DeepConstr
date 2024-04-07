@@ -327,34 +327,34 @@ if __name__ == "__main__":
     processed_data = process_pickle_files(data)
     aggregated_df = aggregate_summarized_data(processed_data)
     final_bf_summary, completed_data = summarize_final_bf(aggregated_df)
-    print(final_bf_summary)
+    # print(final_bf_summary)
     save_data(final_bf_summary, completed_data, "/artifact/experiments/results")
 
-    merge_with_original_data(orig_df, aggregated_df)
-    csv_paths = [
-        "/artifact/experiments/results/merged_torch_v3.csv",
-    ]
-    # orig_df = merge_csvs(*csv_paths)
-    print("torch")
-    csv_paths = [
-        "/artifact/experiments/results/final_torch.csv",
-    ]
-    df = merge_csvs(*csv_paths)
-    gen_table4(
-        df,  
-        "/artifact/data/torch_nnsmith.json",
-        "/artifact/data/torch_neuri.json",
-        type="torch")
-    print("tf")
-    csv_paths = [
-        "/artifact/experiments/results/final_tf.csv",
-    ]
-    df = merge_csvs(*csv_paths, save_path="/artifact/experiments/results/merged_tf_v3.csv")
-    gen_table4(
-        df,
-        "/artifact/data/tf_nnsmith.json",
-        "/artifact/data/tf_neuri.json",
-        type="tf")
+    # merge_with_original_data(orig_df, aggregated_df)
+    # csv_paths = [
+    #     "/artifact/experiments/results/merged_torch_v3.csv",
+    # ]
+    # # orig_df = merge_csvs(*csv_paths)
+    # print("torch")
+    # csv_paths = [
+    #     "/artifact/experiments/results/final_torch.csv",
+    # ]
+    # df = merge_csvs(*csv_paths)
+    # gen_table4(
+    #     df,  
+    #     "/artifact/data/torch_nnsmith.json",
+    #     "/artifact/data/torch_neuri.json",
+    #     type="torch")
+    # print("tf")
+    # csv_paths = [
+    #     "/artifact/experiments/results/final_tf.csv",
+    # ]
+    # df = merge_csvs(*csv_paths, save_path="/artifact/experiments/results/merged_tf_v3.csv")
+    # gen_table4(
+    #     df,
+    #     "/artifact/data/tf_nnsmith.json",
+    #     "/artifact/data/tf_neuri.json",
+    #     type="tf")
 
     # print("torch")
     # df = merge_csvs(*csv_paths)
