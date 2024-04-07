@@ -20,7 +20,7 @@ def parse_directory_name(dirname):
     parts = dirname.split('-')
     if len(parts) >= 3:
         column = parts[1]  # Column name (e.g., 'neuri')
-        api_name = parts[-1].replace(folder_suffix)  # API name (e.g., 'torch.acos')
+        api_name = parts[-1].replace(folder_suffix, "")  # API name (e.g., 'torch.acos')
         return column, api_name
     else:
         return None, None
@@ -80,8 +80,8 @@ def traverse_and_classify(root_dir, api_data):
                 if column and api_name:
                     if api_name not in api_data:
                         api_data[api_name] = {}
+                    assert api_data[api_name].get(column) is None, f"the data of {api_name}-{column} is duplicated"
                     api_data[api_name][column] = os.path.join(root, dirname, 'coverage', 'merged_cov.pkl')
-    return api_data
 
 def process_pickle_files(api_coverage_data):
     """
@@ -180,24 +180,18 @@ def summarize_final_bf(aggregated_df):
     completed_data = []
 
     cnt = 0
-    # Extracting and reshaping the final_bf values
-    # print(aggregated_df.head())
     final_bf_summary = aggregated_df.pivot_table(index='API', columns='Column', values='Final BF', aggfunc='max')
     model_cnt = aggregated_df.pivot_table(index='API', columns='Column', values='Model Count', aggfunc='max')
-
-    # Formatting the table to mark the largest value in each row with an asterisk
+    model_cnt.add_suffix('_cnt')
     for idx in range(final_bf_summary.shape[0]):
-        # max_value = final_bf_summary.iloc[idx].max()
-        # print(final_bf_summary.iloc[idx])
         max_column = final_bf_summary.iloc[idx].idxmax()
         if max_column == 'constrinf' :
             completed_data.append(final_bf_summary.iloc[idx]._name.replace(folder_suffix, ''))
             cnt+=1
-        # final_bf_summary.loc[idx] = final_bf_summary.iloc[idx].apply(lambda x: f"*{x}" if x == max_value else x)
 
     all_data = final_bf_summary.shape[0]
     revise_complete_data("/artifact/experiments/results/completed.json", completed_data)
-    print("Total APIs with constrinf as the largest final BF: ", cnt)
+    print("Total APIs with constrinf as the largest final BF: ", cnt, "from", all_data)
     print(f"Increase ratio of constrinf as the largest final BF: {cnt/all_data}")
     return pd.concat([final_bf_summary, model_cnt], axis=1), completed_data 
 
@@ -254,42 +248,6 @@ def check_record(api_names, record_dir) :
             print(f"{path} is not exist")
     return todo
             
-pt_data_paths = [
-    "/artifact/experiments/results/merged_torch_v2.csv",
-]
-pt_neuri_data_path = "/artifact/data/torch_overall_apis.json"
-pt_nnsmith_data_path = "/artifact/data/torch_nnsmith.json"
-tf_data_paths = [
-    "/artifact/experiments/results/merged_tf_v2.csv"
-]
-tf_neuri_data_path = "/artifact/data/tf_overall_apis.json"
-tf_nnsmith_data_path = "/artifact/data/tf_nnsmith.json"
-
-def exclude_intestable() :
-    neuri_pt = check_left_api(
-        pt_neuri_data_path,
-        pt_data_paths
-    )
-
-    neuri_pt_rec = check_record(neuri_pt, "/artifact/data/records")
-    neuri_tf = check_left_api(
-        tf_neuri_data_path,
-        tf_data_paths
-    )
-    neuri_tf_rec = check_record(neuri_tf, "/artifact/data/records")
-
-    nnsmith_pt = check_left_api(
-        pt_nnsmith_data_path,
-        pt_data_paths
-    )
-
-    nnsmith_pt_rec = check_record(nnsmith_pt, "/artifact/data/records")
-    nnsmith_tf = check_left_api(
-        tf_nnsmith_data_path,
-        tf_data_paths
-    )
-    nnsmith_tf_rec = check_record(nnsmith_tf, "/artifact/data/records")
-    return list(set(neuri_pt_rec + neuri_tf_rec + nnsmith_pt_rec + nnsmith_tf_rec))
 
 def gen_table4(df, nnsmith_path, neuri_path, type="torch") :
 
@@ -350,7 +308,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-f", "--folders", type=str, nargs="+", help="bug report folder"
     )
-    parser.add_argument("--tags", type=str, nargs="+", help="tags")
+    # parser.add_argument("--tags", type=str, nargs="+", help="tags")
     # parser.add_argument(
     #     "-n", "--name", type=str, help="file_name"
     # )
@@ -361,16 +319,18 @@ if __name__ == "__main__":
     # parser.add_argument("--pdf", action="store_true", help="use pdf as well")
     # parser.add_argument("--minfac", type=float, default=0.85, help="min factor")
     # parser.add_argument("--maxfac", type=float, default=1.02, help="max factor")
+    args = parser.parse_args()
     data = {}
     for folder in args.folders:
-        api_coverage_data = traverse_and_classify(root_dir)
-        processed_data = process_pickle_files(api_coverage_data, data)
-        aggregated_df = aggregate_summarized_data(processed_data)
-        merge_with_original_data(orig_df, aggregated_df)
-        final_bf_summary, completed_data = summarize_final_bf(aggregated_df)
-        save_data(final_bf_summary, completed_data, "/artifact/experiments/results")
-        print(final_bf_summary)
+        traverse_and_classify(folder, data)
 
+    processed_data = process_pickle_files(data)
+    aggregated_df = aggregate_summarized_data(processed_data)
+    final_bf_summary, completed_data = summarize_final_bf(aggregated_df)
+    print(final_bf_summary)
+    save_data(final_bf_summary, completed_data, "/artifact/experiments/results")
+
+    merge_with_original_data(orig_df, aggregated_df)
     csv_paths = [
         "/artifact/experiments/results/merged_torch_v3.csv",
     ]
@@ -415,3 +375,40 @@ if __name__ == "__main__":
     #     "/artifact/data/tf_nnsmith.json",
     #     "/artifact/data/tf_overall_apis.json",
     #     type="torch")
+
+# pt_data_paths = [
+#     "/artifact/experiments/results/merged_torch_v2.csv",
+# ]
+# pt_neuri_data_path = "/artifact/data/torch_overall_apis.json"
+# pt_nnsmith_data_path = "/artifact/data/torch_nnsmith.json"
+# tf_data_paths = [
+#     "/artifact/experiments/results/merged_tf_v2.csv"
+# ]
+# tf_neuri_data_path = "/artifact/data/tf_overall_apis.json"
+# tf_nnsmith_data_path = "/artifact/data/tf_nnsmith.json"
+
+# def exclude_intestable() :
+#     neuri_pt = check_left_api(
+#         pt_neuri_data_path,
+#         pt_data_paths
+#     )
+
+#     neuri_pt_rec = check_record(neuri_pt, "/artifact/data/records")
+#     neuri_tf = check_left_api(
+#         tf_neuri_data_path,
+#         tf_data_paths
+#     )
+#     neuri_tf_rec = check_record(neuri_tf, "/artifact/data/records")
+
+#     nnsmith_pt = check_left_api(
+#         pt_nnsmith_data_path,
+#         pt_data_paths
+#     )
+
+#     nnsmith_pt_rec = check_record(nnsmith_pt, "/artifact/data/records")
+#     nnsmith_tf = check_left_api(
+#         tf_nnsmith_data_path,
+#         tf_data_paths
+#     )
+#     nnsmith_tf_rec = check_record(nnsmith_tf, "/artifact/data/records")
+#     return list(set(neuri_pt_rec + neuri_tf_rec + nnsmith_pt_rec + nnsmith_tf_rec))
