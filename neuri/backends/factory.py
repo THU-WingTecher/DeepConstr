@@ -93,8 +93,9 @@ class BackendFactory(ABC):
             )
 
         try:  # execution
-            copied = deepcopy(input)
-            output = executable(copied)
+            # copied = deepcopy(input)
+            # output = executable(copied)
+            output = executable(input)
             return output
         except InternalError as e:
             raise e
