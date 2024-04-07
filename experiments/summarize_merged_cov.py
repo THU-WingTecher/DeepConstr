@@ -6,6 +6,7 @@ import datetime
 
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
+folder_suffix = ".models"
 def parse_directory_name(dirname):
     """
     Parses the directory name to classify information into columns and API names.
@@ -19,7 +20,7 @@ def parse_directory_name(dirname):
     parts = dirname.split('-')
     if len(parts) >= 3:
         column = parts[1]  # Column name (e.g., 'neuri')
-        api_name = parts[-1]  # API name (e.g., 'torch.acos')
+        api_name = parts[-1].replace(folder_suffix)  # API name (e.g., 'torch.acos')
         return column, api_name
     else:
         return None, None
@@ -62,7 +63,7 @@ def cov_summerize(data, tlimit=None, gen_time=None):
 
     return branch_by_time, final_bf
 
-def traverse_and_classify(root_dir):
+def traverse_and_classify(root_dir, api_data):
     """
     Traverses the root directory to identify relevant subdirectories and classifies the information.
 
@@ -72,10 +73,9 @@ def traverse_and_classify(root_dir):
     Returns:
     - dict: A dictionary with keys as API names and values as dicts with columns and paths.
     """
-    api_data = {}
     for root, dirs, files in os.walk(root_dir):
         for dirname in dirs:
-            if dirname.endswith('.models'):
+            if dirname.endswith(folder_suffix):
                 column, api_name = parse_directory_name(dirname)
                 if column and api_name:
                     if api_name not in api_data:
@@ -191,7 +191,7 @@ def summarize_final_bf(aggregated_df):
         # print(final_bf_summary.iloc[idx])
         max_column = final_bf_summary.iloc[idx].idxmax()
         if max_column == 'constrinf' :
-            completed_data.append(final_bf_summary.iloc[idx]._name.replace(".models", ''))
+            completed_data.append(final_bf_summary.iloc[idx]._name.replace(folder_suffix, ''))
             cnt+=1
         # final_bf_summary.loc[idx] = final_bf_summary.iloc[idx].apply(lambda x: f"*{x}" if x == max_value else x)
 
@@ -239,7 +239,7 @@ def check_left_api(api_data_path, saved_data_paths) :
                     pass
                 else :
                     columns = line.split(",")
-                    api_name = columns[0].replace(".models","")
+                    api_name = columns[0].replace(folder_suffix,"")
                     if api_name in data :
                         data.remove(api_name)
     
@@ -295,20 +295,20 @@ def gen_table4(df, nnsmith_path, neuri_path, type="torch") :
 
     with open(nnsmith_path, 'r') as file:
         apis = json.load(file)
-    nnsmith_columns = [name + ".models" for name in apis]
+    nnsmith_columns = [name + folder_suffix for name in apis]
     with open(neuri_path, 'r') as file:
         apis = json.load(file)
-    neuri_columns = [name + ".models" for name in apis]
+    neuri_columns = [name + folder_suffix for name in apis]
     nnsmith_none, neuri_none = [], []
     improvements = []
     print(len(nnsmith_columns), len(list(set(nnsmith_columns + neuri_columns))))
     for col in nnsmith_columns:
         if col not in df.API.values:
-            nnsmith_none.append(col.replace(".models", ''))
+            nnsmith_none.append(col.replace(folder_suffix, ''))
             df.loc[len(df)] = [col, 0, 0, 0, 0, 0, 0, 0, 0]  # Or another default value as appropriate
     # for col in neuri_columns:
     #     if col not in df.API.values:
-    #         neuri_none.append(col.replace(".models", ''))
+    #         neuri_none.append(col.replace(folder_suffix, ''))
     #         df.loc[len(df)] = [col, 0, 0, 0, 0, 0, 0, 0, 0]  # Or another default value as appropriate
     for tool in ["constrinf"] :
         for baseline in ["neuri", "symbolic", "constrinf_2"] :
@@ -343,23 +343,38 @@ def merge_with_original_data(df_original, aggregated_df) :
     #         if changed_values.at[row, col]:
     #             print(f"Changed value at row {df_original.loc[row,'API']}, column '{col}': {df_original_copy.at[row, col]} -> {df_original.at[row, col]}")
 if __name__ == "__main__":
-    import sys
-    if len(sys.argv) > 1:
-        root_dir = sys.argv[1]
-    else:
-        root_dir = '/artifact/gen_tf/'
+    import argparse
+    import pickle
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-f", "--folders", type=str, nargs="+", help="bug report folder"
+    )
+    parser.add_argument("--tags", type=str, nargs="+", help="tags")
+    # parser.add_argument(
+    #     "-n", "--name", type=str, help="file_name"
+    # )
+    # parser.add_argument(
+    #     "-o", "--output", type=str, default="results", help="results folder"
+    # )
+    # parser.add_argument("-t", "--tlimit", type=int, default=4 * 3600, help="time limit")
+    # parser.add_argument("--pdf", action="store_true", help="use pdf as well")
+    # parser.add_argument("--minfac", type=float, default=0.85, help="min factor")
+    # parser.add_argument("--maxfac", type=float, default=1.02, help="max factor")
+    data = {}
+    for folder in args.folders:
+        api_coverage_data = traverse_and_classify(root_dir)
+        processed_data = process_pickle_files(api_coverage_data, data)
+        aggregated_df = aggregate_summarized_data(processed_data)
+        merge_with_original_data(orig_df, aggregated_df)
+        final_bf_summary, completed_data = summarize_final_bf(aggregated_df)
+        save_data(final_bf_summary, completed_data, "/artifact/experiments/results")
+        print(final_bf_summary)
+
     csv_paths = [
         "/artifact/experiments/results/merged_torch_v3.csv",
     ]
     # orig_df = merge_csvs(*csv_paths)
-    # api_coverage_data = traverse_and_classify(root_dir)
-    # processed_data = process_pickle_files(api_coverage_data)
-    # aggregated_df = aggregate_summarized_data(processed_data)
-    # merge_with_original_data(orig_df, aggregated_df)
-    # final_bf_summary, completed_data = summarize_final_bf(aggregated_df)
-    # save_data(final_bf_summary, completed_data, "/artifact/experiments/results")
-    # print(final_bf_summary)
-
     print("torch")
     csv_paths = [
         "/artifact/experiments/results/final_torch.csv",

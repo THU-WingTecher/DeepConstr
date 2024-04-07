@@ -6,7 +6,6 @@ import tempfile
 from copy import deepcopy
 from pathlib import Path
 
-
 def analyze_lcov(lcov_data):
     file_covs = lcov_data.split("end_of_record\n")[:-1]
     ret = {

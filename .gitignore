@@ -13,6 +13,7 @@ debug/
 gen*
 exp/
 data/debug/
+experiments/data
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
