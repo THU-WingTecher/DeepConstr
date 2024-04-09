@@ -518,6 +518,11 @@ class AbsTensor:
         if len(self.shape) != self.rank:
             self.rank = len(self.shape)
 
+    def concrete_str(self, symb_2_value: Dict[str, Any]) -> str:
+        # AbsTensor<3>([s0=1, s1=2, s2=3], float32)
+        shapes = [f"{s}={symb_2_value[s]}" for s in self.shape]
+        return f"AbsTensor<{self.rank}>({', '.join(shapes)}, {self.dtype})"
+    
     def concretize(
         self,
         symb_2_value: Dict[str, Any],
