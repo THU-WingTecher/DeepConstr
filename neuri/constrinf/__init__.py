@@ -23,7 +23,37 @@ def is_special_apis(record) :
 
     return False 
 
-def _process_record(file_path: str, test_pool: list = []) -> dict:
+def del_related_rule(record, args_idx_to_filter) :
+    names = [record['args'].get('name', [])[idx] for idx in args_idx_to_filter]
+    for rule in record.get("rules", []):
+        for name in names :
+            if name in rule[0]["txt"] :
+                record['rules'].remove(rule)
+
+    for rule in record.get("rules", []):
+        for name in names :
+            if name in rule[0]["target"]["choosen_dtype"] :
+                #delete the key, item pair 
+                del rule[0]["target"]["choosen_dtype"][name]
+def filter_record(record, filter) :
+    args_idx_to_filter = []
+    for key in filter : 
+        if key == "args" : 
+            names = record[key].get('name', [])
+            for to_filter in filter.get(key, []) :
+                if names and to_filter in names: 
+                    args_idx_to_filter.append(names.index(to_filter))
+            del_related_rule(record, args_idx_to_filter)
+            for idx in sorted(args_idx_to_filter, reverse=True) :
+                for ele in record[key] :
+                    if idx < len(record[key][ele]) :
+                        record[key][ele].pop(idx)
+        else :
+            pass #other filter rules 
+    
+    return record
+
+def _process_record(file_path: str, test_pool: list = [], filter : Dict[str, List[str]] = {"args" : ["out"]}) -> dict:
     """
     Process a single file and return the configuration as a record dictionary.
     """
@@ -32,6 +62,7 @@ def _process_record(file_path: str, test_pool: list = []) -> dict:
     record = load_yaml(file_path)
     if test_pool and record["name"].split("-")[0] not in test_pool:
         return None
+    record = filter_record(record, filter)
     record['args']['dtype_obj'] = [materalize_dtypes(dtype) for dtype in record['args']['dtype']]
     record['args']['value'] = [None] * len(record['args']["name"]) # Placeholder for the input values
     record['outputs'] = {'value': []} # Placeholder for the output values

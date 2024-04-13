@@ -21,8 +21,7 @@ python experiments/evaluate_apis.py exp.save_dir=tf_gen_constr mgen.record_path=
 """
 
 """ FUZZING 
-python neuri/cli/fuzz.py fuzz.time=24h mgen.record_path=data/records/torch fuzz.root=bugs/torchcomp-constrinf-fuzz-0221 filter.type=\[\'nan\',\'dup\',\'inf\'\] backend.type=torchcomp model.type=torch fuzz.save_test=bugs/torchcomp-constrinf-fuzz-0221_record debug.viz=true hydra.verbose=fuzz fuzz.resume=false mgen.method=constrinf mgen.max_nodes=3 mgen.pass_rate=0.6
-
+q
 ./fuzz.sh 5 constrinf          torch torchcomp 4h
 """
 """FUZZING NEURI

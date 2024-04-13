@@ -599,7 +599,7 @@ class TrainingLoop:
             if n_func >= trained_func_index :
                 if record_path is None :
                     break
-                op_record = _process_record(record_path)
+                op_record = _process_record(record_path, filter={})
                 TRAIN_LOG.info(f"Start infering {op_record['name']}({n_func})")
                 if self.is_trainable(op_record) :
                     try :
