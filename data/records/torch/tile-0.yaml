@@ -25,7 +25,7 @@ rules:
         allocate memory: you tried to allocate 307453132546560 bytes. Error code 12
         (Cannot allocate memory)'
       package: torch
-    txt: all(dims[i] <= 100 for i in range(len(dims)))
+    txt: all(dims[i] <= 10 for i in range(len(dims)))
   - f1_score: 64.92650785605677
     overall_score: 49.92307692307692
     precision: 93.84615384615384

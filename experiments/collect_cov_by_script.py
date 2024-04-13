@@ -130,7 +130,7 @@ if __name__ == "__main__":
     )
     parser.add_argument("--batch_size", type=int, default=1000, help="")
     parser.add_argument(
-        "--parallel", type=int, default=8, help="Number of process for execution."
+        "--parallel", type=int, default=1, help="Number of process for execution."
     )
 
     args = parser.parse_args()

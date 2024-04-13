@@ -14,10 +14,10 @@ def onnx2external_data_dir(onnx_file):
 # save directory : torchcomp-fuzz-0221
 """ API TEST
 python experiments/evaluate_apis.py \
-exp.save_dir=gen_torch4 mgen.record_path=$(pwd)/data/records/torch/ mgen.pass_rate=0.05 model.type=torch backend.type=torchjit fuzz.time=10m exp.parallel=15 mgen.noise=0.8
+exp.save_dir=pt_gen_constr mgen.record_path=$(pwd)/data/records/torch/ mgen.pass_rate=0.05 model.type=torch backend.type=torchjit fuzz.time=15m exp.parallel=32 mgen.noise=0.8 exp.baselines=['constrinf']
 """
 """ API TEST
-python experiments/evaluate_apis.py exp.save_dir=gen_tf3 mgen.record_path=/artifact/data/records/tf/ mgen.pass_rate=0.05 model.type=tensorflow backend.type=xla fuzz.time=10m exp.parallel=5 mgen.noise=0.8
+python experiments/evaluate_apis.py exp.save_dir=tf_gen_constr mgen.record_path=/artifact/data/records/tf/ mgen.pass_rate=0.05 model.type=tensorflow backend.type=xla fuzz.time=15m exp.parallel=32 mgen.noise=0.8
 """
 
 """ FUZZING 

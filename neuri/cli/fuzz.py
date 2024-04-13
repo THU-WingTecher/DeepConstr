@@ -293,7 +293,7 @@ class FuzzingLoop:
                 model.attach_viz(ir)
             model.refine_weights()  # DType enum error: either random generated or gradient-based.
             oracle = model.make_oracle()
-            # FUZZ_LOG.info(f"IR: {ir.pretty()}")
+            FUZZ_LOG.info(f"IR: {ir.pretty()}")
         except Exception as e:
             self.status.rej_inst(ir)
             ir.debug()

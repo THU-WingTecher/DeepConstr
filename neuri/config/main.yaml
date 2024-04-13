@@ -111,6 +111,7 @@ exp: #for experiments, only using by
   api_list: null
   parallel: 1
   save_dir: "exp"
+  baselines: [] #["symbolic-cinit", "neuri", "constrinf", "constrinf_2"]
 
 cmp:
   equal_nan: true # skip regarding it as a bug if with fp exception values.

@@ -62,7 +62,7 @@ class BaseGen:
         max_elem_per_tensor=2**16,
         dtype_choices=None,
     ):
-        assert len(opset) > 0, "opset must not be empty"
+        # assert len(opset) > 0, "opset must not be empty"
         if seed is not None:
             set_seed(seed)
 
@@ -93,8 +93,9 @@ class BaseGen:
             else DTYPE_GEN_ALL
         )
 
-        self.dtype_choices = list(dtype_top.intersection(self.dtype_choices))
-        # assert len(self.dtype_choices) > 0, "dtype_choices must not be empty"
+        if dtype_top :
+            self.dtype_choices = list(dtype_top.intersection(self.dtype_choices))
+        assert len(self.dtype_choices) > 0, "dtype_choices must not be empty"
 
     def random_rank(self):
         return random.choice(rank_all())
@@ -1025,8 +1026,8 @@ class Neuri(NeuriR):
         if dtypes_in_ir.isdisjoint(set(DTYPE_GEN_ALL)):
             self.symbolic_impossible += 1
             return False
-
-        return BaseGen.try_insert(self)
+        return False
+        # return BaseGen.try_insert(self)
 
     def try_autoinf_insert_forward(self, op_bound=64) -> bool:
         htype2vars = {}  # available types.
@@ -1170,6 +1171,10 @@ class ConstrInf(BaseGen):
         return random.choice(self.record_finder)
     
     def try_insert(self):
+        ### for experiment
+        return self.try_autoinf_insert_forward()
+        ### for experiment
+
         if not self.is_inited() : 
             return self.try_autoinf_insert_forward() 
         else :
@@ -1179,7 +1184,7 @@ class ConstrInf(BaseGen):
             else : 
                 if not self.is_inited() : 
                     self.insert_place_holder()
-                    return BaseGen.try_insert(self)
+                return BaseGen.try_insert(self)
     
     def is_inited(self) : 
         return len(self.ir.vars) > 0
@@ -1296,8 +1301,6 @@ class ConstrInf(BaseGen):
                 self.ir.remove_unused(temp_var)
                 self.placeholders.remove(temp_var.retval())
             
-            # self.save_err_msg(traceback.format_exc())
-
         return False
     
     def save_err_msg(self, str_msg : str) :
