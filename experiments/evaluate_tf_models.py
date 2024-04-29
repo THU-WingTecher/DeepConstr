@@ -8,8 +8,8 @@ import os
 import pickle
 import subprocess
 import sys
-from neuri.autoinf.inference.const import ROOT_DIR
-from neuri.util import mkdir
+from nnsmith.autoinf.inference.const import ROOT_DIR
+from nnsmith.util import mkdir
 
 results = dict()
 WORKSPACE = "temp_cov"

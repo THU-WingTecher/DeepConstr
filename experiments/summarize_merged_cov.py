@@ -3,6 +3,7 @@ import pickle
 import pandas as pd
 import json
 import datetime
+import numpy as np
 
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
@@ -83,6 +84,19 @@ def traverse_and_classify(root_dir, api_data):
                     assert api_data[api_name].get(column) is None, f"the data of {api_name}-{column} is duplicated"
                     api_data[api_name][column] = os.path.join(root, dirname, 'coverage', 'merged_cov.pkl')
 
+def get_model_cnt(pickle_path) : 
+    cnt = 0
+    dir_path = os.path.dirname(os.path.dirname(pickle_path)) #../*.models/coverage/merged_cov.pkl
+    dir_path = dir_path.replace(folder_suffix, "")
+    csv_path = os.path.join(dir_path, "status.csv")
+    with open(csv_path, 'r') as file:
+        data = file.readlines() 
+    for row in data :
+        cols = row.split(",")
+        if cols and cols[1] == "ok" :
+            cnt +=1
+    return cnt
+
 def process_pickle_files(api_coverage_data):
     """
     Processes each relevant pickle file using the cov_summerize function.
@@ -98,8 +112,7 @@ def process_pickle_files(api_coverage_data):
             api_summary = {}
             for column, pickle_path in columns.items():
                 # Load the pickle file
-                dir_path = os.path.dirname(os.path.dirname(pickle_path)) #../*.models/coverage/merged_cov.pkl
-                model_n = len(os.listdir(dir_path)) - 1
+
                 try :
                     with open(pickle_path, 'rb') as file:
                         data = pickle.load(file)
@@ -108,7 +121,7 @@ def process_pickle_files(api_coverage_data):
                         api_summary[column] = {
                             'branch_by_time': branch_by_time,
                             'final_bf': max([bf for _,_,bf in branch_by_time]),
-                            'model_n': model_n
+                            'model_n': get_model_cnt(pickle_path)
                         }
                 except FileNotFoundError :
                     api_summary[column] = {
@@ -178,128 +191,23 @@ def summarize_final_bf(aggregated_df):
     - str: A string representation of the summarized table.
     """
     completed_data = []
-
     cnt = 0
+    # print(aggregated_df.head())
     final_bf_summary = aggregated_df.pivot_table(index='API', columns='Column', values='Final BF', aggfunc='max')
     model_cnt = aggregated_df.pivot_table(index='API', columns='Column', values='Model Count', aggfunc='max')
-    model_cnt.add_suffix('_cnt')
+    model_cnt = model_cnt.add_suffix('_cnt')
     for idx in range(final_bf_summary.shape[0]):
         max_column = final_bf_summary.iloc[idx].idxmax()
-        if max_column == 'constrinf' :
+        if max_column == 'deepconstr' :
             completed_data.append(final_bf_summary.iloc[idx]._name.replace(folder_suffix, ''))
             cnt+=1
 
     all_data = final_bf_summary.shape[0]
     revise_complete_data("/artifact/experiments/results/completed.json", completed_data)
-    print("Total APIs with constrinf as the largest final BF: ", cnt, "from", all_data)
-    print(f"Increase ratio of constrinf as the largest final BF: {cnt/all_data}")
+    print("Total APIs with deepconstr as the largest final BF: ", cnt, "from", all_data)
+    print(f"Increase ratio of deepconstr as the largest final BF: {cnt/all_data}")
     return pd.concat([final_bf_summary, model_cnt], axis=1), completed_data 
 
-def save_data(final_bf, completed_data, save_dir="/artifact/experiments/results"):
-    save_path = os.path.join(save_dir, datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + ".csv")
-    complete_data_path = os.path.join(save_dir, "completed.json")
-    final_bf.to_csv(save_path)
-    revise_complete_data(complete_data_path, completed_data)
-
-def merge_csvs(*csv_paths, save_path=None):
-    dfs = []
-    for arg in csv_paths : 
-        dfs.append(pd.read_csv(arg))
-    
-    merged_df = pd.concat(dfs)
-    # filtered_df = merged_df[~(merged_df == 0).any(axis=1)]
-
-    if 'constrinf' in merged_df.columns:
-        filtered_df = merged_df.sort_values('constrinf', ascending=False).drop_duplicates(subset='API').sort_index()
-    else:
-        # If 'constrinf' column does not exist, just remove duplicates based on all columns
-        filtered_df = merged_df.drop_duplicates()
-
-    sorted_columns_df = filtered_df.sort_values(by="API")
-    filtered_df.reset_index(drop=True, inplace=True)
-    filtered_df = filtered_df.sort_values(by="API")
-    if save_path is not None :
-        filtered_df.to_csv(save_path, index=False)
-    return filtered_df
-
-def check_left_api(api_data_path, saved_data_paths) :
-    with open(api_data_path, "r") as file:
-        data = json.load(file)
-    data = list(set(data))
-    for saved_data_path in saved_data_paths :
-        with open(saved_data_path, "r") as f:
-            for i, line in enumerate(f.readlines()) :
-                if i==0 :
-                    pass
-                else :
-                    columns = line.split(",")
-                    api_name = columns[0].replace(folder_suffix,"")
-                    if api_name in data :
-                        data.remove(api_name)
-    
-    return data
-
-def check_record(api_names, record_dir) :
-    todo = []
-    for name in api_names :
-        path = os.path.join(record_dir, name.replace(".","/")+"-0.yaml")
-        if not os.path.exists(path) :
-            todo.append(name)
-            print(f"{path} is not exist")
-    return todo
-            
-
-def gen_table4(df, nnsmith_path, neuri_path, type="torch") :
-
-    with open(nnsmith_path, 'r') as file:
-        apis = json.load(file)
-    nnsmith_columns = [name + folder_suffix for name in apis]
-    with open(neuri_path, 'r') as file:
-        apis = json.load(file)
-    neuri_columns = [name + folder_suffix for name in apis]
-    nnsmith_none, neuri_none = [], []
-    improvements = []
-    print(len(nnsmith_columns), len(list(set(nnsmith_columns + neuri_columns))))
-    for col in nnsmith_columns:
-        if col not in df.API.values:
-            nnsmith_none.append(col.replace(folder_suffix, ''))
-            df.loc[len(df)] = [col, 0, 0, 0, 0, 0, 0, 0, 0]  # Or another default value as appropriate
-    # for col in neuri_columns:
-    #     if col not in df.API.values:
-    #         neuri_none.append(col.replace(folder_suffix, ''))
-    #         df.loc[len(df)] = [col, 0, 0, 0, 0, 0, 0, 0, 0]  # Or another default value as appropriate
-    for tool in ["constrinf"] :
-        for baseline in ["neuri", "symbolic", "constrinf_2"] :
-            columns_to_compare = [baseline] if all(col in df.columns for col in [baseline]) else []
-            if baseline == "symbolic":
-                total_rows = len(nnsmith_columns)
-                added = len(nnsmith_none)
-                extracted_columns_df_with_models = df[df['API'].isin(nnsmith_columns)]
-            else :
-                total_rows = df.shape[0]
-                added = len(neuri_none)
-                extracted_columns_df_with_models = df[df['API'].isin(neuri_columns)]
-            rows_where_constrinf_is_highest = extracted_columns_df_with_models.apply(lambda row: row[tool] > row[columns_to_compare], axis=1).sum()
-            print("rows_where_constrinf_is_highest", tool, "vs", baseline, ":", "highest", rows_where_constrinf_is_highest, "intersected", total_rows - added)
-    for col in df.columns:
-        if col == "API":
-            continue
-        print(col)
-        print(df[df[col] != 0][col].mean())
-
-def merge_with_original_data(df_original, aggregated_df) : 
-    final_bf_summary = aggregated_df.pivot_table(index='API', columns='Column', values='Final BF', aggfunc='max')
-    model_cnt = aggregated_df.pivot_table(index='API', columns='Column', values='Model Count', aggfunc='max')
-    new_data = pd.concat([final_bf_summary, model_cnt], axis=1)
-    print(new_data)
-    # df_original_copy = df_original.copy()
-    # df_original.update(new_data)
-    # # Identifying and printing the changed values
-    # changed_values = df_original != df_original_copy
-    # for col in changed_values.columns:
-    #     for row in changed_values.index:
-    #         if changed_values.at[row, col]:
-    #             print(f"Changed value at row {df_original.loc[row,'API']}, column '{col}': {df_original_copy.at[row, col]} -> {df_original.at[row, col]}")
 if __name__ == "__main__":
     import argparse
     import pickle
@@ -308,25 +216,19 @@ if __name__ == "__main__":
     parser.add_argument(
         "-f", "--folders", type=str, nargs="+", help="bug report folder"
     )
-    # parser.add_argument("--tags", type=str, nargs="+", help="tags")
-    # parser.add_argument(
-    #     "-n", "--name", type=str, help="file_name"
-    # )
-    # parser.add_argument(
-    #     "-o", "--output", type=str, default="results", help="results folder"
-    # )
-    # parser.add_argument("-t", "--tlimit", type=int, default=4 * 3600, help="time limit")
-    # parser.add_argument("--pdf", action="store_true", help="use pdf as well")
-    # parser.add_argument("--minfac", type=float, default=0.85, help="min factor")
-    # parser.add_argument("--maxfac", type=float, default=1.02, help="max factor")
+    parser.add_argument(
+        "-o", "--output", type=str, help="save name"
+    )
     args = parser.parse_args()
+
     data = {}
     for folder in args.folders:
         traverse_and_classify(folder, data)
-
     processed_data = process_pickle_files(data)
     aggregated_df = aggregate_summarized_data(processed_data)
     final_bf_summary, completed_data = summarize_final_bf(aggregated_df)
+    final_bf_summary.reset_index().to_csv(os.path.join("/artifact/results/", args.output+".csv"), index=False)
+
     # print(final_bf_summary)
     save_data(final_bf_summary, completed_data, "/artifact/experiments/results")
 
@@ -412,3 +314,4 @@ if __name__ == "__main__":
 #     )
 #     nnsmith_tf_rec = check_record(nnsmith_tf, "/artifact/data/records")
 #     return list(set(neuri_pt_rec + neuri_tf_rec + nnsmith_pt_rec + nnsmith_tf_rec))
+

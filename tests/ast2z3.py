@@ -3,10 +3,8 @@ from typing import *
 
 import hydra
 from omegaconf import DictConfig
-from neuri.constrinf import _process_record, gen_inst_with_records, make_record_finder
-from neuri.constrinf.ast2z3 import Ast2z3
-from neuri.constrinf.executor import Executor
-from neuri.materialize import Model
+from deepconstr.gen.record import gen_inst_with_records
+from deepconstr.grammar.ast2z3 import Ast2z3
 from tests.smt import test_smt
 
 def test_with_given_constraints(constrs, arg_names, dtypes) :
@@ -55,9 +53,8 @@ def test_whole_constraints(dir_path = None ) :
     
 @hydra.main(version_base=None, config_path="../neuri/config/", config_name="main")
 def main(cfg: DictConfig):
-    from neuri.constrinf.smt_funcs import load_z3_const
-    from neuri.abstract.dtype import AbsDType
-    from neuri.abstract.dtype import AbsTensor
+    from deepconstr.grammar import load_z3_const
+    from deepconstr.grammar.dtype import AbsDType, AbsTensor
     ## whole constraints testing ##
     # test_whole_constraints()
 

@@ -10,7 +10,6 @@ build/Cov_Trace_Analyzer
 *.tar.gz
 bugs/
 debug/
-gen*
 exp/
 data/debug/
 experiments/data
