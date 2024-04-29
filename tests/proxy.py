@@ -1,11 +1,8 @@
-
-
-
 import os
 from dotenv import load_dotenv
 
 def proxy_check(cfg) : 
-    from neuri.constrinf.inferencer import Inferencer
+    from deepconstr.train.inferencer import Inferencer
     inferencer = Inferencer(cfg['llm']['settings'])
     inferencer.change_to_gpt3()
     prompts = 'hello'

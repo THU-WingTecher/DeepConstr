@@ -1,4 +1,4 @@
-API,symbolic,symbolic_cnt,neuri,neuri_cnt,constrinf,constrinf_2,constrinf_cnt,constrinf_2_cnt,improvement_ratio_constrinf_vs_neuri,improvement_ratio_constrinf_vs_symbolic,improvement_ratio_constrinf_vs_constrinf_2
+API,symbolic,symbolic_cnt,neuri,neuri_cnt,deepconstr,deepconstr_2,deepconstr_cnt,deepconstr_2_cnt,improvement_ratio_deepconstr_vs_neuri,improvement_ratio_deepconstr_vs_symbolic,improvement_ratio_deepconstr_vs_deepconstr_2
 torch.Tensor.conj,,,1788.0,149.0,869.0,865.0,4131.0,3549.0,-0.5139821029082774,,0.004624277456647399
 torch.Tensor.__and__,,,1650.0,150.0,1034.0,1118.0,5689.0,167.0,-0.37333333333333335,,-0.07513416815742398
 torch.Tensor.pow_,,,2403.0,129.0,1735.0,1641.0,5730.0,7255.0,-0.27798585101955886,,0.05728214503351615

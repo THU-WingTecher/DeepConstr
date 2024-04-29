@@ -1,15 +1,15 @@
 import os
 import sys
 from typing import Any, Dict, List
-from neuri.autoinf import AutoInfOpBase
-from neuri.autoinf.instrument.op import OpInstance
-from neuri.abstract.dtype import AbsTensor, materalize_dtypes
-from neuri.logger import LOGGER
-from neuri.specloader.smt import gen_val
-from neuri.specloader.utils import load_yaml
+from nnsmith.autoinf import AutoInfOpBase
+from nnsmith.autoinf.instrument.op import OpInstance
+from nnsmith.abstract.dtype import AbsTensor, materalize_dtypes
+from nnsmith.logger import LOGGER
+from deepconstr.gen.solve import gen_val
+from nnsmith.specloader.utils import load_yaml
 
 def proxy_check(cfg) : 
-    from neuri.constrinf.inferencer import Inferencer
+    from nnsmith.deepconstr.inferencer import Inferencer
     inferencer = Inferencer(cfg['llm']['settings'])
     inferencer.change_to_gpt3()
     prompts = 'hello'
@@ -58,7 +58,7 @@ def convert_rule_to_executable(record) -> List["z3.Exr"] :
     return exec_rules
 
 def test_whole_rules(data_dir = None) : 
-    from neuri.constrinf import gen_inst_with_records
+    from nnsmith.deepconstr import gen_inst_with_records
     if data_dir == None : 
         dir_path = os.path.join(os.getcwd(), 'data/constraints')
 
@@ -140,13 +140,13 @@ def gen_op_inst(record : Dict[str, Any]) :
     opbase.execute()
 
 def gen_record_finder(path : str , pass_rate=0.8) :
-    from neuri.constrinf import make_record_finder 
+    from nnsmith.deepconstr import make_record_finder 
     record_finder = make_record_finder(path, pass_rate)
     return record_finder
 
 def test_insert_node(record_finder, model_type, backend_type) : 
-    from neuri.graph_gen import ConstrInf 
-    from neuri.materialize import Model
+    from nnsmith.graph_gen import ConstrInf 
+    from nnsmith.materialize import Model
     dump_ops = []
     ModelType = Model.init(
         model_type, backend_type

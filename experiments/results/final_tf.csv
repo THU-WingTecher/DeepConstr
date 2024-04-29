@@ -1,4 +1,4 @@
-API,constrinf,constrinf_cnt,constrinf_2,constrinf_2_cnt,neuri,neuri_cnt,improvement_ratio_constrinf_vs_neuri,improvement_ratio_constrinf_vs_constrinf_2,symbolic,symbolic_cnt,improvement_ratio_constrinf_vs_symbolic
+API,deepconstr,deepconstr_cnt,deepconstr_2,deepconstr_2_cnt,neuri,neuri_cnt,improvement_ratio_deepconstr_vs_neuri,improvement_ratio_deepconstr_vs_deepconstr_2,symbolic,symbolic_cnt,improvement_ratio_deepconstr_vs_symbolic
 tf.raw_ops.All,1074.0,1958.0,-8937.0,0.0,3776.0,146.0,-0.715572033898305,0.0,,,
 tf.raw_ops.Sum,1693.0,195.0,,,4905.0,266.0,-0.654841997961264,0.0,,,
 tf.raw_ops.Unpack,1679.0,4.0,,,2559.0,219.0,-0.3438843298163345,0.0,,,

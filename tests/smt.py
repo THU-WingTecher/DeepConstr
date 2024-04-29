@@ -1,11 +1,10 @@
 
 import hydra
 from omegaconf import DictConfig
-from neuri.abstract.dtype import AbsDType, AbsTensor
-from neuri.logger import SMT_LOG
-from neuri.specloader.smt import gen_noise, gen_val
-from neuri.specloader.smt import _gen_val
-
+from nnsmith.abstract.dtype import AbsDType, AbsTensor
+from nnsmith.logger import SMT_LOG
+from deepconstr.gen.noise import gen_noise
+from deepconstr.gen.solve import gen_val
 
 _all_dtypes = [
     AbsDType.int,

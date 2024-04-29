@@ -6,7 +6,7 @@ import multiprocessing as mp
 import os
 import subprocess
 import sys
-from neuri.util import mkdir
+from nnsmith.util import mkdir
 
 
 def batched(iterable, n=1):

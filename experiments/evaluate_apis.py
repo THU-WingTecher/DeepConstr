@@ -9,7 +9,7 @@ import threading
 import multiprocessing
 from experiments.evaluate_models import model_exec, batched
 from experiments.evaluate_tf_models import tf_model_exec, clear_gcda
-from neuri.logger import DTEST_LOG
+from nnsmith.logger import DTEST_LOG
 # Load the JSON file
 
 BASELINES = ["neuri"] 
@@ -206,16 +206,16 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov"):
                 print("Command executed successfully!")
 
     if config['model']['type'] == "tensorflow":
-        if baseline == "constrinf":
+        if baseline == "deepconstr":
             RECORD = config["mgen"]["record_path"]
-        elif baseline == "constrinf_2":
+        elif baseline == "deepconstr_2":
             RECORD = config["mgen"]["record_path"].replace("records", "only_acc")
         else:
             RECORD = os.path.join(os.getcwd(), "data", "tf_records")
     elif config['model']['type'] == "torch":
-        if baseline == "constrinf":
+        if baseline == "deepconstr":
             RECORD = config["mgen"]["record_path"]
-        elif baseline == "constrinf_2":
+        elif baseline == "deepconstr_2":
             RECORD = config["mgen"]["record_path"].replace("records", "only_acc")
         else:
             RECORD = os.path.join(os.getcwd(), "data", "torch_records")
@@ -321,7 +321,7 @@ def load_from_dirs(cfg) :
     return retrain_list, refuzz_list
 
 def load_api_names_from_data(record_path, pass_rate) : 
-    from neuri.constrinf import make_record_finder  
+    from nnsmith.deepconstr import make_record_finder  
     records = make_record_finder(
         path=record_path,
         pass_rate=pass_rate,

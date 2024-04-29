@@ -198,14 +198,14 @@ def summarize_final_bf(aggregated_df):
     model_cnt = model_cnt.add_suffix('_cnt')
     for idx in range(final_bf_summary.shape[0]):
         max_column = final_bf_summary.iloc[idx].idxmax()
-        if max_column == 'constrinf' :
+        if max_column == 'deepconstr' :
             completed_data.append(final_bf_summary.iloc[idx]._name.replace(folder_suffix, ''))
             cnt+=1
 
     all_data = final_bf_summary.shape[0]
     revise_complete_data("/artifact/experiments/results/completed.json", completed_data)
-    print("Total APIs with constrinf as the largest final BF: ", cnt, "from", all_data)
-    print(f"Increase ratio of constrinf as the largest final BF: {cnt/all_data}")
+    print("Total APIs with deepconstr as the largest final BF: ", cnt, "from", all_data)
+    print(f"Increase ratio of deepconstr as the largest final BF: {cnt/all_data}")
     return pd.concat([final_bf_summary, model_cnt], axis=1), completed_data 
 
 def save_data(final_bf, completed_data, save_dir="/artifact/experiments/results"):
@@ -222,10 +222,10 @@ def merge_csvs(*csv_paths, save_path=None):
     merged_df = pd.concat(dfs)
     # filtered_df = merged_df[~(merged_df == 0).any(axis=1)]
 
-    if 'constrinf' in merged_df.columns:
-        filtered_df = merged_df.sort_values('constrinf', ascending=False).drop_duplicates(subset='API').sort_index()
+    if 'deepconstr' in merged_df.columns:
+        filtered_df = merged_df.sort_values('deepconstr', ascending=False).drop_duplicates(subset='API').sort_index()
     else:
-        # If 'constrinf' column does not exist, just remove duplicates based on all columns
+        # If 'deepconstr' column does not exist, just remove duplicates based on all columns
         filtered_df = merged_df.drop_duplicates()
 
     sorted_columns_df = filtered_df.sort_values(by="API")
@@ -299,15 +299,15 @@ def gen_table4_from_df(*args, nnsmith_path, neuri_path, type="torch") :
     #         neuri_none.append(col.replace(folder_suffix, ''))
     #         df.loc[len(df)] = [col, 0, 0, 0, 0, 0, 0, 0, 0]  # Or another default value as appropriate
     # print(df.head())
-    columns_to_subtract = ['constrinf', 'neuri', 'symbolic', 'constrinf_2']
+    columns_to_subtract = ['deepconstr', 'neuri', 'symbolic', 'deepconstr_2']
     for col in columns_to_subtract:
         if col in df.columns:
             default_val = 8937 if type == "tensorflow" else 35809# 31304 # 8937
             df[col] = df[col] - default_val
 
     extract_unnormal_val(df)
-    for tool in ["constrinf"] :
-        for baseline in ["neuri", "symbolic", "constrinf_2"] :
+    for tool in ["deepconstr"] :
+        for baseline in ["neuri", "symbolic", "deepconstr_2"] :
             columns_to_compare = [baseline] if all(col in df.columns for col in [baseline]) else []
             if baseline == "symbolic":
                 extracted_columns_df_with_models = df.loc[df.index.intersection(nnsmith_columns)]
@@ -328,11 +328,11 @@ def gen_table4_from_df(*args, nnsmith_path, neuri_path, type="torch") :
                 # Correctly update the original DataFrame
                 df.loc[extracted_columns_df_with_models.index, improvement_col_name] = extracted_columns_df_with_models[improvement_col_name]
             
-            rows_where_constrinf_is_highest = extracted_columns_df_with_models.apply(
+            rows_where_deepconstr_is_highest = extracted_columns_df_with_models.apply(
                 lambda row: row[tool] > row[columns_to_compare], axis=1).sum()
             
-            print(f"rows_where_constrinf_is_highest {tool} vs {baseline}: highest {rows_where_constrinf_is_highest}, intersected {total_rows - added}")
-    df = df.sort_values(by='improvement_ratio_constrinf_vs_neuri', ascending=True)
+            print(f"rows_where_deepconstr_is_highest {tool} vs {baseline}: highest {rows_where_deepconstr_is_highest}, intersected {total_rows - added}")
+    df = df.sort_values(by='improvement_ratio_deepconstr_vs_neuri', ascending=True)
     for col in df.columns:
         if col == "API":
             continue

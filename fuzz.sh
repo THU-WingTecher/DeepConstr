@@ -1,8 +1,8 @@
 #!/bin/bash
 set -x
 
-source /opt/conda/etc/profile.d/conda.sh
-conda activate cov
+# source /opt/conda/etc/profile.d/conda.sh
+# conda activate cov
 
 cd "$(dirname "$0")"
 
@@ -11,6 +11,7 @@ echo "METHOD: $2";
 echo "MODEL: $3";
 echo "BACKEND: $4";
 echo "TIME: $5";
+echo "TESTPOOL: $6";
 
 NSIZE="$1"
 METHOD="$2"
@@ -30,14 +31,14 @@ export CUDA_VISIBLE_DEVICES=""
 echo "CUDA_VISIBLE_DEVICES: $CUDA_VISIBLE_DEVICES"
 
 if [ $MODEL = "tensorflow" ]; then
-    if [ $METHOD = "constrinf" ]; then
-        RECORD="$(pwd)/data/constraints/tf"
+    if [ $METHOD = "deepconstr" ]; then
+        RECORD="$(pwd)/data/records/tf"
     else 
         RECORD="$(pwd)/data/tf_records"
     fi
 elif [ $MODEL = "torch" ]; then
-    if [ $METHOD = "constrinf" ]; then
-        RECORD="$(pwd)/data/constraints/torch"
+    if [ $METHOD = "deepconstr" ]; then
+        RECORD="$(pwd)/data/records/torch"
     else 
         RECORD="$(pwd)/data/torch_records"
     fi
@@ -46,19 +47,19 @@ else
     exit 1
 fi
 
-mkdir $(pwd)/gen -p
+mkdir $(pwd)/outputs -p
 
 # attempt at most 2 times
 for i in {1..2}
 do
     echo "Attempt $i"
-    PYTHONPATH=$(pwd):$(pwd)/neuri python neuri/cli/fuzz.py fuzz.time=${TIME} \
+    PYTHONPATH=$(pwd):$(pwd)/deepconstr:$(pwd)/nnsmith python nnsmith/cli/fuzz.py fuzz.time=${TIME} \
                                             mgen.record_path=${RECORD} \
-                                            fuzz.root=$(pwd)/gen/${MODEL}-${METHOD}-n${NSIZE}-${TESTPOOL_MODIFIED} \
-                                            fuzz.save_test=$(pwd)/gen/${MODEL}-${METHOD}-n${NSIZE}-${TESTPOOL_MODIFIED}.models \
+                                            fuzz.root=$(pwd)/outputs/${MODEL}-${METHOD}-n${NSIZE}-${TESTPOOL_MODIFIED} \
+                                            fuzz.save_test=$(pwd)/outputs/${MODEL}-${METHOD}-n${NSIZE}-${TESTPOOL_MODIFIED}.models \
                                             model.type=${MODEL} backend.type=${BACKEND} filter.type="[nan,dup,inf]" \
-                                            debug.viz=true hydra.verbose=fuzz fuzz.resume=true \
-                                            mgen.method=${METHOD} mgen.max_nodes=${NSIZE} mgen.test_pool="[${TESTPOOL}]" 
+                                            debug.viz=true hydra.verbose=['fuzz'] fuzz.resume=true \
+                                            mgen.method=${METHOD} mgen.max_nodes=${NSIZE} mgen.test_pool="[${TESTPOOL}]" mgen.pass_rate=10 
     if [ $? -eq 0 ]; then
         echo "Fuzzing succeeded after $i attempts."
         break
@@ -69,10 +70,10 @@ do
 done
 
 echo "WAS RUNNING:"
-PYTHONPATH=$(pwd):$(pwd)/neuri python neuri/cli/fuzz.py fuzz.time=${TIME} \
+PYTHONPATH=$(pwd):$(pwd)/deepconstr:$(pwd)/nnsmith python nnsmith/cli/fuzz.py fuzz.time=${TIME} \
                                         mgen.record_path=${RECORD} \
-                                        fuzz.root=$(pwd)/gen/${MODEL}-${METHOD}-n${NSIZE}-${TESTPOOL_MODIFIED} \
-                                        fuzz.save_test=$(pwd)/gen/${MODEL}-${METHOD}-n${NSIZE}-${TESTPOOL_MODIFIED}.models \
+                                        fuzz.root=$(pwd)/outputs/${MODEL}-${METHOD}-n${NSIZE}-${TESTPOOL_MODIFIED} \
+                                        fuzz.save_test=$(pwd)/outputs/${MODEL}-${METHOD}-n${NSIZE}-${TESTPOOL_MODIFIED}.models \
                                         model.type=${MODEL} backend.type=${BACKEND} filter.type="[nan,dup,inf]" \
-                                        debug.viz=true hydra.verbose=fuzz fuzz.resume=true \
-                                        mgen.method=${METHOD} mgen.max_nodes=${NSIZE} mgen.test_pool="[${TESTPOOL}]" 
+                                        debug.viz=true hydra.verbose=['fuzz'] fuzz.resume=true \
+                                        mgen.method=${METHOD} mgen.max_nodes=${NSIZE} mgen.test_pool="[${TESTPOOL}]" mgen.pass_rate=10

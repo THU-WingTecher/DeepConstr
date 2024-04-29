@@ -198,14 +198,14 @@ def summarize_final_bf(aggregated_df):
     model_cnt = model_cnt.add_suffix('_cnt')
     for idx in range(final_bf_summary.shape[0]):
         max_column = final_bf_summary.iloc[idx].idxmax()
-        if max_column == 'constrinf' :
+        if max_column == 'deepconstr' :
             completed_data.append(final_bf_summary.iloc[idx]._name.replace(folder_suffix, ''))
             cnt+=1
 
     all_data = final_bf_summary.shape[0]
     revise_complete_data("/artifact/experiments/results/completed.json", completed_data)
-    print("Total APIs with constrinf as the largest final BF: ", cnt, "from", all_data)
-    print(f"Increase ratio of constrinf as the largest final BF: {cnt/all_data}")
+    print("Total APIs with deepconstr as the largest final BF: ", cnt, "from", all_data)
+    print(f"Increase ratio of deepconstr as the largest final BF: {cnt/all_data}")
     return pd.concat([final_bf_summary, model_cnt], axis=1), completed_data 
 
 if __name__ == "__main__":

@@ -1,0 +1,146 @@
+topset: null # All instances will be a subset of `topset`;
+# >> Example:
+# topset:
+#   core.MaxPool2d:
+#     in_dtypes: [["f32"], ["f64"]]
+#     out_dtypes: [["f32"], ["f64"]]
+#   core.Where:
+#     in_dtypes: [["bool", "f32", "f32"]]
+#     out_dtypes: [["f32"]]
+
+exclude: null
+# >> Example:
+# exclude:
+#   - core.MaxPool2d:
+#     in_dtypes: [["f32"], ["f64"]]
+#     out_dtypes: [["f32"], ["f64"]]
+#   - core.Where:
+#     in_dtypes: [["bool", "f32", "f32"]]
+#     out_dtypes: [["f32"]]
+
+topset_from_file: null # Path that contains a YAML file that contains a topset domain as above
+
+# model gen config
+model:
+  type: null
+  path: "???" # can be multiple files tho.
+  skip_err: true # skip bad models in model_exec
+
+temp:
+  start: null
+  end: null
+
+mgen: # model gen.
+  max_nodes: 5
+  pass_rate: 0.8 # 0 ~ 1 
+  timeout_ms: 10000 #10000
+  vulops: False
+  method: "deepconstr"
+  save: null
+  seed: null
+  max_elem_per_tensor: 65536 # 2^16
+  record_path: null # path to load records for ConcolicGenWithRecords
+  test_pool: []
+  noise: 0.15 # 0 ~ 1
+  allow_zero_length_rate: 0.04 # 0 ~ 1
+  allow_zero_rate: 0.1 # 0 ~ 1
+  num_of_try: 1 ## num_of_try * noise will be the number of trials for each input
+# backend config
+backend:
+  type: null
+  optmax: true
+  target: "cpu"
+
+cache:
+  topset: true # Run dtype test with automatically maintained cache
+
+debug:
+  viz: true
+  viz_fmt: "png" # or "svg" for much smaller figure size and precision;
+  gir_path: null
+
+fuzz:
+  time: 14400
+  root: "???"
+  seed: null
+  crash_safe: false
+  test_timeout: null
+  save_test: true
+  resume: false
+
+train:
+  root: null # path to the root of the training data
+  n_try: 20
+  seed: null
+  record_path: null
+  crash_safe: false
+  test_timeout: null
+  resume: false
+  parallel: 1 # parallel num of executor
+  noise: 0.7 # 0 ~ 1
+  allow_zero_length_rate: 0.1 # 0 ~ 1
+  allow_zero_rate: 0.1 # 0 ~ 1
+  num_of_try: 30 ## num_of_try * noise will be the number of trials for each input generation
+  tolerance: 5
+  top_k: 10
+  max_num_of_seeds: 50
+  simple_eval_asset: 20
+  eval_asset: 50 #eval asset of constraints, pass_rate assess asset of the operator
+  n_infer_per_round: 10
+  str_sim_threshold: 0.65
+  pass_rate: 95
+  precision_threshold: 10 # 0 ~ 100
+  list: "/artifact/data/torch_overall_apis.json" # list of train-target apis
+  max_length: 5
+  api_name: null # api name to train(in this case, we only train one api)
+llm:
+  settings:
+    model_name: "gpt-3.5-turbo" # "gpt-4" # "gpt-3.5-turbo" # "gpt-3.5" # "gpt-3" # "gpt-2" # "gpt-2-xl"
+    temperature: 0.7
+    timeout: 7
+    top_p: 1
+    stop: null
+    presence_penalty: 0
+    frequency_penalty: 0
+
+filter:
+  type: []
+  patch: []
+
+exp: #for experiments, only using by
+  api_list: null
+  parallel: 1
+  save_dir: "exp"
+  baselines: [] #["symbolic-cinit", "neuri", "deepconstr", "deepconstr_2"]
+
+cmp:
+  equal_nan: true # skip regarding it as a bug if with fp exception values.
+
+  raw_input: null # path to raw input data (Dict[str, np.ndarray])
+
+  oracle: "auto"
+  # "auto": use `oracle.pkl` in local path;
+  # PathLike: get the oracle from somewhere else;
+  # null: fallback to random.
+
+  with:
+    type: null
+    optmax: true
+    target: "cpu"
+
+  seed: null
+  bug_presence: "report" # or "crash"
+  save: null # path to save the bug report if `bug_presence` is "report"
+
+test:
+  task:
+    type: 5
+  paths:
+    rule: 'tests/test_rules.txt'
+  package: 'tf'
+  func: 'tf/raw_ops/QuantizeAndDequantizeV4'
+  model_type: 'tensorflow' 
+  backend_type: 'xla'
+defaults:
+  - override hydra/job_logging: file
+  - override hydra/hydra_logging: colorlog

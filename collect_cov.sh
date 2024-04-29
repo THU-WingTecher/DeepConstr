@@ -35,7 +35,7 @@ python experiments/process_profraws.py --root $(pwd)/gen/${MODEL}-${METHOD}-n${N
 python experiments/viz_merged_cov.py --name ${TESTPOOL_MODIFIED} --folders                  \
         $(pwd)/gen/${MODEL}-symbolic-cinit-n${NSIZE}-${TESTPOOL_MODIFIED}.models/coverage        \
         $(pwd)/gen/${MODEL}-neuri-n${NSIZE}-${TESTPOOL_MODIFIED}.models/coverage \
-        $(pwd)/gen/${MODEL}-constrinf-n${NSIZE}-${TESTPOOL_MODIFIED}.models/coverage        \
+        $(pwd)/gen/${MODEL}-deepconstr-n${NSIZE}-${TESTPOOL_MODIFIED}.models/coverage        \
     --tags '\textsc{NNSmith}' '\textsc{NeuRI}$^r$' '\textsc{ConstrInf}$^i$'
 
 # echo "evaluating finished..."
