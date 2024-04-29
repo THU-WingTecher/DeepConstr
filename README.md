@@ -68,7 +68,7 @@ and set your values.
 
 3. start extraction(WIP)
 
-- PyTorch 
+- PyTorch (WIP)
     
 ```bash 
 python train.py
