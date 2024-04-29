@@ -10,6 +10,29 @@ BLACKLIST = [
 
 uncompatiable_api_marks = ["tensor element", "bug", "no function"]
 
+class Record(Dict): pass
+
+def transform_record_for_saving(record: Record) -> dict:
+    """
+    Transform the record dictionary to the original format expected for saving.
+
+    Args:
+        record (dict): The modified record dictionary.
+
+    Returns:
+        dict: The transformed record dictionary suitable for saving.
+    """
+    transformed = {}
+    for key, value in record.items():
+        if key == 'args':
+            transformed[key] = {k : v for k, v in record[key].items() if k not in ["value", "dtype_obj"]}
+        elif key in ["outputs"] :
+            pass
+        elif key == "rules" :
+            transformed[key] = list(value)
+        else:
+            transformed[key] = value
+    return transformed
 
 def record_args_info(record, values) : 
     for i_arg, arg_name, in enumerate(record['args']['name']) :
