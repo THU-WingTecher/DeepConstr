@@ -227,5 +227,91 @@ if __name__ == "__main__":
     processed_data = process_pickle_files(data)
     aggregated_df = aggregate_summarized_data(processed_data)
     final_bf_summary, completed_data = summarize_final_bf(aggregated_df)
-    print(final_bf_summary.head())
     final_bf_summary.reset_index().to_csv(os.path.join("/artifact/results/", args.output+".csv"), index=False)
+
+    # print(final_bf_summary)
+    save_data(final_bf_summary, completed_data, "/artifact/experiments/results")
+
+    # merge_with_original_data(orig_df, aggregated_df)
+    # csv_paths = [
+    #     "/artifact/experiments/results/merged_torch_v3.csv",
+    # ]
+    # # orig_df = merge_csvs(*csv_paths)
+    # print("torch")
+    # csv_paths = [
+    #     "/artifact/experiments/results/final_torch.csv",
+    # ]
+    # df = merge_csvs(*csv_paths)
+    # gen_table4(
+    #     df,  
+    #     "/artifact/data/torch_nnsmith.json",
+    #     "/artifact/data/torch_neuri.json",
+    #     type="torch")
+    # print("tf")
+    # csv_paths = [
+    #     "/artifact/experiments/results/final_tf.csv",
+    # ]
+    # df = merge_csvs(*csv_paths, save_path="/artifact/experiments/results/merged_tf_v3.csv")
+    # gen_table4(
+    #     df,
+    #     "/artifact/data/tf_nnsmith.json",
+    #     "/artifact/data/tf_neuri.json",
+    #     type="tf")
+
+    # print("torch")
+    # df = merge_csvs(*csv_paths)
+    # gen_table4(
+    #     df,  
+    #     nnsmith_path="/artifact/data/torch_nnsmith.json",
+    #     neuri_path="/artifact/data/torch_overall_apis.json",
+    #     type="torch")
+    # print("tf")
+    # csv_paths = [
+    #     "/artifact/experiments/results/merged_tf_v2.csv",
+    #     "/artifact/experiments/results/20240402-235616.csv",
+    #     "/artifact/experiments/results/20240404-124049.csv"
+    # ]
+    # df = merge_csvs(*csv_paths, save_path="/artifact/experiments/results/merged_tf_v3.csv")
+    # gen_table4(
+    #     df,
+    #     "/artifact/data/tf_nnsmith.json",
+    #     "/artifact/data/tf_overall_apis.json",
+    #     type="torch")
+
+# pt_data_paths = [
+#     "/artifact/experiments/results/merged_torch_v2.csv",
+# ]
+# pt_neuri_data_path = "/artifact/data/torch_overall_apis.json"
+# pt_nnsmith_data_path = "/artifact/data/torch_nnsmith.json"
+# tf_data_paths = [
+#     "/artifact/experiments/results/merged_tf_v2.csv"
+# ]
+# tf_neuri_data_path = "/artifact/data/tf_overall_apis.json"
+# tf_nnsmith_data_path = "/artifact/data/tf_nnsmith.json"
+
+# def exclude_intestable() :
+#     neuri_pt = check_left_api(
+#         pt_neuri_data_path,
+#         pt_data_paths
+#     )
+
+#     neuri_pt_rec = check_record(neuri_pt, "/artifact/data/records")
+#     neuri_tf = check_left_api(
+#         tf_neuri_data_path,
+#         tf_data_paths
+#     )
+#     neuri_tf_rec = check_record(neuri_tf, "/artifact/data/records")
+
+#     nnsmith_pt = check_left_api(
+#         pt_nnsmith_data_path,
+#         pt_data_paths
+#     )
+
+#     nnsmith_pt_rec = check_record(nnsmith_pt, "/artifact/data/records")
+#     nnsmith_tf = check_left_api(
+#         tf_nnsmith_data_path,
+#         tf_data_paths
+#     )
+#     nnsmith_tf_rec = check_record(nnsmith_tf, "/artifact/data/records")
+#     return list(set(neuri_pt_rec + neuri_tf_rec + nnsmith_pt_rec + nnsmith_tf_rec))
+
