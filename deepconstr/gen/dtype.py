@@ -1,3 +1,244 @@
+import copy
+import os
+import re
+from deepconstr.grammar.dtype import materalize_dtypes
+import yaml
+from logger import TRAIN_LOG
+from deepconstr.train.inferencer import Inferencer
+from typing import *
+from deepconstr.gen.record import save_record, transform_record_for_saving
+
+def gen_dtype_info(save_dir, func_name, package, inferencer) :
+
+    res = []
+    if package == "torch" :
+        res = torch_load_from_doc(save_dir, api_name=func_name)
+    if res :
+        return res
+    else :
+        res = TypeGenerator(save_dir, func_name, package, inferencer)()
+        return [res]
+
+def torch_load_from_doc(save_dir, api_name = None):
+    import torch.jit.supported_ops
+    results = []
+    legal = 0
+    illegal = 0
+    ops_doc_lines = torch.jit.supported_ops.__doc__.splitlines()
+    """
+    1. tensor_methods: `Tensor.method_name(...`
+    2. torch_funcs: `torch.func_name(...`
+    """
+    skip_startwith_kws = []
+    skip_in_kws = [
+        ".detach",
+        ".save",
+        ".item",
+        ".dim",
+        ".to",
+        ".set",
+        ".clone",
+        ".device",
+        ".cpu",
+        ".cuda",
+        ".tensor",
+    ]
+    tensor_methods = {}
+    torch_funcs = {}
+    tot_doc_lines = len(ops_doc_lines)
+    i_line = 0
+    n_ = 0
+    while i_line < tot_doc_lines:
+        line = ops_doc_lines[i_line].strip()
+        if not line:
+            i_line += 1
+            continue
+
+        is_tensor_method = line.startswith("Tensor.")
+        is_torch_func = line.startswith("torch.")
+        # i_line += 1
+        # read wanted lines
+        if any(
+            [line.startswith(skip_kw) for skip_kw in skip_startwith_kws]
+        ) or any([skip_kw in line for skip_kw in skip_in_kws]):
+            i_line += 1
+            continue
+        if is_tensor_method or is_torch_func:
+            n_+=1
+            # get specification of a whole op/func
+            op_spec = []
+            while i_line < tot_doc_lines:
+                line = ops_doc_lines[i_line].strip()
+                op_spec.append(line)
+                if "->" in line:
+                    break
+                i_line += 1
+            op_spec = " ".join(op_spec)
+            # parse op spec
+            op_name = op_spec.split("(")[0]
+            if api_name is not None and op_name != api_name : 
+                i_line += 1
+                continue
+            if op_name in tensor_methods or op_name in torch_funcs:
+                cnt+=1 
+            else :
+                cnt = 0
+            if is_tensor_method:
+                op_name = f"torch.{op_name}"
+            obj = eval(op_name)
+            if callable(obj):
+                op_args = op_spec.split("(")[1].split(")")[0]
+                op_rets = op_spec.split("-> ")[1]
+                if not (
+                    ("Tensor" in op_args or is_tensor_method)
+                    # and "Tensor" in op_rets
+                    # and "out : Tensor" not in op_args
+                ):
+                    # both inputs and outputs have tensors
+                    i_line += 1
+                    continue
+                if is_torch_func:
+                    torch_funcs[op_name] = obj
+                else:
+                    tensor_methods[op_name] = obj
+                save_path = os.path.join(save_dir, f"{op_name.replace('.', '/')}-{cnt}.yaml")
+                results.append(save_path)
+                if os.path.exists(save_path):
+                    i_line += 1
+                    continue
+                # TRAIN_LOG.info(f"deal with {save_path}")
+                record = gen_record_for_operator(op_name, op_args, is_tensor_method)
+                save_record(transform_record_for_saving(record), save_path)
+            else:
+                TRAIN_LOG.info(f"  (Ignored: {obj = } from {op_name = } is not callable")
+        i_line += 1
+    return results
+
+
+def gen_record_for_operator(op_name, args_str, is_tensor_method, package="torch") :
+    """
+    Used for the generate records by cli/prepare.py
+    {
+        'name': 'torch.add',
+        'args': {
+            'name': ['arg_0', 'arg_1', 'alpha'],
+            'dtype' : [number, List[int], Optional[str], ...]
+            'is_pos': [True, True, False],
+            'required': [True, True, False],
+            'value' : [None, None, None],
+        },
+        'package': 'torch',
+        'pass_rate': 0, 
+        'rules' : {}
+
+    }
+    """
+    special_kws = [ # kwarg name -> we don't support this object
+        "dtype",
+        "memory_format",
+        "layout"
+    ]
+    is_pos_kwargs = [ "self", "tensors"]
+    # args_str --> name : dtype=1, Optional
+    records = {
+        'name': op_name,
+        "args": {
+            "name": [],
+            "dtype" : [],
+            "is_pos": [],
+            "required": [],
+            "value": [],
+        },
+        "package": package,
+        "pass_rate": 0,
+        "rules" : {}
+    }
+    names = []
+    dtypes = []
+    is_pos = []
+    required_list = []
+    if is_tensor_method :
+        names.append("self")
+        dtypes.append("Tensor")
+        is_pos.append(True)
+        required_list.append(True)
+    for arg_str in custom_split(args_str) :
+        if arg_str :
+            arg_name = arg_str.split(':')[0].strip()
+            arg_dtype = arg_str.split(':')[1].split('=')[0].strip()
+            if arg_name in special_kws : # dtype arg name related data type is all wrong
+                arg_dtype = "None"
+            if 'Optional' in arg_str or "=" in arg_str :
+                required = False
+            else :
+                required = True
+            names.append(arg_name)
+            dtypes.append(arg_dtype)
+            is_pos.append(True if arg_name in is_pos_kwargs else False)
+            required_list.append(required)
+    records['args']['name'] = names
+    records['args']['dtype'] = dtypes
+    records['args']['is_pos'] = is_pos
+    records['args']['required'] = required_list
+    records['args']['value'] = [None] * len(names)
+    return records
+
+
+def custom_split(input_string):
+    # Stores the parts of the string split by commas outside brackets
+    parts = []
+    current_part = []  # Stores characters for the current part being processed
+    bracket_stack = []  # Keeps track of open brackets to ensure matching pairs
+    
+    # Mapping of closing and opening brackets
+    brackets = {']': '[', '}': '{', ')': '('}
+    
+    for char in input_string:
+        if char in "[{(":
+            bracket_stack.append(char)
+        elif char in "]})" and bracket_stack:
+            if bracket_stack[-1] == brackets[char]:
+                bracket_stack.pop()
+            else:
+                # Handle mismatched bracket scenario
+                raise ValueError("Mismatched brackets in input string")
+        
+        if char == ',' and not bracket_stack:
+            # If we're not inside brackets, split here
+            parts.append(''.join(current_part))
+            current_part = []
+        else:
+            current_part.append(char)
+    
+    # Add the last part if there's any
+    if current_part:
+        parts.append(''.join(current_part))
+    
+    return parts
+
+def transfer_older_record_to_newer(record: dict) -> dict:
+    new = {
+        "args" : { 
+            "is_pos" : [],
+            "dtype" : [],
+            "name" : [],
+            "required" : [],
+        },
+        "name" : None,
+        "package" : None,
+        "pass_rate" : 0,
+    }
+    new["name"] = record["title"]
+    new["args"]["name"] = list(record["constraints"].keys())
+    new["args"]["dtype"] = list([a["dtype"] for a in record["constraints"].values()])
+    new["args"]["required"] = list([a["required"] for a in record["constraints"].values()])
+    new["args"]["is_pos"] = [False for _ in range(len(new["args"]["name"]))]
+    new["args"]["value"] = [None for _ in range(len(new["args"]["name"]))]
+
+    if record["package"] == "tf" :
+        new["package"] = "tensorflow"
+    return new
+
 def materalize_func(func_name : str, package : Literal['torch', 'tf'] = 'torch') -> Union[Callable, None] :
     """
     Generate function with given name
@@ -29,6 +270,7 @@ def add_required_info(func_name) :
     data['pass_rate'] = 0.0
     data['rules'] = {}
     return data
+
 def gen_cfg(cfg_path : str, add_info : Optional[Dict[str,Any]] = None) -> str :
     """
     workspace : /home/ 
@@ -89,8 +331,8 @@ Finally, print the final results as dictionary value to the key of input paramet
         Q=f"\nQ : {serizlized}"
 
     examples="""
-ex 1 : {{"input" : {{"default" : None, "required" :true, "dtype" : "tf.tensor",}}, "ksize" : {{"default" : None, "required" :true, "dtype" : "tf.tensor",}}, "strides" : {{"default" : None, "required" :true, "dtype" : "int, List[int]",}}, "padding" : {{"default" : None, "required" :true, "dtype" : "valid", "same"}}}}
-ex 2 : {{"axis" : {{"default" : -1, "required" : false, "dtype" : "int",}}, "x" : {{"default" : None, "required" : false, "dtype" : "tensor",}}, "center" : {{"default" : true, "required" : true, "dtype" : "tensor",}}, "beta_initializer : {{"default" : "zeros", "required" :true, "dtype" : "zeros",}}, "beta_regularizer" : {{"default" : "None", "required" : false, "dtype" :"not defined"}}}}
+ex 1 : {{"input" : {{"default" : None, "required" :true, "dtype" : "tf.tensor",}}, "ksize" : {{"default" : None, "required" :true, "dtype" : "tensor",}}, "strides" : {{"default" : None, "required" :true, "dtype" : "int, List[int]",}}, "padding" : {{"default" : None, "required" :true, "dtype" : str}}}}
+ex 2 : {{"axis" : {{"default" : -1, "required" : false, "dtype" : "int",}}, "x" : {{"default" : None, "required" : false, "dtype" : "tensor",}}, "center" : {{"default" : true, "required" : true, "dtype" : "tensor",}}, "beta_initializer : {{"default" : "zeros", "required" :true, "dtype" :str}}}}
 """        
     return prompts+examples+Q
 
@@ -150,19 +392,20 @@ Finally, print the final results as dictionary value to the key of input paramet
 
     examples="""
 ex 1 : {{"input" : {{"default" : None, "required" :true, "dtype" : "tensor",}}, "ksize" : {{"default" : None, "required" :true, "dtype" : "tensor",}}, "strides" : {{"default" : None, "required" :true, "dtype" : "int, List[int]",}}, "padding" : {{"default" : None, "required" :true, "dtype" : "valid", "same"}}}}
-ex 2 : {{"axis" : {{"default" : -1, "required" : false, "dtype" : "int",}}, "x" : {{"default" : None, "required" : false, "dtype" : "tensor",}}, "center" : {{"default" : true, "required" : true, "dtype" : "tensor",}}, "beta_initializer : {{"default" : "zeros", "required" :true, "dtype" : "zeros",}}, "beta_regularizer" : {{"default" : "None", "required" : false, "dtype" :"not defined"}}}}
+ex 2 : {{"axis" : {{"default" : -1, "required" : false, "dtype" : "int",}}, "x" : {{"default" : None, "required" : false, "dtype" : "tensor",}}, "center" : {{"default" : true, "required" : true, "dtype" : "tensor",}}, "beta_initializer : {{"default" : "zeros", "required" :true, "dtype" : "zeros",}}, "beta_regularizer" : {{"default" : "None", "required" : false, "dtype" : None}}}}
 """        
     return prompts+examples+Q
 class TypeGenerator() :
     def __init__(self, 
-                 cfg : Dict[str, Any], 
+                 save_dir,
+                 func_name,
+                 package,
                  inferencer : Inferencer) : # # API names that we should extract(every functions in tf.keras)
-        self.cfg = cfg
-        self.func_name = cfg['title']
-        self.func = materalize_func(self.func_name, cfg['package'])
-        self.find_aliases()
+        self.save_dir = save_dir
+        self.func_name = func_name
+        self.func = materalize_func(self.func_name, package)
+        # self.find_aliases()
         self.inferencer = inferencer
-        self.tensor_type_keys = []
         self.args_info = {}
         self.only_forward=None
         self.def_args_info = {}
@@ -171,8 +414,7 @@ class TypeGenerator() :
         self.infered = None 
         self.prompts = None 
         self.new = False
-        self.undefined_tag = "not defined"
-        self.args_info = self.load_from_cfg()
+        self.undefined_tag = None
         self.inferencer.change_to_gpt4()
         self.generated = False
         if len(self.args_info) == 0 :
@@ -187,13 +429,9 @@ class TypeGenerator() :
         else : 
             self.generated = True 
         if self.generated :
-            if self.check() :
-                self.give_pos()
-            else :
-                self.cfg['skipped'] = 'uncompatiable type'
-                self.generated=False
+            self.give_pos()
         else :
-            LOGGER.error(f"{self.func_name} Inferencing failed")
+            TRAIN_LOG.error(f"{self.func_name} Inferencing failed")
 
     def find_aliases(self) :
         found = False 
@@ -227,7 +465,7 @@ class TypeGenerator() :
         for pattern in alias_patterns:
             aliases.extend(re.findall(pattern, doc_string))
         aliases = [aliase.replace('~','torch.') for aliase in aliases if not aliase[1:].startswith('torch.')]
-        if aliases : LOGGER.info("found aliases : "+str(aliases[0]))
+        if aliases : TRAIN_LOG.info("found aliases : "+str(aliases[0]))
         return aliases
 
     def init(self) : 
@@ -246,22 +484,7 @@ class TypeGenerator() :
                 self.def_args_info.update({key : self.args_info[key]}) 
             else :
                 self.forward_args_info.update({key : self.args_info[key]})
-    
-    def load_from_cfg(self) -> Dict[str, Any] : ## will change
-        ## cfg <- yaml file
-        types_dict={}
-        res={}
-        if 'constraints' in self.cfg.keys() :
-            # types_dict = load_types_dict(self.cfg, self.package)
-            types_dict = copy.deepcopy(self.cfg['constraints'])
-            for key, value in types_dict.items():
-                if value is None:
-                    types_dict[key] = None
-        if len(types_dict) == 0 : return {} 
 
-        for name, params in types_dict.items() :
-            types_dict[name]['dtype'] = materalize_dtypes(types_dict[name]['dtype'])
-        return types_dict 
     def get_forward_keys(self) : 
         return list(self.forward_args_info.keys())
     def get_def_keys(self) : 
@@ -338,7 +561,7 @@ class TypeGenerator() :
         changed = False 
         for key in self.args_info.keys() :
             if not self.type_check(self.args_info[key]["dtype"]) :
-                self.args_info[key]["dtype"] = 'not defined'
+                self.args_info[key]["dtype"] = None
                 changed = True
         return changed
     def check(self) : 
@@ -347,18 +570,18 @@ class TypeGenerator() :
         for key in self.args_info.keys() :
             if not self.type_check(self.args_info[key]["dtype"]) :
                 if self.args_info[key]['required'] :
-                    LOGGER.error(f"The type of {key}(={self.args_info[key]['dtype']})(REQUIRED) cannot utilized, dtype infer failed")
+                    TRAIN_LOG.error(f"The type of {key}(={self.args_info[key]['dtype']})(REQUIRED) cannot utilized, dtype infer failed")
                     return False
                 else :
                     rm_list.append(key)
         for key in rm_list :
             if key in self.args_info.keys() :
-                LOGGER.error(f"The type of {key}(={self.args_info[key]['dtype']})cannot utilized, delete this param(={key})")
+                TRAIN_LOG.error(f"The type of {key}(={self.args_info[key]['dtype']})cannot utilized, delete this param(={key})")
                 self.args_info.pop(key)
         return True
     
-    def type_check(self, dtype) -> bool :
-        return RandomGenerator.check(dtype)     
+    # def type_check(self, dtype) -> bool :
+    #     return RandomGenerator.check(dtype)     
 
     def look_up_sig(self, func) : 
         import inspect
@@ -403,12 +626,11 @@ class TypeGenerator() :
 
     def run_llm(self) :
         self.prompts = self._gen_prompts()
-        LOGGER.info(f"type_gen prompts :\n{self.prompts}")
+        TRAIN_LOG.info(f"type_gen prompts :\n{self.prompts}")
         self.infered = self.inferencer.inference(self.prompts)
-        LOGGER.info(f"type_gen results :\n{self.infered}")
+        TRAIN_LOG.info(f"type_gen results :\n{self.infered}")
 
     def _gen_prompts(self) :
-        from train.prompt import torch_type_hint_infer_prompts, tf_type_hint_infer_prompts
         if self.cfg['package'] == 'torch' :
             return torch_type_hint_infer_prompts(self.func, self.args_info, undefined_tag=self.undefined_tag)
         else :
@@ -422,7 +644,7 @@ class TypeGenerator() :
             res = self.preprocess(res)
             res = self.extract_json(res)
             res = json.loads(res)
-            LOGGER.debug(f"interpret_res : {res}")
+            TRAIN_LOG.debug(f"interpret_res : {res}")
             for key, value in res.items():
                 if value is None:
                     res[key] = None
@@ -450,7 +672,3 @@ class TypeGenerator() :
                 else : 
                     converted[key]["required"] = False
         return converted
-
-
-api_name = ""
-gen_cfg(cfg_save_path)

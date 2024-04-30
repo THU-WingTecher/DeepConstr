@@ -13,6 +13,12 @@ debug/
 exp/
 data/debug/
 experiments/data
+results/*
+outputs/*
+
+build/tensorflow-2.12.0-cp38-cp38-linux_x86_64.whl
+build/pytorch-cov
+experiments/gcno
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -173,10 +179,3 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-results/*
-outputs/*
-gen/* 
-
-build/tensorflow-2.12.0-cp38-cp38-linux_x86_64.whl
-build/pytorch-cov
-experiments/gcno

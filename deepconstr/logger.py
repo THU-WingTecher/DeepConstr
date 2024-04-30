@@ -1,6 +1,6 @@
 import logging
 
-# MGEN_LOG = logging.getLogger("mgen")
+GEN_LOG = logging.getLogger("gen")
 SMT_LOG = logging.getLogger("smt")
 CONVERT_LOG = logging.getLogger("convert")
 CONSTR_LOG = logging.getLogger("constr")

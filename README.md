@@ -47,8 +47,6 @@ source ./env_std.sh
 
 ### Settings
 
-
-### Select test operator
 We strongly recommend to use virtual environment using anaconda.
 For detail, you can refer [!this]()
 1. install needed libraries. 
@@ -56,7 +54,7 @@ For detail, you can refer [!this]()
 pip install -r requirements.txt
 ```
 2. setting needed configuration
-generate .env file on the workspace(~/artifact/.env) 
+generate .env file on the workspace($(pwd)/.env) 
 and set your values.
 
     (1) Set openai key, ```OPENAI_API_KEY ='sk-********'```
@@ -81,8 +79,10 @@ and set your values.
 > - `train.num_eval`: the number of evaluation to validate the constraints(default: 500).
 > - `model.type`: in `["tensorflow", "torch"]`.
 > - `backend.type`: in `["xla", "torchjit"]`.
+>
 > **Other Arguments**:
 > refer to the values under train at `/artifact/nnsmith/config/main.yaml` for more information.
+>
 > **Outputs**:
 > - `$(pwd)/${train.record_path}/torch` if `model.type` is `torch`
 > - `$(pwd)/${train.record_path}/tf` if `model.type` is `tensorflow`
@@ -91,7 +91,11 @@ and set your values.
 
 ##### for PyTorch 
 ```bash
-PYTHONPATH=/artifact/:/artifact/nnsmith/:/artifact/deepconstr/:$PYTHONPATH python deepconstr/train/run.py train.record_path=test/records/torch backend.type=torchcomp model.type=torch hydra.verbose=train train.parallel=1 train.eval_asset=100 train.pass_rate=95 hydra.verbose=['train'] train.retrain=true train.target='["torch.add","torch.abs"]'
+PYTHONPATH=/artifact/:/artifact/nnsmith/:/artifact/deepconstr/:$PYTHONPATH \
+python deepconstr/train/run.py train.record_path=test/records/torch backend.type=torchcomp \
+model.type=torch hydra.verbose=train train.parallel=1 train.eval_asset=100 \
+train.pass_rate=95 hydra.verbose=['train'] \
+train.retrain=true train.target='["torch.add","torch.abs"]'
 ```
 
 ##### for TensorFlow 

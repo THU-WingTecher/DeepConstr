@@ -1,4 +1,5 @@
 import copy
+import glob
 import json
 import random
 import os
@@ -6,19 +7,18 @@ import time
 import traceback
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Tuple, Type
-
 import yaml
-from deepconstr.gen.record import load_yaml, process_record
+import hydra
+from nnsmith.backends.factory import BackendFactory
+from nnsmith.materialize import Model
+from omegaconf import DictConfig, ListConfig
+from deepconstr.gen.record import Record, load_yaml, process_record, save_record
+from deepconstr.gen.dtype import gen_dtype_info
 from deepconstr.train.constr import Constraint, convert_constr_to_executable, convert_dtypes_to_z3s
 from deepconstr.train.errmsg import ErrorMessage, is_similar, map_error_messages_to_clusters_dynamic
 from deepconstr.train.executor import Executor, is_normal_error
 from deepconstr.train.inferencer import Inferencer
-import hydra
-from omegaconf import DictConfig
-
 from deepconstr.train.prepare import check_trainable
-from nnsmith.backends.factory import BackendFactory
-from nnsmith.materialize import Model
 from deepconstr.train.prompter import Prompter
 from deepconstr.train.synthesizer import Synthesizer, segment_constr, parse_from_raw_txt
 from deepconstr.utils import formatted_dict
@@ -81,29 +81,6 @@ class TrainingLoop:
         TRAIN_LOG.info(
             f"{len(self.train_list)} opsets wait for inferring"
         )
-        self.stat = {}
-        # self.save_test = cfg["train"]["save_test"]
-        # resume = cfg["train"]["resume"]
-        # self.status = StatusCollect(
-        #     cfg["train"]["root"],
-        #     resume=resume,
-        #     op_usage=(
-        #         cfg["mgen"]["max_nodes"] == 1 and cfg["mgen"]["method"] == "neuri-i"
-        #     ),
-        # )
-        # if isinstance(self.save_test, str) and not (
-        #     os.path.exists(self.save_test) and resume
-        # ):  # path of root dir.
-        #     TRAIN_LOG.info(f"Saving all intermediate testcases to {self.save_test}")
-        #     mkdir(self.save_test)
-
-    def init_stat(self) :
-        self.stat = {
-            "exec" : 0,
-            "llm" : 0,
-            "smt" : 0,
-            "save" : 0
-        }
 
     def get_train_list(self, target) -> List[str]:
         """
@@ -119,7 +96,7 @@ class TrainingLoop:
         final_train_list = []
         record_paths = []
         record : Dict[str, Any] = {}
-        if isinstance(target, list) : 
+        if isinstance(target, (list, ListConfig)) : 
             train_list = target 
         elif isinstance(target, str) :
             if target.endswith("json") :
@@ -132,9 +109,9 @@ class TrainingLoop:
         
         root_path = self.cfg["train"]["record_path"] 
         for api_name in train_list :
-            TRAIN_LOG.info(f"Finding Type information with with {len(train_list)} apis")
+            TRAIN_LOG.info(f"Finding Type information with {api_name}")
             all_files = []
-            name_to_path = os.path.join(root_path, api_name.replace(".", "/"))
+            name_to_path = os.path.join(os.path.dirname(root_path), api_name.replace(".", "/"))
             search_pattern = name_to_path + "-*"
             files_found = glob.glob(search_pattern)
             if files_found:
@@ -142,9 +119,10 @@ class TrainingLoop:
                 all_files.extend(files_found)
                 TRAIN_LOG.info(f"Files found for {api_name}: {files_found}")
             else:
-                TRAIN_LOG.info(f"No files found for API: {api_name} ==> Try to generate ...")
-                file = gen_property(api_name)
-                all_files.append(file)
+                TRAIN_LOG.info(f"No files found for {api_name} ==> Try to generate ...")
+                save_dir = os.path.dirname(self.cfg["train"]["record_path"])
+                file = gen_dtype_info(save_dir, api_name, self.cfg["model"]["type"], self.inferencer)
+                all_files.extend(file)
                 # If no files are found for this api, log the information
             record_paths.extend(all_files)
         
@@ -159,7 +137,8 @@ class TrainingLoop:
                 TRAIN_LOG.info(f"{record_path} is already trained")
                 final_train_list.append(record_path)
                 continue
-            is_trainable, record = check_trainable(record, self.executor) :
+            TRAIN_LOG.info(f"Check whether {record_path} is valid")
+            is_trainable, record = check_trainable(record, self.executor)
             if is_trainable :
                 final_train_list.append(record_path)
 
@@ -631,7 +610,7 @@ unsolved_err_msgs : {unsolved_msgs}
         return errmsg.error_type in [TypeError]
 
 
-@hydra.main(version_base=None, config_path="../config", config_name="main")
+@hydra.main(version_base=None, config_path="../../nnsmith/config", config_name="main")
 def main(cfg: DictConfig):
     try :
         trainer = TrainingLoop(cfg)

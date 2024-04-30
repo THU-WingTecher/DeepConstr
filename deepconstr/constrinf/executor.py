@@ -9,7 +9,7 @@ from deepconstr.abstract.dtype import AbsTensor
 from deepconstr.autoinf.instrument.op import OpInstance
 from deepconstr.deepconstr import record_args_info
 from deepconstr.error import InternalError
-from deepconstr.logger import MGEN_LOG
+from deepconstr.logger import GEN_LOG
 from deepconstr.gen.solve import DEFAULT_DTYPE_CONSTR, gen_val
 from deepconstr.deepconstr.errmsg import ErrorMessage
 
@@ -38,7 +38,7 @@ def worker(model, record, noise=0.8, allow_zero_length_rate=0.1, allow_zero_rate
     for i_arg, arg_name in enumerate(record['args']['name']):
         if record['args']['dtype_obj'][i_arg] is None :
             chosen_dtype[arg_name] = None
-            MGEN_LOG.debug(f"Unidentiable dtype for {arg_name} : {record['args']['dtype'][i_arg]}")
+            GEN_LOG.debug(f"Unidentiable dtype for {arg_name} : {record['args']['dtype'][i_arg]}")
         elif len(record['args']['dtype_obj'][i_arg]) > 0:
             chosen_dtype[arg_name] = random.choice(record['args']['dtype_obj'][i_arg])
         else:
@@ -65,7 +65,7 @@ def worker(model, record, noise=0.8, allow_zero_length_rate=0.1, allow_zero_rate
             concretized_values[key] = [v.concretize(inst.input_symb_2_value, only_shape=True) if hasattr(v, 'concretize') else v for v in values[key]]
         else :
             concretized_values[key] = values[key].concretize(inst.input_symb_2_value, only_shape=True) if hasattr(values[key], 'concretize') else values[key]
-    MGEN_LOG.debug(f"Concretized values of {record['name']}: {concretized_values}")
+    GEN_LOG.debug(f"Concretized values of {record['name']}: {concretized_values}")
     try:
         res_or_bug, abs_ret_list = model.execute_op(inst)
         return True, ErrorMessage(NOERR_MSG, "", concretized_values, chosen_dtype, package=model.package)  # Assuming execution success
@@ -79,7 +79,7 @@ def worker_wrapper(worker_fn, return_dict, task_chunk, *args, **kwargs):
             result = worker_fn(*args, **kwargs)
         except Exception as e:
             err_instance = ErrorMessage(InternalError(), traceback.format_exc(), {}, {})
-            MGEN_LOG.error(f"Err execute: {e}, maybe child process core dumped")
+            GEN_LOG.error(f"Err execute: {e}, maybe child process core dumped")
             result = [False, err_instance]
         return_dict[task_id] = result
 
@@ -91,7 +91,7 @@ class Executor:
         _dtype_constrs_executable = DEFAULT_DTYPE_CONSTR.get(self.model.package)
 
     def execute(self, ntimes, constraints, *args, **kwargs) -> Optional[List[Tuple[bool, ErrorMessage]]]:
-        MGEN_LOG.info(f"Executing {ntimes} times")
+        GEN_LOG.info(f"Executing {ntimes} times")
         set_global_constraints(constraints) # to be used in worker(parallel execution)
         res = self.parallel_execute(ntimes, *args, **kwargs) \
             if self.parallel != 1 else self._execute(ntimes, *args, **kwargs)
