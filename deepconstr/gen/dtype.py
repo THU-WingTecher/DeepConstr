@@ -13,12 +13,11 @@ def gen_dtype_info(save_dir, func_name, package, inferencer) :
     res = []
     if package == "torch" :
         res = torch_load_from_doc(save_dir, api_name=func_name)
-    if res :
-        return res
-    else :
-        res = TypeGenerator(save_dir, func_name, package, inferencer)()
-        return [res]
-
+    if not res :
+        type_gen = TypeGenerator(save_dir, func_name, package, inferencer)
+        if type_gen.generated :
+            res.append(type_gen.save_path())
+    return res
 def torch_load_from_doc(save_dir, api_name = None):
     import torch.jit.supported_ops
     results = []
@@ -216,7 +215,7 @@ def custom_split(input_string):
     
     return parts
 
-def transfer_older_record_to_newer(record: dict) -> dict:
+def transfer_older_record_to_newer(record: dict, func_name, package) -> dict:
     new = {
         "args" : { 
             "is_pos" : [],
@@ -228,25 +227,25 @@ def transfer_older_record_to_newer(record: dict) -> dict:
         "package" : None,
         "pass_rate" : 0,
     }
-    new["name"] = record["title"]
-    new["args"]["name"] = list(record["constraints"].keys())
-    new["args"]["dtype"] = list([a["dtype"] for a in record["constraints"].values()])
-    new["args"]["required"] = list([a["required"] for a in record["constraints"].values()])
+    new["name"] = func_name
+    new["args"]["name"] = list(record.keys())
+    new["args"]["dtype"] = list([a["dtype"] for a in record.values()])
+    new["args"]["required"] = list([a["required"] for a in record.values()])
     new["args"]["is_pos"] = [False for _ in range(len(new["args"]["name"]))]
     new["args"]["value"] = [None for _ in range(len(new["args"]["name"]))]
 
-    if record["package"] == "tf" :
+    if package == "tf" :
         new["package"] = "tensorflow"
     return new
 
-def materalize_func(func_name : str, package : Literal['torch', 'tf'] = 'torch') -> Union[Callable, None] :
+def materalize_func(func_name : str, package : Literal['torch', 'tensorflow'] = 'torch') -> Union[Callable, None] :
     """
     Generate function with given name
     """
     print("materallize : ", package)
     if package == 'torch' :
         import torch 
-    elif package == 'tf' :
+    elif package == 'tensorflow' :
         import tensorflow as tf 
     else :
         pass
@@ -264,12 +263,11 @@ def materalize_func(func_name : str, package : Literal['torch', 'tf'] = 'torch')
         raise AttributeError(f"Function '{function_str}' does not exist.")
 
     
-def add_required_info(func_name) :
-    data = {}
+def add_required_info(data, func_name, package) :
     data['title'] = func_name
     data['pass_rate'] = 0.0
     data['rules'] = {}
-    return data
+    data['package'] = package
 
 def gen_cfg(cfg_path : str, add_info : Optional[Dict[str,Any]] = None) -> str :
     """
@@ -403,10 +401,12 @@ class TypeGenerator() :
                  inferencer : Inferencer) : # # API names that we should extract(every functions in tf.keras)
         self.save_dir = save_dir
         self.func_name = func_name
+        self.package = package
         self.func = materalize_func(self.func_name, package)
         # self.find_aliases()
         self.inferencer = inferencer
         self.args_info = {}
+        # self.args_info = add_required_info(self.func_name, package)
         self.only_forward=None
         self.def_args_info = {}
         self.forward_args_info = {}
@@ -424,49 +424,23 @@ class TypeGenerator() :
             if self.is_extractable() :
                 self.gen()
                 self.new = True
-                if self._precheck() : 
-                    self.gen()
+                # if self._precheck() : 
+                #     self.gen()
         else : 
             self.generated = True 
         if self.generated :
             self.give_pos()
+            converted = transfer_older_record_to_newer(self.args_info, func_name, package)
+            self.dump(converted)
         else :
             TRAIN_LOG.error(f"{self.func_name} Inferencing failed")
 
-    def find_aliases(self) :
-        found = False 
-        cur_func = self.func
-        new = True 
-        cnt=0
-        while new :
-            if hasattr(cur_func, '__doc__') :
-                if find_aliases := self._find_aliases(cur_func.__doc__) :
-                    cnt+=1 
-                    if cnt > 3 : break
-                    self.cfg['alias'] = find_aliases[0]
-                    cur_func = materalize_func(find_aliases[0], self.cfg['package'])
-                    new = True 
-                    continue
-            new = False 
-
-        self.func = cur_func
-
-    def _find_aliases(self, doc_string):
-        if doc_string is None : return None 
-        alias_patterns = [
-            r'See :func:`([\w.]+)`',  # Pattern like "See :func:`torch.gt`"
-            r'In-place version of :meth:`([\w.]+)`',  # Pattern like "In-place version of :meth:`~Tensor.unsqueeze`"
-            r'Alias for :func:`([\w.]+)`',  # Pattern like "Alias for :func:`torch.add`"
-            r'See :class:`([\w.]+)`'
-        ]
-        
-        aliases = []
-        
-        for pattern in alias_patterns:
-            aliases.extend(re.findall(pattern, doc_string))
-        aliases = [aliase.replace('~','torch.') for aliase in aliases if not aliase[1:].startswith('torch.')]
-        if aliases : TRAIN_LOG.info("found aliases : "+str(aliases[0]))
-        return aliases
+    def dump(self, record) : 
+        converted = transform_record_for_saving(record)
+        for i, dtypes in enumerate(converted['args']['dtype']) :
+            for i_d, dtype in enumerate(dtypes) :
+                dtypes[i_d] = dtype.to_str()
+        save_record(transform_record_for_saving(record), self.save_path())
 
     def init(self) : 
         self.def_args_info = self.look_up_sig(self.func)
@@ -517,11 +491,17 @@ class TypeGenerator() :
             res = self.materalize(res)
             res = self.mark_pos(res) 
             self.update(self.args_info, res)
-            self.generated = True 
-            return True 
+            if self.check() :
+                self.generated = True 
+                return True 
+            else : 
+                return False
         except : 
             return False
 
+    def save_path(self) :
+        return os.path.join(self.save_dir, f"{self.func_name.replace('.', '/')}-{0}.yaml")
+    
     def update(self, target, new) : 
         if len(target) == 0 :
             target.update(new)
@@ -537,8 +517,8 @@ class TypeGenerator() :
 
     def __call__(self) : 
         return self.args_info
+
     def materalize(self, types_dict) : 
-        "str->typing"
         for key in types_dict.keys() :
             for attr in types_dict[key].keys() :
                 if attr == "dtype" :
@@ -580,8 +560,9 @@ class TypeGenerator() :
                 self.args_info.pop(key)
         return True
     
-    # def type_check(self, dtype) -> bool :
-    #     return RandomGenerator.check(dtype)     
+    def type_check(self, dtype) -> bool :
+        return dtype is not None 
+        # return RandomGenerator.check(dtype)     
 
     def look_up_sig(self, func) : 
         import inspect
@@ -631,7 +612,7 @@ class TypeGenerator() :
         TRAIN_LOG.info(f"type_gen results :\n{self.infered}")
 
     def _gen_prompts(self) :
-        if self.cfg['package'] == 'torch' :
+        if self.package == 'torch' :
             return torch_type_hint_infer_prompts(self.func, self.args_info, undefined_tag=self.undefined_tag)
         else :
             return tf_type_hint_infer_prompts(self.func, self.args_info, undefined_tag=self.undefined_tag)

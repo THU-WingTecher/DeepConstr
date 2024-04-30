@@ -1,10 +1,6 @@
 # Introduction
 
-This is the implementation of DeepConstr.
-
-# Bug finding evidence (RQ3)
-
-To fully support anonymous of this artifact, we temporarily don't present bug list.
+This repository contains the implementation of DeepConstr.
 
 ### Start fuzzing
 
@@ -14,14 +10,14 @@ To fully support anonymous of this artifact, we temporarily don't present bug li
 >
 > **Arguments**:
 > - `NSIZE`: the number of operators in each generated graph.
-> - `METHOD`: in `["deepconstr", "neuri", "symbolic-cinit"]`.
-> - `MODEL`: in `["tensorflow", "torch"]`.
-> - `BACKEND`: in `["xla", "torchjit"]`.
-> - `TIME`: fuzzing time in formats like `4h`, `1m`, `30s`.
-> - `POOL`(Optional): Fuzz specific api. if not specified, conducts the fuzzing on the whole apis prepared.
+> - `METHOD`: Choose from `["deepconstr", "neuri", "symbolic-cinit"]`.
+> - `MODEL`: Choose from `["tensorflow", "torch"]`.
+> - `BACKEND`: Choose from `["xla", "torchjit"]`.
+> - `TIME`: fuzzing time in formats such as `4h`, `1m`, `30s`.
+> - `POOL`(Optional): Targets a specific API for fuzzing. If not specified, fuzzing will be conducted across all prepared APIs.
 >
 > **Outputs**:
-> - `$(pwd)/outputs/${MODEL}-${METHOD}-n${NSIZE}-{POOL}.models`: the generated test-cases (models)
+> - `$(pwd)/outputs/${MODEL}-${METHOD}-n${NSIZE}-{POOL}.models` : Directory where the generated test cases (models) are stored.
 
 #### For PyTorch
 
@@ -29,8 +25,8 @@ To fully support anonymous of this artifact, we temporarily don't present bug li
 ```bash
 source ./env_std.sh
 ./fuzz.sh 5 deepconstr     torch torchcomp 4h # test all apis that deepconstr supports
-./fuzz.sh 5 deepconstr     torch torchcomp 4h torch.abs,torch.add # test torch.abs, torch.add
-./fuzz.sh 5 deepconstr     torch torchcomp 4h torch.abs,torch.add,torch.acos # test torch.abs, torch.add, torch.acos
+./fuzz.sh 5 deepconstr     torch torchcomp 4h torch.abs,torch.add # test torch.abs, and torch.add
+./fuzz.sh 5 deepconstr     torch torchcomp 4h torch.abs,torch.add,torch.acos # test torch.abs, torch.add, and torch.acos
 ```
 
 #### For TensorFlow
@@ -45,54 +41,55 @@ source ./env_std.sh
 
 # Extract Constraints
 
-### Settings
+We strongly recommend using a virtual environment via Anaconda to ensure a clean and controlled setup. For detailed instructions, please refer to the [Anaconda documentation](https://docs.anaconda.com/free/anaconda/install/windows/).
 
-We strongly recommend to use virtual environment using anaconda.
-For detail, you can refer [!this]()
-1. install needed libraries. 
+### Setup Instructions
+
+1. Install Required Libraries:
 ```bash 
 pip install -r requirements.txt
 ```
-2. setting needed configuration
-generate .env file on the workspace($(pwd)/.env) 
-and set your values.
+2. Configuration Setup:
+Generate a .env file in your workspace directory ($(pwd)/.env) and populate it with your specific values:
+- OpenAI API Key:
+```OPENAI_API_KEY ='sk-********'```
+- Proxy Setting (Optional):
+```MYPROXY ='166.111.***.***:****'```
+3. Testing Your Configuration:
+After setting your environment variables, you can verify your configuration by running:
+```python tests/proxy.py```
+If configured correctly, you will receive a response from the OpenAI API, such as: "Hello! How can I assist you today?"
 
-    (1) Set openai key, ```OPENAI_API_KEY ='sk-********'```
-
-    (2) Set proxy(Optional), ```MYPROXY ='166.111.***.***:****'```
-
-    (3) Testing, after setting, you can check your setting by running ```python 
-    python tests/proxy.py```
-
-3. start extraction(WIP)
+### Start Extraction
 > [!NOTE]
 >
 > **Command usage of**: `./fuzz.sh tran.target METHOD MODEL BACKEND TIME`
 >
 > **Important Arguments**:
-> - `tran.target`: api name or path to extract. It can be either single api name(e.g, "torch.add") or a list contaning multiple api names(e.g, "['torch.add','torch.abs']"), or a json file path containing the list(e.g, "['torch.add','torch.abs']").
-> - `train.retrain`: boolean value that deteremine whether re-conduct constraint extraction, if it is set false, the tool only collect api that doesn't extracted. if is set true, the tool collect all apis except for pass rate exceeds pre-set target pass rate(i.e, `train.pass_rate`) 
-> - `train.pass_rate`: the target pass rate to filter out apis that have pass rate higher than the target pass rate.
-> - `train.parallel`: the number of parallel processes to validate the constraints.
-> - `train.record_path`: the path to record the extracted constraints.
-> - `hydra.verbose`: the logging level of hydra of certain mlogger("smt", "train", "convert", "constr", "llm").
-> - `train.num_eval`: the number of evaluation to validate the constraints(default: 500).
-> - `model.type`: in `["tensorflow", "torch"]`.
-> - `backend.type`: in `["xla", "torchjit"]`.
+> - `tran.target`: Specifies the API name or path to extract. This can be a single API name (e.g., `"torch.add"`), a list containing multiple API names (e.g., `["torch.add", "torch.abs"]`), or a JSON file path containing the list.
+> - `train.retrain`: A boolean value that determines whether to reconduct constraint extraction. If set to false, the tool will only collect APIs that haven't been extracted. If set to true, the tool collects all APIs except those where the pass rate exceeds the preset target pass rate (`train.pass_rate`).
+> - `train.pass_rate`: The target pass rate to filter out APIs that have a pass rate higher than this target.
+> - `train.parallel`: The number of parallel processes used to validate the constraints.
+> - `train.record_path`: The path where the extracted constraints are saved.
+> - `hydra.verbose`: Set the logging level of Hydra for specific modules ("smt", "train", "convert", "constr", "llm").
+> - `train.num_eval`: The number of evaluations performed to validate the constraints (default: 500).
+> - `model.type`: Choose from `["tensorflow", "torch"]`.
+> - `backend.type`: Choose from `["xla", "torchjit"]`.
 >
 > **Other Arguments**:
-> refer to the values under train at `/artifact/nnsmith/config/main.yaml` for more information.
+> For additional details, refer to the values under train at `/artifact/nnsmith/config/main.yaml`.
 >
 > **Outputs**:
 > - `$(pwd)/${train.record_path}/torch` if `model.type` is `torch`
 > - `$(pwd)/${train.record_path}/tf` if `model.type` is `tensorflow`
 
-#### Quick Start (Not tested yet):
+
+#### Quick Start :
 
 ##### for PyTorch 
 ```bash
 PYTHONPATH=/artifact/:/artifact/nnsmith/:/artifact/deepconstr/:$PYTHONPATH \
-python deepconstr/train/run.py train.record_path=test/records/torch backend.type=torchcomp \
+python deepconstr/train/run.py train.record_path=repro/records/torch backend.type=torchcomp \
 model.type=torch hydra.verbose=train train.parallel=1 train.eval_asset=100 \
 train.pass_rate=95 hydra.verbose=['train'] \
 train.retrain=true train.target='["torch.add","torch.abs"]'
@@ -100,7 +97,55 @@ train.retrain=true train.target='["torch.add","torch.abs"]'
 
 ##### for TensorFlow 
 ```bash
-PYTHONPATH=/artifact/:/artifact/nnsmith/:/artifact/deepconstr/:$PYTHONPATH python deepconstr/train/run.py train.record_path=test/records/tf backend.type=xla model.type=tensorflow hydra.verbose=train train.parallel=1 train.eval_asset=100 train.pass_rate=95 hydra.verbose=['train'] train.retrain=true train.target='["tf.add","tf.abs"]'
+PYTHONPATH=/artifact/:/artifact/nnsmith/:/artifact/deepconstr/:$PYTHONPATH \
+python deepconstr/train/run.py train.record_path=repro/records/tf backend.type=xla \
+model.type=tensorflow hydra.verbose=train train.parallel=1 train.eval_asset=100 train.pass_rate=95 hydra.verbose=['train'] \
+train.retrain=true train.target='["tf.add","tf.abs"]'
 ```
 
 # Reproduct Experiments
+
+### Comparative Experiment (RQ1) 
+We have four baselines for conducting experiments. Additionally, approximately 700 operators (programs) require testing for PyTorch and 150 operators for TensorFlow. Given that each operator needs to be tested for 15 minutes, completing the experiment will be time-intensive. To expedite the process, we recommend using the `exp.parallel` argument to enable multiple threads during the experiment.
+The experiment results will be saved at the folder specified in `exp.save_dir`.
+
+##### for PyTorch 
+
+```bash
+PYTHONPATH=/artifact/:/artifact/nnsmith/:/artifact/deepconstr/:$PYTHONPATH \
+python experiments/evaluate_apis.py \
+exp.save_dir=pt_gen mgen.record_path=$(pwd)/data/records/torch/ mgen.pass_rate=0.05 model.type=torch backend.type=torchjit fuzz.time=15m exp.parallel=16 mgen.noise=0.8 exp.baselines=['deepconstr', 'neuri', 'symbolic-cinit', 'deepconstr_2']
+
+```
+
+##### for TensorFlow 
+
+```bash
+PYTHONPATH=/artifact/:/artifact/nnsmith/:/artifact/deepconstr/:$PYTHONPATH \
+python experiments/evaluate_apis.py \
+exp.save_dir=tf_gen mgen.record_path=$(pwd)/data/records/tf/ mgen.pass_rate=0.05 model.type=tensorflow backend.type=xla fuzz.time=15m exp.parallel=16 mgen.noise=0.8 exp.baselines=['deepconstr', 'neuri', 'symbolic-cinit', 'deepconstr_2']
+```
+
+##### Summarize the results
+
+Specify the folder name that you used in a previous experiment. Use the -o option to name the output file. The final experiment results will be saved in the following path: /artifact/results/${output_file}.csv.
+
+For example, to specify a folder named pt_gen and save the results to pt_gen.csv, use the following command:
+```bash
+python experiments/summarize_merged_cov.py -f pt_gen -o pt_gen
+```
+
+### Constraint Assessment (RQ2) 
+
+You can review the overall scores of constraints by executing the script below:
+
+
+You can look into the overall scores of constraints by running below scripts.
+```bash
+python experiments/eval_constr.py
+```
+By default, the extracted constraints are stored at `/artifact/data/records/torch` and `/artifact/data/records/tf`. This script will automatically gather the constraints from these default locations. The resulting plots will be saved at`/artifact/results/5_dist_tf.png` for TensorFlow and `/artifact/results/5_dist_torch.png` for PyTorch.
+
+### Bug finding evidence (RQ3)
+
+To ensure the anonymity of this artifact, we are currently withholding the list of identified bugs.

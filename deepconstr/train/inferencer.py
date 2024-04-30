@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from typing import Dict, Any, List, Tuple
 import os 
 import openai
-from logger import LLM_LOG
+from deepconstr.logger import LLM_LOG
 from deepconstr.utils import formatted_dict
 
 load_dotenv(override=True)
@@ -67,7 +67,7 @@ class Inferencer() :
                   update : bool = False
                   ) -> str :
         # self.flip_key()
-        os.environ['ALL_PROXY'] =os.getenv("MYPROXY")
+        os.environ['ALL_PROXY'] = os.getenv("MYPROXY")
         completion = None
 
         start = time.time()

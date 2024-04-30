@@ -12,7 +12,6 @@ from experiments.evaluate_tf_models import tf_model_exec, clear_gcda
 from nnsmith.logger import DTEST_LOG
 # Load the JSON file
 
-BASELINES = ["neuri"] 
 cov_parallel = 1
 
 def activate_conda_environment(env_name):
@@ -220,7 +219,7 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov"):
         else:
             RECORD = os.path.join(os.getcwd(), "data", "torch_records")
     # Construct the command to run fuzz.py
-    fuzz_command = f"PYTHONPATH=$(pwd):$(pwd)/neuri python neuri/cli/fuzz.py " \
+    fuzz_command = f"PYTHONPATH=$(pwd):$(pwd)/nnsmith:$(pwd)/deepconstr python nnsmith/cli/fuzz.py " \
                    f"fuzz.time={config['fuzz']['time']} " \
                    f"mgen.record_path={RECORD} " \
                    f"fuzz.root=$(pwd)/{config['exp']['save_dir']}/{config['model']['type']}-{baseline}-n{max_nodes}-{test_pool_modified} " \
@@ -301,27 +300,27 @@ def gen_save_path(api_name, baseline, cfg) :
     save_path = f"{os.getcwd()}/{cfg['exp']['save_dir']}/{cfg['model']['type']}-{baseline}-n{max_nodes}-{test_pool_modified}.models"
     return save_path
 
-def load_from_dirs(cfg) :
-    columns = []
-    retrain_list = set()
-    refuzz_list = set() 
-    for dir_name in os.listdir(os.path.join(os.getcwd(),cfg["exp"]["save_dir"])) :
-        if dir_name.endswith("models") :
-            test_list = os.listdir(os.path.join(os.getcwd(),cfg["exp"]["save_dir"],dir_name))
-            baseline, name = parse_directory_name(dir_name)
-            name = name.replace('.models','')
+# def load_from_dirs(cfg) :
+#     columns = []
+#     retrain_list = set()
+#     refuzz_list = set() 
+#     for dir_name in os.listdir(os.path.join(os.getcwd(),cfg["exp"]["save_dir"])) :
+#         if dir_name.endswith("models") :
+#             test_list = os.listdir(os.path.join(os.getcwd(),cfg["exp"]["save_dir"],dir_name))
+#             baseline, name = parse_directory_name(dir_name)
+#             name = name.replace('.models','')
 
-            if len(test_list)>0 and( "coverage" in test_list or max(map(float, test_list)) > 500 ):
-                pass
-            else :
-                print(max(map(float, test_list)) if test_list else 0)
-                refuzz_list.add((baseline, name, "fuzz"))
-                print(f"keep test {name}, {baseline}")
-            retrain_list.add((baseline, name, "cov"))
-    return retrain_list, refuzz_list
+#             if len(test_list)>0 and( "coverage" in test_list or max(map(float, test_list)) > 500 ):
+#                 pass
+#             else :
+#                 print(max(map(float, test_list)) if test_list else 0)
+#                 refuzz_list.add((baseline, name, "fuzz"))
+#                 print(f"keep test {name}, {baseline}")
+#             retrain_list.add((baseline, name, "cov"))
+#     return retrain_list, refuzz_list
 
 def load_api_names_from_data(record_path, pass_rate) : 
-    from nnsmith.deepconstr import make_record_finder  
+    from deepconstr.gen.record import make_record_finder  
     records = make_record_finder(
         path=record_path,
         pass_rate=pass_rate,
@@ -350,27 +349,19 @@ def need_to_gen_testcases(api_name, base_line, cfg) :
             if max(map(float, test_list)) > 500 : return False
     return True
 
-@hydra.main(version_base=None, config_path="../neuri/config", config_name="main")
+@hydra.main(version_base=None, config_path="../nnsmith/config", config_name="main")
 def main(cfg) : 
-    # from neuri.cli.train import get_completed_list
+    # from nnsmith.cli.train import get_completed_list
     # from experiments.summarize_merged_cov import exclude_intestable
     """
     totally, cfg['exp']['parallel'] * cov_parallel * len(BASELINES) process will be craeted
     """
     retrain_list = set()
     refuzz_list = set()
-    csv_paths = [
-        # "/artifact/experiments/results/merged_tf_v3.csv",
-        "/artifact/results/pt_constr.csv",
-        # "/artifact/results/pt_constr.csv",
-        ]
-
-    # retrain_list, refuzz_list = load_from_csvs(csv_paths)
-    # retrain_list, refuzz_list = load_from_dirs(cfg)
     api_names = load_api_names_from_data(cfg["mgen"]["record_path"], cfg["mgen"]["pass_rate"])
-    api_names = list(set(api_names))
-    with open("/artifact/data/torch_nnsmith.json", "r") as f :
-        api_names = json.load(f)
+    # api_names = list(set(api_names))
+    # with open("/artifact/data/torch_nnsmith.json", "r") as f :
+    #     api_names = json.load(f)
     for baseline in cfg["exp"]["baselines"] : 
         for api_name in api_names :
             if need_to_gen_testcases(api_name, baseline, cfg) :

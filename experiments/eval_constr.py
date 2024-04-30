@@ -46,88 +46,40 @@ def load_data(path) :
     print(len(data_list))
     return data_list
 
-
-"""
-args:
-  dtype:
-  - Tensor
-  - Tensor
-  is_pos:
-  - true
-  - false
-  name:
-  - self
-  - LLM
-  required:
-  - true
-  - true
-name: torch.Tensor.atan2
-package: torch
-pass_rate: 17.4
-rules:
-- - cot: ''
-    length: 1
-    target:
-      choosen_dtype:
-        LLM: tensor
-        self: tensor
-      msg: The size of tensor a (2) must match the size of tensor b (9) at non-singleton
-        dimension 5
-      package: torch
-    txt: self.shape[5] == LLM.shape[5]
-  - f1_score: 69.06077348066299
-    overall_score: 100
-    precision: 100.0
-    recall: 52.742616033755276
-- - cot: divided
-    length: 1
-    target:
-      choosen_dtype:
-        LLM: tensor
-        self: tensor
-      msg: 'Too large tensor shape: shape = [6, 9, 7, 8, 9, 9, 9, 9, 9]'
-      package: torch
-    txt: self.shape == LLM.shape
-  - f1_score: 67.79661016949153
-    overall_score: 100
-    precision: 100.0
-    recall: 51.28205128205129
-
-"""
-def get_constr_stats(data_list):
-    constr_stats = {
+def get_deepconstr_stats(data_list):
+    deepconstr_stats = {
         "processed": 0,
         "LLM": 0
     }
-    constr_len = []
-    constr_operator = {}
-    constr_f1 = []
-    constr_prec = []
-    constr_recall = []
+    deepconstr_len = []
+    deepconstr_operator = {}
+    deepconstr_f1 = []
+    deepconstr_prec = []
+    deepconstr_recall = []
     for data in data_list:
         # if any([rule[0]["cot"] in ["processed", "divided"] for rule in data["rules"]]):
-        #     constr_stats["processed"] += 1
+        #     deepconstr_stats["processed"] += 1
         # else :
         #     # for r in data["rules"] :
         #     #     print(r[0]["cot"])
-        #     constr_stats["LLM"] += 1
+        #     deepconstr_stats["LLM"] += 1
         for rule in data["rules"]:
             if "processed" == rule[0]["cot"] or "divided" == rule[0]["cot"]:
-                constr_stats["processed"] += 1
+                deepconstr_stats["processed"] += 1
             else :
-                constr_stats["LLM"] += 1
-            constr_len.append(rule[0].get("length", 1))
-            constr_f1.append(rule[1]["f1_score"])
-            constr_prec.append(rule[1]["precision"])
-            constr_recall.append(rule[1]["recall"])
-    return constr_stats, constr_len, constr_operator, constr_f1, constr_prec, constr_recall
+                deepconstr_stats["LLM"] += 1
+            deepconstr_len.append(rule[0].get("length", 1))
+            deepconstr_f1.append(rule[1]["f1_score"])
+            deepconstr_prec.append(rule[1]["precision"])
+            deepconstr_recall.append(rule[1]["recall"])
+    return deepconstr_stats, deepconstr_len, deepconstr_operator, deepconstr_f1, deepconstr_prec, deepconstr_recall
 def mean(numbers):
     return sum(numbers) / len(numbers)
 import statistics
 # -> visualize distribution of length of cosntr, f1_ prec_ recall of constr, pie chart of constr type
-def viz_passrate(data_list, acc_data_list, name, path = "/artifact/results/") :
+def viz_passrate(data_list, deepdeepconstr_s_data_list, name, path = "/artifact/results/") :
     all = []
-    for i, data_li in enumerate([data_list, acc_data_list]):
+    for i, data_li in enumerate([data_list, deepdeepconstr_s_data_list]):
         pass_rate_num_of_constr = []
         for data in data_li:
             pass_rate_num_of_constr.append(
@@ -142,32 +94,32 @@ def viz_passrate(data_list, acc_data_list, name, path = "/artifact/results/") :
     print("mean passrate", mean(all))
     print("median passrate", statistics.median(all))
 
-def viz_gen_way_of_constrs(constr_stats):
+def viz_gen_way_of_constrs(deepconstr_stats):
     print("### GEN WAY OF CONSTRAINS ###")
-    print(constr_stats)
+    print(deepconstr_stats)
     print("### GEN WAY OF CONSTRAINS ###")
 
-def viz_constr_len(constr_len : List[int]):
-    plt.hist(constr_len, bins=range(1, max(constr_len) + 1))
+def viz_deepconstr_len(deepconstr_len : List[int]):
+    plt.hist(deepconstr_len, bins=range(1, max(deepconstr_len) + 1))
     plt.show()
 
-def viz_constr_f1(constr_recall : List[float], constr_prec, acc_recall, acc_prec , path = "/artifact/results/", name = "PyTorch"):
+def viz_f1(deepconstr_recall : List[float], deepconstr_prec, deepdeepconstr_s_recall, deepdeepconstr_s_prec , path = "/artifact/results/", name = "PyTorch"):
 
     plt.figure(figsize=(9,9))
     plt.legend(loc='lower right')
     # PyTorch
-    plt.scatter(acc_prec, acc_recall, alpha=0.8, edgecolors='black', label=r'\textsc{DeepConstr$^{s}$}', linewidth=0.6, s=80, c='blue', marker='x')
-    plt.scatter(constr_prec, constr_recall, alpha=0.8, edgecolors='black', label=r'\textsc{DeepConstr}', linewidth=0.6, s=80, c='red', marker='+')
-    # plt.scatter(acc_prec, acc_recall, alpha=0.8, edgecolors='black', label=r'\textsc{DeepConstr$^{s}$}', linewidth=0.6, s=80, c='blue', marker='o')
-    # plt.scatter(constr_prec, constr_recall, alpha=0.8, edgecolors='black', label=r'\textsc{DeepConstr}', linewidth=0.6, s=80, c='red', marker='o')
-    print("mean acc_prec", mean(acc_prec))
-    print("median acc_prec", statistics.median(acc_prec))
-    print("mean acc_recall", mean(acc_recall))
-    print("median acc_recall", statistics.median(acc_recall))
-    print("mean constr_prec", mean(constr_prec))
-    print("median constr_prec", statistics.median(constr_prec))
-    print("mean constr_recall", mean(constr_recall))
-    print("median constr_recall", statistics.median(constr_recall))
+    plt.scatter(deepdeepconstr_s_prec, deepdeepconstr_s_recall, alpha=0.8, edgecolors='black', label=r'\textsc{DeepConstr$^{s}$}', linewidth=0.6, s=80, c='blue', marker='x')
+    plt.scatter(deepconstr_prec, deepconstr_recall, alpha=0.8, edgecolors='black', label=r'\textsc{DeepConstr}', linewidth=0.6, s=80, c='red', marker='+')
+    # plt.scatter(deepdeepconstr_s_prec, deepdeepconstr_s_recall, alpha=0.8, edgecolors='black', label=r'\textsc{DeepConstr$^{s}$}', linewidth=0.6, s=80, c='blue', marker='o')
+    # plt.scatter(deepconstr_prec, deepconstr_recall, alpha=0.8, edgecolors='black', label=r'\textsc{DeepConstr}', linewidth=0.6, s=80, c='red', marker='o')
+    print("mean deepdeepconstr_s_prec", mean(deepdeepconstr_s_prec))
+    print("median deepdeepconstr_s_prec", statistics.median(deepdeepconstr_s_prec))
+    print("mean deepdeepconstr_s_recall", mean(deepdeepconstr_s_recall))
+    print("median deepdeepconstr_s_recall", statistics.median(deepdeepconstr_s_recall))
+    print("mean deepconstr_prec", mean(deepconstr_prec))
+    print("median deepconstr_prec", statistics.median(deepconstr_prec))
+    print("mean deepconstr_recall", mean(deepconstr_recall))
+    print("median deepconstr_recall", statistics.median(deepconstr_recall))
     # if name == "torch" :
     #     plt.title('\\textit{PyTorch}')
     # else :
@@ -190,24 +142,24 @@ if __name__ == "__main__" :
     for framework in frameworks:
         data = []
         path = os.path.join(record_dir, "records", framework)
-        acc_path = os.path.join(record_dir, "only_acc", framework)
+        deepdeepconstr_s_path = os.path.join(record_dir, "only_acc", framework)
         data_list = load_data(path)
-        acc_data_list = load_data(acc_path)
-        constr_stats, constr_len, constr_operator, constr_f1, constr_prec, constr_recall = get_constr_stats(data_list)
-        acc_constr_stats, acc_constr_len, acc_constr_operator, acc_constr_f1, acc_constr_prec, acc_constr_recall = get_constr_stats(acc_data_list)
+        deepdeepconstr_s_data_list = load_data(deepdeepconstr_s_path)
+        deepconstr_stats, deepconstr_len, deepconstr_operator, deepconstr_f1, deepconstr_prec, deepconstr_recall = get_deepconstr_stats(data_list)
+        deepdeepconstr_s_deepconstr_stats, deepdeepconstr_s_deepconstr_len, deepdeepconstr_s_deepconstr_operator, deepdeepconstr_s_deepconstr_f1, deepdeepconstr_s_deepconstr_prec, deepdeepconstr_s_deepconstr_recall = get_deepconstr_stats(deepdeepconstr_s_data_list)
 
     for framework in frameworks:
         data = []
         path = os.path.join(record_dir, "records", framework)
-        acc_path = os.path.join(record_dir, "only_acc", framework)
+        deepdeepconstr_s_path = os.path.join(record_dir, "only_acc", framework)
         data_list = load_data(path)
-        acc_data_list = load_data(acc_path)
-        constr_stats, constr_len, constr_operator, constr_f1, constr_prec, constr_recall = get_constr_stats(data_list)
-        acc_constr_stats, acc_constr_len, acc_constr_operator, acc_constr_f1, acc_constr_prec, acc_constr_recall = get_constr_stats(acc_data_list)
-        print("all")
-        viz_gen_way_of_constrs(constr_stats)
-        print("only_acc")
-        viz_gen_way_of_constrs(acc_constr_stats)
-        viz_constr_f1(constr_recall, constr_prec, acc_constr_recall, acc_constr_prec, name=framework)
-        viz_passrate(data_list, acc_data_list, name=framework)
+        deepdeepconstr_s_data_list = load_data(deepdeepconstr_s_path)
+        deepconstr_stats, deepconstr_len, deepconstr_operator, deepconstr_f1, deepconstr_prec, deepconstr_recall = get_deepconstr_stats(data_list)
+        deepdeepconstr_s_deepconstr_stats, deepdeepconstr_s_deepconstr_len, deepdeepconstr_s_deepconstr_operator, deepdeepconstr_s_deepconstr_f1, deepdeepconstr_s_deepconstr_prec, deepdeepconstr_s_deepconstr_recall = get_deepconstr_stats(deepdeepconstr_s_data_list)
+        # print("all")
+        # viz_gen_way_of_constrs(deepconstr_stats)
+        # print("only_acc")
+        # viz_gen_way_of_constrs(deepdeepconstr_s_deepconstr_stats)
+        viz_f1(deepconstr_recall, deepconstr_prec, deepdeepconstr_s_deepconstr_recall, deepdeepconstr_s_deepconstr_prec, name=framework)
+        viz_passrate(data_list, deepdeepconstr_s_data_list, name=framework)
         # print(pass_rate_num_of_constr)
