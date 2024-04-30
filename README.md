@@ -83,19 +83,18 @@ and set your values.
 > - `backend.type`: in `["xla", "torchjit"]`.
 > **Other Arguments**:
 > refer to the values under train at `/artifact/nnsmith/config/main.yaml` for more information.
-
-
 > **Outputs**:
 > - `$(pwd)/${train.record_path}/torch` if `model.type` is `torch`
 > - `$(pwd)/${train.record_path}/tf` if `model.type` is `tensorflow`
 
-> **Quick Start**(Not tested yet):
-for PyTorch 
+#### Quick Start (Not tested yet):
+
+##### for PyTorch 
 ```bash
 PYTHONPATH=/artifact/:/artifact/nnsmith/:/artifact/deepconstr/:$PYTHONPATH python deepconstr/train/run.py train.record_path=test/records/torch backend.type=torchcomp model.type=torch hydra.verbose=train train.parallel=1 train.eval_asset=100 train.pass_rate=95 hydra.verbose=['train'] train.retrain=true train.target='["torch.add","torch.abs"]'
 ```
 
-for TensorFlow 
+##### for TensorFlow 
 ```bash
 PYTHONPATH=/artifact/:/artifact/nnsmith/:/artifact/deepconstr/:$PYTHONPATH python deepconstr/train/run.py train.record_path=test/records/tf backend.type=xla model.type=tensorflow hydra.verbose=train train.parallel=1 train.eval_asset=100 train.pass_rate=95 hydra.verbose=['train'] train.retrain=true train.target='["tf.add","tf.abs"]'
 ```
