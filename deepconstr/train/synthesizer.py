@@ -64,11 +64,8 @@ class Synthesizer:
         scores = {}
         evaluator = Evaluator(self.target, constraint, self.record, self.executor, self.cfg, self.errs_of_FP_cases)
         TRAIN_LOG.info(f"Evaluating [[{constraint.txt}]] ::: Z3 [[{constraint.z3expr}]]")
-        # if self.goal_is_acc() :
-        #     evaluator.get_precision(num_of_check=self.cfg['simple_eval_asset'] if skim else self.cfg['eval_asset'])
-        #     scores["precision"] = evaluator.precision
-        # else :
-        evaluator.get_f1(num_of_check=self.cfg['simple_eval_asset'] if skim else self.cfg['eval_asset'])
+
+        evaluator.get_f1(num_of_check=self.cfg['simple_num_eval'] if skim else self.cfg['num_eval'], ratio=self.cfg['eval_ratio'])
         self.get_varied_errs_from_evaluator(evaluator)
         scores["precision"] = evaluator.precision
         scores["recall"] = evaluator.recall

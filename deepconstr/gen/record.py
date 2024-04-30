@@ -1,7 +1,9 @@
 # Utilities for using and be used by autoinf.
 from os import PathLike
+import os
 from typing import Any, Dict, List, Tuple, Type
-from deepconstr.utils import load_yaml
+
+import yaml
 from deepconstr.logger import CONVERT_LOG
 # from neuri.specloader.rule import gen_rule
 BLACKLIST = [
@@ -76,6 +78,11 @@ def filter_record(record, filter) :
     
     return record
 
+
+def load_yaml(path) :
+    with open(path, 'r') as f:
+        return yaml.safe_load(f)
+
 def process_record(file_path: str, test_pool: list = [], filter : Dict[str, List[str]] = {"args" : ["out"]}) -> dict:
     """
     Process a single file and return the configuration as a record dictionary.
@@ -106,6 +113,15 @@ def gen_inst_with_records(data_dir: str, test_pool: list = []):
             if record:
                 yield record
 
+
+def save_record(record, path) :
+    directory = os.path.dirname(path)
+    if not os.path.exists(directory):
+        os.makedirs(directory, exist_ok=True)
+    
+    with open(path, 'w') as file:
+        yaml.dump(record, file)
+        
 def make_record_finder(
     path: PathLike = None,
     pass_rate: float = 0.8,

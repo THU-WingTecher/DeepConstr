@@ -70,6 +70,7 @@ fuzz:
 
 train:
   root: null # path to the root of the training data
+  retrain: false
   n_try: 20
   seed: null
   record_path: null
@@ -85,14 +86,14 @@ train:
   top_k: 10
   max_num_of_seeds: 50
   simple_eval_asset: 20
-  eval_asset: 50 #eval asset of constraints, pass_rate assess asset of the operator
+  num_eval: 50 #eval asset of constraints, pass_rate assess asset of the operator
+  eval_ratio: 1.5 # the ratio of eval asset for completeness compared to soundness
   n_infer_per_round: 10
   str_sim_threshold: 0.65
   pass_rate: 95
   precision_threshold: 10 # 0 ~ 100
-  list: "/artifact/data/torch_overall_apis.json" # list of train-target apis
+  target: null # path or list or api name "/artifact/data/torch_overall_apis.json" # list of train-target apis
   max_length: 5
-  api_name: null # api name to train(in this case, we only train one api)
 llm:
   settings:
     model_name: "gpt-3.5-turbo" # "gpt-4" # "gpt-3.5-turbo" # "gpt-3.5" # "gpt-3" # "gpt-2" # "gpt-2-xl"
@@ -107,7 +108,7 @@ filter:
   type: []
   patch: []
 
-exp: #for experiments, only using by
+exp: #for experiments
   api_list: null
   parallel: 1
   save_dir: "exp"

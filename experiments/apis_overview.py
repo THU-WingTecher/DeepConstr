@@ -1,3 +1,21 @@
+        completed_list = get_completed_list()
+        if self.cfg["model"]["type"] == "torch" :
+            train_list = check_left_api(
+                    pt_neuri_data_path,
+                    pt_data_paths
+                ) + check_left_api(
+                    pt_deepconstr_data_path,
+                    pt_data_paths
+                )
+        elif self.cfg["model"]["type"] == "tensorflow" :
+            train_list = check_left_api(
+                    tf_neuri_data_path,
+                    tf_data_paths
+                ) + check_left_api(
+                    tf_deepconstr_data_path,
+                    tf_data_paths
+                )
+            
 def get_completed_list(path = "/artifact/experiments/results/completed.json") : 
     data = set()
     # with open(path, "r") as f:

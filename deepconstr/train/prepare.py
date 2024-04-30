@@ -1,19 +1,13 @@
-import copy
 import os
 import hydra
 from omegaconf import DictConfig
-
-import torch
-from torch import Tensor
 import yaml
-import tensorflow as tf 
-from nnsmith.autoinf.instrument.collect import parse_torch_sigs
-from nnsmith.deepconstr import _process_record
-from nnsmith.deepconstr.executor import Executor
-from nnsmith.error import UnsolverableError
+from deepconstr.gen.record import save_record, transform_record_for_saving
+from deepconstr.train.executor import Executor
+from deepconstr.error import UnsolverableError
 from nnsmith.logger import TRAIN_LOG
 from nnsmith.materialize import Model
-from nnsmith.abstract.dtype import materalize_dtypes
+from deepconstr.grammar.dtype import materalize_dtypes
 
 def load_executor(model_type, backend_target, parallel):
     ModelType = Model.init(
@@ -21,83 +15,6 @@ def load_executor(model_type, backend_target, parallel):
     )
     executor = Executor(ModelType, parallel = parallel)
     return executor
-
-def transfer_older_record_to_newer(record: dict) -> dict:
-    new = {
-        "args" : { 
-            "is_pos" : [],
-            "dtype" : [],
-            "name" : [],
-            "required" : [],
-        },
-        "name" : None,
-        "package" : None,
-        "pass_rate" : 0,
-    }
-    new["name"] = record["title"]
-    new["args"]["name"] = list(record["constraints"].keys())
-    new["args"]["dtype"] = list([a["dtype"] for a in record["constraints"].values()])
-    new["args"]["required"] = list([a["required"] for a in record["constraints"].values()])
-    new["args"]["is_pos"] = [False for _ in range(len(new["args"]["name"]))]
-    new["args"]["value"] = [None for _ in range(len(new["args"]["name"]))]
-
-    assert record["package"] == "tf"
-    new["package"] = "tensorflow"
-    return new
-
-def build_record_from_sig(api) :
-    def dtype_infer(name, default) :
-        if name in ["name"] :
-            return "str"
-        elif name in ["input", "x", "y"] :
-            return "tensor" 
-        elif param.default != inspect.Parameter.empty :
-            return type(param.default)
-        else :
-            print(name, default)
-            return None
-    import inspect 
-    sig = inspect.signature(api)
-    names = []
-    dtypes = []
-    is_pos = []
-    required_list = []
-    for param in sig.parameters.values() :
-        names.append(param.name)
-        if dtype_infer(param.name, param.default) is None :
-            continue
-        dtypes.append(param.annotation)
-        is_pos.append(True)
-        required_list.append(param.default == inspect.Parameter.empty)
-    print(names, dtypes, is_pos, required_list)
-def transform_record_for_saving(record: dict) -> dict:
-    """
-    Transform the record dictionary to the original format expected for saving.
-
-    Args:
-        record (dict): The modified record dictionary.
-
-    Returns:
-        dict: The transformed record dictionary suitable for saving.
-    """
-    transformed = {}
-    for key, value in record.items():
-        if key == 'args' :
-            transformed[key] = {}
-            for k, v in value.items():
-                if k in ['dtype_obj', 'value'] :
-                    pass 
-                else :
-                    transformed[key][k] = v
-        elif key == "rules" :
-            ## logic for deserialize rules
-            pass 
-        elif key == "outputs" :
-            ## outputs are only for placeholder
-            pass
-        else:
-            transformed[key] = value
-    return transformed
 
 def deal_special_case(record) :
     special_records = {
@@ -142,7 +59,6 @@ def deal_special_case(record) :
                 record[key] = value
             elif key == "is_pos" :
                 record["args"]["is_pos"] = value
-
 
 def torch_prepare(save_dir, executor):
     import torch.jit.supported_ops
@@ -274,7 +190,6 @@ def tf_prepare(save_dir, executor, datapath="/artifact/data/tf_nnsmith.json"):
 
 def check_trainable(record, executor, save_path, *args, **kwargs) : 
 
-    record = transfer_older_record_to_newer(record)
     record['args']['dtype_obj'] = [materalize_dtypes(dtype) for dtype in record['args']['dtype']]
     record['args']['value'] = [None] * len(record['args']['name'])
     record['outputs'] = {'value': []} # Placeholder for the output values
@@ -301,14 +216,6 @@ def check_trainable(record, executor, save_path, *args, **kwargs) :
     else :
         TRAIN_LOG.info(f"SELECTED  {record['name'] = } from {record['args'] = } is legal({res[1]})")
         return True, record
-
-def save_record(record, path) :
-    directory = os.path.dirname(path)
-    if not os.path.exists(directory):
-        os.makedirs(directory, exist_ok=True)
-    
-    with open(path, 'w') as file:
-        yaml.dump(record, file)
 
 def custom_split(input_string):
     # Stores the parts of the string split by commas outside brackets
@@ -414,6 +321,7 @@ def gen_record_for_operator(op_name, args_str, is_tensor_method, package="torch"
 def main(cfg: DictConfig):
     executor = load_executor(cfg["model"]["type"], "cpu", cfg["train"]["parallel"])
     if cfg["model"]["type"] == "torch":
+        ## generate torch type information from torch.jit.supported_ops
         torch_prepare(cfg["train"]["root"], executor)
     elif cfg["model"]["type"] == "tensorflow":
         tf_prepare(cfg["train"]["root"], executor)

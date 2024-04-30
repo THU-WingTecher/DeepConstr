@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Literal, Tuple, Type
 
 import yaml
-from deepconstr.gen.record import process_record
+from deepconstr.gen.record import load_yaml, process_record
 from deepconstr.train.constr import Constraint, convert_constr_to_executable, convert_dtypes_to_z3s
 from deepconstr.train.errmsg import ErrorMessage, is_similar, map_error_messages_to_clusters_dynamic
 from deepconstr.train.executor import Executor, is_normal_error
@@ -16,11 +16,12 @@ from deepconstr.train.inferencer import Inferencer
 import hydra
 from omegaconf import DictConfig
 
+from deepconstr.train.prepare import check_trainable
 from nnsmith.backends.factory import BackendFactory
 from nnsmith.materialize import Model
 from deepconstr.train.prompter import Prompter
 from deepconstr.train.synthesizer import Synthesizer, segment_constr, parse_from_raw_txt
-from deepconstr.utils import formatted_dict, load_yaml
+from deepconstr.utils import formatted_dict
 from deepconstr.logger import TRAIN_LOG
 
 # Status.csv
@@ -58,7 +59,7 @@ class TrainingLoop:
         ):
             raise ValueError(
                 "Please set `fuzz.crash_safe=false` for XLA on CUDA. "
-                "Also see https://github.com/ise-uiuc/deepconstr/blob/main/doc/known-issues.md"
+                "Also see https://github.com/ise-uiuc/nnsmith/blob/main/doc/known-issues.md"
             )
 
         self.n_infer = int(cfg["train"]["n_infer_per_round"])
@@ -76,8 +77,7 @@ class TrainingLoop:
         )
 
         self.executor : Executor = Executor(self.ModelType, parallel = cfg["train"]["parallel"])
-        self.train_list = self.get_train_list(path = cfg["train"]["list"], 
-                                              api_name = cfg["train"]["api_name"])
+        self.train_list = self.get_train_list(target = cfg["train"]["target"])
         TRAIN_LOG.info(
             f"{len(self.train_list)} opsets wait for inferring"
         )
@@ -105,58 +105,67 @@ class TrainingLoop:
             "save" : 0
         }
 
-    def get_train_list(self, path = None, api_name = None) -> List[str]:
+    def get_train_list(self, target) -> List[str]:
         """
         get operator yaml file path
         """
+        
         def sort_key(file_name):
             base_name, index_with_extension = file_name.split('-')[0], file_name.split('-')[1]
             index = index_with_extension.replace('.yaml', '')
             return base_name, index
+
         train_list = []
+        final_train_list = []
         record_paths = []
-        if api_name is not None :
-            train_list = [api_name]
-        elif path is not None :
-            with open(path, "r") as f:
-                train_list = json.load(f)
+        record : Dict[str, Any] = {}
+        if isinstance(target, list) : 
+            train_list = target 
+        elif isinstance(target, str) :
+            if target.endswith("json") :
+                with open(target, "r") as f:
+                    train_list = json.load(f)
+            else :
+                train_list = [target]
+        else :
+            raise ValueError(f"Invalid train list(list, or str(api name or api name list)) : {type(target)}")
         
         root_path = self.cfg["train"]["record_path"] 
-        completed_list = get_completed_list()
-        if self.cfg["model"]["type"] == "torch" :
-            train_list = check_left_api(
-                    pt_neuri_data_path,
-                    pt_data_paths
-                ) + check_left_api(
-                    pt_deepconstr_data_path,
-                    pt_data_paths
-                )
-        elif self.cfg["model"]["type"] == "tensorflow" :
-            train_list = check_left_api(
-                    tf_neuri_data_path,
-                    tf_data_paths
-                ) + check_left_api(
-                    tf_deepconstr_data_path,
-                    tf_data_paths
-                )
-        for root, _, files in os.walk(root_path):
-            for file in files:
-                if file.endswith(".yaml"):
-                    name = file.split(".")[0].split("-")[0]
-                    full_name = ".".join(os.path.join(root, file).replace('/','.').split('-')[0].split('.')[2:])
-                    if full_name in train_list :
-                        with open(os.path.join(root, file), "r") as f:
-                            record = yaml.safe_load(f)
-                            if record.get("name", None) in ["tf.raw_ops.Pad", "tf.raw_ops.StatelessMultinomial", "torch.block_diag"] :
-                                pass
-                            elif record.get("error", None) is not None or len(record.get("rules", [])) > 0 :
-                                continue
-                            elif record.get("pass_rate", 0) >= 15 :
-                                continue
-                        record_paths.append(os.path.join(root, file))
+        for api_name in train_list :
+            TRAIN_LOG.info(f"Finding Type information with with {len(train_list)} apis")
+            all_files = []
+            name_to_path = os.path.join(root_path, api_name.replace(".", "/"))
+            search_pattern = name_to_path + "-*"
+            files_found = glob.glob(search_pattern)
+            if files_found:
+                # If files are found, append them to the all_files list
+                all_files.extend(files_found)
+                TRAIN_LOG.info(f"Files found for {api_name}: {files_found}")
+            else:
+                TRAIN_LOG.info(f"No files found for API: {api_name} ==> Try to generate ...")
+                file = gen_property(api_name)
+                all_files.append(file)
+                # If no files are found for this api, log the information
+            record_paths.extend(all_files)
+        
+        for record_path in record_paths :
+            TRAIN_LOG.info(f"Validate the properties of {record_path}")
+            with open(os.path.join(record_path), "r") as f:
+                record = yaml.safe_load(f)
+            if record.get("error", None) is not None :
+                TRAIN_LOG.info(f"{record_path} is errored record")
+                continue
+            elif not self.cfg["train"]["retrain"] and len(record.get("rules", [])) > 0 :
+                TRAIN_LOG.info(f"{record_path} is already trained")
+                final_train_list.append(record_path)
+                continue
+            is_trainable, record = check_trainable(record, self.executor) :
+            if is_trainable :
+                final_train_list.append(record_path)
+
         record_paths = sorted(record_paths, key=sort_key)
-        print(record_paths)
         return record_paths
+    
         ### all records of torch apis ###
         # li = []
         # root_path = self.cfg["train"]["record_path"] 
@@ -383,7 +392,7 @@ class TrainingLoop:
                     TRAIN_LOG.warning(f"""Record don't need-train/trainable : {formatted_dict(op_record, sep=":", split=SPLITTER)}""")
 
     def finalize_infering(self, record, record_path) :
-        pass_rate, unsolved = self.get_pass_rate_and_err_msgs(record, self.cfg["train"]["eval_asset"])
+        pass_rate, unsolved = self.get_pass_rate_and_err_msgs(record, self.cfg["train"]["num_eval"])
         unsolved_msgs = [e[0].dump() for e in unsolved if e] if unsolved else []
         self.update_pass_rate(record, pass_rate)
         save_record(record, record_path)
@@ -399,7 +408,7 @@ unsolved_err_msgs : {unsolved_msgs}
     
     def update_pass_rate(self, record, pass_rate = None) :
         if pass_rate is None :
-            pass_rate, unsolved = self.get_pass_rate_and_err_msgs(record, self.cfg["train"]["eval_asset"])
+            pass_rate, unsolved = self.get_pass_rate_and_err_msgs(record, self.cfg["train"]["num_eval"])
         TRAIN_LOG.info(f"pass_rate : {pass_rate}")
         record["pass_rate"] = pass_rate
 
@@ -439,7 +448,7 @@ unsolved_err_msgs : {unsolved_msgs}
         constr_list.extend(self.get_constrs_from_rules(op_record))
         self.inferencer.init()
         while n_try < self.cfg["train"]["n_try"] :
-            pass_rate, sorted_err_instances = self.get_pass_rate_and_err_msgs(op_record, self.cfg["train"]["eval_asset"])
+            pass_rate, sorted_err_instances = self.get_pass_rate_and_err_msgs(op_record, self.cfg["train"]["num_eval"])
             self.update_pass_rate(op_record, pass_rate)
             if self.extra_exit_check(pass_rate, sorted_err_instances, constr_list) :
                 break
@@ -454,7 +463,7 @@ unsolved_err_msgs : {unsolved_msgs}
                 else :
                     TRAIN_LOG.error(f"Failed to train {most_frequents[0].get_core_msg()}")
                     return
-                pass_rate, sorted_err_instances = self.get_pass_rate_and_err_msgs(op_record, self.cfg["train"]["eval_asset"])
+                pass_rate, sorted_err_instances = self.get_pass_rate_and_err_msgs(op_record, self.cfg["train"]["num_eval"])
                 self.update_pass_rate(op_record, pass_rate)
         
         self.save_only_acc(op_record, record_path)
@@ -481,7 +490,7 @@ unsolved_err_msgs : {unsolved_msgs}
 
     def reproduce_errs(self, record, target : ErrorMessage) :
         targets = []
-        targets = self.get_sim_errors(target, record, num_of_check = self.cfg["train"]["eval_asset"])
+        targets = self.get_sim_errors(target, record, num_of_check = self.cfg["train"]["num_eval"])
         if targets : 
             return targets
         else :# no similar error messages

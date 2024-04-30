@@ -89,10 +89,10 @@ class Evaluator() :
         tp = self.assess_TP(num_of_check)
         precision = self.cal_precision(fn, tp)
         return precision
-    def get_f1(self, num_of_check) :
+    def get_f1(self, num_of_check, ratio) :
         tp = self.assess_TP(num_of_check)
         if self.gen_interfered : return 0
-        fn = self.assess_FN(num_of_check)
+        fn = self.assess_FN(int(num_of_check*ratio))
         if self.gen_interfered : return 0
         self.precision = self.cal_precision(fn, tp)
         self.recall = self.cal_recall(fn, tp)

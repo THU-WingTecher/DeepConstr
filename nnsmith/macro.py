@@ -33,11 +33,11 @@ python neuri/materialize/torch/program.py /artifact/exp/ torchcomp
 """
 
 """train
-PYTHONPATH=/artifact/neuri/:/artifact/:$PYTHONPATH python neuri/cli/train.py train.record_path=data/records/torch backend.type=torchcomp model.type=torch hydra.verbose=train train.resume=false train.parallel=10 train.eval_asset=300
+PYTHONPATH=/artifact/neuri/:/artifact/:$PYTHONPATH python neuri/cli/train.py train.record_path=data/records/torch backend.type=torchcomp model.type=torch hydra.verbose=train train.parallel=10 train.eval_asset=300
 
 tf
 
-PYTHONPATH=/artifact/neuri/:/artifact/:$PYTHONPATH python neuri/cli/train.py train.record_path=data/records/tf backend.type=xla model.type=tensorflow hydra.verbose=train train.resume=false train.parallel=1 train.eval_asset=150 temp.start=0 temp.end=50 train.list=/artifact/data/tf_overall_apis.json
+PYTHONPATH=/artifact/neuri/:/artifact/:$PYTHONPATH python neuri/cli/train.py train.record_path=data/records/tf backend.type=xla model.type=tensorflow hydra.verbose=train train.resume=false train.parallel=1 train.eval_asset=150 temp.start=0 temp.end=50 train.target=/artifact/data/tf_overall_apis.json
 """
 
 """process prfraw
