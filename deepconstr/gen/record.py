@@ -62,6 +62,8 @@ def del_related_rule(record, args_idx_to_filter) :
                 del rule[0]["target"]["choosen_dtype"][name]
 def filter_record(record, filter) :
     args_idx_to_filter = []
+    if filter is None :
+        return record
     for key in filter : 
         if key == "args" : 
             names = record[key].get('name', [])
@@ -101,7 +103,7 @@ def process_record(file_path: str, test_pool: list = [], filter : Dict[str, List
     return record
 # Step 2: Define the traversal function
 
-def gen_inst_with_records(data_dir: str, test_pool: list = []):
+def gen_inst_with_records(data_dir: str, filter, test_pool: list = []):
     """
     Traverse directories to process files and yield configuration records.
     """
@@ -109,7 +111,7 @@ def gen_inst_with_records(data_dir: str, test_pool: list = []):
     for root, _, files in os.walk(data_dir):
         for file in files:
             path = os.path.join(root, file)
-            record = process_record(path, test_pool)
+            record = process_record(path, test_pool, filter)
             if record:
                 yield record
 
@@ -119,17 +121,19 @@ def save_record(record, path) :
     if not os.path.exists(directory):
         os.makedirs(directory, exist_ok=True)
     
+    transformed = transform_record_for_saving(record)
     with open(path, 'w') as file:
-        yaml.dump(record, file)
+        yaml.dump(transformed, file)
         
 def make_record_finder(
     path: PathLike = None,
     pass_rate: float = 0.8,
+    filter: Dict[str, List[str]] = {"args" : ["out"]},
     test_pool: List = [],
 ) -> List[Dict[str, Any]]:
     
     from deepconstr.train.constr import convert_constr_to_executable
-    gen_inst_records = gen_inst_with_records(data_dir=path, test_pool=test_pool)
+    gen_inst_records = gen_inst_with_records(data_dir=path, filter=filter, test_pool=test_pool)
 
     records = []
     total_rec = 0

@@ -237,6 +237,7 @@ class FuzzingLoop:
                 path=cfg["mgen"]["record_path"],
                 pass_rate=cfg["mgen"]["pass_rate"],
                 test_pool=cfg["mgen"]["test_pool"],
+                filter=cfg["mgen"]["filter"],
             )
             assert len(self.record_finder) > 0, "No record found."
         else :
@@ -291,7 +292,7 @@ class FuzzingLoop:
             model = self.ModelType.from_gir(ir)
             if self.cfg["debug"]["viz"]:
                 model.attach_viz(ir)
-            model.refine_weights()  # DType enum error: either random generated or gradient-based.
+            # model.refine_weights()  # DType enum error: either random generated or gradient-based.
             oracle = model.make_oracle()
             FUZZ_LOG.info(f"IR: {ir.pretty()}")
         except Exception as e:

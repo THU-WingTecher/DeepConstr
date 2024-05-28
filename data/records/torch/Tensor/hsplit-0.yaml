@@ -13,4 +13,70 @@ args:
   - true
 name: torch.Tensor.hsplit
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'The error occurs because the size of the dimension is not divisible by the
+      split_size. It is trying to split the tensor along dimension 0, but it''s failing
+      due to the size of dimension 1. The split_size seems to be negative which is
+      not valid. We need to ensure that the split_size is a positive integer and that
+      the size of the tensor in the dimension we are splitting is evenly divisible
+      by the split_size. Here is the constraint that prevents the error:'
+    length: 1
+    target:
+      choosen_dtype:
+        sections: int
+        self: tensor
+      msg: torch.hsplit attempted to split along dimension 0, but the size of the
+        dimension 1 is not divisible by the split_size -4!
+      package: torch
+    txt: self.size(0) % sections == 0 and sections > 0
+  - f1_score: 97.92484576556365
+    overall_score: 60.96242288278182
+    precision: 97.0
+    recall: 98.86749716874293
+- - cot: "Based on the given runtime information, the error is triggered because the\
+      \ size of dimension 1 is not divisible by the split_size 0. To prevent this\
+      \ error, we can add a constraint that ensures the split_size is not 0 and the\
+      \ size of dimension 1 is divisible by the split_size. \n\nThe correct formula\
+      \ would be:"
+    length: 1
+    target:
+      choosen_dtype:
+        sections: int
+        self: tensor
+      msg: torch.hsplit attempted to split along dimension 0, but the size of the
+        dimension 1 is not divisible by the split_size 0!
+      package: torch
+    txt: sections != 0 and self.size(1) % sections == 0
+  - f1_score: 71.11716621253404
+    overall_score: 31.999999999999996
+    precision: 57.99999999999999
+    recall: 91.90140845070422
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        sections: int
+        self: tensor
+      msg: torch.hsplit requires a tensor with at least 1 dimension, but got a tensor
+        with 0 dimensions!
+      package: torch
+    txt: self.dim > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        sections: int
+        self: tensor
+      msg: torch.hsplit attempted to split along dimension 1, but the size of the
+        dimension 6 is not divisible by the split_size 7!
+      package: torch
+    txt: (self.shape[1] % sections == 0) and (self.size(6) % sections == 0)
+  - f1_score: 69.01840490797547
+    overall_score: 100
+    precision: 100.0
+    recall: 52.69320843091335

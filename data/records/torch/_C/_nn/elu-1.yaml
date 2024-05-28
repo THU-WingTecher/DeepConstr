@@ -25,4 +25,37 @@ args:
   - true
 name: torch._C._nn.elu
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        input_scale: int
+        out: tensor
+        scale: int
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 74.87520798668885
+    overall_score: 100
+    precision: 100.0
+    recall: 59.84042553191489
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        alpha: int
+        input_scale: int
+        out: tensor
+        scale: int
+        self: tensor
+      msg: Found dtype Float but expected Int
+      package: torch
+    txt: (out.dtype == torch.int) and (dtype(out) == dtype(self))
+  - f1_score: 68.59756097560977
+    overall_score: 100
+    precision: 100.0
+    recall: 52.20417633410672

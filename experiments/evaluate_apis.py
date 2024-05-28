@@ -170,7 +170,7 @@ def del_test_cases(root) :
         if dir != "coverage":
             os.system(f"rm -r {os.path.join(root, dir)}")
 
-def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov"):
+def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov", dirname=None, run_cov=True):
     """
     Runs the fuzzing process for a given API and baseline with the specified configuration.
     Captures and displays output in real-time.
@@ -188,7 +188,8 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov"):
         max_nodes = config['mgen']['max_nodes']
     else :
         max_nodes = 3
-    save_path = f"{os.getcwd()}/{config['exp']['save_dir']}/{config['model']['type']}-{baseline}-n{max_nodes}-{test_pool_modified}.models"
+    
+    save_path = f"{os.getcwd()}/{config['exp']['save_dir']}/{config['model']['type']}-{baseline}-n{max_nodes}-{test_pool_modified}" if dirname is None else f"{os.getcwd()}/{config['exp']['save_dir']}/{dirname}"
     def execute_command(command):
         """
         Executes a given command and prints its output in real-time.
@@ -222,8 +223,8 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov"):
     fuzz_command = f"PYTHONPATH=$(pwd):$(pwd)/nnsmith:$(pwd)/deepconstr python nnsmith/cli/fuzz.py " \
                    f"fuzz.time={config['fuzz']['time']} " \
                    f"mgen.record_path={RECORD} " \
-                   f"fuzz.root=$(pwd)/{config['exp']['save_dir']}/{config['model']['type']}-{baseline}-n{max_nodes}-{test_pool_modified} " \
-                   f"fuzz.save_test={save_path} " \
+                   f"fuzz.root={save_path} " \
+                   f"fuzz.save_test={save_path}.models " \
                    f"model.type={config['model']['type']} backend.type={config['backend']['type']} filter.type=\"[nan,dup,inf]\" " \
                     f"debug.viz=true hydra.verbose=fuzz fuzz.resume=false " \
                    f"mgen.method={baseline.split('_')[0]} mgen.max_nodes={max_nodes} mgen.test_pool=\"{test_pool}\""
@@ -244,8 +245,14 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov"):
         else :
             raise NotImplementedError
     elif task == "fuzz":
-        execute_command(fuzz_command)
-        run(api_name, baseline, config, task = "cov")
+        if "+" in baseline :
+            baselines = baseline.split("+")
+            for base in baselines :
+                run(api_name, base.strip(), config, task = "fuzz", dirname=baseline, run_cov=False)
+        else :
+            execute_command(fuzz_command)
+        if run_cov :
+            run(api_name, baseline, config, task = "cov")
     else :
         raise NotImplementedError
 
@@ -269,25 +276,6 @@ def load_from_csvs(csv_paths) :
                             refuzz_list.add((columns[i], row[0].replace(".models",""), "fuzz"))
                             retrain_list.add((columns[i], row[0].replace(".models",""), "cov"))
 
-                    #     if columns[i] == "symbolic.1" :
-                    #         if col < 500 :
-                    #     else :
-                    #         if col < 30 :
-                    #             refuzz_list.add((columns[i].replace(".1",""), row[0].replace(".models",""), "fuzz"))
-                    #             retrain_list.add((columns[i].replace(".1",""), row[0].replace(".models",""), "cov"))
-                    # if col <= 0.0 :
-                    #     api_name = row[0].replace(".models","")
-                    #     test_pool = [api_name]
-                    #     test_pool_modified = '-'.join(test_pool)
-                    #     if cfg['mgen']['max_nodes'] is not None :
-                    #         max_nodes = cfg['mgen']['max_nodes']
-                    #     else :
-                    #         max_nodes = 3
-                    #     save_path = f"{os.getcwd()}/{cfg['exp']['save_dir']}/{cfg['model']['type']}-{columns[i]}-n{max_nodes}-{test_pool_modified}.models"
-                    #     if len(os.listdir(save_path)) <= 1 :
-                    #         # print(columns[i], row[0], os.listdir(save_path))
-                    #         refuzz_list.add((columns[i], row[0].replace(".models",""), "fuzz"))
-                    #     retrain_list.add((columns[i], row[0].replace(".models",""), "cov"))
     return retrain_list, refuzz_list
 
 def gen_save_path(api_name, baseline, cfg) :
@@ -300,24 +288,6 @@ def gen_save_path(api_name, baseline, cfg) :
     save_path = f"{os.getcwd()}/{cfg['exp']['save_dir']}/{cfg['model']['type']}-{baseline}-n{max_nodes}-{test_pool_modified}.models"
     return save_path
 
-# def load_from_dirs(cfg) :
-#     columns = []
-#     retrain_list = set()
-#     refuzz_list = set() 
-#     for dir_name in os.listdir(os.path.join(os.getcwd(),cfg["exp"]["save_dir"])) :
-#         if dir_name.endswith("models") :
-#             test_list = os.listdir(os.path.join(os.getcwd(),cfg["exp"]["save_dir"],dir_name))
-#             baseline, name = parse_directory_name(dir_name)
-#             name = name.replace('.models','')
-
-#             if len(test_list)>0 and( "coverage" in test_list or max(map(float, test_list)) > 500 ):
-#                 pass
-#             else :
-#                 print(max(map(float, test_list)) if test_list else 0)
-#                 refuzz_list.add((baseline, name, "fuzz"))
-#                 print(f"keep test {name}, {baseline}")
-#             retrain_list.add((baseline, name, "cov"))
-#     return retrain_list, refuzz_list
 
 def load_api_names_from_data(record_path, pass_rate) : 
     from deepconstr.gen.record import make_record_finder  
@@ -354,29 +324,31 @@ def main(cfg) :
     # from nnsmith.cli.train import get_completed_list
     # from experiments.summarize_merged_cov import exclude_intestable
     """
-    totally, cfg['exp']['parallel'] * cov_parallel * len(BASELINES) process will be craeted
+    task = ['deepconstr', 'neuri', 'symbolic-cinit', 'deepconstr_2']
+    if gives multiple tasks connecting with the charactor "+", it will fuzz and collect coverage them in together.
+    ex) task = ['deepconstr+neuri', 'symbolic-cinit+deepconstr_2']
     """
     retrain_list = set()
     refuzz_list = set()
-    api_names = load_api_names_from_data(cfg["mgen"]["record_path"], cfg["mgen"]["pass_rate"])
+    # api_names = load_api_names_from_data(cfg["mgen"]["record_path"], cfg["mgen"]["pass_rate"])
     # api_names = list(set(api_names))
-    # with open("/artifact/data/torch_nnsmith.json", "r") as f :
-    #     api_names = json.load(f)
+    with open(cfg["exp"]["targets"], "r") as f :
+        api_names = json.load(f)
     for baseline in cfg["exp"]["baselines"] : 
         for api_name in api_names :
             if need_to_gen_testcases(api_name, baseline, cfg) :
                 refuzz_list.add((baseline, api_name, "fuzz"))
-            elif need_to_collect_cov(api_name, baseline, cfg) :
-                retrain_list.add((baseline, api_name, "cov"))
+            # elif need_to_collect_cov(api_name, baseline, cfg) :
+            #     retrain_list.add((baseline, api_name, "cov"))
 
              
-    retrain_list = sorted(list(retrain_list), key=lambda x: x[1])
+    # retrain_list = sorted(list(retrain_list), key=lambda x: x[1])
     refuzz_list = sorted(list(refuzz_list), key=lambda x: x[1])
     # print(retrain_list)
     # print(refuzz_list)
-    all_tasks = refuzz_list + retrain_list
+    # all_tasks = refuzz_list + retrain_list
     print("retrain", len(retrain_list), "refuzz", len(refuzz_list))
-    print(all_tasks)
+    # print(all_tasks)
     with concurrent.futures.ProcessPoolExecutor(max_workers=cfg["exp"]["parallel"]) as executor:
         # Pass necessary arguments to the api_worker function
         futures = [executor.submit(run, api, baseline, cfg, task) for baseline, api, task in refuzz_list]
@@ -385,5 +357,6 @@ def main(cfg) :
                 result = future.result()
             except Exception as e:
                 print(f"An error occured: {e}")
+
 if __name__ == "__main__":
     main()

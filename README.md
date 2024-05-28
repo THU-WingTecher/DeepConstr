@@ -87,23 +87,32 @@ If configured correctly, you will receive a response from the OpenAI API, such a
 #### Quick Start :
 
 ##### for PyTorch 
+train with api names : 
 ```bash
 PYTHONPATH=/artifact/:/artifact/nnsmith/:/artifact/deepconstr/:$PYTHONPATH \
-python deepconstr/train/run.py train.record_path=repro/records/torch backend.type=torchcomp \
-model.type=torch hydra.verbose=train train.parallel=1 train.eval_asset=100 \
+python deepconstr/train/run.py train.record_path=data/records/torch backend.type=torchcomp \
+model.type=torch hydra.verbose=train train.parallel=1 train.num_eval=300 \
 train.pass_rate=95 hydra.verbose=['train'] \
 train.retrain=true train.target='["torch.add","torch.abs"]'
+```
+train with api names from a json file : 
+```bash
+PYTHONPATH=/artifact/:/artifact/nnsmith/:/artifact/deepconstr/:$PYTHONPATH \
+python deepconstr/train/run.py train.record_path=data/records/torch backend.type=torchcomp \
+model.type=torch hydra.verbose=train train.parallel=1 train.num_eval=300 \
+train.pass_rate=95 hydra.verbose=['train'] \
+train.retrain=true train.target='/artifact/data/torch_untrained.json'
 ```
 
 ##### for TensorFlow 
 ```bash
 PYTHONPATH=/artifact/:/artifact/nnsmith/:/artifact/deepconstr/:$PYTHONPATH \
-python deepconstr/train/run.py train.record_path=repro/records/tf backend.type=xla \
-model.type=tensorflow hydra.verbose=train train.parallel=1 train.eval_asset=100 train.pass_rate=95 hydra.verbose=['train'] \
+python deepconstr/train/run.py train.record_path=data/records/tf backend.type=xla \
+model.type=tensorflow hydra.verbose=train train.parallel=1 train.num_eval=300 train.pass_rate=95 hydra.verbose=['train'] \
 train.retrain=true train.target='["tf.add","tf.abs"]'
 ```
 
-# Reproduct Experiments
+# dataduct Experiments
 
 ### Comparative Experiment (RQ1) 
 We have four baselines for conducting experiments. Additionally, approximately 700 operators (programs) require testing for PyTorch and 150 operators for TensorFlow. Given that each operator needs to be tested for 15 minutes, completing the experiment will be time-intensive. To expedite the process, we recommend using the `exp.parallel` argument to enable multiple threads during the experiment.
@@ -111,19 +120,28 @@ The experiment results will be saved at the folder specified in `exp.save_dir`.
 
 ##### for PyTorch 
 
+First, change the environment to the conda environment created for this project.
+```bash
+conda activate cov
+```
+
 ```bash
 PYTHONPATH=/artifact/:/artifact/nnsmith/:/artifact/deepconstr/:$PYTHONPATH \
 python experiments/evaluate_apis.py \
-exp.save_dir=pt_gen mgen.record_path=$(pwd)/data/records/torch/ mgen.pass_rate=0.05 model.type=torch backend.type=torchjit fuzz.time=15m exp.parallel=16 mgen.noise=0.8 exp.baselines=['deepconstr', 'neuri', 'symbolic-cinit', 'deepconstr_2']
-
+exp.save_dir=pt_gen mgen.record_path=$(pwd)/data/records/torch/ mgen.pass_rate=0.05 model.type=torch backend.type=torchjit fuzz.time=15m exp.parallel=16 mgen.noise=0.8 exp.targets=/artifact/data/torch_dc_neuri.json exp.baselines=['deepconstr', 'neuri', 'symbolic-cinit', 'deepconstr_2']
 ```
 
 ##### for TensorFlow 
 
+First, change the environment to the conda environment created for this project.
+```bash
+conda activate cov
+```
+
 ```bash
 PYTHONPATH=/artifact/:/artifact/nnsmith/:/artifact/deepconstr/:$PYTHONPATH \
 python experiments/evaluate_apis.py \
-exp.save_dir=tf_gen mgen.record_path=$(pwd)/data/records/tf/ mgen.pass_rate=0.05 model.type=tensorflow backend.type=xla fuzz.time=15m exp.parallel=16 mgen.noise=0.8 exp.baselines=['deepconstr', 'neuri', 'symbolic-cinit', 'deepconstr_2']
+exp.save_dir=tf_gen mgen.record_path=$(pwd)/data/records/tf/ mgen.pass_rate=0.05 model.type=tensorflow backend.type=xla fuzz.time=15m exp.parallel=16 mgen.noise=0.8 exp.targets=/artifact/data/tf_dc_neuri.json exp.baselines=['deepconstr', 'neuri', 'symbolic-cinit', 'deepconstr_2']
 ```
 
 ##### Summarize the results

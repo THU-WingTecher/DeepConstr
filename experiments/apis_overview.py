@@ -1,116 +1,44 @@
-        completed_list = get_completed_list()
-        if self.cfg["model"]["type"] == "torch" :
-            train_list = check_left_api(
-                    pt_neuri_data_path,
-                    pt_data_paths
-                ) + check_left_api(
-                    pt_deepconstr_data_path,
-                    pt_data_paths
-                )
-        elif self.cfg["model"]["type"] == "tensorflow" :
-            train_list = check_left_api(
-                    tf_neuri_data_path,
-                    tf_data_paths
-                ) + check_left_api(
-                    tf_deepconstr_data_path,
-                    tf_data_paths
-                )
-            
-def get_completed_list(path = "/artifact/experiments/results/completed.json") : 
+
+import json
+import os
+
+import yaml
+
+
+def get_trained_list(record_path, path) :
     data = set()
-    # with open(path, "r") as f:
-    #     data.extend(json.load(f))
-    
-    #load csv 
-    csv_paths = [
-        "/artifact/experiments/results/merged_torch_v2.csv",
-        "/artifact/experiments/results/merged_tf_v2.csv"
-        ]
-    for csv_path in csv_paths :
-        with open(csv_path, "r") as f:
-            for i, line in enumerate(f.readlines()) :
-                if i==0 : continue # head 
-                data.add(line.split(",")[0].replace(".models",""))
-    return list(set(data))
+    for root, dirs, files in os.walk(record_path):
+        for file in files:
+            if file.endswith(".yaml"):
+                with open(os.path.join(root, file), "r") as f:
+                    record = yaml.safe_load(f)
+                if record["pass_rate"] > 0 :
+                    data.add(record["name"])
+    return list(data)
 
-def check_left_api(api_data_path, saved_data_paths) :
-    with open(api_data_path, "r") as file:
-        data = json.load(file)
-    data = list(set(data))
-    for saved_data_path in saved_data_paths :
-        with open(saved_data_path, "r") as f:
-            for i, line in enumerate(f.readlines()) :
-                if i==0 :
-                    pass
-                else :
-                    columns = line.split(",")
-                    api_name = columns[0].replace(".models","")
-                    if api_name in data :
-                        data.remove(api_name)
-    
-    return data
+def get_prepared_list() : 
+    data = set()
+    prepared_path = "/artifact/data/records"
+    for root, dirs, files in os.walk(prepared_path+"/torch"):
+        for file in files:
+            if file.endswith(".yaml"):
+                api_name = os.path.join(root, file).replace(prepared_path+"/","").replace("/",".").split('-')[0]
+                data.add(api_name)
+    return list(data)
 
-def check_record(api_names, record_dir) :
-    todo = []
-    for name in api_names :
-        path = os.path.join(record_dir, name.replace(".","/")+"-0.yaml")
-        if not os.path.exists(path) :
-            todo.append(name)
-            print(f"{path} is not exist")
-    return todo
-            
-pt_data_paths = [
-    "/artifact/experiments/results/merged_torch_v2.csv",
-]
-pt_neuri_data_path = "/artifact/data/torch_overall_apis.json"
-pt_deepconstr_data_path = "/artifact/data/torch_deepconstr.json"
-tf_data_paths = [
-    "/artifact/experiments/results/merged_tf_v2.csv"
-]
-tf_neuri_data_path = "/artifact/data/tf_overall_apis.json"
-tf_deepconstr_data_path = "/artifact/data/tf_deepconstr.json"
+def save_to_json(data, path) : 
+    with open(path, "w") as f:
+        json.dump(data, f, indent=4)
 
-# print("neuri - pt")
-# neuri_pt = check_left_api(
-#     pt_neuri_data_path,
-#     pt_data_paths
-# )
-# check_record(neuri_pt, "/artifact/data/records/torch")
-# print("neuri - pt")
-# neuri_pt = check_left_api(
-#     pt_neuri_data_path,
-#     pt_data_paths
-# )
-# check_record(neuri_pt, "/artifact/data/records/torch")
-
-# print(check_left_api(
-#     pt_neuri_data_path,
-#     pt_data_paths
-# ))
-# print("neuri - pt")
-# neuri_pt = check_left_api(
-#     pt_neuri_data_path,
-#     pt_data_paths
-# )
-
-# print(check_record(neuri_pt, "/artifact/data/records"))
-# print("neuri - tf")
-# neuri_tf = check_left_api(
-#     tf_neuri_data_path,
-#     tf_data_paths
-# )
-# print(check_record(neuri_tf, "/artifact/data/records"))
-
-# print("deepconstr - pt")
-# deepconstr_pt = check_left_api(
-#     pt_deepconstr_data_path,
-#     pt_data_paths
-# )
-
-# print(check_record(deepconstr_pt, "/artifact/data/records"))
-# print("deepconstr - tf")
-# deepconstr_tf = check_left_api(
-#     tf_deepconstr_data_path,
-#     tf_data_paths
-# )
-# print(check_record(deepconstr_tf, "/artifact/data/records"))
+if __name__ == "__main__" : 
+    record_path = "/artifact/data/records"
+    tf_trained = get_trained_list(record_path+"/tf", "tf")
+    print("Number of trained tf apis: ", len(tf_trained))
+    print("Saving trained tf apis to json file")
+    save_to_json(tf_trained, "/artifact/data/tf_trained.json")
+    tf_prepared = get_prepared_list()
+    tf_untrained = set(tf_prepared) - set(tf_trained)
+    print(tf_untrained)
+    print(len(tf_untrained))
+    save_to_json(list(tf_untrained), "/artifact/data/tf_untrained.json")
+    print("done")

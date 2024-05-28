@@ -554,24 +554,6 @@ class AbsTensor:
     
     def tensor_conn_constr(self, other : str) -> List[z3.BoolRef] :
         return [self.same_dtype_constr(other)] + self.broadcast_constr(other)
-    
-    def consistent_constr(self, other : str) -> List[z3.BoolRef] :
-        """ 
-        generate constraints that ensure the shape, rank, and dtype as consistent with
-        the name of $other tensor
-        """
-        ## gen z3 var 
-        other_obj = self.z3()(other)
-        ## rank consistent constr 
-        rank_cons = [other_obj.rank == self.ndims]
-        ## shape consistent constr 
-        shape_cons = [
-            other_obj.shape[i] == self.shape[i] for i in range(self.ndims)
-        ]
-        ## dtype consistent constr
-        dtype_cons = [other_obj.dtype == self.dtype.z3_const()]
-
-        return rank_cons + shape_cons + dtype_cons
 
     def constains_symbol(self) -> bool:
         return any(isinstance(s, z3.ExprRef) for s in self.shape)

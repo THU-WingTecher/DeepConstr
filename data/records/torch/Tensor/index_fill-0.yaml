@@ -21,7 +21,7 @@ args:
   - true
 name: torch.Tensor.index_fill
 package: torch
-pass_rate: 0.0
+pass_rate: 2.0
 rules:
 - - cot: 'Error is triggered because the value tensor has 4 dimensions, while index_fill
       only supports a 0-dimensional value tensor. Let''s see what the args were. It

@@ -45,6 +45,7 @@ mgen: # model gen.
   allow_zero_length_rate: 0.04 # 0 ~ 1
   allow_zero_rate: 0.1 # 0 ~ 1
   num_of_try: 1 ## num_of_try * noise will be the number of trials for each input
+  filter: null
 # backend config
 backend:
   type: null
@@ -85,7 +86,7 @@ train:
   tolerance: 5
   top_k: 10
   max_num_of_seeds: 50
-  simple_eval_asset: 20
+  simple_num_eval: 20
   num_eval: 50 #eval asset of constraints, pass_rate assess asset of the operator
   eval_ratio: 1.5 # the ratio of eval asset for completeness compared to soundness
   n_infer_per_round: 10
@@ -112,6 +113,7 @@ exp: #for experiments
   api_list: null
   parallel: 1
   save_dir: "exp"
+  targets: "/artifact/data/torch_dc_neuri.json"
   baselines: [] #["symbolic-cinit", "neuri", "deepconstr", "deepconstr_2"]
 
 cmp:
