@@ -10,6 +10,7 @@ import multiprocessing
 from experiments.evaluate_models import model_exec, batched
 from experiments.evaluate_tf_models import tf_model_exec, clear_gcda
 from nnsmith.logger import DTEST_LOG
+from nnsmith.util import parse_timestr
 # Load the JSON file
 
 cov_parallel = 1
@@ -189,7 +190,8 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov", dirna
     else :
         max_nodes = 3
     
-    save_path = f"{os.getcwd()}/{config['exp']['save_dir']}/{config['model']['type']}-{baseline}-n{max_nodes}-{test_pool_modified}" if dirname is None else f"{os.getcwd()}/{config['exp']['save_dir']}/{dirname}"
+    root_save_path = gen_save_path(api_name, baseline, config) if dirname is None else dirname
+    save_path = f"{root_save_path}.models"
     def execute_command(command):
         """
         Executes a given command and prints its output in real-time.
@@ -223,8 +225,8 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov", dirna
     fuzz_command = f"PYTHONPATH=$(pwd):$(pwd)/nnsmith:$(pwd)/deepconstr python nnsmith/cli/fuzz.py " \
                    f"fuzz.time={config['fuzz']['time']} " \
                    f"mgen.record_path={RECORD} " \
-                   f"fuzz.root={save_path} " \
-                   f"fuzz.save_test={save_path}.models " \
+                   f"fuzz.root={root_save_path} " \
+                   f"fuzz.save_test={save_path} " \
                    f"model.type={config['model']['type']} backend.type={config['backend']['type']} filter.type=\"[nan,dup,inf]\" " \
                     f"debug.viz=true hydra.verbose=fuzz fuzz.resume=false " \
                    f"mgen.method={baseline.split('_')[0]} mgen.max_nodes={max_nodes} mgen.test_pool=\"{test_pool}\""
@@ -248,7 +250,7 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov", dirna
         if "+" in baseline :
             baselines = baseline.split("+")
             for base in baselines :
-                run(api_name, base.strip(), config, task = "fuzz", dirname=baseline, run_cov=False)
+                run(api_name, base.strip(), config, task = "fuzz", dirname=gen_save_path(api_name, baseline, config), run_cov=False)
         else :
             execute_command(fuzz_command)
         if run_cov :
@@ -285,8 +287,11 @@ def gen_save_path(api_name, baseline, cfg) :
         max_nodes = cfg['mgen']['max_nodes']
     else :
         max_nodes = 5
-    save_path = f"{os.getcwd()}/{cfg['exp']['save_dir']}/{cfg['model']['type']}-{baseline}-n{max_nodes}-{test_pool_modified}.models"
-    return save_path
+    if "+" in baseline :
+        root_save_path = f"{os.getcwd()}/{cfg['exp']['save_dir']}/{baseline}-{test_pool_modified}"
+    else :
+        root_save_path = f"{os.getcwd()}/{cfg['exp']['save_dir']}/{cfg['model']['type']}-{baseline}-n{max_nodes}-{test_pool_modified}"
+    return root_save_path
 
 
 def load_api_names_from_data(record_path, pass_rate) : 
@@ -306,17 +311,22 @@ def load_api_names_from_json(path) :
 # Run the script for each API set
 
 def need_to_collect_cov(api_name, base_line, cfg) : 
-    save_path = gen_save_path(api_name, base_line, cfg)
+    save_path = gen_save_path(api_name, base_line, cfg)+".models"
     cov_dir_path = os.path.join(save_path, "coverage", "merged_cov.pkl")
     return not os.path.exists(cov_dir_path)
 
 def need_to_gen_testcases(api_name, base_line, cfg) : 
-    save_path = gen_save_path(api_name, base_line, cfg)
+    save_path = gen_save_path(api_name, base_line, cfg)+".models"
     if os.path.exists(save_path) :
         test_list = os.listdir(save_path)
         if "coverage" in test_list : return False
         if test_list : 
-            if max(map(float, test_list)) > 500 : return False
+            if isinstance( cfg["fuzz"]["time"], str):
+                timeout_s = parse_timestr( cfg["fuzz"]["time"])
+            assert isinstance(
+                 timeout_s, int
+            ), "`fuzz.time` must be an integer (with `s` (default), `m`/`min`, or `h`/`hr`)."
+            if max(map(float, test_list)) > timeout_s-60 : return False
     return True
 
 @hydra.main(version_base=None, config_path="../nnsmith/config", config_name="main")
@@ -338,20 +348,21 @@ def main(cfg) :
         for api_name in api_names :
             if need_to_gen_testcases(api_name, baseline, cfg) :
                 refuzz_list.add((baseline, api_name, "fuzz"))
-            # elif need_to_collect_cov(api_name, baseline, cfg) :
-            #     retrain_list.add((baseline, api_name, "cov"))
+            elif need_to_collect_cov(api_name, baseline, cfg) :
+            # if need_to_collect_cov(api_name, baseline, cfg) :
+                retrain_list.add((baseline, api_name, "cov"))
 
              
-    # retrain_list = sorted(list(retrain_list), key=lambda x: x[1])
+    retrain_list = sorted(list(retrain_list), key=lambda x: x[1])
     refuzz_list = sorted(list(refuzz_list), key=lambda x: x[1])
     # print(retrain_list)
     # print(refuzz_list)
-    # all_tasks = refuzz_list + retrain_list
+    all_tasks = refuzz_list + retrain_list
     print("retrain", len(retrain_list), "refuzz", len(refuzz_list))
     # print(all_tasks)
     with concurrent.futures.ProcessPoolExecutor(max_workers=cfg["exp"]["parallel"]) as executor:
         # Pass necessary arguments to the api_worker function
-        futures = [executor.submit(run, api, baseline, cfg, task) for baseline, api, task in refuzz_list]
+        futures = [executor.submit(run, api, baseline, cfg, task) for baseline, api, task in all_tasks]
         for future in concurrent.futures.as_completed(futures):
             try:
                 result = future.result()

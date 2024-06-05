@@ -75,11 +75,11 @@ def tf_model_exec(
     #     gcda_save_path = f"{WORKSPACE}/{str(id_path)}-workspace"
     os.system(f"rm {gcda_save_path} -r")
     os.makedirs(gcda_save_path, exist_ok=True)
-    batches = batched(model_paths, n=500)
+    batches = batched(model_paths)
     for model_paths in batches :
         trial_arguments = [
             "python3",
-            f"{ROOT_DIR}/neuri/cli/model_exec.py",
+            f"{ROOT_DIR}/nnsmith/cli/model_exec.py",
             "model.type=" + model_type,
             "backend.type=" + backend_type,
             "backend.target=" + backend_target,

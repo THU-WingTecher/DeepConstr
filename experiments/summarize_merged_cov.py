@@ -19,7 +19,11 @@ def parse_directory_name(dirname):
     - tuple: A tuple containing the column name and API name.
     """
     parts = dirname.split('-')
-    if len(parts) >= 3:
+    if len(parts) == 2:
+        column = parts[0]  # Column name (e.g., 'neuri')
+        api_name = parts[-1].replace(folder_suffix, "")  # API name (e.g., 'torch.acos')
+        return column, api_name
+    elif len(parts) >= 3:
         column = parts[1]  # Column name (e.g., 'neuri')
         api_name = parts[-1].replace(folder_suffix, "")  # API name (e.g., 'torch.acos')
         return column, api_name
@@ -203,7 +207,7 @@ def summarize_final_bf(aggregated_df):
             cnt+=1
 
     all_data = final_bf_summary.shape[0]
-    revise_complete_data("/artifact/experiments/results/completed.json", completed_data)
+    # revise_complete_data("/artifact/experiments/results/completed.json", completed_data)
     print("Total APIs with deepconstr as the largest final BF: ", cnt, "from", all_data)
     print(f"Increase ratio of deepconstr as the largest final BF: {cnt/all_data}")
     return pd.concat([final_bf_summary, model_cnt], axis=1), completed_data 
@@ -224,6 +228,7 @@ if __name__ == "__main__":
     data = {}
     for folder in args.folders:
         traverse_and_classify(folder, data)
+    print(data)
     processed_data = process_pickle_files(data)
     aggregated_df = aggregate_summarized_data(processed_data)
     final_bf_summary, completed_data = summarize_final_bf(aggregated_df)

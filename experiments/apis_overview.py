@@ -1,9 +1,20 @@
-
 import json
 import os
-
 import yaml
 
+def gen_tensor_shape_rules(op_record) : 
+
+    tensor_dtypes = op_record["tensor_dtypes"]
+    for name in tensor_dtypes :
+        rules = [
+            {"cot" : '', "length" : 1, "target" : {"choosen_dtype" : 
+                                                {"other" : "tensor", "out" : "tensor", "self" : "int"}, 
+                                                "msg" : "Trying to create tensor with negative dimension -1: [-1]", "package" : "torch"}, 
+                                                "txt" : "dtype(out)==float"},
+            {"f1_score" : 100.0, "overall_score" : 100, "precision" : 100.0, "recall" : 100.0}
+            ]
+def add_tensor_shape_rules() :
+    pass 
 
 def get_trained_list(record_path, path) :
     data = set()

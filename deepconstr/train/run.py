@@ -126,21 +126,21 @@ class TrainingLoop:
                 # If no files are found for this api, log the information
             record_paths.extend(all_files)
         
-        for record_path in record_paths :
-            TRAIN_LOG.info(f"Validate the properties of {record_path}")
-            with open(os.path.join(record_path), "r") as f:
-                record = yaml.safe_load(f)
-            if record.get("error", None) is not None :
-                TRAIN_LOG.info(f"{record_path} is errored record")
-                continue
-            elif not self.cfg["train"]["retrain"] and len(record.get("rules", [])) > 0 :
-                TRAIN_LOG.info(f"{record_path} is already trained")
-                final_train_list.append(record_path)
-                continue
-            TRAIN_LOG.info(f"Check whether {record_path} is valid")
-            is_trainable, record = check_trainable(record, self.executor)
-            if is_trainable :
-                final_train_list.append(record_path)
+        # for record_path in record_paths :
+        #     TRAIN_LOG.info(f"Validate the properties of {record_path}")
+        #     with open(os.path.join(record_path), "r") as f:
+        #         record = yaml.safe_load(f)
+        #     if record.get("error", None) is not None :
+        #         TRAIN_LOG.info(f"{record_path} is errored record")
+        #         continue
+        #     elif not self.cfg["train"]["retrain"] and len(record.get("rules", [])) > 0 :
+        #         # TRAIN_LOG.info(f"{record_path} is already trained")
+        #         final_train_list.append(record_path)
+        #         continue
+        #     TRAIN_LOG.info(f"Check whether {record_path} is valid")
+        #     is_trainable, record = check_trainable(record, self.executor)
+        #     if is_trainable :
+        #         final_train_list.append(record_path)
 
         record_paths = sorted(record_paths, key=sort_key)
         return record_paths
@@ -200,8 +200,8 @@ class TrainingLoop:
             most_frequent_errs = clusters[0]
             distributions = {messages[0] : len(messages) for messages in clusters}
             TRAIN_LOG.debug(f"Current error distribution :\n{formatted_dict(distributions)}")
-            if self.is_special_err_msg(most_frequent_errs[0]):
-                raise Exception("Special error message encountered. Cannot proceed.")
+            # if self.is_special_err_msg(most_frequent_errs[0]):
+            #     raise Exception("Special error message encountered. Cannot proceed.")
         else:
             TRAIN_LOG.info("No error messages encountered.")
 
@@ -347,6 +347,23 @@ class TrainingLoop:
             record.get("error", None) is None and \
             self.is_trained(record) is False \
         )
+    def inspect_trainable(self, record_path) :
+                
+        TRAIN_LOG.info(f"Validate the properties of {record_path}")
+        with open(os.path.join(record_path), "r") as f:
+            record = yaml.safe_load(f)
+        if record.get("error", None) is not None :
+            TRAIN_LOG.info(f"{record_path} is errored record")
+            return False
+        elif not self.cfg["train"]["retrain"] and len(record.get("rules", [])) > 0 :
+            # TRAIN_LOG.info(f"{record_path} is already trained")
+            final_train_list.append(record_path)
+            return False
+        TRAIN_LOG.info(f"Check whether {record_path} is valid")
+        is_trainable, record = check_trainable(record, self.executor)
+        if is_trainable :
+            return True
+        
     def runs(self) :
         n_func = 0
         trained_func_index = self.cfg["temp"]["start"] if self.cfg["temp"]["start"] is not None else 0
@@ -356,19 +373,22 @@ class TrainingLoop:
         while n_func < end_index :
             n_func+=1
             record_path = self.select_train_op()
+            if not self.inspect_trainable(record_path) :
+                continue
             if n_func >= trained_func_index :
                 if record_path is None :
                     break
                 op_record = process_record(record_path, filter={})
                 TRAIN_LOG.info(f"Start infering {op_record['name']}({n_func})")
-                if self.is_trainable(op_record) :
-                    try :
-                        self.run(op_record, record_path)
-                        self.finalize_infering(op_record, record_path)
-                    except :
-                        TRAIN_LOG.error(f"{traceback.format_exc()}")
-                else :
-                    TRAIN_LOG.warning(f"""Record don't need-train/trainable : {formatted_dict(op_record, sep=":", split=SPLITTER)}""")
+                self.get_err_msgs(op_record)
+                # if self.is_trainable(op_record) :
+                #     try :
+                #         self.run(op_record, record_path)
+                #         self.finalize_infering(op_record, record_path)
+                #     except :
+                #         TRAIN_LOG.error(f"{traceback.format_exc()}")
+                # else :
+                #     TRAIN_LOG.warning(f"""Record don't need-train/trainable : {formatted_dict(op_record, sep=":", split=SPLITTER)}""")
 
     def finalize_infering(self, record, record_path) :
         pass_rate, unsolved = self.get_pass_rate_and_err_msgs(record, self.cfg["train"]["num_eval"])
@@ -418,6 +438,48 @@ unsolved_err_msgs : {unsolved_msgs}
             TRAIN_LOG.info(f"All err messages[{SPLITTER.join([e[0].get_core_msg() for e in sorted_err_instances])} are alredy triaged")
             return True 
         return False 
+    
+    def get_err_msgs(self, op_record): 
+
+        file_name = f'{self.cfg["model"]["type"]}_err_msgs.json'
+        if not os.path.exists(file_name) :
+            data = {"solved" : {}, "unsolved" : {}}
+        else : 
+            with open(file_name, "r") as f :
+                data = json.load(f)
+
+        solved_msgs = []
+        unsolved_msgs = []
+        constrs = self.get_constrs_from_rules(op_record)
+        if op_record["name"] in data["solved"] : 
+            solved_msgs.extend(data["solved"][op_record["name"]]) 
+            unsolved_msgs.extend(data["unsolved"][op_record["name"]]) 
+        else :
+            data["solved"][op_record["name"]] = []
+            data["unsolved"][op_record["name"]] = []
+
+        for constr, _ in constrs : 
+            if any(is_similar(constr.target.msg, msg, threshold=self.cfg["train"]["str_sim_threshold"]) for msg in solved_msgs) :
+                continue
+            solved_msgs.append(constr.target.msg)
+
+        #get other error messages
+        pass_rate, sorted_err_instances = self.get_pass_rate_and_err_msgs(op_record, self.cfg["train"]["num_eval"])
+        for err in sorted_err_instances : 
+            if self.is_triaged_err_msg(err[0], constrs) :
+                continue 
+            elif any(is_similar(err[0].msg, msg, threshold=self.cfg["train"]["str_sim_threshold"]) for msg in unsolved_msgs) :
+                continue
+            else :
+                unsolved_msgs.append(err[0].msg)
+
+        # save as txt file 
+        data["solved"][op_record["name"]] = solved_msgs 
+        data["unsolved"][op_record["name"]] = unsolved_msgs 
+        
+        with open(file_name, "w") as f :
+            json.dump(data, f, indent=4)
+
     def run(self, op_record, record_path):
 
         n_try = 0
