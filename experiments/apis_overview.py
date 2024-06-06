@@ -13,6 +13,7 @@ def gen_tensor_shape_rules(op_record) :
                                                 "txt" : "dtype(out)==float"},
             {"f1_score" : 100.0, "overall_score" : 100, "precision" : 100.0, "recall" : 100.0}
             ]
+
 def add_tensor_shape_rules() :
     pass 
 
@@ -42,14 +43,18 @@ def save_to_json(data, path) :
         json.dump(data, f, indent=4)
 
 if __name__ == "__main__" : 
-    record_path = "/artifact/data/records"
-    tf_trained = get_trained_list(record_path+"/tf", "tf")
-    print("Number of trained tf apis: ", len(tf_trained))
-    print("Saving trained tf apis to json file")
-    save_to_json(tf_trained, "/artifact/data/tf_trained.json")
-    tf_prepared = get_prepared_list()
-    tf_untrained = set(tf_prepared) - set(tf_trained)
-    print(tf_untrained)
-    print(len(tf_untrained))
-    save_to_json(list(tf_untrained), "/artifact/data/tf_untrained.json")
-    print("done")
+    import sys 
+    if len(sys.argv) < 2 :
+        record_path = "/artifact/data/records"
+    else :
+        record_path = sys.argv[1]
+    for lib in ["tf", "torch"] :
+        trained = get_trained_list(record_path+f"/{lib}", lib)
+        print(f"Number of trained {lib} apis: ", len(trained))
+        # print("Saving trained tf apis to json file")
+        # save_to_json(tf_trained, "/artifact/data/tf_trained.json")
+    # tf_prepared = get_prepared_list()
+    # tf_untrained = set(tf_prepared) - set(tf_trained)
+    # print(tf_untrained)
+    # print(len(tf_untrained))
+    # save_to_json(list(tf_untrained), "/artifact/data/tf_untrained.json")

@@ -171,6 +171,8 @@ def del_test_cases(root) :
         if dir != "coverage":
             os.system(f"rm -r {os.path.join(root, dir)}")
 
+def acetest_run() : 
+
 def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov", dirname=None, run_cov=True):
     """
     Runs the fuzzing process for a given API and baseline with the specified configuration.
@@ -222,14 +224,17 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov", dirna
         else:
             RECORD = os.path.join(os.getcwd(), "data", "torch_records")
     # Construct the command to run fuzz.py
-    fuzz_command = f"PYTHONPATH=$(pwd):$(pwd)/nnsmith:$(pwd)/deepconstr python nnsmith/cli/fuzz.py " \
-                   f"fuzz.time={config['fuzz']['time']} " \
-                   f"mgen.record_path={RECORD} " \
-                   f"fuzz.root={root_save_path} " \
-                   f"fuzz.save_test={save_path} " \
-                   f"model.type={config['model']['type']} backend.type={config['backend']['type']} filter.type=\"[nan,dup,inf]\" " \
-                    f"debug.viz=true hydra.verbose=fuzz fuzz.resume=false " \
-                   f"mgen.method={baseline.split('_')[0]} mgen.max_nodes={max_nodes} mgen.test_pool=\"{test_pool}\""
+    if baseline == "acetest" : 
+        fuzz_command = acetest_run(config, save_path)
+    else : 
+        fuzz_command = f"PYTHONPATH=$(pwd):$(pwd)/nnsmith:$(pwd)/deepconstr python nnsmith/cli/fuzz.py " \
+                    f"fuzz.time={config['fuzz']['time']} " \
+                    f"mgen.record_path={RECORD} " \
+                    f"fuzz.root={root_save_path} " \
+                    f"fuzz.save_test={save_path} " \
+                    f"model.type={config['model']['type']} backend.type={config['backend']['type']} filter.type=\"[nan,dup,inf]\" " \
+                        f"debug.viz=true hydra.verbose=fuzz fuzz.resume=false " \
+                    f"mgen.method={baseline.split('_')[0]} mgen.max_nodes={max_nodes} mgen.test_pool=\"{test_pool}\""
     if task == "cov" : 
         print(f"Collect Cov for {api_name} with baseline {baseline}")
         print("Activate Conda env -cov")
@@ -334,7 +339,7 @@ def main(cfg) :
     # from nnsmith.cli.train import get_completed_list
     # from experiments.summarize_merged_cov import exclude_intestable
     """
-    task = ['deepconstr', 'neuri', 'symbolic-cinit', 'deepconstr_2']
+    task = ['deepconstr', 'neuri', 'acetest', 'symbolic-cinit', 'deepconstr_2']
     if gives multiple tasks connecting with the charactor "+", it will fuzz and collect coverage them in together.
     ex) task = ['deepconstr+neuri', 'symbolic-cinit+deepconstr_2']
     """

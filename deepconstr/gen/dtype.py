@@ -1,4 +1,5 @@
 import copy
+import itertools
 import os
 import re
 from deepconstr.grammar.dtype import materalize_dtypes
@@ -216,6 +217,7 @@ def custom_split(input_string):
     return parts
 
 def transfer_older_record_to_newer(record: dict, func_name, package) -> dict:
+    all_results = []
     new = {
         "args" : { 
             "is_pos" : [],
@@ -227,16 +229,20 @@ def transfer_older_record_to_newer(record: dict, func_name, package) -> dict:
         "package" : None,
         "pass_rate" : 0,
     }
+    if package == "tf" :
+        new["package"] = "tensorflow"
     new["name"] = func_name
     new["args"]["name"] = list(record.keys())
-    new["args"]["dtype"] = list([a["dtype"] for a in record.values()])
     new["args"]["required"] = list([a["required"] for a in record.values()])
     new["args"]["is_pos"] = [False for _ in range(len(new["args"]["name"]))]
     new["args"]["value"] = [None for _ in range(len(new["args"]["name"]))]
+    dtypes_comb = list([a["dtype"] for a in record.values()])
+    combinations = list(itertools.product(*dtypes_comb))
+    for comb in combinations :
+        new["args"]["dtype"] = comb
+        all_results.append(copy.deepcopy(new))
 
-    if package == "tf" :
-        new["package"] = "tensorflow"
-    return new
+    return all_results
 
 def materalize_func(func_name : str, package : Literal['torch', 'tensorflow'] = 'torch') -> Union[Callable, None] :
     """
@@ -430,17 +436,17 @@ class TypeGenerator() :
             self.generated = True 
         if self.generated :
             self.give_pos()
-            converted = transfer_older_record_to_newer(self.args_info, func_name, package)
-            self.dump(converted)
+            generated_results = transfer_older_record_to_newer(self.args_info, func_name, package)
+            self.dump(generated_results)
         else :
             TRAIN_LOG.error(f"{self.func_name} Inferencing failed")
 
-    def dump(self, record) : 
-        converted = transform_record_for_saving(record)
-        for i, dtypes in enumerate(converted['args']['dtype']) :
-            for i_d, dtype in enumerate(dtypes) :
-                dtypes[i_d] = dtype.to_str()
-        save_record(transform_record_for_saving(record), self.save_path())
+    def dump(self, records) : 
+        for idx, record in enumerate(records) :
+            converted = transform_record_for_saving(record)
+            for i in range(len(converted['args']['dtype'])) :
+                converted['args']['dtype'] = [dtype if isinstance(dtype, str) else dtype.to_str() for dtype in converted['args']['dtype']]
+            save_record(converted, self.save_path(idx))
 
     def init(self) : 
         self.def_args_info = self.look_up_sig(self.func)
@@ -499,8 +505,8 @@ class TypeGenerator() :
         except : 
             return False
 
-    def save_path(self) :
-        return os.path.join(self.save_dir, f"{self.func_name.replace('.', '/')}-{0}.yaml")
+    def save_path(self, idx=0) :
+        return os.path.join(self.save_dir, f"{self.func_name.replace('.', '/')}-{idx}.yaml")
     
     def update(self, target, new) : 
         if len(target) == 0 :

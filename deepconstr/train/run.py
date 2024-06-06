@@ -1,4 +1,5 @@
 import copy
+import functools
 import glob
 import json
 import random
@@ -33,6 +34,12 @@ from deepconstr.logger import TRAIN_LOG
 #  - "bug": bug found.
 SPLITTER = "\n"
 class Scores(Dict): pass
+
+def gen_type_info(api_name, path, library, inferencer) -> List :
+    TRAIN_LOG.info(f"No files found for {api_name} ==> Try to generate ...")
+    save_dir = os.path.dirname(path)
+    file = gen_dtype_info(save_dir, api_name, library, inferencer)
+    return file
 
 class TrainingLoop:
     def __init__(
@@ -77,12 +84,12 @@ class TrainingLoop:
         )
 
         self.executor : Executor = Executor(self.ModelType, parallel = cfg["train"]["parallel"])
-        self.train_list = self.get_train_list(target = cfg["train"]["target"])
+        self.train_list = self.traverse_train_list(target = cfg["train"]["target"])
         TRAIN_LOG.info(
             f"{len(self.train_list)} opsets wait for inferring"
         )
 
-    def get_train_list(self, target) -> List[str]:
+    def traverse_train_list(self, target) -> List[str]:
         """
         get operator yaml file path
         """
@@ -93,9 +100,8 @@ class TrainingLoop:
             return base_name, index
 
         train_list = []
-        final_train_list = []
         record_paths = []
-        record : Dict[str, Any] = {}
+        wait_for_gen = []
         if isinstance(target, (list, ListConfig)) : 
             train_list = target 
         elif isinstance(target, str) :
@@ -119,40 +125,13 @@ class TrainingLoop:
                 all_files.extend(files_found)
                 TRAIN_LOG.info(f"Files found for {api_name}: {files_found}")
             else:
-                TRAIN_LOG.info(f"No files found for {api_name} ==> Try to generate ...")
-                save_dir = os.path.dirname(self.cfg["train"]["record_path"])
-                file = gen_dtype_info(save_dir, api_name, self.cfg["model"]["type"], self.inferencer)
-                all_files.extend(file)
+                func = functools.partial(gen_type_info, api_name, self.cfg["train"]["record_path"], self.cfg["model"]["type"])
+                wait_for_gen.append(func)
                 # If no files are found for this api, log the information
             record_paths.extend(all_files)
-        
-        # for record_path in record_paths :
-        #     TRAIN_LOG.info(f"Validate the properties of {record_path}")
-        #     with open(os.path.join(record_path), "r") as f:
-        #         record = yaml.safe_load(f)
-        #     if record.get("error", None) is not None :
-        #         TRAIN_LOG.info(f"{record_path} is errored record")
-        #         continue
-        #     elif not self.cfg["train"]["retrain"] and len(record.get("rules", [])) > 0 :
-        #         # TRAIN_LOG.info(f"{record_path} is already trained")
-        #         final_train_list.append(record_path)
-        #         continue
-        #     TRAIN_LOG.info(f"Check whether {record_path} is valid")
-        #     is_trainable, record = check_trainable(record, self.executor)
-        #     if is_trainable :
-        #         final_train_list.append(record_path)
 
         record_paths = sorted(record_paths, key=sort_key)
-        return record_paths
-    
-        ### all records of torch apis ###
-        # li = []
-        # root_path = self.cfg["train"]["record_path"] 
-        # for root, _, files in os.walk(root_path):
-        #     for file in files:
-        #         if file.endswith(".yaml"):
-        #             li.append(os.path.join(root, file))
-        # return li
+        return record_paths + wait_for_gen
     
     def get_pass_rate_and_err_msgs(self, record, ntimes) -> Tuple[float, List[ErrorMessage]]:
         success_count = 0
@@ -341,14 +320,16 @@ class TrainingLoop:
 
     def is_trained(self, record : Record) :
         return record.get("pass_rate", 0) >= self.cfg["train"]["pass_rate"] #or record.get("trained", False)
+    
     def is_trainable(self, record : Record) :
         return (
             record is not None and \
             record.get("error", None) is None and \
             self.is_trained(record) is False \
         )
+    
     def inspect_trainable(self, record_path) :
-                
+        
         TRAIN_LOG.info(f"Validate the properties of {record_path}")
         with open(os.path.join(record_path), "r") as f:
             record = yaml.safe_load(f)
@@ -357,7 +338,6 @@ class TrainingLoop:
             return False
         elif not self.cfg["train"]["retrain"] and len(record.get("rules", [])) > 0 :
             # TRAIN_LOG.info(f"{record_path} is already trained")
-            final_train_list.append(record_path)
             return False
         TRAIN_LOG.info(f"Check whether {record_path} is valid")
         is_trainable, record = check_trainable(record, self.executor)
@@ -372,23 +352,28 @@ class TrainingLoop:
         # while True :
         while n_func < end_index :
             n_func+=1
-            record_path = self.select_train_op()
-            if not self.inspect_trainable(record_path) :
-                continue
-            if n_func >= trained_func_index :
-                if record_path is None :
-                    break
-                op_record = process_record(record_path, filter={})
-                TRAIN_LOG.info(f"Start infering {op_record['name']}({n_func})")
-                self.get_err_msgs(op_record)
-                # if self.is_trainable(op_record) :
-                #     try :
-                #         self.run(op_record, record_path)
-                #         self.finalize_infering(op_record, record_path)
-                #     except :
-                #         TRAIN_LOG.error(f"{traceback.format_exc()}")
-                # else :
-                #     TRAIN_LOG.warning(f"""Record don't need-train/trainable : {formatted_dict(op_record, sep=":", split=SPLITTER)}""")
+            record_paths = self.select_train_op()
+            if not isinstance(record_paths, str) :
+                record_paths = record_paths(self.inferencer)
+            else :
+                record_paths = [record_paths]
+            for record_path in record_paths :
+                if not self.inspect_trainable(record_path) :
+                    continue
+                if n_func >= trained_func_index :
+                    if record_path is None :
+                        break
+                    op_record = process_record(record_path, filter={})
+                    TRAIN_LOG.info(f"Start infering {op_record['name']}({n_func})")
+                    # self.get_err_msgs(op_record)
+                    if self.is_trainable(op_record) :
+                        try :
+                            self.run(op_record, record_path)
+                            self.finalize_infering(op_record, record_path)
+                        except :
+                            TRAIN_LOG.error(f"{traceback.format_exc()}")
+                    else :
+                        TRAIN_LOG.warning(f"""Record don't need-train/trainable : {formatted_dict(op_record, sep=":", split=SPLITTER)}""")
 
     def finalize_infering(self, record, record_path) :
         pass_rate, unsolved = self.get_pass_rate_and_err_msgs(record, self.cfg["train"]["num_eval"])

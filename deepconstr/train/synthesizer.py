@@ -203,13 +203,16 @@ class Synthesizer:
             #return best f1 score from self.queue 
             res.sort(key=lambda x : x[0]["overall_score"], reverse=True)
             self.non_FP.sort(key=lambda x : x[0]["overall_score"], reverse=True)
+            self.non_FP = [self.non_FP[0]]
             self.non_FN.sort(key=lambda x : x[0]["overall_score"], reverse=True)
+            self.non_FN = [self.non_FN[0]]
             TRAIN_LOG.debug(f"current non_FPs : {', '.join([c[1].txt for c in self.non_FP])}")
             TRAIN_LOG.debug(f"current non_FNs : {', '.join([c[1].txt for c in self.non_FN])}")
         if skim :
             for _, c in res :
                 self.rm_from_tried(c)
         return res
+
 
 def parse_from_raw_txt(raw_infer) -> Tuple[str, str] :
     """
