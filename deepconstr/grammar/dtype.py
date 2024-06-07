@@ -124,7 +124,7 @@ class DType(Enum):
             "complex128": DType.complex128,
             "bool": DType.bool,
         }[s]
-    def z3_const(self) -> str:
+    def z3_const(self) -> "Z3DTYPE":
         from deepconstr.grammar import Z3DTYPE
         return {
             DType.quint8: Z3DTYPE.quint8,
@@ -147,6 +147,30 @@ class DType(Enum):
             DType.complex64: Z3DTYPE.complex64,
             DType.complex128: Z3DTYPE.complex128,
             DType.bool: Z3DTYPE.bool,
+        }[self]
+    def to_abs(self) -> str:
+        from deepconstr.grammar import Z3DTYPE
+        return {
+            DType.quint8: AbsDType.int,
+            DType.float16: AbsDType.float,
+            DType.float32: AbsDType.float,
+            DType.float64: AbsDType.float,
+            DType.uint8: AbsDType.int,
+            DType.uint16: AbsDType.int,
+            DType.uint32: AbsDType.int,
+            DType.uint64: AbsDType.int,
+            DType.qint8: AbsDType.int,
+            DType.qint16: AbsDType.int,
+            DType.qint32: AbsDType.int,
+            DType.bfloat16: AbsDType.float,
+            DType.int8: AbsDType.int,
+            DType.int16: AbsDType.int,
+            DType.int32: AbsDType.int,
+            DType.int64: AbsDType.int,
+            DType.complex32: AbsDType.complex,
+            DType.complex64: AbsDType.complex,
+            DType.complex128:AbsDType.complex,
+            DType.bool: AbsDType.bool,
         }[self]
     def numpy(self):
         return {
@@ -816,6 +840,12 @@ STR_TO_ABS = {
     'cdouble' : DType.complex128,
     'short' : DType.int16,
     'long' : DType.int64,
+
+    #numpy
+    'array' : AbsTensor(),
+    'array_like' : AbsTensor(),
+    'ndarray' : AbsTensor(),
+    'matrix' : AbsTensor(),
 }
 
 

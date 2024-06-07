@@ -20,6 +20,7 @@ def gen_dtype_constraints(arg_name : str, not_supported_dtypes : List["DType"]) 
 DEFAULT_DTYPE_CONSTR : Dict[str, z3.ExprRef] = {
     "torch" : partial(gen_dtype_constraints, not_supported_dtypes=DTYPE_NOT_SUPPORTED.get("torch")),
     "tensorflow" : partial(gen_dtype_constraints, not_supported_dtypes=DTYPE_NOT_SUPPORTED.get("tensorflow")),
+    "numpy" : partial(gen_dtype_constraints, not_supported_dtypes=DTYPE_NOT_SUPPORTED.get("numpy")),
 }
 
 

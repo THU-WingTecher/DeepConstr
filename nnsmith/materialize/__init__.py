@@ -201,6 +201,11 @@ class Model(ABC):
                 return TFModelGPU
             else:
                 return TFModelCPU
+            
+        elif name == "numpy":
+            from nnsmith.materialize.numpy import NumPyModel
+            assert backend_target == "cpu", "numpy only support cpu"
+            return NumPyModel
 
         raise ValueError(
             f"Unsupported: ModelType={name} for BackendTarget={backend_target}"
