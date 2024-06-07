@@ -2,7 +2,7 @@ import copy
 import itertools
 import os
 import re
-from deepconstr.grammar.dtype import materalize_dtypes
+from deepconstr.grammar.dtype import DType, materalize_dtypes
 import yaml
 from logger import TRAIN_LOG
 from deepconstr.train.inferencer import Inferencer
@@ -239,7 +239,7 @@ def transfer_older_record_to_newer(record: dict, func_name, package) -> dict:
     dtypes_comb = list([a["dtype"] for a in record.values()])
     combinations = list(itertools.product(*dtypes_comb))
     for comb in combinations :
-        new["args"]["dtype"] = comb
+        new["args"]["dtype"] = list(comb)
         all_results.append(copy.deepcopy(new))
 
     return all_results
@@ -253,6 +253,8 @@ def materalize_func(func_name : str, package : Literal['torch', 'tensorflow'] = 
         import torch 
     elif package == 'tensorflow' :
         import tensorflow as tf 
+    elif package == 'numpy' :
+        import numpy 
     else :
         pass
     function_str = func_name
@@ -445,7 +447,14 @@ class TypeGenerator() :
         for idx, record in enumerate(records) :
             converted = transform_record_for_saving(record)
             for i in range(len(converted['args']['dtype'])) :
-                converted['args']['dtype'] = [dtype if isinstance(dtype, str) else dtype.to_str() for dtype in converted['args']['dtype']]
+                for i, dtype in enumerate(converted['args']['dtype']) : 
+                    if isinstance(dtype, str) :
+                        converted['args']['dtype'][i] = dtype 
+                    elif isinstance(dtype, DType) :
+                        converted['args']['dtype'][i] = dtype.to_abs().to_str() 
+                    else :
+                        converted['args']['dtype'][i] = dtype.to_str() 
+                        
             save_record(converted, self.save_path(idx))
 
     def init(self) : 

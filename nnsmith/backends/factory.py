@@ -28,13 +28,17 @@ class BackendFactory(ABC):
     @abstractmethod
     def system_name(self) -> str:
         pass
-
+    
     @property
     def version(self) -> str:
         return "unknown"
 
     def __str__(self) -> str:
         return f"{self.system_name} ({self.target} opt: {self.optmax})"
+
+    @staticmethod
+    def execute_op(inst : "OpInstance") : 
+        raise NotImplementedError(f"Not Implemented for system")
 
     @staticmethod
     def make_random_input(
@@ -354,6 +358,11 @@ class BackendFactory(ABC):
             return XLAFactory(target=target, optmax=optmax, **kwargs)
         elif name == "iree":
             from nnsmith.backends.iree import IREEFactory
+
+            return IREEFactory(target=target, optmax=optmax, **kwargs)
+        
+        elif name == "numpy":
+            from nnsmith.backends.npy import IREEFactory
 
             return IREEFactory(target=target, optmax=optmax, **kwargs)
         else:
