@@ -1,0 +1,61 @@
+args:
+  dtype:
+  - Tensor
+  - bool
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - some
+  required:
+  - true
+  - false
+name: torch.Tensor.qr
+package: torch
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        some: bool
+      msg: 'linalg.qr: The input tensor A must have at least 2 dimensions.'
+      package: torch
+    txt: self.dim >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        some: bool
+      msg: 'linalg.qr: Expected a floating point or complex tensor as input. Got Int'
+      package: torch
+    txt: self.dtype in [torch.float16, torch.float32, torch.float64, torch.complex64,
+      torch.complex128]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error arises because the ''geqrf_cpu'' implementation is not available
+      for the ''Half'' data type. To prevent this error, the ''self'' tensor should
+      be of a data type that is supported by the ''geqrf_cpu'' implementation. Therefore,
+      the constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        some: bool
+      msg: '"geqrf_cpu" not implemented for ''Half'''
+      package: torch
+    txt: dtype(self) not in ["Half"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

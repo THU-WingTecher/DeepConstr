@@ -21,4 +21,23 @@ args:
   - false
 name: torch.Tensor.put
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'The error occurs because the function expects a long tensor for the ''index''
+      argument, but a float tensor was provided instead. To prevent this error in
+      the future, we need to ensure that the ''index'' argument is always a long tensor.
+      The constraint for the ''index'' parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        accumulate: bool
+        index: tensor
+        self: tensor
+        source: tensor
+      msg: 'put_(): Expected a long tensor for index, but got Float'
+      package: torch
+    txt: index.dtype == torch.int64
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

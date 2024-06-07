@@ -71,12 +71,6 @@ class TrainingLoop:
 
         self.n_infer = int(cfg["train"]["n_infer_per_round"])
 
-        self.factory = BackendFactory.init(
-            cfg["backend"]["type"],
-            target=cfg["backend"]["target"],
-            optmax=cfg["backend"]["optmax"],
-        )
-
         model_cfg = self.cfg["model"]
         self.constr_target_map = {}
         self.ModelType = Model.init(

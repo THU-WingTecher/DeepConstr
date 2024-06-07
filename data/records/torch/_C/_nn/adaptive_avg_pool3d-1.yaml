@@ -17,4 +17,35 @@ args:
   - true
 name: torch._C._nn.adaptive_avg_pool3d
 package: torch
-pass_rate: 0
+pass_rate: 31.25
+rules:
+- - cot: 'The error is triggered because the ''output_size'' argument is not satisfying
+      the requirement of being a list of 3 integers. The ''output_size'' should be
+      corrected to have a length of 3. Therefore, the constraint would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        output_size: list[int]
+        self: tensor
+      msg: 'adaptive_avg_pool3d: output_size must be 3'
+      package: torch
+    txt: len(output_size) == 3
+  - f1_score: 98.14612868047982
+    overall_score: 100
+    precision: 100.0
+    recall: 96.35974304068523
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        output_size: list[int]
+        self: tensor
+      msg: 'adaptive_avg_pool3d(): Expected 4D or 5D tensor, but got []'
+      package: torch
+    txt: self.ndims() == 5
+  - f1_score: 92.26006191950462
+    overall_score: 100
+    precision: 100.0
+    recall: 85.63218390804596

@@ -13,5 +13,5 @@ args:
   - false
 name: torch.Tensor.pin_memory
 package: torch
-pass_rate: 6.0
+pass_rate: 4.333333333333334
 rules: []

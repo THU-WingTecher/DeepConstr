@@ -1,0 +1,29 @@
+args:
+  dtype:
+  - tensor
+  - list[int]
+  - float
+  - str
+  - int
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - x
+  - axis
+  - epsilon
+  - name
+  - dim
+  required:
+  - true
+  - false
+  - false
+  - false
+  - false
+name: tf.math.l2_normalize
+package: null
+pass_rate: 0.0
+rules: []

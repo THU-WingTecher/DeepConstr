@@ -1,0 +1,58 @@
+args:
+  dtype:
+  - tensor
+  - int
+  - bool
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input_tensor
+  - axis
+  - keepdims
+  - name
+  required:
+  - true
+  - false
+  - false
+  - false
+name: tf.math.reduce_std
+package: null
+pass_rate: 83.0
+rules:
+- - cot: 'The error is triggered because the input tensor is of integer type, but
+      it should be either real or complex. We can formulate the constraint as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        input_tensor: tensor
+        keepdims: bool
+        name: str
+      msg: 'Input must be either real or complex. Received integer type <dtype: ''int32''>.'
+      package: tensorflow
+    txt: input_tensor.dtype in [tf.float16, tf.float32, tf.float64, tf.complex64,
+      tf.complex128]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        input_tensor: tensor
+        keepdims: bool
+        name: str
+      msg: '{{function_node __wrapped__Mean_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Invalid reduction dimension (-1 for input with 0 dimension(s) [Op:Mean]'
+      package: tensorflow
+    txt: (axis >= -input_tensor.rank) and (axis < input_tensor.rank)
+  - f1_score: 90.31078610603291
+    overall_score: 57.155393053016454
+    precision: 82.33333333333334
+    recall: 100.0

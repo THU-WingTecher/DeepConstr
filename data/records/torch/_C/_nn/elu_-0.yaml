@@ -21,4 +21,24 @@ args:
   - false
 name: torch._C._nn.elu_
 package: torch
-pass_rate: 0
+pass_rate: 96.33333333333334
+rules:
+- - cot: 'The error is due to the function ''elu_cpu'' not being implemented for the
+      data type ''Int''. To prevent this error, the data type of the input tensor
+      should be changed to a supported data type. So, Left : self.dtype, Op : !=,
+      Right : Int. Wrap the final formula with `. Correctly match the variable names
+      : [''self''].'
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        input_scale: int
+        scale: int
+        self: tensor
+      msg: '"elu_cpu" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype != torch.int
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

@@ -1,0 +1,57 @@
+args:
+  dtype:
+  - tensor
+  - str
+  is_pos:
+  - false
+  - false
+  name:
+  - x
+  - name
+  required:
+  - true
+  - false
+name: tf.math.bessel_i1
+package: null
+pass_rate: 100
+rules:
+- - cot: The error is due to an unsupported data type for the node 'BesselI1'. The
+      data type 'DT_BFLOAT16' is not supported by the device executing the function.
+      This can be fixed by ensuring that the data type of 'x' is not 'DT_BFLOAT16'.
+      Therefore, dtype(x)!= 'DT_BFLOAT16'.
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+      msg: "Could not find device for node: {{node BesselI1}} = BesselI1[T=DT_BFLOAT16]\n\
+        All kernels registered for op BesselI1:\n  device='GPU'; T in [DT_DOUBLE]\n\
+        \  device='GPU'; T in [DT_FLOAT]\n  device='GPU'; T in [DT_HALF]\n  device='CPU';\
+        \ T in [DT_DOUBLE]\n  device='CPU'; T in [DT_FLOAT]\n  device='CPU'; T in\
+        \ [DT_HALF]\n [Op:BesselI1]"
+      package: tensorflow
+    txt: x.dtype != 'DT_BFLOAT16'
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the error occurs because the attribute
+      ''x'' is of type int32, but it is expected to be one of the allowed types: bfloat16,
+      half, float, double. To prevent this error, the type of ''x'' should be corrected
+      to match one of the allowed types. So, the constraint that prevents the error
+      is:'
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: bfloat16,\
+        \ half, float, double\n\t; NodeDef: {{node BesselI1}}; Op<name=BesselI1; signature=x:T\
+        \ -> y:T; attr=T:type,allowed=[DT_BFLOAT16, DT_HALF, DT_FLOAT, DT_DOUBLE]>\
+        \ [Op:BesselI1]"
+      package: tensorflow
+    txt: dtype(x) in ["bfloat16", "half", "float", "double"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

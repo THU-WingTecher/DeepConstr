@@ -21,4 +21,51 @@ args:
   - true
 name: torch.Tensor.index_copy
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        self: tensor
+        source: tensor
+      msg: 'index_copy_(): Index should have dimension 1 or 0 (got 7)'
+      package: torch
+    txt: index.dim == 0
+  - f1_score: 84.71035137701806
+    overall_score: 100
+    precision: 100.0
+    recall: 73.47611202635915
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        self: tensor
+        source: tensor
+      msg: 'index_copy_(): Expected a long tensor for index, but got Float'
+      package: torch
+    txt: index.dtype == torch.int64
+  - f1_score: 71.88498402555909
+    overall_score: 100
+    precision: 100.0
+    recall: 56.10972568578553
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        self: tensor
+        source: tensor
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got 6)
+      package: torch
+    txt: dim >= -len(self.shape) and dim < len(self.shape) and dim >= -1 and dim <
+      0
+  - f1_score: 72.6978998384491
+    overall_score: 100
+    precision: 100.0
+    recall: 57.10659898477157

@@ -21,4 +21,38 @@ args:
   - false
 name: torch._C._linalg.linalg_ldl_solve
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'Based on the given runtime information, the constraint to prevent the error
+      is that the input matrices in `LD` must be batches of square matrices, but they
+      are 3 by 1 matrices. Therefore, the condition to satisfy is:'
+    length: 1
+    target:
+      choosen_dtype:
+        B: tensor
+        LD: tensor
+        hermitian: bool
+        pivots: tensor
+      msg: 'torch.linalg.ldl_solve: A must be batches of square matrices, but they
+        are 3 by 1 matrices'
+      package: torch
+    txt: LD.shape[-2] == LD.shape[-1]
+  - f1_score: 68.28528072837634
+    overall_score: 100
+    precision: 100.0
+    recall: 51.843317972350235
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        B: tensor
+        LD: tensor
+        hermitian: bool
+        pivots: tensor
+      msg: 'torch.linalg.ldl_solve: The input tensor A must have at least 2 dimensions.'
+      package: torch
+    txt: LD.dim() >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

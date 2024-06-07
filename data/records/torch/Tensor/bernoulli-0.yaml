@@ -13,4 +13,5 @@ args:
   - false
 name: torch.Tensor.bernoulli
 package: torch
-pass_rate: 0
+pass_rate: 5.0
+rules: []

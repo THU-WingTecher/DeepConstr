@@ -63,7 +63,7 @@ If configured correctly, you will receive a response from the OpenAI API, such a
 ### Start Extraction
 > [!NOTE]
 >
-> **Command usage of**: `./fuzz.sh tran.target METHOD MODEL BACKEND TIME`
+> **Command usage of**: `python deepconstr/train/run.py`
 >
 > **Important Arguments**:
 > - `tran.target`: Specifies the API name or path to extract. This can be a single API name (e.g., `"torch.add"`), a list containing multiple API names (e.g., `["torch.add", "torch.abs"]`), or a JSON file path containing the list.
@@ -112,18 +112,32 @@ model.type=tensorflow hydra.verbose=train train.parallel=1 train.num_eval=300 tr
 train.retrain=true train.target='["tf.add","tf.abs"]'
 ```
 
-# dataduct Experiments
+# Reproduce Experiments
 
 ### Comparative Experiment (RQ1) 
+
+#### Check trained operators( table 1)
+
+You can inspect the number of trained APIs by executing the following commands:
+```bash 
+python experiments/apis_overview.py /path/to/constraints
+```
+By default, /path/to/constraints is set to /artifact/data/records.
+
+#### Coverage Comparison Experiment
+> [!NOTE]
+> For this step, you need first download PyTorch and TensorFlow and compile them 
+> Or you can pull our docker containor(Work in Progress)
+
 We have four baselines for conducting experiments. Additionally, approximately 700 operators (programs) require testing for PyTorch and 150 operators for TensorFlow. Given that each operator needs to be tested for 15 minutes, completing the experiment will be time-intensive. To expedite the process, we recommend using the `exp.parallel` argument to enable multiple threads during the experiment.
 The experiment results will be saved at the folder specified in `exp.save_dir`.
 
 ##### for PyTorch 
 
-First, change the environment to the conda environment created for this project.
+<!-- First, change the environment to the conda environment created for this project.
 ```bash
 conda activate cov
-```
+``` -->
 
 ```bash
 PYTHONPATH=/artifact/:/artifact/nnsmith/:/artifact/deepconstr/:$PYTHONPATH \
@@ -133,10 +147,10 @@ exp.save_dir=pt_gen mgen.record_path=$(pwd)/data/records/torch/ mgen.pass_rate=0
 
 ##### for TensorFlow 
 
-First, change the environment to the conda environment created for this project.
+<!-- First, change the environment to the conda environment created for this project.
 ```bash
 conda activate cov
-```
+``` -->
 
 ```bash
 PYTHONPATH=/artifact/:/artifact/nnsmith/:/artifact/deepconstr/:$PYTHONPATH \

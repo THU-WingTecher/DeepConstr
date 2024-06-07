@@ -17,4 +17,41 @@ args:
   - true
 name: torch._C._nn.max_unpool2d
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: Based on the given runtime information, the constraint that prevents the
+      error is that the elements in the 'indices' tensor should be of type int64,
+      but they are currently of type float. To fix this, the 'indices' tensor should
+      be converted to int64 type.
+    length: 1
+    target:
+      choosen_dtype:
+        indices: tensor
+        output_size: list[int]
+        self: tensor
+      msg: 'elements in indices should be type int64 but got: Float'
+      package: torch
+    txt: dtype(indices) == "int64"
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: "The error occurs because the length of the `output_size` list is not equal\
+      \ to 2. To prevent this error in the future and generate constraints that do\
+      \ not trigger it, we need to ensure that the `output_size` list always has exactly\
+      \ 2 elements. \n\nThe constraint for the `output_size` parameter can be expressed\
+      \ as:"
+    length: 1
+    target:
+      choosen_dtype:
+        indices: tensor
+        output_size: list[int]
+        self: tensor
+      msg: There should be exactly two elements (height, width) in output_size, but
+        got 0 elements.
+      package: torch
+    txt: len(output_size) == 2
+  - f1_score: 99.66777408637873
+    overall_score: 100
+    precision: 100.0
+    recall: 99.33774834437087

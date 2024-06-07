@@ -9,4 +9,17 @@ args:
   - true
 name: torch.Tensor.arcsin_
 package: torch
-pass_rate: 0
+pass_rate: 97.33333333333334
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self) == torch.float64
+  - f1_score: 67.41573033707866
+    overall_score: 100
+    precision: 100.0
+    recall: 50.847457627118644

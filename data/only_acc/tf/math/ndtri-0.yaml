@@ -1,0 +1,59 @@
+args:
+  dtype:
+  - tensor
+  - str
+  is_pos:
+  - false
+  - false
+  name:
+  - x
+  - name
+  required:
+  - true
+  - false
+name: tf.math.ndtri
+package: null
+pass_rate: 100
+rules:
+- - cot: 'Based on the given runtime information, the error arises because the attribute
+      ''x'' is of type ''int32'', but it is expected to be one of ''bfloat16'', ''half'',
+      ''float'', or ''double''. The tensor ''x'' is provided as ''int32'', which is
+      not compatible. Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: bfloat16,\
+        \ half, float, double\n\t; NodeDef: {{node Ndtri}}; Op<name=Ndtri; signature=x:T\
+        \ -> y:T; attr=T:type,allowed=[DT_BFLOAT16, DT_HALF, DT_FLOAT, DT_DOUBLE]>\
+        \ [Op:Ndtri]"
+      package: tensorflow
+    txt: dtype(x) in ["bfloat16", "half", "float", "double"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: The error is due to the fact that the function tf.math.ndtri is trying to
+      operate on a datatype (DT_HALF) that is not supported by the available device.
+      Therefore, the datatype of the input tensor 'x' should be corrected to be a
+      datatype that is supported by the device. However, the error message does not
+      specify what datatypes are supported by the device. In general, most devices
+      support the float32 datatype, so we can use that as a starting point.
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+      msg: "Could not find device for node: {{node Ndtri}} = Ndtri[T=DT_HALF]\nAll\
+        \ kernels registered for op Ndtri:\n  device='XLA_CPU_JIT'; T in [DT_FLOAT,\
+        \ DT_DOUBLE, DT_BFLOAT16, DT_HALF]\n  device='XLA_GPU_JIT'; T in [DT_FLOAT,\
+        \ DT_DOUBLE, DT_BFLOAT16, DT_HALF]\n  device='CPU'; T in [DT_DOUBLE]\n  device='CPU';\
+        \ T in [DT_FLOAT]\n  device='GPU'; T in [DT_DOUBLE]\n  device='GPU'; T in\
+        \ [DT_FLOAT]\n [Op:Ndtri]"
+      package: tensorflow
+    txt: x.dtype == tf.float32
+  - f1_score: 77.85467128027682
+    overall_score: 100
+    precision: 100.0
+    recall: 63.739376770538236

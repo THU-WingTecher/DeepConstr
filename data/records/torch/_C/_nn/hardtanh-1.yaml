@@ -21,4 +21,35 @@ args:
   - true
 name: torch._C._nn.hardtanh
 package: torch
-pass_rate: 0
+pass_rate: 92.66666666666666
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        max_val: int
+        min_val: int
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 75.44006705783738
+    overall_score: 100
+    precision: 100.0
+    recall: 60.56527590847913
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        max_val: int
+        min_val: int
+        out: tensor
+        self: tensor
+      msg: Found dtype Float but expected Int
+      package: torch
+    txt: dtype(out) == dtype(self)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

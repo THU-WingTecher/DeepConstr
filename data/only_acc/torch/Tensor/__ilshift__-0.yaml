@@ -1,0 +1,125 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.Tensor.__ilshift__
+package: torch
+pass_rate: 97.66666666666667
+rules:
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (2) at non-singleton
+        dimension 6
+      package: torch
+    txt: (((self.dim() == other.dim() and self.shape[6] == other.shape[6]) and (self.shape[1]
+      == other.shape[1])) and (self.shape[i] == 1)) or (self.shape[i] == 1)
+  - f1_score: 68.44106463878327
+    overall_score: 100
+    precision: 100.0
+    recall: 52.02312138728323
+- - cot: Wrap the final formula with
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"lshift_cpu" not implemented for ''Float'''
+      package: torch
+    txt: (self.dtype in [half, int16, int32, int64, uint8, uint16, uint32, uint64])
+      and (other.dtype in [half, int16, int32, int64, uint8, uint16, uint32, uint64])
+  - f1_score: 75.82139848357203
+    overall_score: 100
+    precision: 100.0
+    recall: 61.05834464043419
+- - cot: "The error is triggered because the result type Half cannot be cast to the\
+      \ desired output type Short. To prevent this error, the dtypes of the two tensors\
+      \ should be consistent. \n\nThe constraint can be formulated as follows:"
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: result type Half can't be cast to the desired output type Short
+      package: torch
+    txt: dtype(self) == dtype(other)
+  - f1_score: 84.9056603773585
+    overall_score: 100
+    precision: 100.0
+    recall: 73.77049180327869
+- - cot: 'The error is triggered because the output shape [] doesn''t match the broadcast
+      shape [5, 2, 1, 3, 1, 2, 1]. This suggests that there is a mismatch in the shape
+      of the tensors at non-singleton dimensions.
+
+
+      To prevent this error, we need to ensure that the trailing dimensions of the
+      tensors are either 1 or the same. We can formulate the constraint as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: output with shape [] doesn't match the broadcast shape [5, 2, 1, 3, 1,
+        2, 1]
+      package: torch
+    txt: all(self.shape[i] == other.shape[i] or self.shape[i] == 1 or other.shape[i]
+      == 1 for i in range(-1, -min(len(self.shape), len(other.shape))-1, -1))
+  - f1_score: 63.48949919224555
+    overall_score: 46.666666666666664
+    precision: 87.33333333333333
+    recall: 49.8730964467005
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: output with shape [1, 1, 1, 1, 1, 1] doesn't match the broadcast shape
+        [1, 1, 1, 1, 7, 1]
+      package: torch
+    txt: (self.shape[i] == 1) and (self.shape == other.shape)
+  - f1_score: 69.01840490797547
+    overall_score: 100
+    precision: 100.0
+    recall: 52.69320843091335
+- - cot: 'To prevent the error "negative dimensions are not allowed", we need to ensure
+      that none of the dimensions in both `self` and `other` tensors are negative.
+      We can formulate the constraint as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(self.shape[i] >= 0 for i in range(self.dim())) and all(other.shape[i]
+      >= 0 for i in range(other.dim()))
+  - f1_score: 70.03891050583658
+    overall_score: 100
+    precision: 100.0
+    recall: 53.89221556886228
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"lshift_cpu" not implemented for ''Half'''
+      package: torch
+    txt: (dtype(other) != 'half')
+  - f1_score: 97.19222462203025
+    overall_score: 100
+    precision: 100.0
+    recall: 94.53781512605043

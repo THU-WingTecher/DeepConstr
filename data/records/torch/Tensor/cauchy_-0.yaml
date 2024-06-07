@@ -21,4 +21,39 @@ args:
   - false
 name: torch.Tensor.cauchy_
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: "The error is due to the incorrect data type specified for the tensor. It\
+      \ says that the dtype must be a floating point, but it was specified as an integer.\
+      \ Therefore, the constraint to prevent the error is to ensure that the dtype\
+      \ is a floating point. \n\nConstraint:"
+    length: 1
+    target:
+      choosen_dtype:
+        generator: None
+        median: float
+        self: tensor
+        sigma: float
+      msg: Cauchy distribution is a continuous probability distribution. dtype must
+        be a floating point but you specified int
+      package: torch
+    txt: self.dtype == torch.float
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        generator: None
+        median: float
+        self: tensor
+        sigma: float
+      msg: cauchy_ expects sigma > 0.0, but found sigma=-2
+      package: torch
+    txt: sigma > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

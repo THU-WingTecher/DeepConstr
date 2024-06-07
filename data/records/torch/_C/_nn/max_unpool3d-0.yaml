@@ -25,4 +25,24 @@ args:
   - true
 name: torch._C._nn.max_unpool3d
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'The error message indicates that the elements in the ''indices'' parameter
+      should be of integer type (int64). Therefore, the constraint that prevents this
+      error is to make sure the dtype of ''indices'' is int64. The constraint for
+      the ''indices'' parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        indices: tensor
+        output_size: list[int]
+        padding: list[int]
+        self: tensor
+        stride: list[int]
+      msg: elements in indices should be type int64
+      package: torch
+    txt: dtype(indices) == "int64"
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

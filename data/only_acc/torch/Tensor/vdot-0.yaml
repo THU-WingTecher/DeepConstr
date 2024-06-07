@@ -1,0 +1,63 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.Tensor.vdot
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'The error is due to the input tensors ''self'' and ''other'' having more
+      than 1 dimension. The function torch.Tensor.vdot expects both input tensors
+      to be 1D. Therefore, ''self'' and ''other'' should be corrected. They both need
+      to be 1D tensors, so Operation : == and Right : 1.'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: 1D tensors expected, but got 7D and 7D tensors
+      package: torch
+    txt: self.dim()==1 and other.dim()==1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: inconsistent tensor size, expected tensor [4] and src [6] to have the same
+        number of elements, but got 4 and 6 elements respectively
+      package: torch
+    txt: self.shape[0] == other.shape[0]
+  - f1_score: 96.56652360515021
+    overall_score: 100
+    precision: 100.0
+    recall: 93.3609958506224
+- - cot: 'The error is due to the mismatch in data types between the ''self'' and
+      ''other'' tensors. The ''self'' tensor is of type int, but the ''other'' tensor
+      is of type float. To prevent this error, both tensors should have the same data
+      type. So, the constraint should be:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: 'dot : expected both vectors to have same dtype, but found Int and Float'
+      package: torch
+    txt: self.dtype == other.dtype
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

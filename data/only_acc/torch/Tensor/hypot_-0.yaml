@@ -1,0 +1,60 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.Tensor.hypot_
+package: torch
+pass_rate: 100
+rules:
+- - cot: "The error is triggered because the size of tensor `self` (3) does not match\
+      \ the size of tensor `other` (2) at non-singleton dimension 6. \n\nTo prevent\
+      \ this error, we need to ensure that the dimensions and shapes of `self` and\
+      \ `other` are consistent. \n\nThe constraint can be formulated as follows:"
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (3) must match the size of tensor b (2) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.dim == other.dim and self.shape == other.shape
+  - f1_score: 78.53403141361257
+    overall_score: 100
+    precision: 100.0
+    recall: 64.65517241379311
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self)==dtype(other)
+  - f1_score: 96.15384615384615
+    overall_score: 100
+    precision: 100.0
+    recall: 92.59259259259258
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"hypot_cpu" not implemented for ''Int'''
+      package: torch
+    txt: other.dtype in [torch.float32, torch.float64]
+  - f1_score: 96.87836383207751
+    overall_score: 100
+    precision: 100.0
+    recall: 93.94572025052192

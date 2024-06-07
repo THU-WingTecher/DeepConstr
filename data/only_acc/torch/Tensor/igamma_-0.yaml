@@ -1,0 +1,57 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.Tensor.igamma_
+package: torch
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (3) must match the size of tensor b (2) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.dim(6) == other.dim(6) and self.shape == other.shape
+  - f1_score: 86.28954937679771
+    overall_score: 100
+    precision: 100.0
+    recall: 75.88532883642496
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self)==dtype(other)
+  - f1_score: 96.35974304068523
+    overall_score: 100
+    precision: 100.0
+    recall: 92.97520661157024
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"igamma_cpu" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype == torch.float
+  - f1_score: 96.15384615384615
+    overall_score: 100
+    precision: 100.0
+    recall: 92.59259259259258

@@ -25,4 +25,87 @@ args:
   - false
 name: torch.Tensor.addbmm_
 package: torch
-pass_rate: 0
+pass_rate: 2.7491408934707904
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        batch1: tensor
+        batch2: tensor
+        beta: int
+        self: tensor
+      msg: 'expand(torch.FloatTensor{[5, 2, 7, 6, 2, 7, 1]}, size=[6, 7]): the number
+        of sizes provided (2) must be greater or equal to the number of dimensions
+        in the tensor (7)'
+      package: torch
+    txt: len(self.size()) <= len(batch2.dim)
+  - f1_score: 96.55913978494624
+    overall_score: 100
+    precision: 100.0
+    recall: 93.34719334719335
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        alpha: int
+        batch1: tensor
+        batch2: tensor
+        beta: int
+        self: tensor
+      msg: batch1 must be a 3D tensor
+      package: torch
+    txt: (batch1.dim == 3) and (batch2.dim() == 3)
+  - f1_score: 93.75
+    overall_score: 100
+    precision: 100.0
+    recall: 88.23529411764706
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        alpha: int
+        batch1: tensor
+        batch2: tensor
+        beta: int
+        self: tensor
+      msg: batch1 and batch2 must have same number of batches, got 2 and 6
+      package: torch
+    txt: (len(batch1) == len(batch2)) and (batch1.shape[0] == batch2.shape[0])
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        alpha: int
+        batch1: tensor
+        batch2: tensor
+        beta: int
+        self: tensor
+      msg: Incompatible matrix sizes for bmm (1x2 and 1x2)
+      package: torch
+    txt: (self.size(-1) == batch1.size(-2)) and ((batch1.shape[-1] == batch2.shape[-2]))
+  - f1_score: 96.28008752735231
+    overall_score: 100
+    precision: 100.0
+    recall: 92.82700421940929
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        batch1: tensor
+        batch2: tensor
+        beta: int
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: self.rank==batch2.rank
+  - f1_score: 93.86845039018951
+    overall_score: 100
+    precision: 100.0
+    recall: 88.4453781512605

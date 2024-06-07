@@ -9,4 +9,17 @@ args:
   - true
 name: torch._C._nn.hardsigmoid_
 package: torch
-pass_rate: 0
+pass_rate: 98.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+      msg: '"hardsigmoid_cpu" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype == torch.float32
+  - f1_score: 97.71986970684038
+    overall_score: 100
+    precision: 100.0
+    recall: 95.54140127388536

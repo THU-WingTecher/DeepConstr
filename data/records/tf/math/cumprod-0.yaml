@@ -1,0 +1,51 @@
+args:
+  dtype:
+  - tensor
+  - int
+  - bool
+  - bool
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - x
+  - axis
+  - exclusive
+  - reverse
+  - name
+  required:
+  - true
+  - false
+  - false
+  - false
+  - false
+name: tf.math.cumprod
+package: null
+pass_rate: 85.66666666666667
+rules:
+- - cot: 'To prevent the error, we need to ensure that the value of the ''axis'' parameter
+      is within the valid range for the given tensor. If we denote the shape of the
+      tensor as n, the valid range for the ''axis'' parameter would be [-n, n-1].
+
+
+      The constraint for the ''axis'' parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        exclusive: bool
+        name: str
+        reverse: bool
+        x: tensor
+      msg: '{{function_node __wrapped__Cumprod_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        ScanOp: Expected scan axis in the range [-7, 7), but got 7 [Op:Cumprod]'
+      package: tensorflow
+    txt: axis >= -len(x.shape) and axis < len(x.shape)
+  - f1_score: 91.10707803992742
+    overall_score: 57.55353901996371
+    precision: 83.66666666666667
+    recall: 100.0

@@ -1,0 +1,53 @@
+args:
+  dtype:
+  - tensor
+  - tensor
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - x
+  - y
+  - name
+  required:
+  - true
+  - true
+  - false
+name: tf.math.squared_difference
+package: null
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: '{{function_node __wrapped__SquaredDifference_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [3,3,3,3,3,3,3] vs. [1,6,4,6,7,1,1] [Op:SquaredDifference]
+        name: ATsN'
+      package: tensorflow
+    txt: (len(x) == len(y)) and (x.shape == y.shape)
+  - f1_score: 79.92895204262877
+    overall_score: 100
+    precision: 100.0
+    recall: 66.56804733727812
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: 'cannot compute SquaredDifference as input #1(zero-based) was expected
+        to be a float tensor but is a int32 tensor [Op:SquaredDifference] name: nZzP'
+      package: tensorflow
+    txt: dtype(x) == dtype(y)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

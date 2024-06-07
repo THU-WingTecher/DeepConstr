@@ -17,4 +17,33 @@ args:
   - true
 name: torch._C._nn.adaptive_avg_pool2d
 package: torch
-pass_rate: 0
+pass_rate: 45.91836734693878
+rules:
+- - cot: output_size must be a list of 2 integers.
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        output_size: list[int]
+        self: tensor
+      msg: 'adaptive_avg_pool2d: output_size must be 2'
+      package: torch
+    txt: len(output_size) == 2
+  - f1_score: 98.46827133479212
+    overall_score: 100
+    precision: 100.0
+    recall: 96.98275862068965
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        output_size: list[int]
+        self: tensor
+      msg: 'adaptive_avg_pool2d(): Expected 3D or 4D tensor, but got []'
+      package: torch
+    txt: self.ndims() == 4
+  - f1_score: 93.44432882414152
+    overall_score: 100
+    precision: 100.0
+    recall: 87.6953125

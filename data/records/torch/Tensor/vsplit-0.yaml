@@ -13,4 +13,36 @@ args:
   - true
 name: torch.Tensor.vsplit
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        sections: int
+        self: tensor
+      msg: torch.vsplit attempted to split along dimension 0, but the size of the
+        dimension 4 is not divisible by the split_size 7!
+      package: torch
+    txt: self.shape[0] % sections == 0
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: 'Based on the given values, Error is triggered because the input tensor doesn''t
+      have at least 2 dimensions. It expects to have minimum 2 dimensions. Let''s
+      see what the args were. It seems dimension of self which should be corrected.
+      Therefore, Left : self.dim Op : >=, and Right : 2'
+    length: 1
+    target:
+      choosen_dtype:
+        sections: int
+        self: tensor
+      msg: torch.vsplit requires a tensor with at least 2 dimension, but got a tensor
+        with 0 dimensions!
+      package: torch
+    txt: self.dim >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

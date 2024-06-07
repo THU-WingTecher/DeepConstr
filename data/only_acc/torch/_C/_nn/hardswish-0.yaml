@@ -1,0 +1,27 @@
+args:
+  dtype:
+  - Tensor
+  is_pos:
+  - true
+  name:
+  - self
+  required:
+  - true
+name: torch._C._nn.hardswish
+package: torch
+pass_rate: 100
+rules:
+- - cot: The error is caused by calling the "hardswish" function on an integer tensor,
+      which is not supported. To prevent this error, the input tensor should be of
+      a floating-point dtype.
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+      msg: '"hardswish_cpu" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype in [torch.float16, torch.float32, torch.float64]
+  - f1_score: 98.36065573770492
+    overall_score: 100
+    precision: 100.0
+    recall: 96.77419354838709

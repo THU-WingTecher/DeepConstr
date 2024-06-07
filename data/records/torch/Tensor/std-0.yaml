@@ -13,4 +13,24 @@ args:
   - false
 name: torch.Tensor.std
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: 'The error is caused because the input tensor has a dtype that is not supported
+      by the std function. Let''s see what the args were. It seems the input tensor
+      is of type AbsTensor[] and the unbiased parameter is of type AbsDType.bool.
+      Therefore, the input tensor should have a floating point or complex dtype. We
+      can use the .dtype attribute to check the dtype of the input tensor and compare
+      it to the supported dtypes. The supported dtypes for std are floating point
+      and complex dtypes. So the condition should be:'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        unbiased: bool
+      msg: std and var only support floating point and complex dtypes
+      package: torch
+    txt: self.dtype in [torch.float32, torch.float64, torch.complex64, torch.complex128]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

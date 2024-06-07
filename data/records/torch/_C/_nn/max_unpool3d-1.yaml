@@ -29,4 +29,40 @@ args:
   - true
 name: torch._C._nn.max_unpool3d
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        indices: tensor
+        out: tensor
+        output_size: list[int]
+        padding: list[int]
+        self: tensor
+        stride: list[int]
+      msg: elements in indices should be type int64
+      package: torch
+    txt: indices.dtype == torch.int64
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        indices: tensor
+        out: tensor
+        output_size: list[int]
+        padding: list[int]
+        self: tensor
+        stride: list[int]
+      msg: Input to max_unpooling3d should be a 4d or 5d Tensor, but got a tensor
+        with 0 dimensions.
+      package: torch
+    txt: self.dim() == 5
+  - f1_score: 94.5378151260504
+    overall_score: 100
+    precision: 100.0
+    recall: 89.64143426294821

@@ -1,0 +1,32 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.Tensor.true_divide
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'Based on the given runtime information, the constraint that would prevent
+      the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (3) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.dim() == other.dim() and self.shape == other.shape
+  - f1_score: 79.29515418502203
+    overall_score: 100
+    precision: 100.0
+    recall: 65.69343065693431

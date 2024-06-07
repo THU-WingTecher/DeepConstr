@@ -1,0 +1,97 @@
+args:
+  dtype:
+  - tensor
+  - tensor
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - a
+  - x
+  - name
+  required:
+  - true
+  - true
+  - false
+name: tf.math.igamma
+package: null
+pass_rate: 96.33333333333334
+rules:
+- - cot: 'Based on the given values, the error is triggered because the function is
+      trying to perform an operation on a double tensor and a float tensor. However,
+      both tensors in generated args must have the same data type. Let''s see what
+      the args were. The ''a'' tensor is double, but the ''x'' tensor is of type float.
+      Therefore, the data type of tensor x should be corrected. It says that should
+      be equal to the datatype of tensor a, so Op : ==, and Right : dtype(a).'
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        name: str
+        x: tensor
+      msg: 'cannot compute Igamma as input #1(zero-based) was expected to be a double
+        tensor but is a float tensor [Op:Igamma] name: jcji'
+      package: tensorflow
+    txt: dtype(x)==dtype(a)
+  - f1_score: 97.71986970684038
+    overall_score: 60.85993485342019
+    precision: 100.0
+    recall: 95.54140127388536
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        a: tensor
+        name: str
+        x: tensor
+      msg: "Could not find device for node: {{node Igamma}} = Igamma[T=DT_HALF]\n\
+        All kernels registered for op Igamma:\n  device='XLA_CPU_JIT'; T in [DT_FLOAT,\
+        \ DT_DOUBLE, DT_BFLOAT16, DT_HALF]\n  device='XLA_GPU_JIT'; T in [DT_FLOAT,\
+        \ DT_DOUBLE, DT_BFLOAT16, DT_HALF]\n  device='CPU'; T in [DT_DOUBLE]\n  device='CPU';\
+        \ T in [DT_FLOAT]\n  device='GPU'; T in [DT_DOUBLE]\n  device='GPU'; T in\
+        \ [DT_FLOAT]\n [Op:Igamma] name: pYSm"
+      package: tensorflow
+    txt: ((a.dtype != "DT_HALF") and ((a.dtype != "DT_BFLOAT16") and (x.dtype != "DT_BFLOAT16")))
+      and (x.dtype != "DT_HALF")
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        name: str
+        x: tensor
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: bfloat16,\
+        \ half, float, double\n\t; NodeDef: {{node Igamma}}; Op<name=Igamma; signature=a:T,\
+        \ x:T -> z:T; attr=T:type,allowed=[DT_BFLOAT16, DT_HALF, DT_FLOAT, DT_DOUBLE]>\
+        \ [Op:Igamma] name: JCCG"
+      package: tensorflow
+    txt: dtype(a) in ['bfloat16', 'half', 'float', 'double']
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        a: tensor
+        name: str
+        x: tensor
+      msg: '{{function_node __wrapped__Igamma_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [6,7,6,5,3,1,3] vs. [2,2,0,0,1,4,2] [Op:Igamma] name:
+        qCAZ'
+      package: tensorflow
+    txt: (((all(a.shape[i] == x.shape[i] or a.shape[i] == 1 or x.shape[i] == 1 for
+      i in range(-1, -min(len(a.shape), len(x.shape))-1, -1))) or (a.shape == x.shape))
+      and (len(a.shape) == len(x.shape))) and (all(a.shape[i]==x.shape[i] for i in
+      range(a.rank)))
+  - f1_score: 95.13023782559456
+    overall_score: 59.56511891279728
+    precision: 93.33333333333333
+    recall: 96.99769053117784

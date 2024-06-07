@@ -13,4 +13,35 @@ args:
   - true
 name: torch.Tensor.bitwise_left_shift_
 package: torch
-pass_rate: 0
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: int
+        self: tensor
+      msg: '"lshift_cpu" not implemented for ''Half'''
+      package: torch
+    txt: self.dtype in ["int8", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+      "uint64"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'To prevent the error, the variable `self` should have a dtype other than
+      ''Float''. The allowed dtypes for `self` should be one of the following: half,
+      int16, int32, int64, uint8, uint16, uint32, uint64.'
+    length: 1
+    target:
+      choosen_dtype:
+        other: int
+        self: tensor
+      msg: '"lshift_cpu" not implemented for ''Float'''
+      package: torch
+    txt: dtype(self) in ["half", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+      "uint64"]
+  - f1_score: 98.14612868047982
+    overall_score: 100
+    precision: 100.0
+    recall: 96.35974304068523

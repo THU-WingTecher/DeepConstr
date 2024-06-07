@@ -29,4 +29,22 @@ args:
   - false
 name: torch._C._nn.multi_margin_loss
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        margin: int
+        p: int
+        reduction: int
+        self: tensor
+        target: tensor
+        weight: None
+      msg: only p == 1 and p == 2 supported
+      package: torch
+    txt: p == 2
+  - f1_score: 98.6842105263158
+    overall_score: 100
+    precision: 100.0
+    recall: 97.40259740259741

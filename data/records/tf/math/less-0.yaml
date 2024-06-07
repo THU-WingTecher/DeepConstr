@@ -1,0 +1,54 @@
+args:
+  dtype:
+  - tensor
+  - tensor
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - x
+  - y
+  - name
+  required:
+  - true
+  - true
+  - false
+name: tf.math.less
+package: null
+pass_rate: 100
+rules:
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: 'cannot compute Less as input #1(zero-based) was expected to be a int32
+        tensor but is a float tensor [Op:Less] name: Kkfp'
+      package: tensorflow
+    txt: dtype(x)==dtype(y)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: '{{function_node __wrapped__Less_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [4,6,6,1,2,6,6] vs. [2,2,2,2,2,2,2] [Op:Less] name: ognl'
+      package: tensorflow
+    txt: ((all(x.shape[i] == y.shape[i] or x.shape[i] == 1 or y.shape[i] == 1 for
+      i in range(-1, -min(len(x.shape), len(y.shape))-1, -1))) and (x.shape == y.shape))
+      and (len(x) == len(y))
+  - f1_score: 94.44762449914137
+    overall_score: 59.223812249570685
+    precision: 91.66666666666666
+    recall: 97.40259740259741

@@ -29,4 +29,27 @@ args:
   - false
 name: torch.Tensor.index_reduce_
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'The error is triggered because the ''reduce'' parameter is expected to be
+      one of ''prod'', ''mean'', ''amax'', or ''amin'', but it received the value
+      ''snpf''. To prevent this error, we need to ensure that the value of ''reduce''
+      is one of the expected options. The constraint for the ''reduce'' parameter
+      can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        include_self: bool
+        index: tensor
+        reduce: str
+        self: tensor
+        source: tensor
+      msg: 'index_reduce(): Expected reduce to be one of prod, mean, amax or amin
+        but got snpf.'
+      package: torch
+    txt: reduce in ['prod', 'mean', 'amax', 'amin']
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

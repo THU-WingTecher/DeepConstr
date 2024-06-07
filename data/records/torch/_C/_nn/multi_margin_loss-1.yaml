@@ -33,4 +33,46 @@ args:
   - true
 name: torch._C._nn.multi_margin_loss
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        margin: int
+        out: tensor
+        p: int
+        reduction: int
+        self: tensor
+        target: tensor
+        weight: tensor
+      msg: only p == 1 and p == 2 supported
+      package: torch
+    txt: p == 2
+  - f1_score: 95.30054644808745
+    overall_score: 100
+    precision: 100.0
+    recall: 91.02296450939458
+- - cot: 'The error is triggered because the input ''self'' is not a non-empty vector
+      or matrix with optional 0-dim batch size, but rather a 7-dimensional tensor.
+      So, to prevent the error, the input ''self'' should be a vector or matrix (1
+      or 2 dimensions) and should not be empty. Here is the constraint that could
+      prevent the error:'
+    length: 1
+    target:
+      choosen_dtype:
+        margin: int
+        out: tensor
+        p: int
+        reduction: int
+        self: tensor
+        target: tensor
+        weight: tensor
+      msg: 'Expected non-empty vector or matrix with optional 0-dim batch size, but
+        got: [2, 7, 7, 7, 7, 7, 7]'
+      package: torch
+    txt: len(self.shape) in [1,2] and all(dim != 0 for dim in self.shape)
+  - f1_score: 83.52816153028694
+    overall_score: 100
+    precision: 100.0
+    recall: 71.71532846715328

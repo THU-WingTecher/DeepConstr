@@ -13,4 +13,18 @@ args:
   - true
 name: torch.Tensor.mvlgamma_
 package: torch
-pass_rate: 0
+pass_rate: 66.33333333333333
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        p: int
+        self: tensor
+      msg: p has to be greater than or equal to 1
+      package: torch
+    txt: p >= 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

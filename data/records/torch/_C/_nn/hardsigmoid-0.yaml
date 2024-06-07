@@ -9,4 +9,20 @@ args:
   - true
 name: torch._C._nn.hardsigmoid
 package: torch
-pass_rate: 0
+pass_rate: 96.0
+rules:
+- - cot: 'The error is due to the fact that the "hardsigmoid_cpu" implementation is
+      not implemented for ''Int'' data type. To prevent this error, the input tensor
+      should be of a different data type that is supported by the "hardsigmoid_cpu"
+      implementation, such as ''Float''. So, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+      msg: '"hardsigmoid_cpu" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype == torch.float32
+  - f1_score: 98.14612868047982
+    overall_score: 100
+    precision: 100.0
+    recall: 96.35974304068523

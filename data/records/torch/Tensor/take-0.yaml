@@ -13,4 +13,18 @@ args:
   - true
 name: torch.Tensor.take
 package: torch
-pass_rate: 0
+pass_rate: 1.6666666666666667
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        index: tensor
+        self: tensor
+      msg: 'take(): Expected a long tensor for index, but got Float'
+      package: torch
+    txt: index.dtype == torch.int64
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

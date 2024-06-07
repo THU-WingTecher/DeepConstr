@@ -25,4 +25,26 @@ args:
   - false
 name: torch.Tensor.quantile
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: Error is triggered due to an invalid interpolation method. The valid interpolation
+      methods are 'linear', 'lower', 'higher', 'midpoint', and 'nearest'. As per the
+      error message, the given interpolation method is 'YgFc', which is not among
+      the valid methods. Hence, the condition to prevent this error would be to ensure
+      that the interpolation method is one of the valid methods.
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        interpolation: str
+        keepdim: bool
+        q: tensor
+        self: tensor
+      msg: quantile() interpolation must be one of linear, lower, higher, midpoint
+        or nearest, but got YgFc
+      package: torch
+    txt: interpolation in ['linear', 'lower', 'higher', 'midpoint', 'nearest']
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

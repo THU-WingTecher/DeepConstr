@@ -13,4 +13,58 @@ args:
   - true
 name: torch.Tensor.hypot
 package: torch
-pass_rate: 0
+pass_rate: 99.66666666666667
+rules:
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      size of tensor "self" (7) does not match the size of tensor "other" (2) at non-singleton
+      dimension 6.
+
+
+      To prevent this error, the dimensions and shapes of "self" and "other" should
+      be the same at all dimensions.
+
+
+      The constraint can be formulated as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (2) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.dim() == other.dim() and all(self.shape[i] == other.shape[i] or self.shape[i]
+      == 1 or other.shape[i] == 1 for i in range(self.dim()))
+  - f1_score: 91.83673469387755
+    overall_score: 100
+    precision: 100.0
+    recall: 84.90566037735849
+- - cot: 'The error message indicates that negative dimensions are not allowed in
+      the torch.Tensor.hypot function. This means that all dimensions of ''self''
+      and ''other'' tensors should be positive. Therefore, the constraint can be formulated
+      as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in other.shape)
+  - f1_score: 76.96629213483146
+    overall_score: 100
+    precision: 100.0
+    recall: 62.55707762557078
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"hypot_cpu" not implemented for ''Int'''
+      package: torch
+    txt: other.dtype == torch.float32
+  - f1_score: 67.21433905899926
+    overall_score: 100
+    precision: 100.0
+    recall: 50.61867266591676

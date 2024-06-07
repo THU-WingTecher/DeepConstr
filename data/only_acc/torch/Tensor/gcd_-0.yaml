@@ -1,0 +1,63 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.Tensor.gcd_
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'Error is triggered because the size of tensor a (3) does not match the size
+      of tensor b (2) at non-singleton dimension 6. To prevent this error, the dimensions
+      and shapes of the tensors should be checked and matched. Therefore, the constraint
+      can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (3) must match the size of tensor b (2) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.dim() == other.dim() and self.shape == other.shape
+  - f1_score: 81.00810081008102
+    overall_score: 100
+    precision: 100.0
+    recall: 68.07866868381241
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"gcd_cpu" not implemented for ''Float'''
+      package: torch
+    txt: self.dtype in [torch.int8, torch.int16, torch.int32, torch.int64, torch.uint8,
+      torch.uint16, torch.uint32, torch.uint64]
+  - f1_score: 98.57612267250822
+    overall_score: 100
+    precision: 100.0
+    recall: 97.19222462203024
+- - cot: The error is triggered because the result type Float cannot be cast to the
+      desired output type Int. To prevent this error, the dtypes of the two input
+      tensors should be consistent and match the desired output type.
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self) == dtype(other) == torch.int32
+  - f1_score: 98.36065573770492
+    overall_score: 100
+    precision: 100.0
+    recall: 96.77419354838709

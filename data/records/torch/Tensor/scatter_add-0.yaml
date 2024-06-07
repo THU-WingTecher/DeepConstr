@@ -21,4 +21,23 @@ args:
   - true
 name: torch.Tensor.scatter_add
 package: torch
-pass_rate: 0
+pass_rate: 6.0402684563758395
+rules:
+- - cot: "Based on the given runtime information, the error occurs because the dtype\
+      \ of the 'index' tensor is expected to be int64, but it is not. To prevent this\
+      \ error, the dtype of the 'index' tensor should be corrected to int64. \n\n\
+      Therefore, the constraint that prevents the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        self: tensor
+        src: tensor
+      msg: 'scatter(): Expected dtype int64 for index'
+      package: torch
+    txt: index.dtype == torch.int64
+  - f1_score: 72.11538461538463
+    overall_score: 100
+    precision: 100.0
+    recall: 56.390977443609025

@@ -25,4 +25,47 @@ args:
   - false
 name: torch.Tensor.index_add
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'The error is triggered because the index is supposed to be a vector, but
+      it has a dimension of 7 with type Float and size [1, 7, 7, 7, 7, 7, 7]. To prevent
+      this error, the index should be a vector, meaning it should have a dimension
+      of 1. Therefore, the constraint to prevent this error is:
+
+
+      dim(index) == 1
+
+
+      Wrap the final formula with'
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        dim: int
+        index: tensor
+        self: tensor
+        source: tensor
+      msg: 'index_add_(): Index is supposed to be a vector, but got dim: 7 with type:
+        Float and size: [1, 7, 7, 7, 7, 7, 7]'
+      package: torch
+    txt: dim(index) == 1
+  - f1_score: 84.08239700374533
+    overall_score: 100
+    precision: 100.0
+    recall: 72.53634894991923
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        dim: int
+        index: tensor
+        self: tensor
+        source: tensor
+      msg: 'index_add_(): Expected dtype int32/int64 for index but got: Float'
+      package: torch
+    txt: dtype(index) in ["int32", "int64"]
+  - f1_score: 71.59904534606206
+    overall_score: 100
+    precision: 100.0
+    recall: 55.762081784386616

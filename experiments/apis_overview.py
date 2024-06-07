@@ -51,8 +51,8 @@ if __name__ == "__main__" :
     for lib in ["tf", "torch"] :
         trained = get_trained_list(record_path+f"/{lib}", lib)
         print(f"Number of trained {lib} apis: ", len(trained))
-        # print("Saving trained tf apis to json file")
-        # save_to_json(tf_trained, "/artifact/data/tf_trained.json")
+        print(f"Saving trained {lib} apis to json file")
+        save_to_json(trained, f"/artifact/data/{lib}_deepconstr.json")
     # tf_prepared = get_prepared_list()
     # tf_untrained = set(tf_prepared) - set(tf_trained)
     # print(tf_untrained)

@@ -1,0 +1,63 @@
+args:
+  dtype:
+  - tensor
+  - int
+  - bool
+  - bool
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - x
+  - axis
+  - exclusive
+  - reverse
+  - name
+  required:
+  - true
+  - false
+  - false
+  - false
+  - false
+name: tf.math.cumprod
+package: null
+pass_rate: 79.33333333333333
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        exclusive: bool
+        name: str
+        reverse: bool
+        x: tensor
+      msg: '{{function_node __wrapped__Cumprod_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        ScanOp: Expected scan axis in the range [-7, 7), but got 7 [Op:Cumprod]'
+      package: tensorflow
+    txt: axis >= -len(x.shape)
+  - f1_score: 86.0746190225959
+    overall_score: 48.5
+    precision: 91.0
+    recall: 81.65503489531405
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        exclusive: bool
+        name: str
+        reverse: bool
+        x: tensor
+      msg: '{{function_node __wrapped__Cumprod_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        ScanOp: Expected scan axis in the range [-7, 7), but got 7 [Op:Cumprod]'
+      package: tensorflow
+    txt: axis < len(x.shape)
+  - f1_score: 91.10707803992742
+    overall_score: 44.833333333333336
+    precision: 83.66666666666667
+    recall: 100.0

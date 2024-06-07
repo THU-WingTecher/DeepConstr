@@ -13,4 +13,18 @@ args:
   - true
 name: torch._C._nn.reflection_pad2d
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        padding: list[int]
+        self: tensor
+      msg: 'padding size is expected to be 4, but got: 0'
+      package: torch
+    txt: len(padding) == 4
+  - f1_score: 97.82608695652173
+    overall_score: 100
+    precision: 100.0
+    recall: 95.74468085106382

@@ -17,4 +17,5 @@ args:
   - false
 name: torch.Tensor.take_along_dim
 package: torch
-pass_rate: 0
+pass_rate: 3.6666666666666665
+rules: []

@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - Tensor
+  is_pos:
+  - true
+  name:
+  - self
+  required:
+  - true
+name: torch._C._nn.hardswish_
+package: torch
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+      msg: '"hardswish_cpu" not implemented for ''Int'''
+      package: torch
+    txt: dtype(self) == float
+  - f1_score: 97.82608695652173
+    overall_score: 100
+    precision: 100.0
+    recall: 95.74468085106382

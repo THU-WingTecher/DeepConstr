@@ -109,8 +109,6 @@ def check_trainable(record, executor, ntimes=30, *args, **kwargs) :
                 # TRAIN_LOG.info(f"  (Ignored: {obj = } from {op_name = } is illegal({res[1]})")
                 record["error"] = str(res[1].error_type)
                 illegal_cnt+=1
-    if res is None :
-        res = (False, None)
     if illegal_cnt > ntimes * 0.8 :
         TRAIN_LOG.warning(f"InValid: {record['name'] = } from {record['args'] = } is illegal({res[1]}) N_ILLEGAL : {illegal_cnt}")
         return False, record

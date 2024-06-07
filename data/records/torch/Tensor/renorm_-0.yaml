@@ -21,4 +21,21 @@ args:
   - true
 name: torch.Tensor.renorm_
 package: torch
-pass_rate: 0
+pass_rate: 29.666666666666668
+rules:
+- - cot: Error is triggered because the value of `p` is non-positive. To prevent the
+      error, the value of `p` should be greater than 0.
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        maxnorm: int
+        p: int
+        self: tensor
+      msg: 'renorm: non-positive-norm not supported'
+      package: torch
+    txt: p > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

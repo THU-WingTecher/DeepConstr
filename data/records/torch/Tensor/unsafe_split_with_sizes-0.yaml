@@ -17,4 +17,5 @@ args:
   - false
 name: torch.Tensor.unsafe_split_with_sizes
 package: torch
-pass_rate: 0
+pass_rate: 0.6666666666666667
+rules: []

@@ -21,4 +21,20 @@ args:
   - true
 name: torch.Tensor.index_copy_
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        self: tensor
+        source: tensor
+      msg: 'index_copy_(): Index should have dimension 1 or 0 (got 7)'
+      package: torch
+    txt: index.dim() < 2
+  - f1_score: 82.54847645429363
+    overall_score: 100
+    precision: 100.0
+    recall: 70.28301886792453

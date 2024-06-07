@@ -1,0 +1,49 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - dims
+  required:
+  - true
+  - true
+name: torch.Tensor.tile
+package: torch
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dims: list[int]
+        self: tensor
+      msg: '[enforce fail at alloc_cpu.cpp:117] err == 0. DefaultCPUAllocator: can''t
+        allocate memory: you tried to allocate 77324908953600 bytes. Error code 12
+        (Cannot allocate memory)'
+      package: torch
+    txt: len(dims) > 0
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: "Based on the given runtime information, the error is caused by trying to\
+      \ create a tensor with a negative dimension. The negative dimension is -10 in\
+      \ this case. To prevent this error, we can add a constraint that ensures all\
+      \ dimensions in the `dims` list are positive numbers. \n\nFinal formula:"
+    length: 1
+    target:
+      choosen_dtype:
+        dims: list[int]
+        self: tensor
+      msg: 'Trying to create tensor with negative dimension -10: [7, -10, -28, -21,
+        -28, 49, 14]'
+      package: torch
+    txt: all(dim > 0 for dim in dims)
+  - f1_score: 94.14225941422595
+    overall_score: 100
+    precision: 100.0
+    recall: 88.93280632411069

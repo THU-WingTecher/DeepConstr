@@ -13,4 +13,5 @@ args:
   - true
 name: torch.Tensor.align_as
 package: torch
-pass_rate: 0
+pass_rate: 6.666666666666667
+rules: []

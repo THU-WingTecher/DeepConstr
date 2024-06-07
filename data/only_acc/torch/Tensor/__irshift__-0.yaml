@@ -1,0 +1,83 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.Tensor.__irshift__
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'Based on the given runtime information, the constraint that needs to be
+      satisfied to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (5) must match the size of tensor b (2) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.dim == other.dim and self.shape == other.shape
+  - f1_score: 84.19083255378858
+    overall_score: 100
+    precision: 100.0
+    recall: 72.6978998384491
+- - cot: "The error occurs because the method \"__irshift__\" is not implemented for\
+      \ the data type 'Float'. To prevent this error, the data types of \"self\" and\
+      \ \"other\" should be restricted to only those that have the \"__irshift__\"\
+      \ method implemented. The allowed data types are: half, int16, int32, int64,\
+      \ uint8, uint16, uint32, uint64. \n\nThe constraint to prevent the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"rshift_cpu" not implemented for ''Float'''
+      package: torch
+    txt: dtype(self) in ["half", "int16", "int32", "int64", "uint8", "uint16", "uint32",
+      "uint64"] and dtype(other) in ["half", "int16", "int32", "int64", "uint8", "uint16",
+      "uint32", "uint64"]
+  - f1_score: 85.47008547008546
+    overall_score: 100
+    precision: 100.0
+    recall: 74.62686567164178
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: '"rshift_cpu" not implemented for ''Half'''
+      package: torch
+    txt: dtype(self) in ["int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is triggered because the result type Half cannot be cast to the
+      desired output type Short. The runtime information shows that the function torch.Tensor.__irshift__
+      is called with arguments self=AbsTensor[] and other=AbsTensor[].
+
+
+      To prevent this error, the dtypes of the self and other tensors should be consistent.
+      Therefore, the constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: result type Half can't be cast to the desired output type Short
+      package: torch
+    txt: dtype(self) == dtype(other)
+  - f1_score: 76.6609880749574
+    overall_score: 100
+    precision: 100.0
+    recall: 62.154696132596676

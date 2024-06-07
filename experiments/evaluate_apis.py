@@ -171,8 +171,9 @@ def del_test_cases(root) :
         if dir != "coverage":
             os.system(f"rm -r {os.path.join(root, dir)}")
 
-def acetest_run() : 
-
+def acetest_run(api_name, save_path, time) : 
+    time_to_seconds = parse_timestr(time)
+    return f"python main.py --test_round=5000 --mode=all --framework=tf --work_path={save_path} --target_api={api_name} --save_non_crash true --fuzz_time {time_to_seconds}"
 def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov", dirname=None, run_cov=True):
     """
     Runs the fuzzing process for a given API and baseline with the specified configuration.
@@ -239,12 +240,15 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov", dirna
         print(f"Collect Cov for {api_name} with baseline {baseline}")
         print("Activate Conda env -cov")
         activate_conda_environment("cov")
-        collect_cov(root=save_path,
-                    model_type=config['model']['type'],
-                    backend_type=config['backend']['type'],
-                    batch_size=100,  # or other desired default
-                    backend_target="cpu",  # or config-specified
-                    parallel=cov_parallel)  # or other desired default
+        if baseline == "acetest" : 
+            pass 
+        else :
+            collect_cov(root=save_path,
+                        model_type=config['model']['type'],
+                        backend_type=config['backend']['type'],
+                        batch_size=100,  # or other desired default
+                        backend_target="cpu",  # or config-specified
+                        parallel=cov_parallel)  # or other desired default
         if config['model']['type'] == "torch":
             process_profraw(save_path)
         elif config['model']['type'] == "tensorflow":

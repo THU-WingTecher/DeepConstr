@@ -21,4 +21,20 @@ args:
   - false
 name: torch.Tensor.repeat_interleave
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        output_size: int
+        repeats: tensor
+        self: tensor
+      msg: repeats must be 0-dim or 1-dim tensor
+      package: torch
+    txt: len(repeats.shape) == 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

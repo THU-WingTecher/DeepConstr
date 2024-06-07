@@ -1,0 +1,54 @@
+args:
+  dtype:
+  - tensor
+  - tensor
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - x
+  - y
+  - name
+  required:
+  - true
+  - true
+  - false
+name: tf.math.less_equal
+package: null
+pass_rate: 99.66666666666667
+rules:
+- - cot: 'Based on the given runtime information, the error occurs because the function
+      tf.math.less_equal is trying to perform a comparison operation on an int32 tensor
+      and a float tensor. To prevent this error, the data types of both tensors should
+      match. Therefore, the constraint that prevents the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: 'cannot compute LessEqual as input #1(zero-based) was expected to be a
+        int32 tensor but is a float tensor [Op:LessEqual] name: IUDb'
+      package: tensorflow
+    txt: dtype(y) == dtype(x)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: '{{function_node __wrapped__LessEqual_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [6,6,5,6] vs. [6,6,5] [Op:LessEqual] name: lsip'
+      package: tensorflow
+    txt: (x.shape[i] == 1) or (all(x.shape[i]==y.shape[i] for i in range(len(x.shape))))
+  - f1_score: 96.2798897075442
+    overall_score: 60.1399448537721
+    precision: 95.30201342281879
+    recall: 97.27804165144319

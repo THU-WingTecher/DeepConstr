@@ -17,4 +17,33 @@ args:
   - true
 name: torch._C._nn.leaky_relu
 package: torch
-pass_rate: 0
+pass_rate: 91.33333333333333
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        negative_slope: int
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: self.rank == out.rank and all(self.shape[i] == out.shape[i] for i in range(self.rank))
+  - f1_score: 83.41056533827619
+    overall_score: 100
+    precision: 100.0
+    recall: 71.54213036565977
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        negative_slope: int
+        out: tensor
+        self: tensor
+      msg: Found dtype Int but expected Float
+      package: torch
+    txt: dtype(out) == dtype(self)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

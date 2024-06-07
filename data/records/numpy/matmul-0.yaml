@@ -1,0 +1,15 @@
+args:
+  dtype:
+  - array_like
+  - array_like
+  is_pos:
+  - true
+  - true
+  name:
+  - x1
+  - x2
+  required:
+  - true
+name: numpy.matmul
+package: numpy
+pass_rate: 0

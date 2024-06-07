@@ -13,4 +13,5 @@ args:
   - true
 name: torch.Tensor.record_stream
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules: []

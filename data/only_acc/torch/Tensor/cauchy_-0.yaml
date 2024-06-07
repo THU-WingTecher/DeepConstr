@@ -1,0 +1,56 @@
+args:
+  dtype:
+  - Tensor
+  - float
+  - float
+  - Optional[Generator]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - median
+  - sigma
+  - generator
+  required:
+  - true
+  - false
+  - false
+  - false
+name: torch.Tensor.cauchy_
+package: torch
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        generator: None
+        median: float
+        self: tensor
+        sigma: float
+      msg: cauchy_ expects sigma > 0.0, but found sigma=-2
+      package: torch
+    txt: sigma > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        generator: None
+        median: float
+        self: tensor
+        sigma: float
+      msg: Cauchy distribution is a continuous probability distribution. dtype must
+        be a floating point but you specified int
+      package: torch
+    txt: self.dtype is torch.float64
+  - f1_score: 67.26457399103138
+    overall_score: 100
+    precision: 100.0
+    recall: 50.67567567567568

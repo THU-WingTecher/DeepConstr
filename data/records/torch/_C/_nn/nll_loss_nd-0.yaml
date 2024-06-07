@@ -25,4 +25,25 @@ args:
   - false
 name: torch._C._nn.nll_loss_nd
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'The error arises due to the mismatch in the batch size of the ''self'' tensor
+      and the ''target'' tensor. The function expects these two tensors to have the
+      same batch size. Therefore, the size of the first dimension of ''self'' should
+      be equal to the size of the first dimension of ''target''. This can be expressed
+      as:'
+    length: 1
+    target:
+      choosen_dtype:
+        ignore_index: int
+        reduction: int
+        self: tensor
+        target: tensor
+        weight: tensor
+      msg: Expected input batch_size (4) to match target batch_size (7).
+      package: torch
+    txt: self.size(0) == target.size(0)
+  - f1_score: 99.4475138121547
+    overall_score: 100
+    precision: 100.0
+    recall: 98.9010989010989

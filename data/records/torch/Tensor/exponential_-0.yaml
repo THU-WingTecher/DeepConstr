@@ -17,4 +17,34 @@ args:
   - false
 name: torch.Tensor.exponential_
 package: torch
-pass_rate: 0
+pass_rate: 95.66666666666667
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        generator: None
+        lambd: float
+        self: tensor
+      msg: exponential_ expects lambda > 0.0, but found lambda=0
+      package: torch
+    txt: lambd > 0.0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        generator: None
+        lambd: float
+        self: tensor
+      msg: Exponential distribution is a continuous probability distribution. dtype
+        must be a floating point but you specified Int
+      package: torch
+    txt: dtype(self) == float
+  - f1_score: 99.00990099009901
+    overall_score: 100
+    precision: 100.0
+    recall: 98.0392156862745

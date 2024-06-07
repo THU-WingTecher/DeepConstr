@@ -1,0 +1,38 @@
+args:
+  dtype:
+  - tensor
+  - str
+  is_pos:
+  - false
+  - false
+  name:
+  - x
+  - name
+  required:
+  - true
+  - false
+name: tf.math.log_sigmoid
+package: null
+pass_rate: 100
+rules:
+- - cot: "Based on the given runtime information, the error arises because the attribute\
+      \ 'x' is expected to be one of the allowed types: half, bfloat16, float, double.\
+      \ However, the provided tensor 'x' is of type int32, which is not compatible.\n\
+      \nTo prevent the error, the dtype of 'x' should be corrected to match one of\
+      \ the allowed types. \n\nThe constraint that prevents the error can be formulated\
+      \ as:"
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: half,\
+        \ bfloat16, float, double\n\t; NodeDef: {{node Softplus}}; Op<name=Softplus;\
+        \ signature=features:T -> activations:T; attr=T:type,allowed=[DT_HALF, DT_BFLOAT16,\
+        \ DT_FLOAT, DT_DOUBLE]> [Op:Softplus]"
+      package: tensorflow
+    txt: dtype(x) in ["half", "bfloat16", "float", "double"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

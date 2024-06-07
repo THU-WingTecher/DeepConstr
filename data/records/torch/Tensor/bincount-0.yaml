@@ -17,4 +17,20 @@ args:
   - false
 name: torch.Tensor.bincount
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        minlength: int
+        self: tensor
+        weights: tensor
+      msg: '"bincount_cpu" not implemented for ''Float'''
+      package: torch
+    txt: (dtype(self) in ['half', 'int16', 'int32', 'int64', 'uint8', 'uint16', 'uint32',
+      'uint64'])
+  - f1_score: 98.46827133479212
+    overall_score: 100
+    precision: 100.0
+    recall: 96.98275862068965

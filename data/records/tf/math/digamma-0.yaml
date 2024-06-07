@@ -1,0 +1,72 @@
+args:
+  dtype:
+  - tensor
+  - str
+  is_pos:
+  - false
+  - false
+  name:
+  - x
+  - name
+  required:
+  - true
+  - false
+name: tf.math.digamma
+package: null
+pass_rate: 100
+rules:
+- - cot: 'The error message indicates that the function `tf.math.digamma` could not
+      find a device for the node. This could happen if the input tensor `x` is empty
+      or has an unsupported data type. To prevent this error, we can add the following
+      constraints:
+
+
+      1. The input tensor `x` should not be empty. We can ensure this by adding the
+      constraint `len(x) > 0`.
+
+
+      2. The data type of the input tensor `x` should be supported by the `tf.math.digamma`
+      function. To specify the allowed data types, we can use the `tf.dtypes` module.
+      Let''s assume that the supported data types are `''float16''`, `''float32''`,
+      and `''float64''`. We can add the constraint `x.dtype in [tf.float16, tf.float32,
+      tf.float64]` to ensure that the data type of `x` is one of the supported types.
+
+
+      Combining the constraints, the formula would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+      msg: "Could not find device for node: {{node Digamma}} = Digamma[T=DT_BFLOAT16]\n\
+        All kernels registered for op Digamma:\n  device='XLA_CPU_JIT'; T in [DT_FLOAT,\
+        \ DT_DOUBLE, DT_BFLOAT16, DT_HALF]\n  device='XLA_GPU_JIT'; T in [DT_FLOAT,\
+        \ DT_DOUBLE, DT_BFLOAT16, DT_HALF]\n  device='GPU'; T in [DT_DOUBLE]\n  device='GPU';\
+        \ T in [DT_FLOAT]\n  device='GPU'; T in [DT_HALF]\n  device='CPU'; T in [DT_DOUBLE]\n\
+        \  device='CPU'; T in [DT_HALF]\n  device='CPU'; T in [DT_FLOAT]\n [Op:Digamma]\
+        \ name: kwLY"
+      package: tensorflow
+    txt: x.dtype in [tf.float16, tf.float32, tf.float64]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: "Based on the given runtime information, the constraint to prevent the error\
+      \ is to ensure that the data type of the input tensor `x` is one of the allowed\
+      \ values: `bfloat16`, `half`, `float`, or `double`. \n\nThe correct formulation\
+      \ of the constraint is:"
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: bfloat16,\
+        \ half, float, double\n\t; NodeDef: {{node Digamma}}; Op<name=Digamma; signature=x:T\
+        \ -> y:T; attr=T:type,allowed=[DT_BFLOAT16, DT_HALF, DT_FLOAT, DT_DOUBLE]>\
+        \ [Op:Digamma] name: ydLI"
+      package: tensorflow
+    txt: dtype(x) in ["bfloat16", "half", "float", "double"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

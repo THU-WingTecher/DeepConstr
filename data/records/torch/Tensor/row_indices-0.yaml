@@ -9,4 +9,5 @@ args:
   - true
 name: torch.Tensor.row_indices
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules: []

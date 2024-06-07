@@ -17,4 +17,21 @@ args:
   - true
 name: torch.Tensor.unflatten
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: 'The error is triggered because the sizes argument is empty. To prevent this
+      error, we need to ensure that the sizes argument is non-empty. Therefore, the
+      constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+        sizes: list[int]
+      msg: 'unflatten: sizes must be non-empty'
+      package: torch
+    txt: len(sizes) > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

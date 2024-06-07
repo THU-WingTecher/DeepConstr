@@ -101,6 +101,16 @@ def get_model_cnt(pickle_path) :
             cnt +=1
     return cnt
 
+def process_pickle(path) : 
+    with open(path, 'rb') as file:
+        data = pickle.load(file)
+        # Summarize the data
+        branch_by_time, final_bf = cov_summerize(data)
+        return {
+            'branch_by_time': branch_by_time,
+            'final_bf': max([bf for _,_,bf in branch_by_time]),
+        }
+    
 def process_pickle_files(api_coverage_data):
     """
     Processes each relevant pickle file using the cov_summerize function.
@@ -118,22 +128,15 @@ def process_pickle_files(api_coverage_data):
                 # Load the pickle file
 
                 try :
-                    with open(pickle_path, 'rb') as file:
-                        data = pickle.load(file)
-                        # Summarize the data
-                        branch_by_time, final_bf = cov_summerize(data)
-                        api_summary[column] = {
-                            'branch_by_time': branch_by_time,
-                            'final_bf': max([bf for _,_,bf in branch_by_time]),
-                            'model_n': get_model_cnt(pickle_path)
-                        }
+                    api_summary[column] = process_pickle(pickle_path)
                 except FileNotFoundError :
                     api_summary[column] = {
                         'branch_by_time': [[0, 0, 0], [0, 0, 0]],
                         'final_bf': 0,
                         'model_n': 0,
                     }
-                    print("File not found : ", pickle_path)              
+                    print("File not found : ", pickle_path)  
+                api_summary['model_n'] = get_model_cnt(pickle_path)            
             summarized_data[api_name] = api_summary
 
     return summarized_data
@@ -211,6 +214,115 @@ def summarize_final_bf(aggregated_df):
     print("Total APIs with deepconstr as the largest final BF: ", cnt, "from", all_data)
     print(f"Increase ratio of deepconstr as the largest final BF: {cnt/all_data}")
     return pd.concat([final_bf_summary, model_cnt], axis=1), completed_data 
+
+def get_default_coves(model_type) :
+    if model_type == "torch" :
+        path = os.path.join("experiments/torch_default/merged_cov.pkl")
+    elif model_type == "tensorflow" :
+        path = os.path.join("experiments/tf_default/merged_cov.pkl")
+    else :
+        return 
+    return process_pickle(path)
+
+
+def extract_unnormal_val(df) :
+    mask = df < 0
+
+    # Step 2: Find the row and column labels where the condition is True
+    rows, cols = np.where(mask)
+
+    # Step 3: Iterate through the rows and cols to save the (row, col) tuples where the condition is met
+    # Note: This uses the actual index and column labels, not integer positions
+    positions = [(df.index[row], df.columns[col]) for row, col in zip(rows, cols)]            
+    with open("/artifact/results/unnormal_val.json", "w") as file:
+        json.dump(positions, file)
+
+def get_intersected(tool1, tool2, package) : 
+    data = []
+    root_dir = "./data"
+    for tool in [tool1, tool2] :
+        if "symbolic" in tool :
+            tool = "nnsmith" 
+        if "deepconstr_2" in tool :
+            tool = "deepconstr"
+        file_name = os.path.join(root_dir, f"{package}_{tool}.json")
+        with open(file_name, "r") as f :
+            data.append(json.load(f))
+
+    intersected = list(set(data[0]).intersection(set(data[1])))
+    return intersected
+
+def gen_table4_from_df(*args, pivot="deepconstr", nnsmith_path, neuri_path, type="torch") :
+
+    dfs = []
+    for path in args :
+        if isinstance(path, str) :
+            dfs.append(pd.read_csv(path, index_col="API"))
+        elif isinstance(path, pd.DataFrame) :
+            dfs.append(path)
+    df = pd.concat(dfs, axis=1)
+    # with open(nnsmith_path, 'r') as file:
+    #     apis = json.load(file)
+    # nnsmith_columns = [name for name in apis]
+    # with open(neuri_path, 'r') as file:
+    #     apis = json.load(file)
+    # neuri_columns = [name for name in apis]
+    nnsmith_none, neuri_none = [], []
+    improvements = []
+    # print(len(nnsmith_columns), len(list(set(nnsmith_columns + neuri_columns))))
+    # for col in nnsmith_columns:
+    #     if col not in df.API.values:
+    #         nnsmith_none.append(col.replace(folder_suffix, ''))
+    #         df.loc[len(df)] = [col, 0, 0, 0, 0, 0, 0, 0, 0]  # Or another default value as appropriate
+    # for col in neuri_columns:
+    #     if col not in df.API.values:
+    #         neuri_none.append(col.replace(folder_suffix, ''))
+    #         df.loc[len(df)] = [col, 0, 0, 0, 0, 0, 0, 0, 0]  # Or another default value as appropriate
+    # print(df.head())
+    # columns_to_subtract = ['deepconstr', 'neuri', 'symbolic', 'deepconstr_2', 'acetest']
+
+    unnormal_vals = []
+
+    default_val = get_default_coves(type)['final_bf']
+    cov_col_names = [col for col in df.columns if "cnt" not in col]
+    for col in cov_col_names :
+        df[col] = df[col] - default_val
+
+    for tool in [pivot] :
+        for baseline in cov_col_names :
+            columns_to_compare = [baseline] if all(col in df.columns for col in [baseline]) else []
+            intersected = get_intersected(pivot, baseline)
+            # if baseline == "symbolic" :
+            extracted_columns_df_with_models = df.loc[df.index.intersection(intersected)]
+            # total_rows = len(intersected)
+                # added = total_rows - extracted_columns_df_with_models.shape[0]
+            # else:
+            #     extracted_columns_df_with_models = df.loc[df.index.intersection(neuri_columns)]
+            #     total_rows = len(neuri_columns)
+            #     added = total_rows - extracted_columns_df_with_models.shape[0]
+            # print(extracted_columns_df_with_models.head())
+            for col in columns_to_compare:
+                improvement_col_name = f"improvement_ratio_{tool}_vs_{col}"
+
+                # Calculate the improvement ratio and ensure it's a single value per row (Series)
+                extracted_columns_df_with_models[improvement_col_name] = extracted_columns_df_with_models.apply(
+                    lambda row: (row[tool] - row[col]) / row[col] if row[tool] > 0 and row[col] > 0 else 0, axis=1)
+                
+                # Correctly update the original DataFrame
+                df.loc[extracted_columns_df_with_models.index, improvement_col_name] = extracted_columns_df_with_models[improvement_col_name]
+            
+            rows_where_pivot_is_highest = extracted_columns_df_with_models.apply(
+                lambda row: row[tool] > row[columns_to_compare], axis=1).sum()
+            
+            print(f"rows_where_{pivot}_is_highest {tool} vs {baseline}: highest {rows_where_pivot_is_highest}, intersected {intersected}")
+    df = df.sort_values(by='improvement_ratio_deepconstr_vs_neuri', ascending=True)
+    for col in df.columns:
+        if col == "API":
+            continue
+        print(col)
+        print(df[df[col] != 0][col].mean())
+    sorted_df = df.reset_index()
+    return sorted_df
 
 if __name__ == "__main__":
     import argparse

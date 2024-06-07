@@ -1,0 +1,95 @@
+args:
+  dtype:
+  - tensor
+  - int
+  - bool
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input_tensor
+  - axis
+  - keepdims
+  - name
+  required:
+  - true
+  - false
+  - false
+  - false
+name: tf.math.reduce_std
+package: null
+pass_rate: 100
+rules:
+- - cot: Error is due to an invalid reduction dimension. The function is trying to
+      reduce on dimension 7, but the input tensor has 7 dimensions, indexed from 0.
+      Therefore, the maximum valid dimension for reduction would be 6. Thus, the 'axis'
+      variable should be corrected. It must not be 7 for an input tensor with 7 dimensions,
+      and it should be less than 7. So, the conditions are
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        input_tensor: tensor
+        keepdims: bool
+        name: str
+      msg: '{{function_node __wrapped__Mean_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Invalid reduction dimension (7 for input with 7 dimension(s) [Op:Mean]'
+      package: tensorflow
+    txt: (axis < 7)
+  - f1_score: 89.50276243093923
+    overall_score: 43.5
+    precision: 81.0
+    recall: 100.0
+- - cot: '(tf.math.reduce_std(input_tensor=AbsTensor[], axis=AbsDType.int, keepdims=AbsDType.bool,
+      name=AbsDType.str) -> Invalid reduction dimension (-1 for input with 0 dimension(s)
+      [Op:Mean]
+
+
+      The error is due to an invalid reduction dimension. The function is trying to
+      reduce on dimension -1, but the input tensor has 0 dimensions, indexed from
+      0. So, the maximum valid dimension for reduction would be -1. Therefore, the
+      constraint to prevent the error is:
+
+
+      - The reduction dimension (axis) should be a non-negative integer.
+
+      - The reduction dimension (axis) should be less than the number of dimensions
+      in the input tensor.
+
+
+      The formulated constraint is:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        input_tensor: tensor
+        keepdims: bool
+        name: str
+      msg: '{{function_node __wrapped__Mean_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Invalid reduction dimension (6 for input with 2 dimension(s) [Op:Mean]'
+      package: tensorflow
+    txt: (0 <= axis < input_tensor.rank)
+  - f1_score: 72.75666936135812
+    overall_score: 100
+    precision: 100.0
+    recall: 57.179161372299866
+- - cot: 'The error is triggered because the input tensor is of integer type, but
+      it should be either real or complex. We can formulate the constraint as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        input_tensor: tensor
+        keepdims: bool
+        name: str
+      msg: 'Input must be either real or complex. Received integer type <dtype: ''int32''>.'
+      package: tensorflow
+    txt: input_tensor.dtype in [tf.float16, tf.float32, tf.float64, tf.complex64,
+      tf.complex128]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

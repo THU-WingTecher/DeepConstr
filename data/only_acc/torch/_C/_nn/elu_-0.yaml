@@ -1,0 +1,43 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  - number
+  - number
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - alpha
+  - scale
+  - input_scale
+  required:
+  - true
+  - false
+  - false
+  - false
+name: torch._C._nn.elu_
+package: torch
+pass_rate: 100
+rules:
+- - cot: 'The error is caused by passing an input tensor of type ''Int'', which is
+      not supported by the ''elu'' function. To prevent this error, the input tensor
+      should be of a supported data type, such as ''Float''. The constraint can be
+      formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        input_scale: int
+        scale: int
+        self: tensor
+      msg: '"elu_cpu" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype == 'Float'
+  - f1_score: 97.40259740259741
+    overall_score: 100
+    precision: 100.0
+    recall: 94.9367088607595

@@ -29,4 +29,64 @@ args:
   - false
 name: torch.Tensor.index_reduce
 package: torch
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        include_self: bool
+        index: tensor
+        reduce: str
+        self: tensor
+        source: tensor
+      msg: 'index_reduce(): Expected reduce to be one of prod, mean, amax or amin
+        but got ZEhj.'
+      package: torch
+    txt: reduce == 'amin'
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is due to the incorrect dimension of the index tensor. The index
+      tensor is expected to be a vector, but it has a dimension of 7. Therefore, the
+      constraint to prevent this error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        include_self: bool
+        index: tensor
+        reduce: str
+        self: tensor
+        source: tensor
+      msg: 'index_reduce_(): Index is supposed to be a vector, but got dim: 7 with
+        type: Float and size: [2, 7, 7, 7, 7, 7, 7]'
+      package: torch
+    txt: index.dim() == 1
+  - f1_score: 85.55133079847909
+    overall_score: 100
+    precision: 100.0
+    recall: 74.75083056478405
+- - cot: 'The error is caused because the ''index'' tensor has a float data type but
+      the function ''torch.Tensor.index_reduce'' expects an integer (int32/int64)
+      data type for the ''index'' tensor. Therefore, the data type of ''index'' tensor
+      needs to be corrected. The condition to prevent this error could be expressed
+      as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        include_self: bool
+        index: tensor
+        reduce: str
+        self: tensor
+        source: tensor
+      msg: 'index_reduce_(): Expected dtype int32/int64 for index but got: Float'
+      package: torch
+    txt: dtype(index) in ["int32", "int64"]
+  - f1_score: 72.11538461538463
+    overall_score: 100
+    precision: 100.0
+    recall: 56.390977443609025

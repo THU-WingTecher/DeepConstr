@@ -1,0 +1,108 @@
+args:
+  dtype:
+  - Tensor
+  - float
+  - float
+  - Optional[Generator]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - mean
+  - std
+  - generator
+  required:
+  - true
+  - false
+  - false
+  - false
+name: torch.Tensor.log_normal_
+package: torch
+pass_rate: 100
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        generator: None
+        mean: float
+        self: tensor
+        std: float
+      msg: log_normal_ expects std > 0.0, but found std=-1
+      package: torch
+    txt: std > 0.0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is due to the fact that the `log_normal_` function is not implemented
+      for tensors with the data type ''Int''. Therefore, in order to prevent the error,
+      the data type of the tensor (`self`) should be changed to a type that is supported
+      by the `log_normal_` function. The correct constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        generator: None
+        mean: float
+        self: tensor
+        std: float
+      msg: '"log_normal_cpu" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype != torch.int
+  - f1_score: 99.77827050997782
+    overall_score: 100
+    precision: 100.0
+    recall: 99.5575221238938
+- - cot: 'The error is due to the ''self'' tensor being of type ''Long'', while the
+      function ''log_normal_cpu'' is not implemented for ''Long''. Therefore, the
+      dtype of ''self'' should be corrected. It says that ''log_normal_cpu'' is not
+      implemented for ''Long'', so Op : !=, and Right : ''Long''.'
+    length: 1
+    target:
+      choosen_dtype:
+        generator: None
+        mean: float
+        self: tensor
+        std: float
+      msg: '"log_normal_cpu" not implemented for ''Long'''
+      package: torch
+    txt: self.dtype != 'Long'
+  - f1_score: 99.77827050997782
+    overall_score: 100
+    precision: 100.0
+    recall: 99.5575221238938
+- - cot: The error is due to attempting to use a 'Bool' type tensor with the 'log_normal_cpu'
+      function, which is not supported. The function 'log_normal_cpu' is not implemented
+      for 'Bool' data type. Therefore, the dtype of 'self' should be not 'Bool'.
+    length: 1
+    target:
+      choosen_dtype:
+        generator: None
+        mean: float
+        self: tensor
+        std: float
+      msg: '"log_normal_cpu" not implemented for ''Bool'''
+      package: torch
+    txt: self.dtype != torch.bool
+  - f1_score: 99.66777408637873
+    overall_score: 100
+    precision: 100.0
+    recall: 99.33774834437087
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        generator: None
+        mean: float
+        self: tensor
+        std: float
+      msg: '''complex32'''
+      package: torch
+    txt: self.dtype in (torch.float32, torch.float64)
+  - f1_score: 98.90109890109892
+    overall_score: 100
+    precision: 100.0
+    recall: 97.82608695652175

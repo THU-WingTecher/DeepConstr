@@ -1,0 +1,40 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - None
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - the_template
+  - memory_format
+  required:
+  - true
+  - true
+  - false
+name: torch.Tensor.resize_as_
+package: torch
+pass_rate: 100
+rules:
+- - cot: The error is triggered because we are trying to resize a tensor that is not
+      resizable. The 'self' tensor should have the same shape and rank as 'the_template'
+      tensor. Therefore, the condition to prevent this error is that the rank of 'self'
+      should be equal to the rank of 'the_template' and each dimension in 'self' shape
+      should be equal to corresponding dimension in 'the_template' shape.
+    length: 1
+    target:
+      choosen_dtype:
+        memory_format: None
+        self: tensor
+        the_template: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: self.rank==the_template.rank and all(self.shape[i]==the_template.shape[i]
+      for i in range(self.rank))
+  - f1_score: 74.75083056478405
+    overall_score: 100
+    precision: 100.0
+    recall: 59.6816976127321

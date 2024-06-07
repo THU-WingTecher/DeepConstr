@@ -1,0 +1,37 @@
+args:
+  dtype:
+  - tensor
+  - str
+  is_pos:
+  - false
+  - false
+  name:
+  - x
+  - name
+  required:
+  - true
+  - false
+name: tf.math.is_inf
+package: null
+pass_rate: 100
+rules:
+- - cot: "Based on the given runtime information, the error occurs because the attribute\
+      \ 'x' is provided as an int32, which is not in the list of allowed values: ['bfloat16',\
+      \ 'half', 'float', 'double']. To prevent the error, the dtype of 'x' should\
+      \ be corrected to be one of the allowed types. \n\nThe constraint that prevents\
+      \ the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: bfloat16,\
+        \ half, float, double\n\t; NodeDef: {{node IsInf}}; Op<name=IsInf; signature=x:T\
+        \ -> y:bool; attr=T:type,allowed=[DT_BFLOAT16, DT_HALF, DT_FLOAT, DT_DOUBLE]>\
+        \ [Op:IsInf] name: Ktoi"
+      package: tensorflow
+    txt: dtype(x) in ['bfloat16', 'half', 'float', 'double']
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
