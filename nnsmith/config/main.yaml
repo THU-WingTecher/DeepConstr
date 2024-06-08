@@ -110,6 +110,7 @@ filter:
   patch: []
 
 exp: #for experiments
+  mode: null
   api_list: null
   parallel: 1
   save_dir: "exp"

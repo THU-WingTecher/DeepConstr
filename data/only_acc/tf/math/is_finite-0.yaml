@@ -1,0 +1,33 @@
+args:
+  dtype:
+  - tensor
+  - str
+  is_pos:
+  - false
+  - false
+  name:
+  - x
+  - name
+  required:
+  - true
+  - false
+name: tf.math.is_finite
+package: null
+pass_rate: 100
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: bfloat16,\
+        \ half, float, double\n\t; NodeDef: {{node IsFinite}}; Op<name=IsFinite; signature=x:T\
+        \ -> y:bool; attr=T:type,allowed=[DT_BFLOAT16, DT_HALF, DT_FLOAT, DT_DOUBLE]>\
+        \ [Op:IsFinite] name: Bsvr"
+      package: tensorflow
+    txt: dtype(x) in ["bfloat16", "half", "float", "double"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

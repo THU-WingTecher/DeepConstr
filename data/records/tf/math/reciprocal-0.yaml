@@ -1,0 +1,17 @@
+args:
+  dtype:
+  - tensor
+  - str
+  is_pos:
+  - false
+  - false
+  name:
+  - x
+  - name
+  required:
+  - true
+  - false
+name: tf.math.reciprocal
+package: null
+pass_rate: 96.66666666666667
+rules: []

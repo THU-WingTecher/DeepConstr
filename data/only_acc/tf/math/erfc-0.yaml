@@ -1,0 +1,37 @@
+args:
+  dtype:
+  - tensor
+  - str
+  is_pos:
+  - false
+  - false
+  name:
+  - x
+  - name
+  required:
+  - true
+  - false
+name: tf.math.erfc
+package: null
+pass_rate: 100
+rules:
+- - cot: "Based on the given runtime information, the error occurs because the attribute\
+      \ 'x' is provided as an AbsTensor[], but it is expected to be one of the allowed\
+      \ types: bfloat16, half, float, double. Therefore, the variable 'x' should be\
+      \ of one of the allowed types. \n\nThe correct constraint to prevent the error\
+      \ is:"
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: bfloat16,\
+        \ half, float, double\n\t; NodeDef: {{node Erfc}}; Op<name=Erfc; signature=x:T\
+        \ -> y:T; attr=T:type,allowed=[DT_BFLOAT16, DT_HALF, DT_FLOAT, DT_DOUBLE]>\
+        \ [Op:Erfc] name: XgHW"
+      package: tensorflow
+    txt: dtype(x) in ["bfloat16", "half", "float", "double"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

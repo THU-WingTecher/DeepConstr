@@ -1,0 +1,52 @@
+args:
+  dtype:
+  - tensor
+  - tensor
+  - int
+  - tensor
+  - str
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - labels
+  - predictions
+  - num_classes
+  - weights
+  - dtype
+  - name
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+name: tf.math.confusion_matrix
+package: null
+pass_rate: 0.0
+rules:
+- - cot: 'All elements in `labels` should be non-negative. Hence the condition is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dtype: str
+        labels: tensor
+        name: str
+        num_classes: int
+        predictions: tensor
+        weights: tensor
+      msg: "`labels` contains negative values.  \nCondition x >= 0 did not hold element-wise:\n\
+        x (shape=(7, 2, 6, 7, 2, 2, 1) dtype=int64) = \n['61477', '352809', '626818',\
+        \ '...']"
+      package: tensorflow
+    txt: all(label >= 0 for label in labels)
+  - f1_score: 19.79977753058954
+    overall_score: 9.666666666666668
+    precision: 13.333333333333334
+    recall: 38.44492440604751

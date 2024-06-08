@@ -1,0 +1,25 @@
+args:
+  dtype:
+  - None
+  - None
+  - None
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - inputs
+  - shape
+  - tensor_dtype
+  - name
+  required:
+  - true
+  - false
+  - false
+  - false
+name: tf.math.accumulate_n
+package: null
+pass_rate: 0.0
+rules: []

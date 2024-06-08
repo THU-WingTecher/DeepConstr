@@ -1,0 +1,33 @@
+args:
+  dtype:
+  - tensor
+  - str
+  is_pos:
+  - false
+  - false
+  name:
+  - input
+  - name
+  required:
+  - true
+  - false
+name: tf.math.angle
+package: null
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        input: tensor
+        name: str
+      msg: Cannot convert 3.141592653589793 to EagerTensor of dtype int32
+      package: tensorflow
+    txt: (((dtype(input) in ["int8", "int16", "int32", "int64", "uint8", "uint16",
+      "uint32", "uint64"]) or (dtype(input) in ['half', 'int16', 'int32', 'int64',
+      'uint8', 'uint16', 'uint32', 'uint64'])) and (dtype(input) != int32)) and (dtype(input)
+      in [float16, float32, float64])
+  - f1_score: 94.43861490031478
+    overall_score: 100
+    precision: 100.0
+    recall: 89.46322067594433

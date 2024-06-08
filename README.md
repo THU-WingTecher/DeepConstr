@@ -93,7 +93,7 @@ PYTHONPATH=/artifact/:/artifact/nnsmith/:/artifact/deepconstr/:$PYTHONPATH \
 python deepconstr/train/run.py train.record_path=data/records/torch backend.type=torchcomp \
 model.type=torch hydra.verbose=train train.parallel=1 train.num_eval=300 \
 train.pass_rate=95 hydra.verbose=['train'] \
-train.retrain=true train.target='["torch.add","torch.abs"]'
+train.retrain=false train.target='["torch.add","torch.abs"]'
 ```
 train with api names from a json file : 
 ```bash
@@ -101,7 +101,7 @@ PYTHONPATH=/artifact/:/artifact/nnsmith/:/artifact/deepconstr/:$PYTHONPATH \
 python deepconstr/train/run.py train.record_path=data/records/torch backend.type=torchcomp \
 model.type=torch hydra.verbose=train train.parallel=1 train.num_eval=300 \
 train.pass_rate=95 hydra.verbose=['train'] \
-train.retrain=true train.target='/artifact/data/torch_untrained.json'
+train.retrain=false train.target='/artifact/data/torch_untrained.json'
 ```
 
 ##### for TensorFlow 
@@ -109,7 +109,7 @@ train.retrain=true train.target='/artifact/data/torch_untrained.json'
 PYTHONPATH=/artifact/:/artifact/nnsmith/:/artifact/deepconstr/:$PYTHONPATH \
 python deepconstr/train/run.py train.record_path=data/records/tf backend.type=xla \
 model.type=tensorflow hydra.verbose=train train.parallel=1 train.num_eval=300 train.pass_rate=95 hydra.verbose=['train'] \
-train.retrain=true train.target='["tf.add","tf.abs"]'
+train.retrain=false train.target='["tf.add","tf.abs"]'
 ```
 
 # Reproduce Experiments

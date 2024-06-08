@@ -1,0 +1,87 @@
+args:
+  dtype:
+  - tensor
+  - tensor
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - x
+  - q
+  - name
+  required:
+  - true
+  - true
+  - false
+name: tf.math.zeta
+package: null
+pass_rate: 26.666666666666668
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        q: tensor
+        x: tensor
+      msg: 'cannot compute Zeta as input #1(zero-based) was expected to be a float
+        tensor but is a half tensor [Op:Zeta] name: HUvR'
+      package: tensorflow
+    txt: dtype(q) == tf.float32
+  - f1_score: 98.14612868047982
+    overall_score: 61.07306434023991
+    precision: 100.0
+    recall: 96.35974304068523
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        q: tensor
+        x: tensor
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: float,\
+        \ double\n\t; NodeDef: {{node Zeta}}; Op<name=Zeta; signature=x:T, q:T ->\
+        \ z:T; attr=T:type,allowed=[DT_FLOAT, DT_DOUBLE]> [Op:Zeta] name: gRzU"
+      package: tensorflow
+    txt: dtype(x) in ["float", "double"]
+  - f1_score: 98.13242784380306
+    overall_score: 61.06621392190153
+    precision: 96.33333333333334
+    recall: 100.0
+- - cot: 'The error is due to the use of negative dimensions in the tensors x and
+      q. The tf.math.zeta function does not support negative dimensions. Therefore,
+      the constraints should be set to ensure that the dimensions of tensors x and
+      q are non-negative. The constraints can be formulated as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        q: tensor
+        x: tensor
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(x.shape[i] >= 0 for i in range(len(x.shape))) and all(q.shape[i] >= 0
+      for i in range(len(q.shape)))
+  - f1_score: 70.50002634490752
+    overall_score: 47.25001317245376
+    precision: 99.66555183946488
+    recall: 54.53982203490006
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        q: tensor
+        x: tensor
+      msg: '{{function_node __wrapped__Zeta_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [1,7,5,2,3,7,6] vs. [5,7,7,7,7,7,7] [Op:Zeta] name: aMLM'
+      package: tensorflow
+    txt: (all(x.shape[i] == q.shape[i] or x.shape[i] == 1 or q.shape[i] == 1 for i
+      in range(-1, -min(len(x.shape), len(q.shape))-1, -1))) or (all(x.shape[i]==q.shape[i]
+      for i in range(x.rank)))
+  - f1_score: 96.70942554378138
+    overall_score: 60.35471277189069
+    precision: 96.33333333333334
+    recall: 97.08846584546474

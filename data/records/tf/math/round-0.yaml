@@ -1,0 +1,17 @@
+args:
+  dtype:
+  - tensor
+  - str
+  is_pos:
+  - false
+  - false
+  name:
+  - x
+  - name
+  required:
+  - true
+  - false
+name: tf.math.round
+package: null
+pass_rate: 100
+rules: []

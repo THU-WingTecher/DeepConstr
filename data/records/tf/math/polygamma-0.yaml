@@ -1,0 +1,71 @@
+args:
+  dtype:
+  - tensor
+  - tensor
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - a
+  - x
+  - name
+  required:
+  - true
+  - true
+  - false
+name: tf.math.polygamma
+package: null
+pass_rate: 10.333333333333334
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        name: str
+        x: tensor
+      msg: 'cannot compute Polygamma as input #1(zero-based) was expected to be a
+        float tensor but is a half tensor [Op:Polygamma] name: DIoU'
+      package: tensorflow
+    txt: dtype(x) == tf.float32
+  - f1_score: 98.46153846153845
+    overall_score: 61.230769230769226
+    precision: 100.0
+    recall: 96.96969696969697
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        name: str
+        x: tensor
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: float,\
+        \ double\n\t; NodeDef: {{node Polygamma}}; Op<name=Polygamma; signature=a:T,\
+        \ x:T -> z:T; attr=T:type,allowed=[DT_FLOAT, DT_DOUBLE]> [Op:Polygamma] name:\
+        \ NLrP"
+      package: tensorflow
+    txt: dtype(a) in ["float", "double"]
+  - f1_score: 21.021021021021024
+    overall_score: 22.510510510510514
+    precision: 11.74496644295302
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        a: tensor
+        name: str
+        x: tensor
+      msg: '{{function_node __wrapped__Polygamma_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [4,6,6,2,3,1,7] vs. [3,6,1,1,2,7,2] [Op:Polygamma] name:
+        WKdl'
+      package: tensorflow
+    txt: (all(a.shape[i] == x.shape[i] or a.shape[i] == 1 or x.shape[i] == 1 for i
+      in range(-1, -min(len(a.shape), len(x.shape))-1, -1))) and (all(a.shape[i]==x.shape[i]
+      for i in range(a.rank)))
+  - f1_score: 68.50393700787403
+    overall_score: 46.251968503937015
+    precision: 96.66666666666667
+    recall: 53.04878048780488

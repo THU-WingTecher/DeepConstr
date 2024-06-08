@@ -1,0 +1,21 @@
+args:
+  dtype:
+  - list[int]
+  - tensor
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - coeffs
+  - x
+  - name
+  required:
+  - true
+  - true
+  - false
+name: tf.math.polyval
+package: null
+pass_rate: 98.33333333333333
+rules: []

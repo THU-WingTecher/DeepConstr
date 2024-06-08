@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - tensor
+  - int
+  - tensor
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - axis
+  - output_type
+  - name
+  required:
+  - true
+  - false
+  - false
+  - false
+name: tf.math.argmax
+package: null
+pass_rate: 0

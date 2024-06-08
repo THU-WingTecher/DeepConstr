@@ -1,0 +1,58 @@
+args:
+  dtype:
+  - tensor
+  - str
+  is_pos:
+  - false
+  - false
+  name:
+  - x
+  - name
+  required:
+  - true
+  - false
+name: tf.math.bessel_i0
+package: null
+pass_rate: 100
+rules:
+- - cot: 'The error is due to the function unable to find a device for the node. The
+      function tf.math.bessel_i0 requires a specific device to run. What the args
+      were? The function is running on a tensor of dtype ''DT_BFLOAT16'' and the node
+      is ''BesselI0''. Therefore, dtype(x) should be corrected. It says that ''x''
+      should not be of dtype ''DT_BFLOAT16''. So, Op : !=, and Right : ''DT_BFLOAT16''.'
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+      msg: "Could not find device for node: {{node BesselI0}} = BesselI0[T=DT_BFLOAT16]\n\
+        All kernels registered for op BesselI0:\n  device='GPU'; T in [DT_DOUBLE]\n\
+        \  device='GPU'; T in [DT_FLOAT]\n  device='GPU'; T in [DT_HALF]\n  device='CPU';\
+        \ T in [DT_DOUBLE]\n  device='CPU'; T in [DT_FLOAT]\n  device='CPU'; T in\
+        \ [DT_HALF]\n [Op:BesselI0]"
+      package: tensorflow
+    txt: x.dtype != 'DT_BFLOAT16'
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: "Based on the given runtime information, the error occurs because the attribute\
+      \ 'x' is of type int32, but it is expected to be one of the allowed types: bfloat16,\
+      \ half, float, double. The tensor 'x' is provided as int32, which is not compatible.\
+      \ \n\nTo prevent this error, the 'x' should be of one of the allowed types.\
+      \ So, the constraint should be:"
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: bfloat16,\
+        \ half, float, double\n\t; NodeDef: {{node BesselI0}}; Op<name=BesselI0; signature=x:T\
+        \ -> y:T; attr=T:type,allowed=[DT_BFLOAT16, DT_HALF, DT_FLOAT, DT_DOUBLE]>\
+        \ [Op:BesselI0]"
+      package: tensorflow
+    txt: dtype(x) in ["bfloat16", "half", "float", "double"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

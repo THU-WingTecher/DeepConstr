@@ -1,0 +1,65 @@
+args:
+  dtype:
+  - tensor
+  - int
+  - bool
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input_tensor
+  - axis
+  - keepdims
+  - name
+  required:
+  - true
+  - false
+  - false
+  - false
+name: tf.math.reduce_any
+package: null
+pass_rate: 100
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        axis: int
+        input_tensor: tensor
+        keepdims: bool
+        name: str
+      msg: '{{function_node __wrapped__Any_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Invalid reduction dimension (-4 for input with 0 dimension(s) [Op:Any] name:
+        wUws'
+      package: tensorflow
+    txt: (((axis != -4) and (axis < 0)) and ((input_tensor.rank != 0))) and ((axis
+      >= -input_tensor.rank))
+  - f1_score: 89.2988929889299
+    overall_score: 56.64944649446495
+    precision: 80.66666666666666
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the error occurs because the function
+      `tf.math.reduce_any` expects the input tensor to be a boolean tensor, but it
+      is instead a float tensor. To prevent this error, the data type of the input
+      tensor should be changed to boolean.
+
+
+      Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        input_tensor: tensor
+        keepdims: bool
+        name: str
+      msg: 'cannot compute Any as input #0(zero-based) was expected to be a bool tensor
+        but is a float tensor [Op:Any] name: HtTM'
+      package: tensorflow
+    txt: dtype(input_tensor) == bool
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

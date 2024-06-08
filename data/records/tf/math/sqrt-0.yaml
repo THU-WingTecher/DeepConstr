@@ -1,0 +1,34 @@
+args:
+  dtype:
+  - tensor
+  - str
+  is_pos:
+  - false
+  - false
+  name:
+  - x
+  - name
+  required:
+  - true
+  - false
+name: tf.math.sqrt
+package: null
+pass_rate: 100
+rules:
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: bfloat16,\
+        \ half, float, double, complex64, complex128\n\t; NodeDef: {{node Sqrt}};\
+        \ Op<name=Sqrt; signature=x:T -> y:T; attr=T:type,allowed=[DT_BFLOAT16, DT_HALF,\
+        \ DT_FLOAT, DT_DOUBLE, DT_COMPLEX64, DT_COMPLEX128]> [Op:Sqrt] name: QBen"
+      package: tensorflow
+    txt: dtype(x) in ['bfloat16', 'half', 'float', 'double', 'complex64', 'complex128']
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

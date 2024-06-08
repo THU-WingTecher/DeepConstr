@@ -171,10 +171,16 @@ def del_test_cases(root) :
         if dir != "coverage":
             os.system(f"rm -r {os.path.join(root, dir)}")
 
+def cal_time(time, baseline) :
+    parsed_time = parse_timestr(time)
+    num_of_baselines = len(baseline.split("+"))
+    time = parsed_time // len(num_of_baselines)
+    return str(int(time))+"s"
+
 def acetest_run(api_name, save_path, time) : 
     time_to_seconds = parse_timestr(time)
     return f"python main.py --test_round=5000 --mode=all --framework=tf --work_path={save_path} --target_api={api_name} --save_non_crash true --fuzz_time {time_to_seconds}"
-def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov", dirname=None, run_cov=True):
+def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov", dirname=None, fuzz_time=None, run_cov=True):
     """
     Runs the fuzzing process for a given API and baseline with the specified configuration.
     Captures and displays output in real-time.
@@ -225,11 +231,13 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov", dirna
         else:
             RECORD = os.path.join(os.getcwd(), "data", "torch_records")
     # Construct the command to run fuzz.py
+    if fuzz_time is None :
+        fuzz_time = config["fuzz"]["time"]
     if baseline == "acetest" : 
         fuzz_command = acetest_run(config, save_path)
     else : 
         fuzz_command = f"PYTHONPATH=$(pwd):$(pwd)/nnsmith:$(pwd)/deepconstr python nnsmith/cli/fuzz.py " \
-                    f"fuzz.time={config['fuzz']['time']} " \
+                    f"fuzz.time={fuzz_time} " \
                     f"mgen.record_path={RECORD} " \
                     f"fuzz.root={root_save_path} " \
                     f"fuzz.save_test={save_path} " \
@@ -258,8 +266,9 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov", dirna
     elif task == "fuzz":
         if "+" in baseline :
             baselines = baseline.split("+")
+            fuzz_time = cal_time(config['fuzz']['time'], baseline)
             for base in baselines :
-                run(api_name, base.strip(), config, task = "fuzz", dirname=gen_save_path(api_name, baseline, config), run_cov=False)
+                run(api_name, base.strip(), config, task = "fuzz", dirname=gen_save_path(api_name, baseline, config), fuzz_time = fuzz_time, run_cov=False)
         else :
             execute_command(fuzz_command)
         if run_cov :
@@ -269,7 +278,7 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov", dirna
 
 def load_from_csvs(csv_paths) :   
     columns = []
-    retrain_list = set()
+    recollect_list = set()
     refuzz_list = set() 
     for csv_path in csv_paths :
         with open(csv_path, "r") as f:
@@ -285,9 +294,9 @@ def load_from_csvs(csv_paths) :
                         col = float(col.strip())
                         if col == 0 : 
                             refuzz_list.add((columns[i], row[0].replace(".models",""), "fuzz"))
-                            retrain_list.add((columns[i], row[0].replace(".models",""), "cov"))
+                            recollect_list.add((columns[i], row[0].replace(".models",""), "cov"))
 
-    return retrain_list, refuzz_list
+    return recollect_list, refuzz_list
 
 def gen_save_path(api_name, baseline, cfg) :
     test_pool = [api_name]
@@ -347,28 +356,28 @@ def main(cfg) :
     if gives multiple tasks connecting with the charactor "+", it will fuzz and collect coverage them in together.
     ex) task = ['deepconstr+neuri', 'symbolic-cinit+deepconstr_2']
     """
-    retrain_list = set()
+    recollect_list = set()
     refuzz_list = set()
     # api_names = load_api_names_from_data(cfg["mgen"]["record_path"], cfg["mgen"]["pass_rate"])
     # api_names = list(set(api_names))
     with open(cfg["exp"]["targets"], "r") as f :
         api_names = json.load(f)
-    for baseline in cfg["exp"]["baselines"] : 
-        for api_name in api_names :
-            if need_to_gen_testcases(api_name, baseline, cfg) :
-                refuzz_list.add((baseline, api_name, "fuzz"))
-            elif need_to_collect_cov(api_name, baseline, cfg) :
-            # if need_to_collect_cov(api_name, baseline, cfg) :
-                retrain_list.add((baseline, api_name, "cov"))
+    if cfg["exp"]["mode"] is not None :
+        if cfg["exp"]["mode"] == "fix" :
+            assert len(api_names[0]) > 1, "You should give the fix mode targets ( api_name, baseline)" 
+            refuzz_list = [(baseline, name , "fuzz") for name, baseline in api_names]
+            recollect_list = [(baseline, name, "cov") for name, baseline in api_names]
 
-             
-    retrain_list = sorted(list(retrain_list), key=lambda x: x[1])
+    else :
+        for baseline in cfg["exp"]["baselines"] : 
+            for api_name in api_names :
+                refuzz_list.add((baseline, api_name, "fuzz"))
+                recollect_list.add((baseline, api_name, "cov"))
+                
+    recollect_list = sorted(list(recollect_list), key=lambda x: x[1])
     refuzz_list = sorted(list(refuzz_list), key=lambda x: x[1])
-    # print(retrain_list)
-    # print(refuzz_list)
-    all_tasks = refuzz_list + retrain_list
-    print("retrain", len(retrain_list), "refuzz", len(refuzz_list))
-    # print(all_tasks)
+    all_tasks = refuzz_list + recollect_list
+    print("retrain", len(recollect_list), "refuzz", len(refuzz_list))
     with concurrent.futures.ProcessPoolExecutor(max_workers=cfg["exp"]["parallel"]) as executor:
         # Pass necessary arguments to the api_worker function
         futures = [executor.submit(run, api, baseline, cfg, task) for baseline, api, task in all_tasks]

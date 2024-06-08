@@ -1,0 +1,102 @@
+args:
+  dtype:
+  - tensor
+  - tensor
+  - tensor
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - a
+  - b
+  - x
+  - name
+  required:
+  - true
+  - true
+  - true
+  - false
+name: tf.math.betainc
+package: null
+pass_rate: 5.376344086021505
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        a: tensor
+        b: tensor
+        name: str
+        x: tensor
+      msg: '{{function_node __wrapped__Betainc_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Shapes of a and b are inconsistent: [4,4,7,1,1,2,3] vs. [1,2,6,2,2,6,2] [Op:Betainc]
+        name: Puit'
+      package: tensorflow
+    txt: ((len(a) == len(b)) and (all(a.shape[i]==b.shape[i] for i in range(a.rank))))
+      and (all(a.shape[i]==x.shape[i] for i in range(a.rank)))
+  - f1_score: 95.43039319872474
+    overall_score: 100
+    precision: 100.0
+    recall: 91.260162601626
+- - cot: 'Based on the given runtime information, the error occurs because the function
+      expects input #1 to be a float tensor, but it is an int32 tensor. To prevent
+      this error, the data type of input #1 should be modified to float. Therefore,
+      the constraint can be formulated as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        b: tensor
+        name: str
+        x: tensor
+      msg: 'cannot compute Betainc as input #1(zero-based) was expected to be a float
+        tensor but is a int32 tensor [Op:Betainc] name: oVjD'
+      package: tensorflow
+    txt: dtype(a) == float
+  - f1_score: 64.44444444444443
+    overall_score: 50.540983606557376
+    precision: 95.08196721311475
+    recall: 48.739495798319325
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        b: tensor
+        name: str
+        x: tensor
+      msg: "Value for attr 'T' of half is not in the list of allowed values: float,\
+        \ double\n\t; NodeDef: {{node Betainc}}; Op<name=Betainc; signature=a:T, b:T,\
+        \ x:T -> z:T; attr=T:type,allowed=[DT_FLOAT, DT_DOUBLE]> [Op:Betainc] name:\
+        \ UsRq"
+      package: tensorflow
+    txt: dtype(x) in ['float', 'double']
+  - f1_score: 39.47136286308361
+    overall_score: 18.581395348837212
+    precision: 31.16279069767442
+    recall: 53.82104042269857
+- - cot: Based on the given values, the error arises because the attribute 'T' is
+      half, but it must be either float or double. The tensors 'a', 'b', and 'x' are
+      all provided as half, which is not compatible. Therefore, the data types of
+      'a', 'b', and 'x' should be corrected to either float or double.
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        b: tensor
+        name: str
+        x: tensor
+      msg: "Value for attr 'T' of half is not in the list of allowed values: float,\
+        \ double\n\t; NodeDef: {{node Betainc}}; Op<name=Betainc; signature=a:T, b:T,\
+        \ x:T -> z:T; attr=T:type,allowed=[DT_FLOAT, DT_DOUBLE]> [Op:Betainc] name:\
+        \ UeII"
+      package: tensorflow
+    txt: dtype(a) in ["float", "double"] and dtype(b) in ["float", "double"] and dtype(x)
+      in ["float", "double"]
+  - f1_score: 23.843323390450475
+    overall_score: 15.98342541436464
+    precision: 25.96685082872928
+    recall: 22.04085740163027

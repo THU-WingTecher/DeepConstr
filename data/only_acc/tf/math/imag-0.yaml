@@ -1,0 +1,17 @@
+args:
+  dtype:
+  - tensor
+  - str
+  is_pos:
+  - false
+  - false
+  name:
+  - input
+  - name
+  required:
+  - true
+  - false
+name: tf.math.imag
+package: null
+pass_rate: 100
+rules: []

@@ -1,0 +1,69 @@
+args:
+  dtype:
+  - tensor
+  - tensor
+  - bool
+  - bool
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - x
+  - axis
+  - exclusive
+  - reverse
+  - name
+  required:
+  - true
+  - false
+  - false
+  - false
+  - false
+name: tf.math.cumulative_logsumexp
+package: null
+pass_rate: 0.0
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        axis: tensor
+        exclusive: bool
+        name: str
+        reverse: bool
+        x: tensor
+      msg: "Value for attr 'Tidx' of float is not in the list of allowed values: int32,\
+        \ int64\n\t; NodeDef: {{node CumulativeLogsumexp}}; Op<name=CumulativeLogsumexp;\
+        \ signature=x:T, axis:Tidx -> out:T; attr=exclusive:bool,default=false; attr=reverse:bool,default=false;\
+        \ attr=T:type,allowed=[DT_BFLOAT16, DT_HALF, DT_FLOAT, DT_DOUBLE]; attr=Tidx:type,default=DT_INT32,allowed=[DT_INT32,\
+        \ DT_INT64]> [Op:CumulativeLogsumexp]"
+      package: tensorflow
+    txt: (dtype(axis) in ["int32", "int64"]) and (dtype(x) in ["bfloat16", "half",
+      "float", "double"])
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is triggered because the axis parameter is not a scalar. To prevent
+      the error, the axis parameter should be a scalar value. The constraint to prevent
+      the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: tensor
+        exclusive: bool
+        name: str
+        reverse: bool
+        x: tensor
+      msg: '{{function_node __wrapped__CumulativeLogsumexp_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        ScanOp: axis must be a scalar, not [1,1] [Op:CumulativeLogsumexp]'
+      package: tensorflow
+    txt: axis.dim == 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

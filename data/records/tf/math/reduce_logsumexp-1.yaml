@@ -1,0 +1,24 @@
+args:
+  dtype:
+  - tensor
+  - list[int]
+  - bool
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input_tensor
+  - axis
+  - keepdims
+  - name
+  required:
+  - true
+  - false
+  - false
+  - false
+name: tf.math.reduce_logsumexp
+package: null
+pass_rate: 0
