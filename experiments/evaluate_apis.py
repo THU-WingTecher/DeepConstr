@@ -11,6 +11,9 @@ from experiments.evaluate_models import model_exec, batched
 from experiments.evaluate_tf_models import tf_model_exec, clear_gcda
 from nnsmith.logger import DTEST_LOG
 from nnsmith.util import parse_timestr
+import shutil
+import time
+import random
 # Load the JSON file
 
 cov_parallel = 1
@@ -150,7 +153,7 @@ def collect_cov(root, model_type, backend_type, batch_size=100, backend_target="
     # batches = [time_stamps[i:i + batch_size] for i in range(0, len(time_stamps), batch_size)]
     batches = [time_stamps] # no need to batch
     # print(f"=> Number of batches: {len(batches)} of size {batch_size}")
-    print(f"=> Number of batches: {len(batches)} of size {len(time_stamps)}")
+    # print(f"=> Number of batches: {len(batches)} of size {len(time_stamps)}")
 
     cov_save = os.path.join(root, "coverage")
     if not os.path.exists(cov_save):
@@ -177,9 +180,61 @@ def cal_time(time, baseline) :
     time = parsed_time // len(num_of_baselines)
     return str(int(time))+"s"
 
-def acetest_run(api_name, save_path, time) : 
-    time_to_seconds = parse_timestr(time)
-    return f"python main.py --test_round=5000 --mode=all --framework=tf --work_path={save_path} --target_api={api_name} --save_non_crash true --fuzz_time {time_to_seconds}"
+def acetest_run(api_name, config, save_path) : 
+    time_to_seconds = parse_timestr(config["fuzz"]["time"])
+    os.makedirs(save_path, exist_ok=True)
+    package = config["model"]["type"] 
+    if config["model"]["type"] == "tensorflow" :
+        package = "tf"
+    return f"python main.py --test_round=100000 --mode=cpu_ori --framework={package} --work_path={save_path} --target_api={api_name} --save_non_crash=true --api_timeout={time_to_seconds}"
+
+def move_files_to_directory(source_dirs, target_dir):
+    """
+    Move files from source directories to a target directory.
+
+    :param source_dirs: List of directories to move files from.
+    :param target_dir: Directory to move files to.
+    """
+    if not os.path.exists(target_dir):
+        os.makedirs(target_dir)
+
+    for dir in source_dirs:
+        if not os.path.exists(dir):
+            print(f"Source directory does not exist: {dir}")
+            continue
+
+        for file_name in os.listdir(dir):
+            file_path = os.path.join(dir, file_name)
+            if os.path.isfile(file_path):
+                shutil.move(file_path, target_dir)
+                print(f"Moved {file_name} to {target_dir}")
+    
+def acetest_cov(api_name, config, save_path) : 
+    from experiments.collect_cov_by_script import script_exec
+    package = config["model"]["type"] 
+    if config["model"]["type"] == "tensorflow" :
+        package = "tf"
+
+    time2path = {}
+    save_path = os.path.join(save_path, f"output_{package}_0", api_name, "non_crash")
+    for i, dir in enumerate(os.listdir(save_path)):
+        if dir != "coverage" and not dir.endswith('json') and not dir.endswith('csv'):
+            # time2path[float(dir)] = os.path.join(save_path, dir)
+            time2path[float(i)] = os.path.join(save_path, dir)
+    time_stamps = sorted(time2path.keys())
+    num_of_batch = 20
+    batch_size = len(time_stamps) // num_of_batch
+    print(f"Total number of tests: {len(time_stamps)}, each batch size: {batch_size}")
+    cov_save = os.path.join(save_path, "coverage")
+    if not os.path.exists(cov_save) :
+        os.mkdir(cov_save)
+    clear_gcda()
+    id_path = f"{max(time_stamps)}.info" if package != 'torch' else f"{max(time_stamps)}.profraw"
+    output_path = os.path.join(cov_save, id_path)
+    script_exec(
+        [time2path[time] for time in time_stamps], output_path, random.randint(0, 100000), package, batch_size=batch_size
+    )
+
 def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov", dirname=None, fuzz_time=None, run_cov=True):
     """
     Runs the fuzzing process for a given API and baseline with the specified configuration.
@@ -206,7 +261,12 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov", dirna
         Executes a given command and prints its output in real-time.
         """
         print("Running\n", command)
-        with subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True) as p:
+        if baseline == "acetest" and task == "fuzz":
+            cwd = "/artifact/ACETest/Tester/src"
+        else :
+            cwd = os.getcwd()
+        time.sleep(7)
+        with subprocess.Popen(command, cwd = cwd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True) as p:
             for line in p.stdout:
                 print(line, end='')
             p.wait(timeout=60*11)
@@ -234,7 +294,7 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov", dirna
     if fuzz_time is None :
         fuzz_time = config["fuzz"]["time"]
     if baseline == "acetest" : 
-        fuzz_command = acetest_run(config, save_path)
+        fuzz_command = acetest_run(api_name, config, save_path)
     else : 
         fuzz_command = f"PYTHONPATH=$(pwd):$(pwd)/nnsmith:$(pwd)/deepconstr python nnsmith/cli/fuzz.py " \
                     f"fuzz.time={fuzz_time} " \
@@ -249,7 +309,9 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov", dirna
         print("Activate Conda env -cov")
         activate_conda_environment("cov")
         if baseline == "acetest" : 
-            pass 
+            command, save_path = acetest_cov(api_name, config, save_path)
+            execute_command(command)
+
         else :
             collect_cov(root=save_path,
                         model_type=config['model']['type'],
@@ -356,6 +418,10 @@ def main(cfg) :
     if gives multiple tasks connecting with the charactor "+", it will fuzz and collect coverage them in together.
     ex) task = ['deepconstr+neuri', 'symbolic-cinit+deepconstr_2']
     """
+    # model_type=cfg["model"]["type"]
+    # backend_type=cfg["backend"]["type"]
+    # root="/artifact/exp/deepconstr_1/tf/tensorflow-deepconstr-n1-tf.raw_ops.Abs.models"
+    # collect_cov(root, model_type, backend_type, batch_size=100, backend_target="cpu", parallel=8)
     recollect_list = set()
     refuzz_list = set()
     # api_names = load_api_names_from_data(cfg["mgen"]["record_path"], cfg["mgen"]["pass_rate"])
@@ -371,13 +437,15 @@ def main(cfg) :
     else :
         for baseline in cfg["exp"]["baselines"] : 
             for api_name in api_names :
-                refuzz_list.add((baseline, api_name, "fuzz"))
+                if need_to_gen_testcases(api_name, baseline, cfg) :
+                    refuzz_list.add((baseline, api_name, "fuzz"))
+                # refuzz_list.add((baseline, api_name, "fuzz"))
                 recollect_list.add((baseline, api_name, "cov"))
                 
     recollect_list = sorted(list(recollect_list), key=lambda x: x[1])
     refuzz_list = sorted(list(refuzz_list), key=lambda x: x[1])
     all_tasks = refuzz_list + recollect_list
-    print("retrain", len(recollect_list), "refuzz", len(refuzz_list))
+    print("recollect", len(recollect_list), "refuzz", len(refuzz_list))
     with concurrent.futures.ProcessPoolExecutor(max_workers=cfg["exp"]["parallel"]) as executor:
         # Pass necessary arguments to the api_worker function
         futures = [executor.submit(run, api, baseline, cfg, task) for baseline, api, task in all_tasks]

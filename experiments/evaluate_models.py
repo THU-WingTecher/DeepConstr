@@ -9,7 +9,7 @@ import sys
 from nnsmith.util import mkdir
 
 
-def batched(iterable, n=20):
+def batched(iterable, n=100):
     l = len(iterable)
     for ndx in range(0, l, n):
         yield iterable[ndx : min(ndx + n, l)]
@@ -24,7 +24,7 @@ def model_exec(test_paths, model_type, backend_type, backend_target, profraw_pat
                 break
     activation_command = "source /opt/conda/etc/profile.d/conda.sh && conda activate " + "cov" + " && "
     # model_paths = model_paths[:len(model_paths)//10]
-    batches = batched(model_paths)
+    batches = batched(model_paths, 100)
     for model_paths in batches :
         arguments = [
             "python3",
