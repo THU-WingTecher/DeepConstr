@@ -180,7 +180,7 @@ def script_exec(
                 trial_arguments,  # Show all output
                 env=copied_env,
             )
-        os.system(f"rm {temp_script_path}")
+        # os.system(f"rm {temp_script_path}")
         p.communicate()
         exit_code = p.returncode
 

@@ -131,6 +131,7 @@ def api_worker(api, cfg, BASELINES, task):
                 print(f"An error occured: {e}")
     # Trigger drawing after completing all baseline tasks for the current API
     # run_draw_script(api, cfg, BASELINES)
+
 def collect_cov(root, model_type, backend_type, batch_size=100, backend_target="cpu", parallel=8):
     """
     Collects coverage data after fuzzing.
@@ -234,6 +235,7 @@ def acetest_cov(api_name, config, save_path) :
     script_exec(
         [time2path[time] for time in time_stamps], output_path, random.randint(0, 100000), package, batch_size=batch_size
     )
+    return save_path
 
 def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov", dirname=None, fuzz_time=None, run_cov=True):
     """
@@ -309,8 +311,8 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov", dirna
         print("Activate Conda env -cov")
         activate_conda_environment("cov")
         if baseline == "acetest" : 
-            command, save_path = acetest_cov(api_name, config, save_path)
-            execute_command(command)
+            save_path = acetest_cov(api_name, config, save_path)
+            pass
 
         else :
             collect_cov(root=save_path,
@@ -431,13 +433,16 @@ def main(cfg) :
     if cfg["exp"]["mode"] is not None :
         if cfg["exp"]["mode"] == "fix" :
             assert len(api_names[0]) > 1, "You should give the fix mode targets ( api_name, baseline)" 
-            refuzz_list = [(baseline, name , "fuzz") for name, baseline in api_names]
-            recollect_list = [(baseline, name, "cov") for name, baseline in api_names]
+            refuzz_list = [(cfg["exp"]["baselines"][0], name , "fuzz") for name in api_names]
+            recollect_list = [(cfg["exp"]["baselines"][0], name, "cov") for name in api_names]
 
     else :
         for baseline in cfg["exp"]["baselines"] : 
             for api_name in api_names :
-                if need_to_gen_testcases(api_name, baseline, cfg) :
+                if baseline != "acetest" :
+                    if need_to_gen_testcases(api_name, baseline, cfg) :
+                        refuzz_list.add((baseline, api_name, "fuzz"))
+                else :
                     refuzz_list.add((baseline, api_name, "fuzz"))
                 # refuzz_list.add((baseline, api_name, "fuzz"))
                 recollect_list.add((baseline, api_name, "cov"))

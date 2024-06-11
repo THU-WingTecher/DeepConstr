@@ -4,6 +4,7 @@ import pandas as pd
 import json
 import datetime
 import numpy as np
+import traceback
 
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
@@ -68,7 +69,7 @@ def cov_summerize(data, tlimit=None, gen_time=None):
 
     return branch_by_time, final_bf
 
-def traverse_and_classify(root_dir, api_data):
+def traverse_and_classify(root_dir, api_data, package):
     """
     Traverses the root directory to identify relevant subdirectories and classifies the information.
 
@@ -85,8 +86,11 @@ def traverse_and_classify(root_dir, api_data):
                 if column and api_name:
                     if api_name not in api_data:
                         api_data[api_name] = {}
-                    assert api_data[api_name].get(column) is None, f"the data of {api_name}-{column} is duplicated"
-                    api_data[api_name][column] = os.path.join(root, dirname, 'coverage', 'merged_cov.pkl')
+                    assert api_data[api_name].get(column) is None, f"the data of {api_name}-{column} is duplicated, duplicated with {api_data[api_name].get(column)}"
+                    if column == "acetest" :
+                        api_data[api_name][column] = os.path.join(root, dirname, f"output_{package}_0", api_name, "non_crash", 'coverage', 'merged_cov.pkl')
+                    else :
+                        api_data[api_name][column] = os.path.join(root, dirname, 'coverage', 'merged_cov.pkl')
 
 def get_model_cnt(pickle_path) : 
     cnt = 0
@@ -111,7 +115,7 @@ def process_pickle(path) :
             'final_bf': max([bf for _,_,bf in branch_by_time]),
         }
     
-def process_pickle_files(api_coverage_data):
+def process_pickle_files(api_coverage_data, package):
     """
     Processes each relevant pickle file using the cov_summerize function.
 
@@ -129,14 +133,21 @@ def process_pickle_files(api_coverage_data):
 
                 try :
                     api_summary[column] = process_pickle(pickle_path)
-                    api_summary[column]['model_n'] = get_model_cnt(pickle_path)            
+                    if column == "acetest" : 
+                        suffix = "info" if package == "tf" else "profraw"
+                        files = [info_file_nm for info_file_nm in os.listdir(os.path.dirname(pickle_path)) if info_file_nm.endswith(suffix)]
+                        if len(files) < 1 :
+                            raise FileNotFoundError(f"{suffix} file is not exist in {os.path.dirname(pickle_path)}")
+                        api_summary[column]['model_n'] = int(float(files[0].replace("."+suffix,"")))
+                    else :
+                        api_summary[column]['model_n'] = get_model_cnt(pickle_path)            
                 except FileNotFoundError :
                     api_summary[column] = {
                         'branch_by_time': [[0, 0, 0], [0, 0, 0]],
                         'final_bf': 0,
                         'model_n': 0,
                     }
-                    print("File not found : ", pickle_path)  
+                    print("Error while reading : ", pickle_path, "Please refer /data/unnormal_vals* file and readme(unnormal values))")  
             summarized_data[api_name] = api_summary
 
     return summarized_data
@@ -211,8 +222,6 @@ def summarize_final_bf(aggregated_df, pivot):
 
     all_data = final_bf_summary.shape[0]
     # revise_complete_data("/artifact/experiments/results/completed.json", completed_data)
-    print(f"Total APIs with {pivot} as the largest final BF: ", cnt, "from", all_data)
-    print(f"Increase ratio of {pivot} as the largest final BF: {cnt/all_data}")
     return pd.concat([final_bf_summary, model_cnt], axis=1), completed_data 
 
 def get_default_coves(model_type) :
@@ -225,18 +234,22 @@ def get_default_coves(model_type) :
     return process_pickle(path)
 
 
-def extract_and_remove_unnormal_val(df):
+def extract_and_remove_unnormal_val(df, package):
     # Step 1: Create a mask where any value is less than 0
-    mask = df == 0
+    unnormal_vals = {}
+    mask = df <= 0
 
     # Step 2: Find the row labels where the condition is True for any column
     rows_to_remove = np.any(mask, axis=1)
 
     # Step 3: Save the positions of unnormal values
     rows, cols = np.where(mask)
-    positions = [(df.index[row], df.columns[col]) for row, col in zip(rows, cols) if not str(df.columns[col]).endswith("cnt")]
-    with open("/artifact/results/unnormal_val.json", "w") as file:
-        json.dump(positions, file)
+    for col in cols :
+        with open(f"/artifact/results/unnormal_val_{df.columns[col]}_{package}.json", "w") as file:
+            json.dump(list(set([df.index[row] for row in rows])), file)
+
+    # positions = [(df.index[row], df.columns[col]) for row, col in zip(rows, cols) if not str(df.columns[col]).endswith("cnt")]
+
 
     # Step 4: Remove rows containing unnormal values from the dataframe
     df_clean = df[~rows_to_remove]
@@ -274,15 +287,15 @@ def gen_table4_from_df(*args, pivot="deepconstr", package="torch") :
     df = pd.concat(dfs, axis=1)
 
     df = df.set_index('API', drop=True)
-    df = extract_and_remove_unnormal_val(df)
     default_val = get_default_coves(package)['final_bf']
     cov_col_names = [col for col in df.columns if "cnt" not in col]
     for col in cov_col_names :
         # print(df[col], default_val)
         df[col] = df[col] - default_val
+    df = extract_and_remove_unnormal_val(df, package)
 
     for tool in [pivot] :
-        for baseline in cov_col_names :
+        for baseline in [base for base in cov_col_names if base != tool] :
             columns_to_compare = [baseline] if all(col in df.columns for col in [baseline]) else []
             intersected = get_intersected(pivot, baseline, package)
 
@@ -302,7 +315,11 @@ def gen_table4_from_df(*args, pivot="deepconstr", package="torch") :
                 lambda row: row[tool] > row[columns_to_compare], axis=1).sum()
             
             print(f"rows_where_{pivot}_is_highest {tool} vs {baseline}: highest {rows_where_pivot_is_highest}, intersected {len(intersected)} apis")
-    df = df.sort_values(by=f'improvement_ratio_{pivot}_vs_neuri', ascending=True)
+            print(f"After removed unnormal values, we have {extracted_columns_df_with_models.shape[0]} apis")
+            # print(f"Total APIs with {pivot} as the largest final BF: ", cnt, "from", all_data)
+            print(f"Increase ratio of {pivot} as the largest single-operator coverage: {rows_where_pivot_is_highest/extracted_columns_df_with_models.shape[0]}")
+        
+    df = df.sort_values(by=f'improvement_ratio_{pivot}_vs_{col}', ascending=True)
     for col in df.columns:
         print(col)
         print(df[df[col] != 0][col].mean())
@@ -330,9 +347,9 @@ if __name__ == "__main__":
     assert args.output.endswith(".csv"), "output argument should be a csv file name"
     data = {}
     for folder in args.folders:
-        traverse_and_classify(folder, data)
+        traverse_and_classify(folder, data, args.package)
     # print(data)
-    processed_data = process_pickle_files(data)
+    processed_data = process_pickle_files(data, args.package)
     aggregated_df = aggregate_summarized_data(processed_data)
     final_bf_summary, completed_data = summarize_final_bf(aggregated_df, args.pivot)
     final_bf_summary = final_bf_summary.reset_index()
