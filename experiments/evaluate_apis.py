@@ -223,7 +223,7 @@ def acetest_cov(api_name, config, save_path) :
             # time2path[float(dir)] = os.path.join(save_path, dir)
             time2path[float(i)] = os.path.join(save_path, dir)
     time_stamps = sorted(time2path.keys())
-    num_of_batch = 20
+    num_of_batch = 80
     batch_size = len(time_stamps) // num_of_batch
     print(f"Total number of tests: {len(time_stamps)}, each batch size: {batch_size}")
     cov_save = os.path.join(save_path, "coverage")
@@ -432,7 +432,7 @@ def main(cfg) :
         api_names = json.load(f)
     if cfg["exp"]["mode"] is not None :
         if cfg["exp"]["mode"] == "fix" :
-            assert len(api_names[0]) > 1, "You should give the fix mode targets ( api_name, baseline)" 
+            assert len(cfg["exp"]["baselines"]) == 1, "Fix mode only support single baseline" 
             refuzz_list = [(cfg["exp"]["baselines"][0], name , "fuzz") for name in api_names]
             recollect_list = [(cfg["exp"]["baselines"][0], name, "cov") for name in api_names]
 

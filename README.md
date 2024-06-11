@@ -163,13 +163,24 @@ for testing acetest
 PYTHONPATH=/artifact/:/artifact/nnsmith/:/artifact/deepconstr/:$PYTHONPATH python experiments/evaluate_apis.py exp.save_dir=exp/aceteonstr_1/tf mgen.max_nodes=1 mgen.recordst/tf mgen.max_nodes=1 mgen.record=onstr_1/tf mgen.max_nodes=1 mgen.record_path=$(pwd)/data/records/tf/ mgen.pass_rate=0.05 model.type=tensorflow backend.type=xla fuzz.time=5m exp.parallel=64 mgen.noise=0.8 exp.targets=/artifact/data/tf_dc_acetest.json exp.baselines=['acetest']
 ```
 
+
 ##### Summarize the results
 
 Specify the folder name that you used in a previous experiment. Use the -o option to name the output file. The final experiment results will be saved in the following path: /artifact/results/${output_file}.csv.
 
 For example, to specify a folder named pt_gen and save the results to pt_gen.csv, use the following command:
 ```bash
-python experiments/summarize_merged_cov.py -f pt_gen -o pt_gen
+python experiments/summarize_merged_cov.py -f pt_gen -o pt_gen -p deepconstr -k {package}
+```
+
+##### When encounters with unnormal values 
+
+Sometimes we encounter unnormal coverage values, in this please refer the saved unnormal_value list at $(pwd)/results/unnormal_val* and rerun the experiment by adding some arguments like mode=fix and exp.targets=$(pwd)/results/unnormal_val*
+
+```bash
+PYTHONPATH=/artifact/:/artifact/nnsmith/:/artifact/deepconstr/:$PYTHONPATH \
+python experiments/evaluate_apis.py \
+exp.save_dir=pt_gen mgen.record_path=$(pwd)/data/records/torch/ mgen.pass_rate=0 model.type=torch backend.type=torchjit fuzz.time=15m exp.parallel=16 mgen.noise=0.8 exp.targets=/artifact/results/unnormal_val_deepconstr_torch.json exp.baselines=['deepconstr']
 ```
 
 ### Constraint Assessment (RQ2) 

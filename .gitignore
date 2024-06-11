@@ -3,6 +3,7 @@
 .vscode
 
 # experiment data
+*workspace
 bazel-out/
 build/Cov_Trace_Analyzer
 *.profraw 

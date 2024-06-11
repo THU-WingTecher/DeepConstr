@@ -275,6 +275,36 @@ def get_intersected(tool1, tool2, package) :
 
     intersected = list(set(data[0]).intersection(set(data[1])))
     return intersected
+def customize_concat(dataframes):
+    """
+    Concatenate a list of dataframes side by side (column-wise) and resolve any duplicate columns
+    by keeping only the maximum value for each (index, column) pair.
+
+    Args:
+    dataframes (list of pd.DataFrame): List of DataFrames to concatenate.
+
+    Returns:
+    pd.DataFrame: A single DataFrame after handling duplicates by selecting maximum values.
+    """
+    # Concatenate the dataframes with keys to track their origin
+    df_concat = pd.concat(dataframes, axis=1, keys=[f'df{i}' for i in range(len(dataframes))])
+
+    # Flatten the MultiIndex columns for easier manipulation
+    df_concat.columns = ['_'.join(col).strip() for col in df_concat.columns.values]
+
+    # Identify duplicated based on the base column name (ignoring df1_, df2_, etc. prefixes)
+    base_cols = [col.split('_')[1] for col in df_concat.columns]
+    duplicates = set(col for col in base_cols if base_cols.count(col) > 1)
+
+    # Resolve duplicates by taking the max across the original dataframes' columns
+    for col in duplicates:
+        max_col = df_concat[[f'df{i}_{col}' for i in range(len(dataframes))]].max(axis=1)
+        df_concat[col] = max_col    # Assign max values to a new column or overwrite existing one
+        # Drop the original duplicated columns
+        for i in range(len(dataframes)):
+            df_concat.drop([f'df{i}_{col}'], axis=1, inplace=True)
+
+    return df_concat
 
 def gen_table4_from_df(*args, pivot="deepconstr", package="torch") :
 
@@ -284,9 +314,10 @@ def gen_table4_from_df(*args, pivot="deepconstr", package="torch") :
             dfs.append(pd.read_csv(path, index_col="API"))
         elif isinstance(path, pd.DataFrame) :
             dfs.append(path)
-    df = pd.concat(dfs, axis=1)
+    df = customize_concat(dfs)
 
-    df = df.set_index('API', drop=True)
+    # df = df.set_index('API', drop=True)
+    print(df.head())
     default_val = get_default_coves(package)['final_bf']
     cov_col_names = [col for col in df.columns if "cnt" not in col]
     for col in cov_col_names :
@@ -343,8 +374,12 @@ if __name__ == "__main__":
     parser.add_argument(
         "-o", "--output", type=str, help="save name"
     )
+    parser.add_argument(
+        "-l", "--load", type=str, default=None, help="load file"
+    )
     args = parser.parse_args()
     assert args.output.endswith(".csv"), "output argument should be a csv file name"
+    assert args.load.endswith(".csv") , "load argument should be a csv file name and with raw_file"
     data = {}
     for folder in args.folders:
         traverse_and_classify(folder, data, args.package)
@@ -354,4 +389,4 @@ if __name__ == "__main__":
     final_bf_summary, completed_data = summarize_final_bf(aggregated_df, args.pivot)
     final_bf_summary = final_bf_summary.reset_index()
     final_bf_summary.to_csv(os.path.join("/artifact/results/", f"raw_{args.output}"), index=False)
-    gen_table4_from_df(final_bf_summary, pivot=args.pivot, package=args.package).to_csv(os.path.join("/artifact/results/", f"{args.output}"), index=False)
+    gen_table4_from_df(final_bf_summary, args.load, pivot=args.pivot, package=args.package).to_csv(os.path.join("/artifact/results/", f"{args.output}"), index=False)
