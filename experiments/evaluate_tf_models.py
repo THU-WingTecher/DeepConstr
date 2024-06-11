@@ -8,11 +8,11 @@ import os
 import pickle
 import subprocess
 import sys
-from nnsmith.autoinf.inference.const import ROOT_DIR
 from nnsmith.util import mkdir
 
 results = dict()
 WORKSPACE = "temp_cov"
+ROOT_DIR = "/artifact"
 
 def collect():
     for root, dirs, files in os.walk("./bazel-out"):
@@ -62,20 +62,21 @@ def tf_model_exec(
     test_paths, model_type, backend_type, backend_target, output_path, id_path
 ):
     model_paths = []
+    batch_size = 100
     for test_path in test_paths:
         for file in os.listdir(test_path):
             if file.startswith("model"):
                 model_paths.append(os.path.join(test_path, file))
                 break
 
-    # print(len(model_paths))
     gcda_save_path = f"{WORKSPACE}/{id_path}-workspace"
     # while os.path.exists(gcda_save_path):
     #     id_path = float(id_path) + 0.001
     #     gcda_save_path = f"{WORKSPACE}/{str(id_path)}-workspace"
     os.system(f"rm {gcda_save_path} -r")
     os.makedirs(gcda_save_path, exist_ok=True)
-    batches = batched(model_paths)
+    batches = batched(model_paths, n=batch_size)
+    print(f"=> Number of batches: {len(model_paths)//batch_size+1} of size {batch_size}")
     for model_paths in batches :
         trial_arguments = [
             "python3",
@@ -99,7 +100,7 @@ def tf_model_exec(
             return
 
     coverage_collect(output_path, id_path)
-    # os.system(f"rm {gcda_save_path} -r")
+    os.system(f"rm {gcda_save_path} -r")
     # else:
     # cov_file = ''
     # os.system(f'cp {cov_file} {profraw_path}')
