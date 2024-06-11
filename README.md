@@ -158,6 +158,11 @@ python experiments/evaluate_apis.py \
 exp.save_dir=tf_gen mgen.record_path=$(pwd)/data/records/tf/ mgen.pass_rate=0.05 model.type=tensorflow backend.type=xla fuzz.time=15m exp.parallel=16 mgen.noise=0.8 exp.targets=/artifact/data/tf_dc_neuri.json exp.baselines=['deepconstr', 'neuri', 'symbolic-cinit', 'deepconstr_2']
 ```
 
+for testing acetest
+```bash
+PYTHONPATH=/artifact/:/artifact/nnsmith/:/artifact/deepconstr/:$PYTHONPATH python experiments/evaluate_apis.py exp.save_dir=exp/aceteonstr_1/tf mgen.max_nodes=1 mgen.recordst/tf mgen.max_nodes=1 mgen.record=onstr_1/tf mgen.max_nodes=1 mgen.record_path=$(pwd)/data/records/tf/ mgen.pass_rate=0.05 model.type=tensorflow backend.type=xla fuzz.time=5m exp.parallel=64 mgen.noise=0.8 exp.targets=/artifact/data/tf_dc_acetest.json exp.baselines=['acetest']
+```
+
 ##### Summarize the results
 
 Specify the folder name that you used in a previous experiment. Use the -o option to name the output file. The final experiment results will be saved in the following path: /artifact/results/${output_file}.csv.
