@@ -111,9 +111,20 @@ def check_trainable(record, executor, ntimes=30, *args, **kwargs) :
                 illegal_cnt+=1
     if illegal_cnt > ntimes * 0.8 :
         TRAIN_LOG.warning(f"InValid: {record['name'] = } from {record['args'] = } is illegal({res[1]}) N_ILLEGAL : {illegal_cnt}")
-        return False, record
+        not_required_indices = [i for i in range(len(record['args']['required'])) if not record['args']['required'][i]]
+        if not_required_indices : 
+            index = not_required_indices[-1]
+            TRAIN_LOG.info(f" removing {record['args']['name'][index]} from {record['name']}")
+            for key in record['args'].keys() :
+                record['args'][key].pop(index)
+            TRAIN_LOG.info(f"current arguments : {record['args']['name']}")
+            return check_trainable(record, executor, ntimes)
+        else :
+            return False, record 
     else :
         TRAIN_LOG.debug(f"Valid  {record['name'] = } from {record['args'] = } is legal({res[1]})")
+        if "error" in record.keys() :
+            del record["error"]
         return True, record
 
 

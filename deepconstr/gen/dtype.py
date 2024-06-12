@@ -8,6 +8,7 @@ from logger import TRAIN_LOG
 from deepconstr.train.inferencer import Inferencer
 from typing import *
 from deepconstr.gen.record import save_record, transform_record_for_saving
+from deepconstr.train.prompter import torch_type_hint_infer_prompts, numpy_type_hint_infer_prompts, tf_type_hint_infer_prompts
 
 def gen_dtype_info(save_dir, func_name, package, inferencer) :
 
@@ -234,7 +235,7 @@ def transfer_older_record_to_newer(record: dict, func_name, package) -> dict:
     new["name"] = func_name
     new["args"]["name"] = list(record.keys())
     new["args"]["required"] = list([a["required"] for a in record.values()])
-    new["args"]["is_pos"] = [False for _ in range(len(new["args"]["name"]))]
+    new["args"]["is_pos"] = [a.get("is_pos", False) for a in record.values()]
     new["args"]["value"] = [None for _ in range(len(new["args"]["name"]))]
     dtypes_comb = list([a["dtype"] for a in record.values()])
     combinations = list(itertools.product(*dtypes_comb))
@@ -295,112 +296,6 @@ def gen_cfg(cfg_path : str, add_info : Optional[Dict[str,Any]] = None) -> str :
     with open(cfg_path, 'w') as outfile:
         yaml.dump(info, outfile)
 
-def tf_get_func_doc(func) :
-    raw_doc="" 
-    if hasattr(func, '__doc__') :
-        raw_doc = getattr(func, '__doc__')
-        if raw_doc is None : return ""
-        if len(raw_doc) == 0 : 
-            return ""
-        else : 
-            if "Args" in raw_doc :
-                doc = "Args" + ''.join(raw_doc.split("Args")[1:])
-            else :
-                doc = raw_doc
-            if "Returns" in doc : 
-                doc = ''.join(doc.split("Returns")[:-1])
-    return doc
-
-
-def tf_type_hint_infer_prompts(func, dtypes=None, undefined_tag="undefined") :
-    prompts=f"After read the {func.__name__} doc {tf_get_func_doc(func)}\n"
-
-    if len(dtypes)==0 :
-        prompts+=f"""Analyze the api parameter information  follwoing below steps, only output final json result. Do not explain.
-your output format should be matched with input form of json.loads.\n"""
-        step_discription="""First, list every input parameters that the api has, 
-Second, collect type and default value of input parameters.
-Finally, print the final results as dictionary value to the key of input parameter name.
-"""
-        prompts+=step_discription
-        Q=""
-
-    else :
-
-        for arg_name, info in dtypes.items() :
-            for key, item in info.items() : 
-                if not isinstance(dtypes[arg_name][key], str) : 
-                    dtypes[arg_name][key] =  '"'+ str(dtypes[arg_name][key]) + '"'
-
-        serizlized = str(dtypes).replace('\'','"').replace('""', '"')
-        prompts+=f"""fill the given api parameters infomation by replace the "{undefined_tag}". You can only replace the "{undefined_tag}" value with JSON-serializable object """
-        Q=f"\nQ : {serizlized}"
-
-    examples="""
-ex 1 : {{"input" : {{"default" : None, "required" :true, "dtype" : "tf.tensor",}}, "ksize" : {{"default" : None, "required" :true, "dtype" : "tensor",}}, "strides" : {{"default" : None, "required" :true, "dtype" : "int, List[int]",}}, "padding" : {{"default" : None, "required" :true, "dtype" : str}}}}
-ex 2 : {{"axis" : {{"default" : -1, "required" : false, "dtype" : "int",}}, "x" : {{"default" : None, "required" : false, "dtype" : "tensor",}}, "center" : {{"default" : true, "required" : true, "dtype" : "tensor",}}, "beta_initializer : {{"default" : "zeros", "required" :true, "dtype" :str}}}}
-"""        
-    return prompts+examples+Q
-
-def torch_doc_filter(doc) :
-    
-    function_name_pattern = r"\w+\(.*\)"
-    args_content_pattern = r"Args:\n(.+?)(\n\n|$)"
-    function_name = re.findall(function_name_pattern, doc)
-    args_content = re.findall(args_content_pattern, doc, re.DOTALL)
-    if function_name : 
-        function_name = function_name[0].strip()
-    else :
-        function_name = ""
-    
-    if args_content and args_content[0] :
-        args_content = args_content[0][0].strip()
-    else :
-        args_content = ""
-    
-
-    # Regular expression to find content after "Args:"
-    # args_content = re.findall(args_content_pattern, doc, re.DOTALL)[0][0].strip()
-
-    return '\n'.join([function_name, args_content])
-
-def torch_get_func_doc(func) :
-    raw_doc="" 
-    if hasattr(func, '__doc__') :
-        doc = func.__doc__
-        return torch_doc_filter(doc)
-    else :
-        return raw_doc
-
-def torch_type_hint_infer_prompts(func, dtypes=None, undefined_tag="undefined") :
-    prompts=f"After read the {func.__name__} doc. ```{torch_get_func_doc(func)}```\n"
-
-    if len(dtypes)==0 :
-        prompts+=f"""Analyze the api parameter information  follwoing below steps, only output final json result. Do not explain.
-your output format should be matched with input form of json.loads.\n"""
-        step_discription="""First, list every input parameters that the api has by checking parameter between "()"
-, 
-Second, collect type and default value of input parameters.
-Finally, print the final results as dictionary value to the key of input parameter name.
-"""
-        prompts+=step_discription
-        Q=""
-
-    else :
-        for arg_name, info in dtypes.items() :
-            for key, item in info.items() : 
-                if not isinstance(dtypes[arg_name][key], str) : 
-                    dtypes[arg_name][key] =  '"'+ str(dtypes[arg_name][key]) + '"'
-
-        serizlized = str(dtypes).replace('\'','"').replace('""', '"')
-        prompts+=f"""fill the given api parameters infomation by replace the "{undefined_tag}". You can only replace the "{undefined_tag}" value with JSON-serializable object """
-        Q=f"\nQ : {serizlized}"
-
-    examples="""
-ex 1 : {{"input" : {{"default" : None, "required" :true, "dtype" : "tensor",}}, "ksize" : {{"default" : None, "required" :true, "dtype" : "tensor",}}, "strides" : {{"default" : None, "required" :true, "dtype" : "int, List[int]",}}, "padding" : {{"default" : None, "required" :true, "dtype" : "valid", "same"}}}}
-ex 2 : {{"axis" : {{"default" : -1, "required" : false, "dtype" : "int",}}, "x" : {{"default" : None, "required" : false, "dtype" : "tensor",}}, "center" : {{"default" : true, "required" : true, "dtype" : "tensor",}}, "beta_initializer : {{"default" : "zeros", "required" :true, "dtype" : "zeros",}}, "beta_regularizer" : {{"default" : "None", "required" : false, "dtype" : None}}}}
-"""        
-    return prompts+examples+Q
 class TypeGenerator() :
     def __init__(self, 
                  save_dir,
@@ -629,8 +524,12 @@ class TypeGenerator() :
     def _gen_prompts(self) :
         if self.package == 'torch' :
             return torch_type_hint_infer_prompts(self.func, self.args_info, undefined_tag=self.undefined_tag)
-        else :
+        elif self.package == 'numpy' :
+            return numpy_type_hint_infer_prompts(self.func, self.args_info, undefined_tag=self.undefined_tag)
+        elif self.package == 'tensorflow' :
             return tf_type_hint_infer_prompts(self.func, self.args_info, undefined_tag=self.undefined_tag)
+        else :
+            raise NotImplementedError(f"Package {self.package} is not supported")
     
     def preprocess(self, res) :
         return res.replace("False","false").replace("True","true").replace("None","null").replace(',}','}')

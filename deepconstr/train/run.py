@@ -336,6 +336,7 @@ class TrainingLoop:
         TRAIN_LOG.info(f"Check whether {record_path} is valid")
         is_trainable, record = check_trainable(record, self.executor)
         if is_trainable :
+            save_record(record, record_path)
             return True
         
     def runs(self) :

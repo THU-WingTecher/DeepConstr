@@ -261,3 +261,33 @@ ex 1 : {{"input" : {{"default" : None, "required" :true, "dtype" : "tensor",}}, 
 ex 2 : {{"axis" : {{"default" : -1, "required" : false, "dtype" : "int",}}, "x" : {{"default" : None, "required" : false, "dtype" : "tensor",}}, "center" : {{"default" : true, "required" : true, "dtype" : "tensor",}}, "beta_initializer : {{"default" : "zeros", "required" :true, "dtype" : "zeros",}}, "beta_regularizer" : {{"default" : "None", "required" : false, "dtype" :"not defined"}}}}
 """        
     return prompts+examples+Q
+
+def numpy_type_hint_infer_prompts(func, dtypes=None, undefined_tag="undefined") :
+    prompts=f"After read the {func.__name__} doc. ```{tf_get_func_doc(func)}```\n"
+
+    if len(dtypes)==0 :
+        prompts+=f"""Analyze the api parameter information  follwoing below steps, only output final json result. Do not explain.
+your output format should be matched with input form of json.loads.\n"""
+        step_discription="""First, list every input parameters that the api has by checking parameter between "()", if keyward is not specified, is_pos should be set to true .
+Second, collect type and default value of input parameters.
+Finally, print the final results as dictionary value to the key of input parameter name.
+
+"""
+        prompts+=step_discription
+        Q=""
+
+    else :
+        for arg_name, info in dtypes.items() :
+            for key, item in info.items() : 
+                if not isinstance(dtypes[arg_name][key], str) : 
+                    dtypes[arg_name][key] =  '"'+ str(dtypes[arg_name][key]) + '"'
+
+        serizlized = str(dtypes).replace('\'','"').replace('""', '"')
+        prompts+=f"""fill the given api parameters infomation by replace the "{undefined_tag}". You can only replace the "{undefined_tag}" value with JSON-serializable object """
+        Q=f"\nQ : {serizlized}"
+
+    examples="""
+ex 1 : {{"x1" : {{"default" : None, "required" :true, "dtype" : "array", "is_pos" : True}}, "x2" : {{"default" : None, "required" :true, "dtype" : "array", "is_pos" : True}}, "where" : {{"default" : True, "required" : False, "dtype" : "array, None",}}, "padding" : {{"default" : None, "required" :true, "dtype" : "valid", "same"}}}}
+ex 2 : {{"axis" : {{"default" : -1, "required" : false, "dtype" : "int",}}, "x" : {{"default" : None, "required" : false, "dtype" : "tensor",}}, "center" : {{"default" : true, "required" : true, "dtype" : "tensor",}}, "beta_regularizer" : {{"default" : "None", "required" : false, "dtype" :"not defined"}}}}
+"""        
+    return prompts+examples+Q

@@ -222,6 +222,7 @@ def summarize_final_bf(aggregated_df, pivot):
 
     all_data = final_bf_summary.shape[0]
     # revise_complete_data("/artifact/experiments/results/completed.json", completed_data)
+    print(final_bf_summary.head())
     return pd.concat([final_bf_summary, model_cnt], axis=1), completed_data 
 
 def get_default_coves(model_type) :
@@ -314,9 +315,9 @@ def gen_table4_from_df(*args, pivot="deepconstr", package="torch") :
             dfs.append(pd.read_csv(path, index_col="API"))
         elif isinstance(path, pd.DataFrame) :
             dfs.append(path)
-    df = customize_concat(dfs)
-
-    # df = df.set_index('API', drop=True)
+    # df = customize_concat(dfs)
+    df = pd.concat(dfs, axis=1)
+    df = df.set_index('API', drop=True)
     print(df.head())
     default_val = get_default_coves(package)['final_bf']
     cov_col_names = [col for col in df.columns if "cnt" not in col]
@@ -379,7 +380,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     assert args.output.endswith(".csv"), "output argument should be a csv file name"
-    assert args.load.endswith(".csv") , "load argument should be a csv file name and with raw_file"
+    assert args.load is None or args.load.endswith(".csv") , "load argument should be a csv file name and with raw_file"
     data = {}
     for folder in args.folders:
         traverse_and_classify(folder, data, args.package)
