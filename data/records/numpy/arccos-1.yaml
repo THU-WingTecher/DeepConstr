@@ -2,34 +2,14 @@ args:
   dtype:
   - tensor
   - None
-  - tensor
-  - str
-  - str
-  - bool
-  - None
   is_pos:
   - true
   - true
-  - false
-  - false
-  - false
-  - false
-  - false
   name:
   - x
   - out
-  - where
-  - casting
-  - order
-  - subok
-  - extobj
   required:
   - true
-  - false
-  - false
-  - false
-  - false
-  - false
   - false
 name: numpy.arccos
 package: null
@@ -67,6 +47,32 @@ rules:
       msg: Too large tensor shape
       package: null
     txt: x.rank <= 7 and where.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 0
+    target:
+      choosen_dtype:
+        out: None
+        x: tensor
+      msg: negative dimensions are not allowed
+      package: null
+    txt: ''
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 0
+    target:
+      choosen_dtype:
+        out: None
+        x: tensor
+      msg: Too large tensor shape
+      package: null
+    txt: ''
   - f1_score: -1
     overall_score: -1
     precision: -1

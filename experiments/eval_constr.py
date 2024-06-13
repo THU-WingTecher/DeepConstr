@@ -43,8 +43,14 @@ def load_data(path) :
                             data_list.append(data)
                     except yaml.YAMLError as exc:
                         print(exc)
-    print(len(data_list))
     return data_list
+
+def count_sub_constr(constr) :
+    num = 1
+    txt = constr["txt"]
+    and_count = txt.count("and")
+    or_count = txt.count("or")
+    return num + and_count + or_count
 
 def get_deepconstr_stats(data_list):
     deepconstr_stats = {
@@ -56,6 +62,9 @@ def get_deepconstr_stats(data_list):
     deepconstr_f1 = []
     deepconstr_prec = []
     deepconstr_recall = []
+    deepconstr_rule_num = []
+    api_per_subconstraints = {}
+    overall_nsubconstr = 0
     for data in data_list:
         # if any([rule[0]["cot"] in ["processed", "divided"] for rule in data["rules"]]):
         #     deepconstr_stats["processed"] += 1
@@ -63,17 +72,25 @@ def get_deepconstr_stats(data_list):
         #     # for r in data["rules"] :
         #     #     print(r[0]["cot"])
         #     deepconstr_stats["LLM"] += 1
+        if data["name"] not in deepconstr_operator:
+            api_per_subconstraints[data["name"]] = 0
         for rule in data["rules"]:
+            num_of_sub_constr = count_sub_constr(rule[0])
             if "processed" == rule[0]["cot"] or "divided" == rule[0]["cot"]:
                 deepconstr_stats["processed"] += 1
             else :
                 deepconstr_stats["LLM"] += 1
+            api_per_subconstraints[data["name"]] += num_of_sub_constr
             if rule[0]["cot"] == "default" :
                 continue
             deepconstr_len.append(rule[0].get("length", 1))
             deepconstr_f1.append(rule[1]["f1_score"])
             deepconstr_prec.append(rule[1]["precision"])
             deepconstr_recall.append(rule[1]["recall"])
+    
+    total = sum(api_per_subconstraints.values())
+    print(" ## Num of Sub Constraints : ", total, "from", len(list(api_per_subconstraints.keys())), "number of operators")
+    print(" ## Mean : ", total/len(list(api_per_subconstraints.keys())), " Median ",  statistics.median(api_per_subconstraints.values()))
     return deepconstr_stats, deepconstr_len, deepconstr_operator, deepconstr_f1, deepconstr_prec, deepconstr_recall
 def mean(numbers):
     return sum(numbers) / len(numbers)
@@ -142,6 +159,7 @@ if __name__ == "__main__" :
     kinds = ["records", "only_acc"]
 
     for framework in frameworks:
+        print(framework)
         data = []
         path = os.path.join(record_dir, "records", framework)
         deepdeepconstr_s_path = os.path.join(record_dir, "only_acc", framework)

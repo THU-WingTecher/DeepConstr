@@ -13,7 +13,7 @@ args:
   - false
 name: numpy.isfinite
 package: null
-pass_rate: 16.333333333333332
+pass_rate: 100
 rules:
 - - cot: default
     length: 1
@@ -21,19 +21,6 @@ rules:
       choosen_dtype:
         out: None
         x: tensor
-      msg: negative dimensions are not allowed
-      package: null
-    txt: all(i >= 0 for i in x.shape)
-  - f1_score: -1
-    overall_score: -1
-    precision: -1
-    recall: -1
-- - cot: default
-    length: 1
-    target:
-      choosen_dtype:
-        out: None
-        x: tensor
       msg: Too large tensor shape
       package: null
     txt: x.rank <= 7
@@ -89,6 +76,45 @@ rules:
       msg: Too large tensor shape
       package: null
     txt: x.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        out: None
+        x: tensor
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in x.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 0
+    target:
+      choosen_dtype:
+        out: None
+        x: tensor
+      msg: negative dimensions are not allowed
+      package: null
+    txt: ''
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 0
+    target:
+      choosen_dtype:
+        out: None
+        x: tensor
+      msg: Too large tensor shape
+      package: null
+    txt: ''
   - f1_score: -1
     overall_score: -1
     precision: -1

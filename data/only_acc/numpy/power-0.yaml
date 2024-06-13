@@ -1,0 +1,102 @@
+args:
+  dtype:
+  - tensor
+  - tensor
+  - None
+  is_pos:
+  - true
+  - true
+  - false
+  name:
+  - x1
+  - x2
+  - out
+  required:
+  - true
+  - true
+  - false
+name: numpy.power
+package: null
+pass_rate: 90.33333333333333
+rules:
+- - cot: default
+    length: 0
+    target:
+      choosen_dtype:
+        out: None
+        x1: tensor
+        x2: tensor
+      msg: negative dimensions are not allowed
+      package: null
+    txt: ''
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 0
+    target:
+      choosen_dtype:
+        out: None
+        x1: tensor
+        x2: tensor
+      msg: Too large tensor shape
+      package: null
+    txt: ''
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: 'The error is due to the shapes of ''x1'' and ''x2'' not being broadcastable.
+      The shapes of ''x1'' and ''x2'' are (5,7,2,3,6,4,1) and (7,7,7,3,7,7,7) respectively.
+      Broadcasting in tensor operations requires that the trailing dimensions of the
+      tensors are either 1 or the same. So, for each dimension starting from the last,
+      the size of the dimension in ''x1'' should be equal to the size of the dimension
+      in ''x2'' or one of them should be 1. We start from the last dimension because
+      broadcasting aligns dimensions from the end. Therefore, the constraint that
+      prevents the error can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        out: None
+        x1: tensor
+        x2: tensor
+      msg: 'operands could not be broadcast together with shapes (5,7,2,3,6,4,1) (7,7,7,3,7,7,7) '
+      package: numpy
+    txt: all(x1.shape[i] == x2.shape[i] or x1.shape[i] == 1 or x2.shape[i] == 1 for
+      i in range(-1, -min(len(x1.shape), len(x2.shape))-1, -1))
+  - f1_score: 93.68541905855338
+    overall_score: 48.33333333333333
+    precision: 90.66666666666666
+    recall: 96.91211401425178
+- - cot: 'Error is triggered because negative dimensions are not allowed in numpy.power
+      function. To prevent this error, we can add a constraint to check if any of
+      the dimensions in ''x1'' or ''x2'' are negative. The constraint can be formulated
+      as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        out: None
+        x1: tensor
+        x2: tensor
+      msg: negative dimensions are not allowed
+      package: numpy
+    txt: all(x >= 0 for x in x1.shape) and all(x >= 0 for x in x2.shape)
+  - f1_score: 74.68879668049792
+    overall_score: 100
+    precision: 100.0
+    recall: 59.602649006622514
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        out: None
+        x1: tensor
+        x2: tensor
+      msg: 'operands could not be broadcast together with shapes (7,4,7,1,2,2,1) (7,7,7,7,7,7,7) '
+      package: numpy
+    txt: x1.shape[i] == 1
+  - f1_score: 62.356792144026194
+    overall_score: 45.333333333333336
+    precision: 84.66666666666667
+    recall: 49.35233160621762

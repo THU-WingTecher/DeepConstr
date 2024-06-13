@@ -14,7 +14,7 @@ from nnsmith.backends.factory import BackendFactory
 from nnsmith.materialize import Model
 from omegaconf import DictConfig, ListConfig
 from deepconstr.gen.record import Record, load_yaml, process_record, save_record
-from deepconstr.gen.dtype import gen_dtype_info
+from deepconstr.gen.dtype import gen_dtype_info, add_default_rules
 from deepconstr.train.constr import Constraint, convert_constr_to_executable, convert_dtypes_to_z3s
 from deepconstr.train.errmsg import ErrorMessage, is_similar, map_error_messages_to_clusters_dynamic
 from deepconstr.train.executor import Executor, is_normal_error
@@ -336,6 +336,7 @@ class TrainingLoop:
         TRAIN_LOG.info(f"Check whether {record_path} is valid")
         is_trainable, record = check_trainable(record, self.executor)
         if is_trainable :
+            record = add_default_rules(record)
             save_record(record, record_path)
             return True
         

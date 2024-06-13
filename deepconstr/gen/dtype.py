@@ -24,7 +24,7 @@ DEFAULT_RULES = [
 
 def get_tensor_args(record) :
     from deepconstr.grammar.dtype import AbsTensor
-    return [name for name, dtype in zip(record['args']['name'], record['args']['dtype_obj']) if isinstance(dtype[0], AbsTensor)]
+    return [name for name, dtype in zip(record['args']['name'], record['args']['dtype']) if isinstance(dtype, AbsTensor)]
 
 def gen_default_rule(arg_names, record, rule) :
 
@@ -155,7 +155,6 @@ def torch_load_from_doc(save_dir, api_name = None):
                     continue
                 # TRAIN_LOG.info(f"deal with {save_path}")
                 record = gen_record_for_operator(op_name, op_args, is_tensor_method)
-                record = add_default_rules(record)
                 save_record(transform_record_for_saving(record), save_path)
             else:
                 TRAIN_LOG.info(f"  (Ignored: {obj = } from {op_name = } is not callable")
@@ -402,7 +401,6 @@ class TypeGenerator() :
     def dump(self, records) : 
         for idx, record in enumerate(records) :
             converted = transform_record_for_saving(record)
-            converted = add_default_rules(converted)
             for i in range(len(converted['args']['dtype'])) :
                 for i, dtype in enumerate(converted['args']['dtype']) : 
                     if isinstance(dtype, str) :

@@ -29,4 +29,39 @@ args:
   - false
 name: numpy.sum
 package: null
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: default
+    length: 0
+    target:
+      choosen_dtype:
+        a: tensor
+        axis: int
+        initial: None
+        keepdims: bool
+        out: tensor
+        where: None
+      msg: negative dimensions are not allowed
+      package: null
+    txt: ''
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 0
+    target:
+      choosen_dtype:
+        a: tensor
+        axis: int
+        initial: None
+        keepdims: bool
+        out: tensor
+        where: None
+      msg: Too large tensor shape
+      package: null
+    txt: ''
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

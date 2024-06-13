@@ -13,8 +13,21 @@ args:
   - false
 name: numpy.arcsin
 package: null
-pass_rate: 15.666666666666668
+pass_rate: 100
 rules:
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        out: None
+        x: tensor
+      msg: Too large tensor shape
+      package: null
+    txt: x.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
 - - cot: default
     length: 1
     target:
@@ -29,14 +42,27 @@ rules:
     precision: -1
     recall: -1
 - - cot: default
-    length: 1
+    length: 0
+    target:
+      choosen_dtype:
+        out: None
+        x: tensor
+      msg: negative dimensions are not allowed
+      package: null
+    txt: ''
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 0
     target:
       choosen_dtype:
         out: None
         x: tensor
       msg: Too large tensor shape
       package: null
-    txt: x.rank <= 7
+    txt: ''
   - f1_score: -1
     overall_score: -1
     precision: -1

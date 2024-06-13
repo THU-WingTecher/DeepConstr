@@ -63,7 +63,7 @@ class NumPyModel():
             symb_2_value=None,
             tensor_from_numpy=lambda x : x,
             abs_from_dtype=lambda x : x,
-            is_tensor=lambda x : x,
+            is_tensor=lambda x : isinstance(x, np.ndarray),
             func=eval(inst.name)
         )
         return output_info

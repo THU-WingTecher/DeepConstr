@@ -1,48 +1,59 @@
 args:
   dtype:
   - tensor
-  - int
+  - tensor
   - None
   is_pos:
-  - false
-  - false
+  - true
+  - true
   - false
   name:
-  - a
-  - decimals
+  - x1
+  - x2
   - out
   required:
   - true
+  - true
   - false
-  - false
-name: numpy.round
+name: numpy.divide
 package: null
-pass_rate: 100
+pass_rate: 0
 rules:
 - - cot: default
-    length: 1
+    length: 3
     target:
       choosen_dtype:
-        a: tensor
-        decimals: int
+        casting: str
+        extobj: None
+        order: str
         out: None
-      msg: Too large tensor shape
+        subok: bool
+        where: tensor
+        x1: tensor
+        x2: tensor
+      msg: negative dimensions are not allowed
       package: null
-    txt: a.rank <= 7
+    txt: all(i >= 0 for i in x1.shape) and all(i >= 0 for i in x2.shape) and all(i
+      >= 0 for i in where.shape)
   - f1_score: -1
     overall_score: -1
     precision: -1
     recall: -1
 - - cot: default
-    length: 1
+    length: 3
     target:
       choosen_dtype:
-        a: tensor
-        decimals: int
+        casting: str
+        extobj: None
+        order: str
         out: None
-      msg: negative dimensions are not allowed
+        subok: bool
+        where: tensor
+        x1: tensor
+        x2: tensor
+      msg: Too large tensor shape
       package: null
-    txt: all(i >= 0 for i in a.shape)
+    txt: x1.rank <= 7 and x2.rank <= 7 and where.rank <= 7
   - f1_score: -1
     overall_score: -1
     precision: -1
@@ -51,9 +62,9 @@ rules:
     length: 0
     target:
       choosen_dtype:
-        a: tensor
-        decimals: int
         out: None
+        x1: tensor
+        x2: tensor
       msg: negative dimensions are not allowed
       package: null
     txt: ''
@@ -65,9 +76,9 @@ rules:
     length: 0
     target:
       choosen_dtype:
-        a: tensor
-        decimals: int
         out: None
+        x1: tensor
+        x2: tensor
       msg: Too large tensor shape
       package: null
     txt: ''
