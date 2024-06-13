@@ -2,17 +2,13 @@ args:
   dtype:
   - Tensor
   - Tensor
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   name:
   - self
   - mask
-  - out
   required:
-  - true
   - true
   - true
 name: torch.masked_select
@@ -24,7 +20,6 @@ rules:
     target:
       choosen_dtype:
         mask: tensor
-        out: tensor
         self: tensor
       msg: 'masked_select: expected BoolTensor for mask'
       package: torch
@@ -38,7 +33,6 @@ rules:
     target:
       choosen_dtype:
         mask: tensor
-        out: tensor
         self: tensor
       msg: The size of tensor a (8) must match the size of tensor b (9) at non-singleton
         dimension 2
@@ -48,32 +42,11 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 58.139534883720934
-- - cot: 'The error is triggered because we are trying to resize the storage of the
-      `out` tensor, which is not resizable. To prevent this error, we need to ensure
-      that the shape and rank of the `out` tensor match the shape and rank of the
-      operation result, which is the `self` tensor.
-
-
-      Final formula:'
-    length: 1
-    target:
-      choosen_dtype:
-        mask: tensor
-        out: tensor
-        self: tensor
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
-  - f1_score: 49.24242424242425
-    overall_score: 29.13065326633166
-    precision: 52.26130653266332
-    recall: 46.55326768128917
 - - cot: synthesized
     length: 3
     target:
       choosen_dtype:
         mask: tensor
-        out: tensor
         self: tensor
       msg: Trying to resize storage that is not resizable
       package: torch
@@ -83,17 +56,29 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 50.0
-- - cot: ''
-    length: 1
+- - cot: default
+    length: 2
     target:
       choosen_dtype:
-        mask: tensor
-        out: tensor
-        self: tensor
-      msg: 'masked_select(): self and result must have the same scalar type'
+        mask: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
       package: torch
-    txt: dtype(out) == dtype(self)
-  - f1_score: 100.0
-    overall_score: 100
-    precision: 100.0
-    recall: 100.0
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in mask.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        mask: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and mask.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

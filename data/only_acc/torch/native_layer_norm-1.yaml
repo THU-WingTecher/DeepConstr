@@ -1,0 +1,124 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - float
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - normalized_shape
+  - weight
+  - bias
+  - eps
+  - out0
+  - out1
+  - out2
+  required:
+  - true
+  - true
+  - false
+  - false
+  - true
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.native_layer_norm
+package: torch
+pass_rate: 0
+rules:
+- - cot: default
+    length: 6
+    target:
+      choosen_dtype:
+        bias: Optional[Tensor]
+        eps: float
+        input: Tensor
+        normalized_shape: List[int]
+        out0: Tensor
+        out1: Tensor
+        out2: Tensor
+        weight: Optional[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape) and all(i >= 0 for i in weight.shape) and
+      all(i >= 0 for i in bias.shape) and all(i >= 0 for i in out0.shape) and all(i
+      >= 0 for i in out1.shape) and all(i >= 0 for i in out2.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 6
+    target:
+      choosen_dtype:
+        bias: Optional[Tensor]
+        eps: float
+        input: Tensor
+        normalized_shape: List[int]
+        out0: Tensor
+        out1: Tensor
+        out2: Tensor
+        weight: Optional[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7 and weight.rank <= 7 and bias.rank <= 7 and out0.rank <=
+      7 and out1.rank <= 7 and out2.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 6
+    target:
+      choosen_dtype:
+        bias: Optional[Tensor]
+        eps: float
+        input: Tensor
+        normalized_shape: List[int]
+        out0: Tensor
+        out1: Tensor
+        out2: Tensor
+        weight: Optional[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape) and all(i >= 0 for i in weight.shape) and
+      all(i >= 0 for i in bias.shape) and all(i >= 0 for i in out0.shape) and all(i
+      >= 0 for i in out1.shape) and all(i >= 0 for i in out2.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 6
+    target:
+      choosen_dtype:
+        bias: Optional[Tensor]
+        eps: float
+        input: Tensor
+        normalized_shape: List[int]
+        out0: Tensor
+        out1: Tensor
+        out2: Tensor
+        weight: Optional[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7 and weight.rank <= 7 and bias.rank <= 7 and out0.rank <=
+      7 and out1.rank <= 7 and out2.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

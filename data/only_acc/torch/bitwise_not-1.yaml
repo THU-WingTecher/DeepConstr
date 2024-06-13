@@ -1,15 +1,11 @@
 args:
   dtype:
   - Tensor
-  - Tensor
   is_pos:
   - true
-  - false
   name:
   - self
-  - out
   required:
-  - true
   - true
 name: torch.bitwise_not
 package: torch
@@ -30,7 +26,6 @@ rules:
     length: 1
     target:
       choosen_dtype:
-        out: tensor
         self: tensor
       msg: '"bitwise_not_cpu" not implemented for ''Float'''
       package: torch
@@ -44,20 +39,6 @@ rules:
     length: 1
     target:
       choosen_dtype:
-        out: tensor
-        self: tensor
-      msg: Found dtype Float but expected Half
-      package: torch
-    txt: dtype(out) == dtype(self)
-  - f1_score: 97.24473257698541
-    overall_score: 100
-    precision: 100.0
-    recall: 94.6372239747634
-- - cot: ''
-    length: 1
-    target:
-      choosen_dtype:
-        out: tensor
         self: tensor
       msg: Trying to resize storage that is not resizable
       package: torch
@@ -75,7 +56,6 @@ rules:
     length: 1
     target:
       choosen_dtype:
-        out: tensor
         self: tensor
       msg: '"bitwise_not_cpu" not implemented for ''Half'''
       package: torch
@@ -85,3 +65,27 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -1,0 +1,129 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - Optional[List[float]]
+  - Optional[Tensor]
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - bins
+  - range
+  - weight
+  - density
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+name: torch.histogramdd
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: 'The error message indicates that the size of the ''bins'' argument must
+      be equal to the innermost dimension of the input tensor. In this case, the input
+      tensor has a shape of [3, 3, 3, 3], so the size of ''bins'' must be 3. Therefore,
+      the constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        bins: list[int]
+        density: bool
+        range: None
+        self: tensor
+        weight: tensor
+      msg: 'histogramdd: The size of bins must be equal to the innermost dimension
+        of the input.'
+      package: torch
+    txt: len(bins) == self.shape[-1]
+  - f1_score: 91.18541033434651
+    overall_score: 100
+    precision: 100.0
+    recall: 83.79888268156425
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        bins: list[int]
+        density: bool
+        range: None
+        self: tensor
+        weight: tensor
+      msg: 'torch.histogramdd: input tensor should have at least 2 dimensions'
+      package: torch
+    txt: self.dim >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        bins: List[int]
+        density: bool
+        range: Optional[List[float]]
+        self: Tensor
+        weight: Optional[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in weight.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        bins: List[int]
+        density: bool
+        range: Optional[List[float]]
+        self: Tensor
+        weight: Optional[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and weight.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        bins: List[int]
+        density: bool
+        range: Optional[List[float]]
+        self: Tensor
+        weight: Optional[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in weight.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        bins: List[int]
+        density: bool
+        range: Optional[List[float]]
+        self: Tensor
+        weight: Optional[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and weight.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

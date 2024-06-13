@@ -1,0 +1,137 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[List[int]]
+  - List[int]
+  - Optional[str]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - s
+  - dim
+  - norm
+  - out
+  required:
+  - true
+  - false
+  - false
+  - false
+  - true
+name: torch._C._fft.fft_irfft2
+package: torch
+pass_rate: 6.0
+rules:
+- - cot: 'The error is triggered because the `dim` argument is an empty list. The
+      `dim` argument specifies the dimensions along which the FFT should be computed.
+      It must contain at least one axis.
+
+
+      Therefore, the condition to prevent the error is:
+
+
+      `len(dim) > 0`
+
+
+      Wrap the final formula with'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: list[int]
+        norm: str
+        out: tensor
+        s: None
+        self: tensor
+      msg: irfftn must transform at least one axis
+      package: torch
+    txt: len(dim) > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: list[int]
+        norm: None
+        out: tensor
+        s: None
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 9)
+      package: torch
+    txt: (dim[i] >= -len(self.shape)) and (all(d >= -len(self.shape) and d < len(self.shape)
+      for d in dim))
+  - f1_score: 53.63636363636363
+    overall_score: 31.0
+    precision: 59.0
+    recall: 49.166666666666664
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: List[int]
+        norm: Optional[str]
+        out: Tensor
+        s: Optional[List[int]]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: List[int]
+        norm: Optional[str]
+        out: Tensor
+        s: Optional[List[int]]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: List[int]
+        norm: Optional[str]
+        out: Tensor
+        s: Optional[List[int]]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: List[int]
+        norm: Optional[str]
+        out: Tensor
+        s: Optional[List[int]]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

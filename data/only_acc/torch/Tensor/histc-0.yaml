@@ -1,0 +1,151 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - number
+  - number
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - bins
+  - min
+  - max
+  required:
+  - true
+  - false
+  - false
+  - false
+name: torch.Tensor.histc
+package: torch
+pass_rate: 96.66666666666667
+rules:
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      value of "max" is not larger than the value of "min". To prevent the error,
+      we need to add a constraint that ensures "max" is larger than "min". Therefore,
+      the correct formula is:'
+    length: 1
+    target:
+      choosen_dtype:
+        bins: int
+        max: int
+        min: int
+        self: tensor
+      msg: 'torch.histc: max must be larger than min'
+      package: torch
+    txt: max > min
+  - f1_score: 69.60556844547564
+    overall_score: 100
+    precision: 100.0
+    recall: 53.38078291814947
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        bins: int
+        max: int
+        min: int
+        self: tensor
+      msg: 'torch.histogram(): bins must be > 0, but got 0 for dimension 0'
+      package: torch
+    txt: bins > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is due to the fact that the function `torch.Tensor.histc` is not
+      implemented for the data type ''Int''. To prevent this error, the data type
+      of the input tensor should be changed to a different data type that is supported
+      by the `histc` function. The constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        bins: int
+        max: int
+        min: int
+        self: tensor
+      msg: '"histogram_cpu" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype != 'Int'
+  - f1_score: 72.11538461538463
+    overall_score: 100
+    precision: 100.0
+    recall: 56.390977443609025
+- - cot: The error is due to the fact that the method
+    length: 1
+    target:
+      choosen_dtype:
+        bins: int
+        max: int
+        min: int
+        self: tensor
+      msg: '"linspace_cpu" not implemented for ''Bool'''
+      package: torch
+    txt: dtype(self) != 'Bool'
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        bins: int
+        max: number
+        min: number
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        bins: int
+        max: number
+        min: number
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        bins: int
+        max: number
+        min: number
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        bins: int
+        max: number
+        min: number
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

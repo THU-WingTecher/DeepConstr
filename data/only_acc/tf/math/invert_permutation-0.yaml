@@ -1,0 +1,104 @@
+args:
+  dtype:
+  - tensor
+  - str
+  is_pos:
+  - false
+  - false
+  name:
+  - x
+  - name
+  required:
+  - true
+  - false
+name: tf.math.invert_permutation
+package: null
+pass_rate: 2.0
+rules:
+- - cot: 'Based on the given runtime information, the error arises because the attribute
+      ''T'' is expected to be one of int32 or int64, but it is provided as float.
+      So, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+      msg: "Value for attr 'T' of float is not in the list of allowed values: int32,\
+        \ int64\n\t; NodeDef: {{node InvertPermutation}}; Op<name=InvertPermutation;\
+        \ signature=x:T -> y:T; attr=T:type,default=DT_INT32,allowed=[DT_INT32, DT_INT64]>\
+        \ [Op:InvertPermutation] name: fkki"
+      package: tensorflow
+    txt: x.dtype in ['int32', 'int64']
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: "The error is triggered because the function `tf.math.invert_permutation`\
+      \ expects a 1D vector as input, but the input tensor `x` is not a 1D vector.\
+      \ To prevent this error, we need to ensure that the shape of `x` is 1-dimensional.\
+      \ \n\nThe constraint to prevent the error can be formulated as:"
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+      msg: '{{function_node __wrapped__InvertPermutation_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        invert_permutation expects a 1D vector. [Op:InvertPermutation] name: bZdx'
+      package: tensorflow
+    txt: x.shape.rank == 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in x.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+      msg: Too large tensor shape
+      package: null
+    txt: x.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in x.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+      msg: Too large tensor shape
+      package: null
+    txt: x.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

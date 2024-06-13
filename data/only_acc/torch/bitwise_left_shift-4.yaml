@@ -2,17 +2,13 @@ args:
   dtype:
   - Tensor
   - number
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   name:
   - self
   - other
-  - out
   required:
-  - true
   - true
   - true
 name: torch.bitwise_left_shift
@@ -24,7 +20,6 @@ rules:
     target:
       choosen_dtype:
         other: int
-        out: tensor
         self: tensor
       msg: '"lshift_cpu" not implemented for ''Float'''
       package: torch
@@ -39,7 +34,6 @@ rules:
     target:
       choosen_dtype:
         other: int
-        out: tensor
         self: tensor
       msg: '"lshift_cpu" not implemented for ''Half'''
       package: torch
@@ -49,20 +43,29 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 83.79888268156425
-- - cot: '`out` tensor is trying to resize, but it is not resizable. To prevent this
-      error, the shape of `out` tensor should match the shape of the operation result.
-      In this case, the shape of `out` tensor should be the same as the shape of `self`
-      tensor. Therefore, the constraint to prevent the error is:'
+- - cot: default
     length: 1
     target:
       choosen_dtype:
-        other: int
-        out: tensor
-        self: tensor
-      msg: Trying to resize storage that is not resizable
+        other: number
+        self: Tensor
+      msg: negative dimensions are not allowed
       package: torch
-    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
-  - f1_score: 74.25742574257426
-    overall_score: 100
-    precision: 100.0
-    recall: 59.055118110236215
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        other: number
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

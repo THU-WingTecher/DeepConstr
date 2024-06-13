@@ -1,0 +1,181 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[int]
+  - int
+  - None
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - dim
+  - _stacklevel
+  - dtype
+  required:
+  - true
+  - false
+  - false
+  - false
+name: torch.nn.functional.softmin
+package: torch
+pass_rate: 97.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        _stacklevel: int
+        dim: int
+        dtype: None
+        input: tensor
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 26)
+      package: torch
+    txt: dim >= -len(input.shape)
+  - f1_score: 78.30985915492958
+    overall_score: 49.33333333333333
+    precision: 92.66666666666666
+    recall: 67.80487804878048
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        _stacklevel: int
+        dim: int
+        dtype: None
+        input: tensor
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 7)
+      package: torch
+    txt: dim < len(input.shape)
+  - f1_score: 61.47651006711409
+    overall_score: 41.166666666666664
+    precision: 76.33333333333333
+    recall: 51.460674157303366
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        _stacklevel: int
+        dim: int
+        dtype: None
+        input: tensor
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 9)
+      package: torch
+    txt: (dim < len(input.shape)) and (dim in [-7, 6])
+  - f1_score: 73.98273736128237
+    overall_score: 100
+    precision: 100.0
+    recall: 58.70841487279843
+- - cot: The error is caused by the 'input' tensor being of type int32, which is not
+      supported by the 'softmax_kernel_impl' implementation. To prevent this error,
+      the 'input' tensor should be of a supported data type, such as float.
+    length: 1
+    target:
+      choosen_dtype:
+        _stacklevel: int
+        dim: int
+        dtype: None
+        input: tensor
+      msg: '"softmax_kernel_impl" not implemented for ''Int'''
+      package: torch
+    txt: dtype(input) != int32
+  - f1_score: 98.19967266775778
+    overall_score: 100
+    precision: 100.0
+    recall: 96.46302250803859
+- - cot: The error is due to using a tensor with data type 'Long' as input to the
+      softmin function. The softmin function does not support tensors with data type
+      'Long'. The input tensor should be converted to a different data type, such
+      as 'Float' or 'Double', before using it as input to the softmin function.
+    length: 1
+    target:
+      choosen_dtype:
+        _stacklevel: int
+        dim: int
+        dtype: None
+        input: tensor
+      msg: '"softmax_kernel_impl" not implemented for ''Long'''
+      package: torch
+    txt: (input.dtype != torch.int64)
+  - f1_score: 97.71986970684038
+    overall_score: 100
+    precision: 100.0
+    recall: 95.54140127388536
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        _stacklevel: int
+        dim: None
+        dtype: None
+        input: tensor
+      msg: Negation, the `-` operator, on a bool tensor is not supported. If you are
+        trying to invert a mask, use the `~` or `logical_not()` operator instead.
+      package: torch
+    txt: ((input.rank>=1)) and (input.dtype != torch.bool)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        _stacklevel: int
+        dim: Optional[int]
+        dtype: None
+        input: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        _stacklevel: int
+        dim: Optional[int]
+        dtype: None
+        input: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        _stacklevel: int
+        dim: Optional[int]
+        dtype: None
+        input: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        _stacklevel: int
+        dim: Optional[int]
+        dtype: None
+        input: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -1,0 +1,122 @@
+args:
+  dtype:
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - name
+  - x
+  - y
+  required:
+  - false
+  - true
+  - true
+name: tf.pow
+package: tensorflow
+pass_rate: 54.0
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: '{{function_node __wrapped__Pow_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [4,4,1,7,2,7,2] vs. [1,1,2,6,1,4,4] [Op:Pow]'
+      package: tensorflow
+    txt: (all(x.shape[i] == y.shape[i] or x.shape[i] == 1 or y.shape[i] == 1 for i
+      in range(-1, -min(len(x.shape), len(y.shape))-1, -1))) and (x.shape == y.shape)
+  - f1_score: 89.84615384615385
+    overall_score: 50.16666666666667
+    precision: 97.33333333333334
+    recall: 83.42857142857143
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(x.shape[i] >= 0 for i in range(x.rank))
+  - f1_score: 72.11538461538463
+    overall_score: 100
+    precision: 100.0
+    recall: 56.390977443609025
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: 'cannot compute Pow as input #1(zero-based) was expected to be a int32
+        tensor but is a float tensor [Op:Pow]'
+      package: tensorflow
+    txt: (dtype(y) == int32) and (dtype(y) == dtype(x))
+  - f1_score: 68.02721088435375
+    overall_score: 100
+    precision: 100.0
+    recall: 51.54639175257733
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        x: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        y: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in x.shape) and all(i >= 0 for i in y.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        x: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        y: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: x.rank <= 7 and y.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        x: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        y: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in x.shape) and all(i >= 0 for i in y.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        x: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        y: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: x.rank <= 7 and y.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

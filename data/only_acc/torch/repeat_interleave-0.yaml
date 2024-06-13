@@ -1,0 +1,102 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[int]
+  is_pos:
+  - false
+  - false
+  name:
+  - repeats
+  - output_size
+  required:
+  - true
+  - false
+name: torch.repeat_interleave
+package: torch
+pass_rate: 6.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: None
+        repeats: tensor
+      msg: '"repeat_interleave_cpu" not implemented for ''Float'''
+      package: torch
+    txt: dtype(repeats) not in ["float"]
+  - f1_score: 71.94244604316549
+    overall_score: 100
+    precision: 100.0
+    recall: 56.17977528089888
+- - cot: 'Based on the given runtime information, the error arises because the `torch.repeat_interleave`
+      function only accepts a 1D vector as the `repeats` argument. However, in the
+      given runtime information, the `repeats` argument is a 2D tensor with shape
+      `[1, 1]`.
+
+
+      To prevent the error, the `repeats` argument should be a 1D vector. Therefore,
+      the constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: int
+        repeats: tensor
+      msg: repeat_interleave only accept 1D vector as repeat
+      package: torch
+    txt: repeats.dim() == 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: Optional[int]
+        repeats: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in repeats.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: Optional[int]
+        repeats: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: repeats.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: Optional[int]
+        repeats: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in repeats.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: Optional[int]
+        repeats: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: repeats.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -1,0 +1,79 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[Tensor]
+  - Optional[Tensor]
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - min
+  - max
+  required:
+  - true
+  - false
+  - false
+name: torch.clamp
+package: torch
+pass_rate: 15.0
+rules:
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        max: Optional[Tensor]
+        min: Optional[Tensor]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in min.shape) and all(i
+      >= 0 for i in max.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        max: Optional[Tensor]
+        min: Optional[Tensor]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and min.rank <= 7 and max.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        max: Optional[Tensor]
+        min: Optional[Tensor]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in min.shape) and all(i
+      >= 0 for i in max.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        max: Optional[Tensor]
+        min: Optional[Tensor]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and min.rank <= 7 and max.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

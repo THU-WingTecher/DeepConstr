@@ -18,3 +18,32 @@ args:
 name: numpy.round
 package: null
 pass_rate: 0
+rules:
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        decimals: int
+        out: None
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in a.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        decimals: int
+        out: None
+      msg: Too large tensor shape
+      package: null
+    txt: a.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

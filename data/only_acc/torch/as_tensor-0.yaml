@@ -18,4 +18,32 @@ args:
 name: torch.as_tensor
 package: torch
 pass_rate: 100
-rules: []
+rules:
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        data: Tensor
+        device: Optional[Device]
+        dtype: None
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in data.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        data: Tensor
+        device: Optional[Device]
+        dtype: None
+      msg: Too large tensor shape
+      package: torch
+    txt: data.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

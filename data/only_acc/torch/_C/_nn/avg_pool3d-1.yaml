@@ -1,0 +1,136 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - List[int]
+  - List[int]
+  - bool
+  - bool
+  - Optional[int]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - kernel_size
+  - stride
+  - padding
+  - ceil_mode
+  - count_include_pad
+  - divisor_override
+  - out
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - true
+name: torch._C._nn.avg_pool3d
+package: torch
+pass_rate: 0.5025125628140703
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: int
+        kernel_size: list[int]
+        out: tensor
+        padding: list[int]
+        self: tensor
+        stride: list[int]
+      msg: 'avg_pool3d: kernel_size must be a single int, or a tuple of three ints'
+      package: torch
+    txt: ((len(kernel_size) == 1) or (len(padding) == 0)) and (len(padding) == 3)
+  - f1_score: 98.98477157360406
+    overall_score: 49.99497487437186
+    precision: 97.98994974874373
+    recall: 100.0
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: Optional[int]
+        kernel_size: List[int]
+        out: Tensor
+        padding: List[int]
+        self: Tensor
+        stride: List[int]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: Optional[int]
+        kernel_size: List[int]
+        out: Tensor
+        padding: List[int]
+        self: Tensor
+        stride: List[int]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: Optional[int]
+        kernel_size: List[int]
+        out: Tensor
+        padding: List[int]
+        self: Tensor
+        stride: List[int]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: Optional[int]
+        kernel_size: List[int]
+        out: Tensor
+        padding: List[int]
+        self: Tensor
+        stride: List[int]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

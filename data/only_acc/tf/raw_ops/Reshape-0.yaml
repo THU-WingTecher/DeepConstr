@@ -1,0 +1,77 @@
+args:
+  dtype:
+  - str
+  - list[int]
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - name
+  - shape
+  - tensor
+  required:
+  - false
+  - true
+  - true
+name: tf.raw_ops.Reshape
+package: tensorflow
+pass_rate: 36.666666666666664
+rules:
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        shape: list[int]
+        tensor: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in tensor.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        shape: list[int]
+        tensor: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: tensor.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        shape: list[int]
+        tensor: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in tensor.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        shape: list[int]
+        tensor: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: tensor.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

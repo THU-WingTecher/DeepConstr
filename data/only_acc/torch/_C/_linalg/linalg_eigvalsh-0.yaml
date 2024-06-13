@@ -1,0 +1,82 @@
+args:
+  dtype:
+  - Tensor
+  - str
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - UPLO
+  required:
+  - true
+  - false
+name: torch._C._linalg.linalg_eigvalsh
+package: torch
+pass_rate: 70.66666666666667
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        UPLO: str
+        self: tensor
+      msg: Expected UPLO argument to be 'L' or 'U', but got pGNG
+      package: torch
+    txt: UPLO in ['L', 'U']
+  - f1_score: 86.20689655172413
+    overall_score: 100
+    precision: 100.0
+    recall: 75.75757575757575
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        UPLO: str
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        UPLO: str
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        UPLO: str
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        UPLO: str
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

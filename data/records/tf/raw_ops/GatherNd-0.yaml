@@ -213,4 +213,31 @@ rules:
     overall_score: 48.0
     precision: 90.0
     recall: 63.1578947368421
-
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        indices: list[int]
+        name: str
+        params: int16,int32,int64
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in params.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        indices: list[int]
+        name: str
+        params: int16,int32,int64
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: params.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

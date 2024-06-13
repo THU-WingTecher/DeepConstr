@@ -1,0 +1,132 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - Optional[float]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - output_size
+  - scales
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+name: torch._C._nn.upsample_nearest1d
+package: torch
+pass_rate: 23.5
+rules:
+- - cot: 'To prevent the error, we need to ensure that the size of the `output_size`
+      list is not 0. The constraint for `output_size` can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        output_size: list[int]
+        scales: float
+        self: tensor
+      msg: It is expected output_size equals to 1, but got size 0
+      package: torch
+    txt: len(output_size) > 0
+  - f1_score: 20.62780269058296
+    overall_score: 8.75
+    precision: 11.5
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        output_size: list[int]
+        scales: float
+        self: tensor
+      msg: It is expected output_size equals to 1, but got size 7
+      package: torch
+    txt: (len(output_size) == 1) and (len(self.size()) == 3)
+  - f1_score: 90.70294784580497
+    overall_score: 100
+    precision: 100.0
+    recall: 82.9875518672199
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        output_size: list[int]
+        scales: float
+        self: tensor
+      msg: 'Input and output sizes should be greater than 0, but got input (W: 7)
+        and output (W: -1)'
+      package: torch
+    txt: self.size(-1) > 0 and output_size[0] > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        out: Tensor
+        output_size: List[int]
+        scales: Optional[float]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        out: Tensor
+        output_size: List[int]
+        scales: Optional[float]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        out: Tensor
+        output_size: List[int]
+        scales: Optional[float]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        out: Tensor
+        output_size: List[int]
+        scales: Optional[float]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -1,0 +1,108 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - int
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - target
+  - weight
+  - pos_weight
+  - reduction
+  - out
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - true
+error: <class 'TypeError'>
+name: torch.binary_cross_entropy_with_logits
+package: torch
+pass_rate: 0
+rules:
+- - cot: default
+    length: 5
+    target:
+      choosen_dtype:
+        out: Tensor
+        pos_weight: Optional[Tensor]
+        reduction: int
+        self: Tensor
+        target: Tensor
+        weight: Optional[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in target.shape) and
+      all(i >= 0 for i in weight.shape) and all(i >= 0 for i in pos_weight.shape)
+      and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 5
+    target:
+      choosen_dtype:
+        out: Tensor
+        pos_weight: Optional[Tensor]
+        reduction: int
+        self: Tensor
+        target: Tensor
+        weight: Optional[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and target.rank <= 7 and weight.rank <= 7 and pos_weight.rank
+      <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 5
+    target:
+      choosen_dtype:
+        out: Tensor
+        pos_weight: Optional[Tensor]
+        reduction: int
+        self: Tensor
+        target: Tensor
+        weight: Optional[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in target.shape) and
+      all(i >= 0 for i in weight.shape) and all(i >= 0 for i in pos_weight.shape)
+      and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 5
+    target:
+      choosen_dtype:
+        out: Tensor
+        pos_weight: Optional[Tensor]
+        reduction: int
+        self: Tensor
+        target: Tensor
+        weight: Optional[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and target.rank <= 7 and weight.rank <= 7 and pos_weight.rank
+      <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

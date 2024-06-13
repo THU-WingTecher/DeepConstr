@@ -2,34 +2,42 @@ args:
   dtype:
   - Tensor
   - List[int]
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   name:
   - self
   - size
-  - out
   required:
-  - true
   - true
   - true
 name: torch.view_copy
 package: torch
 pass_rate: 8.0
 rules:
-- - cot: divided
+- - cot: default
     length: 1
     target:
       choosen_dtype:
-        out: tensor
-        self: tensor
-        size: list[int]
-      msg: shape '[]' is invalid for input of size 6
+        self: Tensor
+        size: List[int]
+      msg: negative dimensions are not allowed
       package: torch
-    txt: len(out.shape) > 0
-  - f1_score: 17.195087117966295
-    overall_score: 8.25
-    precision: 10.5
-    recall: 47.45139253809774
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+        size: List[int]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

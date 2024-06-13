@@ -1,0 +1,95 @@
+args:
+  dtype:
+  - float16,float32
+  - str
+  - float
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - images
+  - name
+  - scale
+  required:
+  - true
+  - false
+  - true
+name: tf.raw_ops.AdjustSaturation
+package: tensorflow
+pass_rate: 5.5
+rules:
+- - cot: 'Based on the given runtime information, the error occurs because the input
+      tensor "images" has shape [0, 0], which is not at least 3-D as required by the
+      AdjustSaturation operation. To prevent the error, we can formulate the following
+      constraint:'
+    length: 1
+    target:
+      choosen_dtype:
+        images: tensor
+        name: str
+        scale: float
+      msg: '{{function_node __wrapped__AdjustSaturation_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        input must be at least 3-D, got shape[1,1] [Op:AdjustSaturation] name: ozpR'
+      package: tensorflow
+    txt: len(images.shape) >= 3
+  - f1_score: 99.30486593843098
+    overall_score: 100
+    precision: 100.0
+    recall: 98.61932938856016
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        images: float16,float32
+        name: str
+        scale: float
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in images.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        images: float16,float32
+        name: str
+        scale: float
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: images.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        images: float16,float32
+        name: str
+        scale: float
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in images.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        images: float16,float32
+        name: str
+        scale: float
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: images.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

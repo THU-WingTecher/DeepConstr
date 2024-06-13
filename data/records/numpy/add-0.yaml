@@ -37,3 +37,29 @@ rules:
     overall_score: 48.166666666666664
     precision: 90.33333333333333
     recall: 95.75971731448763
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        x1: tensor
+        x2: tensor
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in x1.shape) and all(i >= 0 for i in x2.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        x1: tensor
+        x2: tensor
+      msg: Too large tensor shape
+      package: null
+    txt: x1.rank <= 7 and x2.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

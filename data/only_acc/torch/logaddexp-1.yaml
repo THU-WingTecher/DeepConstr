@@ -1,0 +1,146 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.logaddexp
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      dimensions of the tensors `self` and `other` are inconsistent. The error specifically
+      states that the size of tensor `a` (which is `self`) must match the size of
+      tensor `b` (which is `other`) at non-singleton dimension 2.
+
+
+      To prevent this error, the following constraint can be formulated:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (3) must match the size of tensor b (9) at non-singleton
+        dimension 1
+      package: torch
+    txt: self.shape[2] == other.shape[2]
+  - f1_score: 75.18796992481204
+    overall_score: 100
+    precision: 100.0
+    recall: 60.24096385542168
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank)))
+      and (out.shape == other.shape and out.rank == other.rank)
+  - f1_score: 78.125
+    overall_score: 100
+    precision: 100.0
+    recall: 64.1025641025641
+- - cot: "The error can be prevented by ensuring that the dtypes of all input tensors\
+      \ (`self`, `other`, and `out`) are consistent and match the desired output type\
+      \ (`Int`). \n\nThe constraint to prevent the error can be formulated as:"
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self) == dtype(other) == dtype(out) == Int
+  - f1_score: 68.25938566552901
+    overall_score: 100
+    precision: 100.0
+    recall: 51.813471502590666
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: '"logaddexp_cpu" not implemented for ''Short'''
+      package: torch
+    txt: ((out.dtype in ['Float', 'Double'])) or (dtype(self) != 'Short' and dtype(other)
+      != 'Short' and dtype(out) != 'Short')
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        other: Tensor
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in other.shape) and
+      all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        other: Tensor
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and other.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        other: Tensor
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in other.shape) and
+      all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        other: Tensor
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and other.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -1,0 +1,99 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - lambd
+  required:
+  - true
+  - false
+name: torch.hardshrink
+package: torch
+pass_rate: 98.66666666666667
+rules:
+- - cot: 'The error is caused by the fact that the function "hardshrink_cpu" does
+      not support the data type ''Int''. To prevent this error, we need to make sure
+      that the input tensor ''self'' is of a supported data type. The supported data
+      types for the input tensor are float, double, and complex. Therefore, the condition
+      to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        lambd: int
+        self: tensor
+      msg: '"hardshrink_cpu" not implemented for ''Int'''
+      package: torch
+    txt: dtype(self) in [float, double, complex]
+  - f1_score: 98.03921568627452
+    overall_score: 100
+    precision: 100.0
+    recall: 96.15384615384615
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        lambd: int
+        self: tensor
+      msg: '"hardshrink_cpu" not implemented for ''ComplexDouble'''
+      package: torch
+    txt: (self.dtype() != 'ComplexDouble') and (self.dtype() != torch.complex64)
+  - f1_score: 95.38950715421304
+    overall_score: 100
+    precision: 100.0
+    recall: 91.1854103343465
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        lambd: number
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        lambd: number
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        lambd: number
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        lambd: number
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

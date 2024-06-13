@@ -1,0 +1,85 @@
+args:
+  dtype:
+  - Tensor
+  is_pos:
+  - true
+  name:
+  - self
+  required:
+  - true
+name: torch.view_as_complex
+package: torch
+pass_rate: 5.5
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+      msg: Tensor must have a last dimension of size 2
+      package: torch
+    txt: self.shape[-1] == 2
+  - f1_score: 85.47008547008546
+    overall_score: 100
+    precision: 100.0
+    recall: 74.62686567164178
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+      msg: Input tensor must have one or more dimensions
+      package: torch
+    txt: self.ndim > 0
+  - f1_score: 99.00990099009901
+    overall_score: 100
+    precision: 100.0
+    recall: 98.0392156862745
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

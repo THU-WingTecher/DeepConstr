@@ -4,10 +4,8 @@ args:
   - int
   - Tensor
   - bool
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   - false
   - false
@@ -16,13 +14,11 @@ args:
   - dim
   - index
   - sparse_grad
-  - out
   required:
   - true
   - true
   - true
   - false
-  - true
 name: torch.gather
 package: torch
 pass_rate: 0.0
@@ -33,7 +29,6 @@ rules:
       choosen_dtype:
         dim: int
         index: tensor
-        out: tensor
         self: tensor
         sparse_grad: bool
       msg: Dimension out of range (expected to be in range of [-7, 6], but got 9)
@@ -49,7 +44,6 @@ rules:
       choosen_dtype:
         dim: int
         index: tensor
-        out: tensor
         self: tensor
         sparse_grad: bool
       msg: 'gather(): Expected dtype int64 for index'
@@ -67,7 +61,6 @@ rules:
       choosen_dtype:
         dim: int
         index: tensor
-        out: tensor
         self: tensor
         sparse_grad: bool
       msg: Index tensor must have the same number of dimensions as input tensor
@@ -77,23 +70,6 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 68.80733944954129
-- - cot: synthesized
-    length: 3
-    target:
-      choosen_dtype:
-        dim: int
-        index: tensor
-        out: tensor
-        self: tensor
-        sparse_grad: bool
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: ((out.shape == self.shape) and (out.rank == self.rank and all(out.shape[i]
-      == self.shape[i] for i in range(out.rank)))) and (out.shape == index.shape)
-  - f1_score: 79.05138339920948
-    overall_score: 100
-    precision: 100.0
-    recall: 65.359477124183
 - - cot: The error is due to an index being out of bounds. In this case, the index
       739078 is greater than the size of dimension 4 which is 8. What the args were?
       The function torch.gather is trying to access index 739078 at dimension 4, but
@@ -104,7 +80,6 @@ rules:
       choosen_dtype:
         dim: int
         index: tensor
-        out: tensor
         self: tensor
         sparse_grad: bool
       msg: index 512275 is out of bounds for dimension 0 with size 3
@@ -120,7 +95,6 @@ rules:
       choosen_dtype:
         dim: int
         index: tensor
-        out: tensor
         self: tensor
         sparse_grad: bool
       msg: Dimension out of range (expected to be in range of [-4, 3], but got 5)
@@ -136,7 +110,6 @@ rules:
       choosen_dtype:
         dim: int
         index: tensor
-        out: tensor
         self: tensor
         sparse_grad: bool
       msg: Dimension out of range (expected to be in range of [-4, 3], but got 4)
@@ -152,7 +125,6 @@ rules:
       choosen_dtype:
         dim: int
         index: tensor
-        out: tensor
         self: tensor
         sparse_grad: bool
       msg: negative dimensions are not allowed
@@ -162,3 +134,33 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 81.16343490304709
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        index: Tensor
+        self: Tensor
+        sparse_grad: bool
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in index.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        index: Tensor
+        self: Tensor
+        sparse_grad: bool
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and index.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

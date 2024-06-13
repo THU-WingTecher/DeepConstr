@@ -1,0 +1,99 @@
+args:
+  dtype:
+  - Tensor
+  - bool
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - upper
+  required:
+  - true
+  - false
+name: torch.cholesky_inverse
+package: torch
+pass_rate: 89.0
+rules:
+- - cot: The error is triggered because the input matrix A is not a square matrix.
+      In this case, the last two dimensions of the tensor represent the matrix and
+      they are not the same, thus the matrix is not square. To prevent this error,
+      the last two dimensions of the input tensor must be equal.
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        upper: bool
+      msg: 'cholesky_inverse: A must be batches of square matrices, but they are 8
+        by 6 matrices'
+      package: torch
+    txt: self.shape[-1] == self.shape[-2]
+  - f1_score: 68.18181818181819
+    overall_score: 100
+    precision: 100.0
+    recall: 51.724137931034484
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        upper: bool
+      msg: 'cholesky_inverse: The input tensor A must have at least 2 dimensions.'
+      package: torch
+    txt: self.dim >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+        upper: bool
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+        upper: bool
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+        upper: bool
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+        upper: bool
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

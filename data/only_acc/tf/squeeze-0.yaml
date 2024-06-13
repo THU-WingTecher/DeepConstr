@@ -1,0 +1,93 @@
+args:
+  dtype:
+  - int,list[int]
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - axis
+  - input
+  - name
+  required:
+  - false
+  - true
+  - false
+name: tf.squeeze
+package: tensorflow
+pass_rate: 21.333333333333336
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        input: tensor
+        name: str
+      msg: '{{function_node __wrapped__Squeeze_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Tried to squeeze dim index 27 for tensor with 0 dimensions. [Op:Squeeze] name:
+        Llqa'
+      package: tensorflow
+    txt: (axis < input.rank)
+  - f1_score: 54.36893203883495
+    overall_score: 21.666666666666668
+    precision: 37.333333333333336
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int,list[int]
+        input: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in input.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int,list[int]
+        input: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: input.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int,list[int]
+        input: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in input.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int,list[int]
+        input: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: input.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

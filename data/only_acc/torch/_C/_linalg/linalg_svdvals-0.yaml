@@ -1,0 +1,69 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[str]
+  is_pos:
+  - false
+  - false
+  name:
+  - A
+  - driver
+  required:
+  - true
+  - false
+name: torch._C._linalg.linalg_svdvals
+package: torch
+pass_rate: 47.0
+rules:
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        A: Tensor
+        driver: Optional[str]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in A.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        A: Tensor
+        driver: Optional[str]
+      msg: Too large tensor shape
+      package: torch
+    txt: A.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        A: Tensor
+        driver: Optional[str]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in A.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        A: Tensor
+        driver: Optional[str]
+      msg: Too large tensor shape
+      package: torch
+    txt: A.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -90,3 +90,34 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 66.96428571428571
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        clip_value_max: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        clip_value_min: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+        t: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in clip_value_max.shape) and all(i >= 0 for i in clip_value_min.shape)
+      and all(i >= 0 for i in t.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        clip_value_max: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        clip_value_min: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+        t: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: clip_value_max.rank <= 7 and clip_value_min.rank <= 7 and t.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

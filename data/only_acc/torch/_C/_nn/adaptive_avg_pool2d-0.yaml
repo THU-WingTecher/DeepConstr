@@ -1,0 +1,147 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - output_size
+  required:
+  - true
+  - true
+name: torch._C._nn.adaptive_avg_pool2d
+package: torch
+pass_rate: 93.9799331103679
+rules:
+- - cot: The error is triggered because the `output_size` must be a list of length
+      2. To prevent the error, we can add a constraint that checks the length of `output_size`
+      and ensure it is equal to 2.
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: list[int]
+        self: tensor
+      msg: 'adaptive_avg_pool2d: output_size must be 2'
+      package: torch
+    txt: len(output_size) == 2
+  - f1_score: 98.57612267250822
+    overall_score: 100
+    precision: 100.0
+    recall: 97.19222462203024
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: list[int]
+        self: tensor
+      msg: 'adaptive_avg_pool2d(): Expected 3D or 4D tensor, but got []'
+      package: torch
+    txt: self.ndims() == 4
+  - f1_score: 72.93354943273906
+    overall_score: 100
+    precision: 100.0
+    recall: 57.397959183673464
+- - cot: 'The error occurs because the elements of the `output_size` list are less
+      than 0. To prevent this error in the future and generate constraints that do
+      not trigger it, we need to ensure that all elements of the `output_size` list
+      are greater than or equal to 0. The constraint for the `output_size` parameter
+      can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: list[int]
+        self: tensor
+      msg: 'adaptive_avg_pool2d: elements of output_size must be greater than or equal
+        to 0 but received {-3, -3}'
+      package: torch
+    txt: all(d >= 0 for d in output_size)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is due to the function not being implemented for the ''Int'' data
+      type. The function expects the ''self'' tensor to have a data type other than
+      ''Int''. Therefore, the data type of ''self'' tensor should be something other
+      than ''Int''. So, Left : dtype(self), Op : !=, Right : ''Int'''
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: list[int]
+        self: tensor
+      msg: '"adaptive_avg_pool2d" not implemented for ''Int'''
+      package: torch
+    txt: dtype(self) != 'Int'
+  - f1_score: 66.96495152870992
+    overall_score: 100
+    precision: 100.0
+    recall: 50.336322869955154
+- - cot: 'The error is due to the fact that the function "adaptive_avg_pool2d" is
+      not implemented for ''Bool'' type tensors. To prevent this error, we need to
+      add a constraint that ensures the input tensor is not of type ''Bool''. Therefore,
+      the constraint should be:'
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: list[int]
+        self: tensor
+      msg: '"adaptive_avg_pool2d" not implemented for ''Bool'''
+      package: torch
+    txt: self.dtype != 'Bool'
+  - f1_score: 82.15919487648674
+    overall_score: 100
+    precision: 100.0
+    recall: 69.72049689440993
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: List[int]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: List[int]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: List[int]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: List[int]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -1,0 +1,96 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[List[int]]
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - dims
+  required:
+  - true
+  - true
+  - false
+name: torch._C._linalg.linalg_tensorsolve
+package: torch
+pass_rate: 11.5
+rules:
+- - cot: 'Based on the given runtime information, the error occurs because the function
+      is trying to create a `std::vector` that is larger than its maximum size. Let''s
+      analyze the input tensors. The `other` tensor has a shape of [7, 7, 7, 7, 7]
+      and the `self` tensor has a shape of [3, 7, 3, 3]. To prevent the error, the
+      shape of the `other` tensor should be modified to match the shape of the `self`
+      tensor. Therefore, the constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dims: None
+        other: tensor
+        self: tensor
+      msg: cannot create std::vector larger than max_size()
+      package: torch
+    txt: shape(other) == shape(self)
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dims: Optional[List[int]]
+        other: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in other.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dims: Optional[List[int]]
+        other: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and other.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dims: Optional[List[int]]
+        other: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in other.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dims: Optional[List[int]]
+        other: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and other.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

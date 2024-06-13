@@ -1,0 +1,186 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - float
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - num_groups
+  - weight
+  - bias
+  - eps
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+name: torch.nn.functional.group_norm
+package: torch
+pass_rate: 12.666666666666668
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        bias: None
+        eps: float
+        input: tensor
+        num_groups: int
+        weight: tensor
+      msg: Expected number of channels in input to be divisible by num_groups, but
+        got input of shape [6, 3] and num_groups=52
+      package: torch
+    txt: (input.shape[-2] % num_groups == 0)
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        bias: None
+        eps: float
+        input: tensor
+        num_groups: int
+        weight: tensor
+      msg: Expected at least 2 dimensions for input tensor but received 0
+      package: torch
+    txt: input.ndim() >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: The error is triggered by performing an integer division or modulo operation
+      by zero. Let's see what the args were. The value of the `num_groups` parameter
+      is 0. Therefore, the condition to prevent the error is `num_groups != 0`. Wrap
+      the final formula with
+    length: 1
+    target:
+      choosen_dtype:
+        bias: None
+        eps: float
+        input: tensor
+        num_groups: int
+        weight: None
+      msg: integer division or modulo by zero
+      package: torch
+    txt: num_groups != 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        bias: None
+        eps: float
+        input: tensor
+        num_groups: int
+        weight: tensor
+      msg: Expected weight to be a vector of size equal to the number of channels
+        in input, but got weight of shape [1, 1, 1, 1, 1, 1, 1] and input of shape
+        [1, 2]
+      package: torch
+    txt: weight.ndim == 1
+  - f1_score: 66.08695652173914
+    overall_score: 41.0
+    precision: 76.0
+    recall: 58.46153846153847
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      input tensor has only one value per channel, but the function expects more than
+      one value per channel when training. To prevent the error, the input tensor
+      should have more than one value per channel. Therefore, the constraint can be
+      formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        bias: None
+        eps: float
+        input: tensor
+        num_groups: int
+        weight: tensor
+      msg: Expected more than 1 value per channel when training, got input size [1,
+        1]
+      package: torch
+    txt: input.size(1) > 1
+  - f1_score: 75.28230865746549
+    overall_score: 100
+    precision: 100.0
+    recall: 60.36217303822937
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        bias: Optional[Tensor]
+        eps: float
+        input: Tensor
+        num_groups: int
+        weight: Optional[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape) and all(i >= 0 for i in weight.shape) and
+      all(i >= 0 for i in bias.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        bias: Optional[Tensor]
+        eps: float
+        input: Tensor
+        num_groups: int
+        weight: Optional[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7 and weight.rank <= 7 and bias.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        bias: Optional[Tensor]
+        eps: float
+        input: Tensor
+        num_groups: int
+        weight: Optional[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape) and all(i >= 0 for i in weight.shape) and
+      all(i >= 0 for i in bias.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        bias: Optional[Tensor]
+        eps: float
+        input: Tensor
+        num_groups: int
+        weight: Optional[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7 and weight.rank <= 7 and bias.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

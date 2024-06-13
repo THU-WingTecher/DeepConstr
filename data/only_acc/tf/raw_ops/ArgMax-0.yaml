@@ -1,0 +1,125 @@
+args:
+  dtype:
+  - int
+  - float32,float64,int32,uint8,int16,int8,int64,bfloat16,uint16,float16,uint32,uint64,qint8,qint32,qint16,bool
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - dimension
+  - input
+  - name
+  required:
+  - true
+  - true
+  - false
+name: tf.raw_ops.ArgMax
+package: tensorflow
+pass_rate: 90.66666666666666
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dimension: int
+        input: tensor
+        name: str
+      msg: '{{function_node __wrapped__ArgMax_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Expected dimension in the range [-2, 2), but got 8 [Op:ArgMax] name: PbbB'
+      package: tensorflow
+    txt: dimension >= -len(input.shape)
+  - f1_score: 89.19860627177701
+    overall_score: 45.66666666666667
+    precision: 85.33333333333334
+    recall: 93.43065693430658
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dimension: int
+        input: tensor
+        name: str
+      msg: '{{function_node __wrapped__ArgMax_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Expected dimension in the range [0, 0), but got 0 [Op:ArgMax] name: ADkq'
+      package: tensorflow
+    txt: (9 < len(input.shape)) or (dimension >= 0)
+  - f1_score: 63.63636363636364
+    overall_score: 48.166666666666664
+    precision: 93.33333333333333
+    recall: 48.275862068965516
+- - cot: "The error occurs because the dimension provided is out of the valid range.\
+      \ The valid range for the dimension is [-n, n-1], where n is the length of the\
+      \ shape of the input tensor. \n\nTo prevent this error, we can formulate the\
+      \ following constraint:"
+    length: 1
+    target:
+      choosen_dtype:
+        dimension: int
+        input: tensor
+        name: str
+      msg: '{{function_node __wrapped__ArgMax_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Expected dimension in the range [-7, 7), but got 7 [Op:ArgMax] name: gYpd'
+      package: tensorflow
+    txt: dimension >= -len(input.shape) and dimension < len(input.shape)
+  - f1_score: 96.55172413793103
+    overall_score: 49.666666666666664
+    precision: 93.33333333333333
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dimension: int
+        input: float32,float64,int32,uint8,int16,int8,int64,bfloat16,uint16,float16,uint32,uint64,qint8,qint32,qint16,bool
+        name: str
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in input.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dimension: int
+        input: float32,float64,int32,uint8,int16,int8,int64,bfloat16,uint16,float16,uint32,uint64,qint8,qint32,qint16,bool
+        name: str
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: input.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dimension: int
+        input: float32,float64,int32,uint8,int16,int8,int64,bfloat16,uint16,float16,uint32,uint64,qint8,qint32,qint16,bool
+        name: str
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in input.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dimension: int
+        input: float32,float64,int32,uint8,int16,int8,int64,bfloat16,uint16,float16,uint32,uint64,qint8,qint32,qint16,bool
+        name: str
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: input.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

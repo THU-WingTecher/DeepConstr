@@ -1,0 +1,92 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - keepdim
+  required:
+  - true
+  - true
+  - false
+name: torch.Tensor.logsumexp
+package: torch
+pass_rate: 53.333333333333336
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: list[int]
+        keepdim: bool
+        self: tensor
+      msg: output with shape [] doesn't match the broadcast shape [1, 1, 1, 1, 1,
+        1, 1]
+      package: torch
+    txt: keepdim == True
+  - f1_score: 93.16770186335403
+    overall_score: 100
+    precision: 100.0
+    recall: 87.20930232558139
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: List[int]
+        keepdim: bool
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: List[int]
+        keepdim: bool
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: List[int]
+        keepdim: bool
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: List[int]
+        keepdim: bool
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

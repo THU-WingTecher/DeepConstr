@@ -1,0 +1,97 @@
+args:
+  dtype:
+  - Tensor
+  - bool
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - hermitian
+  required:
+  - true
+  - false
+name: torch._C._linalg.linalg_ldl_factor
+package: torch
+pass_rate: 92.0
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        hermitian: bool
+        self: tensor
+      msg: 'torch.linalg.ldl_factor_ex: A must be batches of square matrices, but
+        they are 9 by 3 matrices'
+      package: torch
+    txt: (hermitian == False) and (self.shape[-2] == self.shape[-1])
+  - f1_score: 68.3371298405467
+    overall_score: 100
+    precision: 100.0
+    recall: 51.903114186851205
+- - cot: Based on the given runtime information, the error can be prevented by ensuring
+      that the input tensor `A` has at least 2 dimensions.
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        self: tensor
+      msg: 'torch.linalg.ldl_factor_ex: The input tensor A must have at least 2 dimensions.'
+      package: torch
+    txt: self.dim >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

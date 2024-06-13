@@ -1,0 +1,144 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[int]
+  - bool
+  - str
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - q
+  - dim
+  - keepdim
+  - interpolation
+  - out
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - true
+name: torch.quantile
+package: torch
+pass_rate: 0.5
+rules:
+- - cot: 'The error occurs because the interpolation value provided is not one of
+      the expected values. Let''s see what the args were. The interpolation value
+      should be one of "linear", "lower", "higher", "midpoint", or "nearest", but
+      the value provided is "DMhZ". To prevent this error in the future and generate
+      constraints that do not trigger it, we need to ensure that the "interpolation"
+      value is always one of the expected values. The constraint for the ''interpolation''
+      parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        interpolation: str
+        keepdim: bool
+        out: tensor
+        q: tensor
+        self: tensor
+      msg: quantile() interpolation must be one of linear, lower, higher, midpoint
+        or nearest, but got SlXQ
+      package: torch
+    txt: interpolation in ["linear", "lower", "higher", "midpoint", "nearest"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        interpolation: str
+        keepdim: bool
+        out: tensor
+        q: tensor
+        self: tensor
+      msg: quantile() q must be a scalar or 1D tensor
+      package: torch
+    txt: q.dim == 1
+  - f1_score: 98.28009828009829
+    overall_score: 100
+    precision: 100.0
+    recall: 96.61835748792271
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        dim: Optional[int]
+        interpolation: str
+        keepdim: bool
+        out: Tensor
+        q: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in q.shape) and all(i
+      >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        dim: Optional[int]
+        interpolation: str
+        keepdim: bool
+        out: Tensor
+        q: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and q.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        dim: Optional[int]
+        interpolation: str
+        keepdim: bool
+        out: Tensor
+        q: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in q.shape) and all(i
+      >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        dim: Optional[int]
+        interpolation: str
+        keepdim: bool
+        out: Tensor
+        q: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and q.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

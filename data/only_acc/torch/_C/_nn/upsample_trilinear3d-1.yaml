@@ -1,0 +1,173 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - bool
+  - Optional[float]
+  - Optional[float]
+  - Optional[float]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - output_size
+  - align_corners
+  - scales_d
+  - scales_h
+  - scales_w
+  required:
+  - true
+  - true
+  - true
+  - false
+  - false
+  - false
+name: torch._C._nn.upsample_trilinear3d
+package: torch
+pass_rate: 96.93877551020408
+rules:
+- - cot: synthesized
+    length: 5
+    target:
+      choosen_dtype:
+        align_corners: bool
+        output_size: list[int]
+        scales_d: float
+        scales_h: None
+        scales_w: None
+        self: tensor
+      msg: It is expected output_size equals to 3, but got size 0
+      package: torch
+    txt: ((((len(output_size) == 3) or (len(output_size) == 5)) or (len(output_size)
+      == len(self.shape))) and (len(self.shape) == 5)) and (len(output_size) == 3)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        align_corners: bool
+        output_size: list[int]
+        scales_d: float
+        scales_h: float
+        scales_w: float
+        self: tensor
+      msg: 'Input and output sizes should be greater than 0, but got input (D: 9,
+        H: 4, W: 2) output (D: 3, H: -2, W: 3)'
+      package: torch
+    txt: (((output_size[0] > 0)) and (self.shape[0] > 0)) and (all(output_size[i]
+      > 0 for i in range(len(output_size))))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        align_corners: bool
+        output_size: list[int]
+        scales_d: None
+        scales_h: float
+        scales_w: float
+        self: tensor
+      msg: 'Input and output sizes should be greater than 0, but got input (D: 0,
+        H: 1, W: 9) output (D: 3, H: 3, W: 5)'
+      package: torch
+    txt: (all(dim > 0 for dim in output_size)) and (self.shape[4] > 0)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        output_size: list[int]
+        scales_d: float
+        scales_h: float
+        scales_w: float
+        self: tensor
+      msg: '"compute_indices_weights_linear" not implemented for ''Int'''
+      package: torch
+    txt: dtype(self) == Float
+  - f1_score: 96.85230024213074
+    overall_score: 100
+    precision: 100.0
+    recall: 93.89671361502347
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        output_size: List[int]
+        scales_d: Optional[float]
+        scales_h: Optional[float]
+        scales_w: Optional[float]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        output_size: List[int]
+        scales_d: Optional[float]
+        scales_h: Optional[float]
+        scales_w: Optional[float]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        output_size: List[int]
+        scales_d: Optional[float]
+        scales_h: Optional[float]
+        scales_w: Optional[float]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        output_size: List[int]
+        scales_d: Optional[float]
+        scales_h: Optional[float]
+        scales_w: Optional[float]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

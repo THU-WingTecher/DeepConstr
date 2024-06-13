@@ -1,0 +1,174 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - min
+  - max
+  - out
+  required:
+  - true
+  - false
+  - false
+  - true
+name: torch.clamp
+package: torch
+pass_rate: 24.333333333333336
+rules:
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        max: tensor
+        min: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (6) must match the size of tensor b (7) at non-singleton
+        dimension 3
+      package: torch
+    txt: (((self.shape[2] == min.shape[2]) and (max.dim == min.dim and max.shape ==
+      min.shape)) and (self.shape[4] == max.shape[4])) or (self.dim == max.dim and
+      self.shape == max.shape)
+  - f1_score: 91.68081494057726
+    overall_score: 45.75
+    precision: 90.0
+    recall: 93.42560553633218
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        max: None
+        min: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (9) at non-singleton
+        dimension 6
+      package: torch
+    txt: (self.dim == out.dim) or (self.shape[6] == min.shape[6])
+  - f1_score: 74.71980074719801
+    overall_score: 100
+    precision: 100.0
+    recall: 59.64214711729622
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        max: None
+        min: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==self.rank
+  - f1_score: 87.36349453978158
+    overall_score: 49.666666666666664
+    precision: 93.33333333333333
+    recall: 82.11143695014663
+- - cot: 'Error is triggered because the size of tensor a (9) does not match the size
+      of tensor b (7) at non-singleton dimension 2. From the given runtime information,
+      we can infer that the dimensions of the tensors are 3 and 2 respectively. To
+      prevent this error, we need to add a constraint that ensures the sizes of the
+      tensors match at non-singleton dimension 2.
+
+
+      Therefore, the constraint can be formulated as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        max: tensor
+        min: None
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (8) must match the size of tensor b (9) at non-singleton
+        dimension 5
+      package: torch
+    txt: self.shape[2] == max.shape[2]
+  - f1_score: 74.16563658838072
+    overall_score: 100
+    precision: 100.0
+    recall: 58.93909626719057
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        max: tensor
+        min: None
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank == self.rank) and (self.rank==max.rank)
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        max: Optional[Tensor]
+        min: Optional[Tensor]
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in min.shape) and all(i
+      >= 0 for i in max.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        max: Optional[Tensor]
+        min: Optional[Tensor]
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and min.rank <= 7 and max.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        max: Optional[Tensor]
+        min: Optional[Tensor]
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in min.shape) and all(i
+      >= 0 for i in max.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        max: Optional[Tensor]
+        min: Optional[Tensor]
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and min.rank <= 7 and max.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

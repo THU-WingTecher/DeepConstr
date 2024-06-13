@@ -1,0 +1,173 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - bool
+  - Optional[float]
+  - Optional[float]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - output_size
+  - align_corners
+  - scales_h
+  - scales_w
+  - out
+  required:
+  - true
+  - true
+  - true
+  - false
+  - false
+  - true
+name: torch._C._nn.upsample_bicubic2d
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        align_corners: bool
+        out: tensor
+        output_size: list[int]
+        scales_h: None
+        scales_w: None
+        self: tensor
+      msg: It is expected output_size equals to 2, but got size 0
+      package: torch
+    txt: (((len(output_size) == 2) or (len(output_size) == 4)) and (len(self.size())
+      == 4)) and (len(output_size) == 2)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        align_corners: bool
+        out: tensor
+        output_size: list[int]
+        scales_h: None
+        scales_w: None
+        self: tensor
+      msg: 'Input and output sizes should be greater than 0, but got input (H: 7,
+        W: 8) output (H: -3, W: 9)'
+      package: torch
+    txt: ((output_size[0] > 0) and (self.shape[2]>0 and self.shape[3]>0 and output_size[0]>0
+      and output_size[1]>0)) and (output_size[0] > 0)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        align_corners: bool
+        out: tensor
+        output_size: list[int]
+        scales_h: None
+        scales_w: float
+        self: tensor
+      msg: Expected out tensor to have dtype int, but got float instead
+      package: torch
+    txt: (dtype(out) == int) and (dtype(out) == dtype(self))
+  - f1_score: 97.68211920529802
+    overall_score: 100
+    precision: 100.0
+    recall: 95.46925566343043
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        align_corners: bool
+        out: tensor
+        output_size: list[int]
+        scales_h: float
+        scales_w: float
+        self: tensor
+      msg: '"compute_indices_weights_cubic" not implemented for ''Char'''
+      package: torch
+    txt: (((scales_w > 0)) or (self.dtype in [torch.float32, torch.float64])) and
+      ((i < self.rank for i in out))
+  - f1_score: 67.6056338028169
+    overall_score: 100
+    precision: 100.0
+    recall: 51.06382978723404
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        align_corners: bool
+        out: Tensor
+        output_size: List[int]
+        scales_h: Optional[float]
+        scales_w: Optional[float]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        align_corners: bool
+        out: Tensor
+        output_size: List[int]
+        scales_h: Optional[float]
+        scales_w: Optional[float]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        align_corners: bool
+        out: Tensor
+        output_size: List[int]
+        scales_h: Optional[float]
+        scales_w: Optional[float]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        align_corners: bool
+        out: Tensor
+        output_size: List[int]
+        scales_h: Optional[float]
+        scales_w: Optional[float]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

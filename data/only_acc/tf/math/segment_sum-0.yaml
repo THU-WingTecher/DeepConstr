@@ -1,0 +1,144 @@
+args:
+  dtype:
+  - tensor
+  - tensor
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - data
+  - segment_ids
+  - name
+  required:
+  - true
+  - true
+  - false
+name: tf.math.segment_sum
+package: null
+pass_rate: 30.34188034188034
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        data: tensor
+        name: str
+        segment_ids: tensor
+      msg: "Value for attr 'Tindices' of float is not in the list of allowed values:\
+        \ int32, int64\n\t; NodeDef: {{node SegmentSum}}; Op<name=SegmentSum; signature=data:T,\
+        \ segment_ids:Tindices -> output:T; attr=T:type,allowed=[DT_FLOAT, DT_DOUBLE,\
+        \ DT_INT32, DT_UINT8, DT_INT16, 10440210506161272279, DT_UINT16, DT_COMPLEX128,\
+        \ DT_HALF, DT_UINT32, DT_UINT64]; attr=Tindices:type,allowed=[DT_INT32, DT_INT64]>\
+        \ [Op:SegmentSum] name: JKdc"
+      package: tensorflow
+    txt: dtype(segment_ids) in ['int32', 'int64']
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        data: tensor
+        name: str
+        segment_ids: tensor
+      msg: '{{function_node __wrapped__SegmentSum_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        input must be at least rank 1 [Op:SegmentSum] name: cdOK'
+      package: tensorflow
+    txt: data.rank > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'segment_ids should be a 1-dimensional tensor. To ensure this, the number
+      of dimensions of segment_ids should be 1. Therefore, the constraint to prevent
+      the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        data: tensor
+        name: str
+        segment_ids: tensor
+      msg: '{{function_node __wrapped__SegmentSum_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        segment_ids should be a vector. [Op:SegmentSum] name: LPUU'
+      package: tensorflow
+    txt: segment_ids.dim == 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        data: tensor
+        name: str
+        segment_ids: tensor
+      msg: '{{function_node __wrapped__SegmentSum_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        segment_ids should be the same size as dimension 0 of input. [Op:SegmentSum]
+        name: LbDU'
+      package: tensorflow
+    txt: segment_ids.shape[0] == data.shape[0]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        data: tensor
+        name: str
+        segment_ids: tensor
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in data.shape) and all(i >= 0 for i in segment_ids.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        data: tensor
+        name: str
+        segment_ids: tensor
+      msg: Too large tensor shape
+      package: null
+    txt: data.rank <= 7 and segment_ids.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        data: tensor
+        name: str
+        segment_ids: tensor
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in data.shape) and all(i >= 0 for i in segment_ids.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        data: tensor
+        name: str
+        segment_ids: tensor
+      msg: Too large tensor shape
+      package: null
+    txt: data.rank <= 7 and segment_ids.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

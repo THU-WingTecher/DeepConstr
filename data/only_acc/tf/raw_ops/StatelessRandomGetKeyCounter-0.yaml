@@ -31,3 +31,29 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 100.0
+- - cot: default
+    length: 0
+    target:
+      choosen_dtype:
+        name: str
+        seed: list[int]
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: ''
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 0
+    target:
+      choosen_dtype:
+        name: str
+        seed: list[int]
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: ''
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

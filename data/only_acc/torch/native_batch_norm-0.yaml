@@ -1,0 +1,168 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - bool
+  - float
+  - float
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - weight
+  - bias
+  - running_mean
+  - running_var
+  - training
+  - momentum
+  - eps
+  required:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - true
+  - true
+  - true
+name: torch.native_batch_norm
+package: torch
+pass_rate: 0.6711409395973155
+rules:
+- - cot: 'In order to prevent the error, the number of dimensions of the tensors should
+      be corrected. The error message indicates that the tensor should have 1 dimension,
+      but it actually has 7 dimensions. Therefore, the condition to prevent the error
+      would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        bias: tensor
+        eps: float
+        input: tensor
+        momentum: float
+        running_mean: tensor
+        running_var: tensor
+        training: bool
+        weight: tensor
+      msg: TensorAccessor expected 1 dims but tensor has 7
+      package: torch
+    txt: running_mean.ndims() == 1 and running_var.ndims() == 1 and weight.ndims()
+      == 1 and bias.ndims() == 1
+  - f1_score: 92.0
+    overall_score: 100
+    precision: 100.0
+    recall: 85.18518518518519
+- - cot: Error is triggered because the tensor has 7 dimensions, but it expects to
+      have 1 dimension. Let's see what the args were. The tensor input has 7 dimensions.
+      Therefore, the condition to prevent the error is that the number of dimensions
+      of input should be 1.
+    length: 1
+    target:
+      choosen_dtype:
+        bias: None
+        eps: float
+        input: tensor
+        momentum: float
+        running_mean: None
+        running_var: tensor
+        training: bool
+        weight: None
+      msg: TensorAccessor expected 1 dims but tensor has 7
+      package: torch
+    txt: input.ndims() == 1
+  - f1_score: 94.7867298578199
+    overall_score: 100
+    precision: 100.0
+    recall: 90.09009009009009
+- - cot: default
+    length: 5
+    target:
+      choosen_dtype:
+        bias: Optional[Tensor]
+        eps: float
+        input: Tensor
+        momentum: float
+        running_mean: Optional[Tensor]
+        running_var: Optional[Tensor]
+        training: bool
+        weight: Optional[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape) and all(i >= 0 for i in weight.shape) and
+      all(i >= 0 for i in bias.shape) and all(i >= 0 for i in running_mean.shape)
+      and all(i >= 0 for i in running_var.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 5
+    target:
+      choosen_dtype:
+        bias: Optional[Tensor]
+        eps: float
+        input: Tensor
+        momentum: float
+        running_mean: Optional[Tensor]
+        running_var: Optional[Tensor]
+        training: bool
+        weight: Optional[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7 and weight.rank <= 7 and bias.rank <= 7 and running_mean.rank
+      <= 7 and running_var.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 5
+    target:
+      choosen_dtype:
+        bias: Optional[Tensor]
+        eps: float
+        input: Tensor
+        momentum: float
+        running_mean: Optional[Tensor]
+        running_var: Optional[Tensor]
+        training: bool
+        weight: Optional[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape) and all(i >= 0 for i in weight.shape) and
+      all(i >= 0 for i in bias.shape) and all(i >= 0 for i in running_mean.shape)
+      and all(i >= 0 for i in running_var.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 5
+    target:
+      choosen_dtype:
+        bias: Optional[Tensor]
+        eps: float
+        input: Tensor
+        momentum: float
+        running_mean: Optional[Tensor]
+        running_var: Optional[Tensor]
+        training: bool
+        weight: Optional[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7 and weight.rank <= 7 and bias.rank <= 7 and running_mean.rank
+      <= 7 and running_var.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

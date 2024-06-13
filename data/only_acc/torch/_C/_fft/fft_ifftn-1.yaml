@@ -1,0 +1,161 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[List[int]]
+  - Optional[List[int]]
+  - Optional[str]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - s
+  - dim
+  - norm
+  - out
+  required:
+  - true
+  - false
+  - false
+  - false
+  - true
+name: torch._C._fft.fft_ifftn
+package: torch
+pass_rate: 64.66666666666666
+rules:
+- - cot: 'The error is due to an invalid normalization mode. The value provided for
+      ''norm'' is "qEVb", which is not a valid normalization mode. The valid normalization
+      modes for ''norm'' are "forward", "backward", or "ortho". Therefore, the constraint
+      to prevent this error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        norm: str
+        out: tensor
+        s: None
+        self: tensor
+      msg: 'Invalid normalization mode: "bxqn"'
+      package: torch
+    txt: norm in ["forward", "backward", "ortho"]
+  - f1_score: 99.66777408637873
+    overall_score: 100
+    precision: 100.0
+    recall: 99.33774834437087
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: None
+        norm: str
+        out: tensor
+        s: None
+        self: tensor
+      msg: fftn expects a complex output tensor, but got Float
+      package: torch
+    txt: (self.shape() == out.shape()) and (out.dtype == complex)
+  - f1_score: 99.50248756218905
+    overall_score: 100
+    precision: 100.0
+    recall: 99.00990099009901
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        dim: None
+        norm: str
+        out: tensor
+        s: None
+        self: tensor
+      msg: '''complex32'''
+      package: torch
+    txt: ((self.size() == out.size()) and (self.dim() == out.dim())) and (self.dim()
+      == out.dim() and self.dtype == out.dtype)
+  - f1_score: 78.58472998137802
+    overall_score: 36.16666666666667
+    precision: 70.33333333333334
+    recall: 89.0295358649789
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        norm: None
+        out: tensor
+        s: None
+        self: tensor
+      msg: '''complex32'''
+      package: torch
+    txt: out.dim == 1
+  - f1_score: 56.973293768546
+    overall_score: 35.0
+    precision: 64.0
+    recall: 51.33689839572193
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        norm: Optional[str]
+        out: Tensor
+        s: Optional[List[int]]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        norm: Optional[str]
+        out: Tensor
+        s: Optional[List[int]]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        norm: Optional[str]
+        out: Tensor
+        s: Optional[List[int]]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        norm: Optional[str]
+        out: Tensor
+        s: Optional[List[int]]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

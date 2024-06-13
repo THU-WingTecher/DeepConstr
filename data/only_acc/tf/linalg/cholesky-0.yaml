@@ -1,0 +1,97 @@
+args:
+  dtype:
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  is_pos:
+  - false
+  - false
+  name:
+  - input
+  - name
+  required:
+  - true
+  - false
+name: tf.linalg.cholesky
+package: tensorflow
+pass_rate: 90.66666666666666
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        input: tensor
+        name: str
+      msg: '{{function_node __wrapped__Cholesky_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Input matrix must be square. [Op:Cholesky] name: CcuD'
+      package: tensorflow
+    txt: (input.shape[-2] == input.shape[-1]) and (input.shape[0] == input.shape[1])
+  - f1_score: 68.80733944954127
+    overall_score: 100
+    precision: 100.0
+    recall: 52.44755244755245
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        name: str
+      msg: '{{function_node __wrapped__Cholesky_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Input tensor 0 must have rank >= 2, got 0 [Op:Cholesky] name: TvDq'
+      package: tensorflow
+    txt: input.rank >= 2
+  - f1_score: 99.00990099009901
+    overall_score: 100
+    precision: 100.0
+    recall: 98.0392156862745
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        input: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in input.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        input: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: input.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        input: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in input.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        input: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: input.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

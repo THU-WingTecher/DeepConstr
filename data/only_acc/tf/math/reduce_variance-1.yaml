@@ -1,0 +1,85 @@
+args:
+  dtype:
+  - tensor
+  - list[int]
+  - bool
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input_tensor
+  - axis
+  - keepdims
+  - name
+  required:
+  - true
+  - false
+  - false
+  - false
+name: tf.math.reduce_variance
+package: null
+pass_rate: 0
+rules:
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        axis: list[int]
+        input_tensor: tensor
+        keepdims: bool
+        name: str
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in input_tensor.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        axis: list[int]
+        input_tensor: tensor
+        keepdims: bool
+        name: str
+      msg: Too large tensor shape
+      package: null
+    txt: input_tensor.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        axis: list[int]
+        input_tensor: tensor
+        keepdims: bool
+        name: str
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in input_tensor.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        axis: list[int]
+        input_tensor: tensor
+        keepdims: bool
+        name: str
+      msg: Too large tensor shape
+      package: null
+    txt: input_tensor.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

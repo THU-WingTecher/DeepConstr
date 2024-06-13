@@ -1,0 +1,165 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[List[int]]
+  - Optional[List[int]]
+  - Optional[str]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - s
+  - dim
+  - norm
+  - out
+  required:
+  - true
+  - false
+  - false
+  - false
+  - true
+name: torch._C._fft.fft_irfftn
+package: torch
+pass_rate: 11.333333333333332
+rules:
+- - cot: The error is triggered because the normalization mode "MzVL" is not a valid
+      mode. The valid normalization modes are "backward" and "forward". Therefore,
+      the constraint should be that the normalization mode must be either "backward"
+      or "forward".
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        norm: str
+        out: tensor
+        s: None
+        self: tensor
+      msg: 'Invalid normalization mode: "yYGc"'
+      package: torch
+    txt: norm in ["backward", "forward"]
+  - f1_score: 94.7867298578199
+    overall_score: 100
+    precision: 100.0
+    recall: 90.09009009009009
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        norm: None
+        out: tensor
+        s: None
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
+  - f1_score: 73.9622641509434
+    overall_score: 52.0
+    precision: 98.0
+    recall: 59.3939393939394
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      `irfftn` function must transform at least one axis. To prevent this error, the
+      constraint can be formulated as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        norm: str
+        out: tensor
+        s: None
+        self: tensor
+      msg: irfftn must transform at least one axis
+      package: torch
+    txt: self.dim >= 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: The error occurs because the 'out' tensor is not resizable and its shape
+      doesn't match the result of the operation. The result shape of the operation
+      should be the same as the 'self' tensor. Therefore, the 'out' tensor shape should
+      be the same as 'self' tensor shape.
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        norm: str
+        out: tensor
+        s: None
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.shape == self.shape
+  - f1_score: 35.566382460414125
+    overall_score: 16.0
+    precision: 26.0
+    recall: 56.270382448858584
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        norm: Optional[str]
+        out: Tensor
+        s: Optional[List[int]]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        norm: Optional[str]
+        out: Tensor
+        s: Optional[List[int]]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        norm: Optional[str]
+        out: Tensor
+        s: Optional[List[int]]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        norm: Optional[str]
+        out: Tensor
+        s: Optional[List[int]]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

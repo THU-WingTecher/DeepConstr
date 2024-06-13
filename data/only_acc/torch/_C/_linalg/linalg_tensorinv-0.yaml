@@ -1,0 +1,100 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - ind
+  required:
+  - true
+  - false
+name: torch._C._linalg.linalg_tensorinv
+package: torch
+pass_rate: 7.000000000000001
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        ind: int
+        self: tensor
+      msg: 'ArrayRef: invalid slice, N = 7; size = 2'
+      package: torch
+    txt: self.dim == 2 and ind < self.dim
+  - f1_score: 69.93006993006993
+    overall_score: 100
+    precision: 100.0
+    recall: 53.76344086021506
+- - cot: 'The error occurs because the value of the ''ind'' parameter is not a strictly
+      positive integer. Let''s see what the args were. The value of ''ind'' is -4,
+      which is not a strictly positive integer. To prevent this error in the future
+      and generate constraints that do not trigger it, we need to ensure that the
+      value of ''ind'' is always a strictly positive integer. The constraint for the
+      ''ind'' parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        ind: int
+        self: tensor
+      msg: Expected a strictly positive integer for 'ind', but got 0
+      package: torch
+    txt: ind > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        ind: int
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        ind: int
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        ind: int
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        ind: int
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

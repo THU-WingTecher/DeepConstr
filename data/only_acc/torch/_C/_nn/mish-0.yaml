@@ -1,0 +1,107 @@
+args:
+  dtype:
+  - Tensor
+  is_pos:
+  - true
+  name:
+  - self
+  required:
+  - true
+name: torch._C._nn.mish
+package: torch
+pass_rate: 98.0
+rules:
+- - cot: 'The error is due to the function "mish_cpu" not being implemented for the
+      data type ''Int''. The input tensor ''self'' is of type ''Int'', but the function
+      does not have an implementation for this data type. Therefore, the data type
+      of the input tensor should be changed to a supported data type, such as ''Float''.
+      So, Left : self.dtype, Op : !=, Right : dtype(''Int'')'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+      msg: '"mish_cpu" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype != torch.int
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is due to the function mish_cpu not being implemented for ''Long''
+      data type in the tensor self. Therefore, the data type of self should be corrected.
+      It needs to be any data type other than ''Long''. Therefore, Op : !=, and Right
+      : ''Long''.'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+      msg: '"mish_cpu" not implemented for ''Long'''
+      package: torch
+    txt: self.dtype != 'Long'
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is due to the fact that the ''mish_cpu'' implementation in torch._C._nn.mish
+      does not support input tensors of type ''Bool''. To prevent this error, a constraint
+      should be added to ensure that the input tensor is not of type ''Bool''. The
+      constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+      msg: '"mish_cpu" not implemented for ''Bool'''
+      package: torch
+    txt: self.dtype != 'Bool'
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

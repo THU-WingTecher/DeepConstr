@@ -1,0 +1,99 @@
+args:
+  dtype:
+  - Tensor
+  - bool
+  is_pos:
+  - false
+  - false
+  name:
+  - A
+  - check_errors
+  required:
+  - true
+  - false
+name: torch._C._linalg.linalg_inv_ex
+package: torch
+pass_rate: 91.0
+rules:
+- - cot: The error is triggered because the provided matrices are not square. In this
+      case, the final two dimensions of the tensor A are 8 and 7 respectively, indicating
+      a matrix of size 8x7. However, for the function to work, the matrices should
+      be square, meaning the last two dimensions of the tensor A should be the same.
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        check_errors: bool
+      msg: 'linalg.inv: A must be batches of square matrices, but they are 6 by 2
+        matrices'
+      package: torch
+    txt: A.shape[-1] == A.shape[-2]
+  - f1_score: 68.02721088435375
+    overall_score: 100
+    precision: 100.0
+    recall: 51.54639175257733
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        check_errors: bool
+      msg: 'linalg.inv: The input tensor A must have at least 2 dimensions.'
+      package: torch
+    txt: A.dim >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        A: Tensor
+        check_errors: bool
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in A.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        A: Tensor
+        check_errors: bool
+      msg: Too large tensor shape
+      package: torch
+    txt: A.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        A: Tensor
+        check_errors: bool
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in A.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        A: Tensor
+        check_errors: bool
+      msg: Too large tensor shape
+      package: torch
+    txt: A.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

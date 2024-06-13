@@ -2,17 +2,13 @@ args:
   dtype:
   - Tensor
   - Tensor
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   name:
   - self
   - other
-  - out
   required:
-  - true
   - true
   - true
 name: torch.bitwise_left_shift
@@ -29,7 +25,6 @@ rules:
     target:
       choosen_dtype:
         other: tensor
-        out: tensor
         self: tensor
       msg: The size of tensor a (8) must match the size of tensor b (9) at non-singleton
         dimension 3
@@ -44,7 +39,6 @@ rules:
     target:
       choosen_dtype:
         other: tensor
-        out: tensor
         self: tensor
       msg: '"lshift_cpu" not implemented for ''Float'''
       package: torch
@@ -53,17 +47,29 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 63.291139240506325
-- - cot: ''
-    length: 1
+- - cot: default
+    length: 2
     target:
       choosen_dtype:
-        other: tensor
-        out: tensor
-        self: tensor
-      msg: Trying to resize storage that is not resizable
+        other: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
       package: torch
-    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
-  - f1_score: 73.52941176470588
-    overall_score: 100
-    precision: 100.0
-    recall: 58.139534883720934
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in other.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        other: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and other.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

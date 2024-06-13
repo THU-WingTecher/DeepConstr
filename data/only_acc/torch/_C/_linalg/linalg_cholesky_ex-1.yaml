@@ -1,0 +1,96 @@
+args:
+  dtype:
+  - Tensor
+  - bool
+  - bool
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - upper
+  - check_errors
+  - L
+  - info
+  required:
+  - true
+  - false
+  - false
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch._C._linalg.linalg_cholesky_ex
+package: torch
+pass_rate: 0
+rules:
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        L: Tensor
+        check_errors: bool
+        info: Tensor
+        self: Tensor
+        upper: bool
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in L.shape) and all(i
+      >= 0 for i in info.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        L: Tensor
+        check_errors: bool
+        info: Tensor
+        self: Tensor
+        upper: bool
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and L.rank <= 7 and info.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        L: Tensor
+        check_errors: bool
+        info: Tensor
+        self: Tensor
+        upper: bool
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in L.shape) and all(i
+      >= 0 for i in info.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        L: Tensor
+        check_errors: bool
+        info: Tensor
+        self: Tensor
+        upper: bool
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and L.rank <= 7 and info.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

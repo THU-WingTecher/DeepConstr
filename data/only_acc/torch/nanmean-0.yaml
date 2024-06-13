@@ -1,0 +1,104 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[List[int]]
+  - bool
+  - None
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - keepdim
+  - dtype
+  required:
+  - true
+  - false
+  - false
+  - false
+name: torch.nanmean
+package: torch
+pass_rate: 95.5
+rules:
+- - cot: 'Error is triggered because the input tensor has an integer data type instead
+      of a floating point or complex data type. To prevent the error, the input tensor
+      should have a floating point or complex data type. Therefore, the constraint
+      can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        self: tensor
+      msg: 'nanmean(): expected input to have floating point or complex dtype but
+        got Int'
+      package: torch
+    txt: self.dtype in [torch.float32, torch.float64, torch.complex64, torch.complex128]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        dtype: None
+        keepdim: bool
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        dtype: None
+        keepdim: bool
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        dtype: None
+        keepdim: bool
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        dtype: None
+        keepdim: bool
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

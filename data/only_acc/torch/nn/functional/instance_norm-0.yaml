@@ -1,0 +1,123 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - bool
+  - float
+  - float
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - running_mean
+  - running_var
+  - weight
+  - bias
+  - use_input_stats
+  - momentum
+  - eps
+  required:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+name: torch.nn.functional.instance_norm
+package: torch
+pass_rate: 0.33333333333333337
+rules:
+- - cot: default
+    length: 5
+    target:
+      choosen_dtype:
+        bias: Optional[Tensor]
+        eps: float
+        input: Tensor
+        momentum: float
+        running_mean: Optional[Tensor]
+        running_var: Optional[Tensor]
+        use_input_stats: bool
+        weight: Optional[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape) and all(i >= 0 for i in running_mean.shape)
+      and all(i >= 0 for i in running_var.shape) and all(i >= 0 for i in weight.shape)
+      and all(i >= 0 for i in bias.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 5
+    target:
+      choosen_dtype:
+        bias: Optional[Tensor]
+        eps: float
+        input: Tensor
+        momentum: float
+        running_mean: Optional[Tensor]
+        running_var: Optional[Tensor]
+        use_input_stats: bool
+        weight: Optional[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7 and running_mean.rank <= 7 and running_var.rank <= 7 and
+      weight.rank <= 7 and bias.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 5
+    target:
+      choosen_dtype:
+        bias: Optional[Tensor]
+        eps: float
+        input: Tensor
+        momentum: float
+        running_mean: Optional[Tensor]
+        running_var: Optional[Tensor]
+        use_input_stats: bool
+        weight: Optional[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape) and all(i >= 0 for i in running_mean.shape)
+      and all(i >= 0 for i in running_var.shape) and all(i >= 0 for i in weight.shape)
+      and all(i >= 0 for i in bias.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 5
+    target:
+      choosen_dtype:
+        bias: Optional[Tensor]
+        eps: float
+        input: Tensor
+        momentum: float
+        running_mean: Optional[Tensor]
+        running_var: Optional[Tensor]
+        use_input_stats: bool
+        weight: Optional[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7 and running_mean.rank <= 7 and running_var.rank <= 7 and
+      weight.rank <= 7 and bias.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

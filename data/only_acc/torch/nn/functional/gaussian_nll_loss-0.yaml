@@ -1,0 +1,163 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - bool
+  - float
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - target
+  - var
+  - full
+  - eps
+  - reduction
+  required:
+  - true
+  - true
+  - true
+  - false
+  - false
+  - false
+name: torch.nn.functional.gaussian_nll_loss
+package: torch
+pass_rate: 3.0
+rules:
+- - cot: 'Error is triggered because the size of the variance tensor ''var'' is not
+      matching the size of the input and target tensors. The gaussian_nll_loss function
+      expects the variance tensor to have the same size as the input and target tensors.
+      Therefore, the constraint should be:'
+    length: 1
+    target:
+      choosen_dtype:
+        eps: float
+        full: bool
+        input: tensor
+        reduction: str
+        target: tensor
+        var: tensor
+      msg: var is of incorrect size
+      package: torch
+    txt: var.shape == input.shape and var.shape == target.shape
+  - f1_score: 89.54128440366972
+    overall_score: 43.666666666666664
+    precision: 81.33333333333333
+    recall: 99.59183673469389
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        eps: float
+        full: bool
+        input: tensor
+        reduction: str
+        target: tensor
+        var: tensor
+      msg: var is of incorrect size
+      package: torch
+    txt: (var.shape == input.shape and var.shape == target.shape) and (var.dim ==
+      input.dim)
+  - f1_score: 71.59904534606206
+    overall_score: 100
+    precision: 100.0
+    recall: 55.762081784386616
+- - cot: "Based on the given runtime information, the error is caused by an invalid\
+      \ value for the 'reduction' argument. The provided value is 'XTGk', which is\
+      \ not a valid value for 'reduction'. \n\nTo prevent the error, the 'reduction'\
+      \ argument should be set to a valid value. The valid values for 'reduction'\
+      \ are [\"none\", \"mean\", \"sum\"]. \n\nTherefore, the constraint to prevent\
+      \ the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        eps: float
+        full: bool
+        input: tensor
+        reduction: str
+        target: tensor
+        var: tensor
+      msg: XTGk is not valid
+      package: torch
+    txt: reduction in ["none", "mean", "sum"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        eps: float
+        full: bool
+        input: Tensor
+        reduction: str
+        target: Tensor
+        var: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape) and all(i >= 0 for i in target.shape) and
+      all(i >= 0 for i in var.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        eps: float
+        full: bool
+        input: Tensor
+        reduction: str
+        target: Tensor
+        var: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7 and target.rank <= 7 and var.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        eps: float
+        full: bool
+        input: Tensor
+        reduction: str
+        target: Tensor
+        var: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape) and all(i >= 0 for i in target.shape) and
+      all(i >= 0 for i in var.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        eps: float
+        full: bool
+        input: Tensor
+        reduction: str
+        target: Tensor
+        var: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7 and target.rank <= 7 and var.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

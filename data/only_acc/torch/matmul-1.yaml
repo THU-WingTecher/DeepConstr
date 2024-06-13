@@ -2,17 +2,13 @@ args:
   dtype:
   - Tensor
   - Tensor
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   name:
   - self
   - other
-  - out
   required:
-  - true
   - true
   - true
 name: torch.matmul
@@ -29,7 +25,6 @@ rules:
     target:
       choosen_dtype:
         other: tensor
-        out: tensor
         self: tensor
       msg: The size of tensor a (9) must match the size of tensor b (7) at non-singleton
         dimension 3
@@ -48,7 +43,6 @@ rules:
     target:
       choosen_dtype:
         other: tensor
-        out: tensor
         self: tensor
       msg: both arguments to matmul need to be at least 1D, but they are 0D and 7D
       package: torch
@@ -66,7 +60,6 @@ rules:
     target:
       choosen_dtype:
         other: tensor
-        out: tensor
         self: tensor
       msg: The size of tensor a (5) must match the size of tensor b (9) at non-singleton
         dimension 4
@@ -76,27 +69,12 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 61.91950464396285
-- - cot: synthesized
-    length: 2
-    target:
-      choosen_dtype:
-        other: tensor
-        out: tensor
-        self: tensor
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: (out.rank==self.rank) and (out.rank==other.rank)
-  - f1_score: 77.16535433070867
-    overall_score: 50.5
-    precision: 98.0
-    recall: 63.63636363636363
 - - cot: 'Based on the given runtime information, the constraint that prevents the
       error is:'
     length: 1
     target:
       choosen_dtype:
         other: tensor
-        out: tensor
         self: tensor
       msg: inconsistent tensor size, expected tensor [1] and src [6] to have the same
         number of elements, but got 1 and 6 elements respectively
@@ -118,7 +96,6 @@ rules:
     target:
       choosen_dtype:
         other: tensor
-        out: tensor
         self: tensor
       msg: mat1 and mat2 shapes cannot be multiplied (7x9 and 7x1)
       package: torch
@@ -132,21 +109,6 @@ rules:
     target:
       choosen_dtype:
         other: tensor
-        out: tensor
-        self: tensor
-      msg: result dtype Float does not match input dtype Int
-      package: torch
-    txt: dtype(self) == dtype(out)
-  - f1_score: 99.25558312655089
-    overall_score: 100
-    precision: 100.0
-    recall: 98.52216748768474
-- - cot: ''
-    length: 1
-    target:
-      choosen_dtype:
-        other: tensor
-        out: tensor
         self: tensor
       msg: 'dot : expected both vectors to have same dtype, but found Int and Float'
       package: torch
@@ -155,3 +117,29 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 99.50248756218907
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        other: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in other.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        other: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and other.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

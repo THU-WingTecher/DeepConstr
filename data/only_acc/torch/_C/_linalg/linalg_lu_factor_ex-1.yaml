@@ -1,0 +1,104 @@
+args:
+  dtype:
+  - Tensor
+  - bool
+  - bool
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - A
+  - pivot
+  - check_errors
+  - LU
+  - pivots
+  - info
+  required:
+  - true
+  - false
+  - false
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch._C._linalg.linalg_lu_factor_ex
+package: torch
+pass_rate: 0
+rules:
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        A: Tensor
+        LU: Tensor
+        check_errors: bool
+        info: Tensor
+        pivot: bool
+        pivots: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in A.shape) and all(i >= 0 for i in LU.shape) and all(i
+      >= 0 for i in pivots.shape) and all(i >= 0 for i in info.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        A: Tensor
+        LU: Tensor
+        check_errors: bool
+        info: Tensor
+        pivot: bool
+        pivots: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: A.rank <= 7 and LU.rank <= 7 and pivots.rank <= 7 and info.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        A: Tensor
+        LU: Tensor
+        check_errors: bool
+        info: Tensor
+        pivot: bool
+        pivots: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in A.shape) and all(i >= 0 for i in LU.shape) and all(i
+      >= 0 for i in pivots.shape) and all(i >= 0 for i in info.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        A: Tensor
+        LU: Tensor
+        check_errors: bool
+        info: Tensor
+        pivot: bool
+        pivots: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: A.rank <= 7 and LU.rank <= 7 and pivots.rank <= 7 and info.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

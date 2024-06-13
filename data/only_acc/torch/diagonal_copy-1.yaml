@@ -1,0 +1,163 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - int
+  - int
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - offset
+  - dim1
+  - dim2
+  - out
+  required:
+  - true
+  - false
+  - false
+  - false
+  - true
+name: torch.diagonal_copy
+package: torch
+pass_rate: 87.5
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim1: int
+        dim2: int
+        offset: int
+        out: tensor
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 6)
+      package: torch
+    txt: (dim1 >= -len(self.shape)) and (dim2 >= -len(self.shape))
+  - f1_score: 74.34782608695653
+    overall_score: 44.25
+    precision: 85.5
+    recall: 65.76923076923077
+- - cot: 'Based on the given runtime information, the error occurs because the diagonal
+      dimensions `dim1` and `dim2` are identical and equal to -4. To prevent the error,
+      the diagonal dimensions should be different. Therefore, the condition to prevent
+      the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim1: int
+        dim2: int
+        offset: int
+        out: tensor
+        self: tensor
+      msg: diagonal dimensions cannot be identical 0, 0
+      package: torch
+    txt: dim1 != dim2
+  - f1_score: 82.15158924205379
+    overall_score: 45.0
+    precision: 84.0
+    recall: 80.38277511961722
+- - cot: synthesized
+    length: 5
+    target:
+      choosen_dtype:
+        dim1: int
+        dim2: int
+        offset: int
+        out: tensor
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-3, 2], but got 4)
+      package: torch
+    txt: ((((dim1 < len(self.shape)) or (7 >= -len(self.shape) and 7 < len(self.shape)))
+      and (-len(self.shape) <= dim2 <= 0)) and (3 >= -len(self.shape) and 3 < len(self.shape)))
+      and (-7 <= dim1 < 6)
+  - f1_score: 77.36943907156673
+    overall_score: 100
+    precision: 100.0
+    recall: 63.09148264984227
+- - cot: '`out` tensor should have the same shape as `self` tensor. Therefore, the
+      constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim1: int
+        dim2: int
+        offset: int
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.shape == self.shape
+  - f1_score: 67.79661016949153
+    overall_score: 100
+    precision: 100.0
+    recall: 51.28205128205129
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim1: int
+        dim2: int
+        offset: int
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim1: int
+        dim2: int
+        offset: int
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim1: int
+        dim2: int
+        offset: int
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim1: int
+        dim2: int
+        offset: int
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -1,0 +1,88 @@
+args:
+  dtype:
+  - Tensor
+  is_pos:
+  - true
+  name:
+  - self
+  required:
+  - true
+name: torch._C._linalg.linalg_eigvals
+package: torch
+pass_rate: 89.0
+rules:
+- - cot: The error is triggered because the input matrix is not square. For linalg.eigvals,
+      the input matrix should be square. In this case, the matrix is 9 by 7. So, the
+      condition should be that the last two dimensions of the tensor are equal.
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+      msg: 'linalg.eigvals: A must be batches of square matrices, but they are 1 by
+        4 matrices'
+      package: torch
+    txt: self.shape[-1] == self.shape[-2]
+  - f1_score: 67.79661016949153
+    overall_score: 100
+    precision: 100.0
+    recall: 51.28205128205129
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+      msg: 'linalg.eigvals: The input tensor A must have at least 2 dimensions.'
+      package: torch
+    txt: self.dim() >= 2
+  - f1_score: 98.19967266775778
+    overall_score: 100
+    precision: 100.0
+    recall: 96.46302250803859
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

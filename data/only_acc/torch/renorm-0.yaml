@@ -1,0 +1,134 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  - int
+  - number
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - p
+  - dim
+  - maxnorm
+  required:
+  - true
+  - true
+  - true
+  - true
+name: torch.renorm
+package: torch
+pass_rate: 84.5
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        maxnorm: int
+        p: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-6, 5], but got 40)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 68.70503597122303
+    overall_score: 50.75
+    precision: 95.5
+    recall: 53.65168539325843
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        maxnorm: int
+        p: int
+        self: tensor
+      msg: 'renorm: non-positive-norm not supported'
+      package: torch
+    txt: p > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is triggered because the value of ''maxnorm'' is less than 0.
+      Let''s see what the args were. The argument ''maxnorm'' is currently -4, which
+      is less than 0. Therefore, ''maxnorm'' should be corrected. It says it should
+      be greater than or equal to 0, so the condition for ''maxnorm'' can be expressed
+      as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        maxnorm: int
+        p: int
+        self: tensor
+      msg: 'renorm: expected maxnorm to be >= 0 but got -1'
+      package: torch
+    txt: maxnorm >= 0
+  - f1_score: 99.75062344139653
+    overall_score: 100
+    precision: 100.0
+    recall: 99.50248756218907
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        maxnorm: number
+        p: number
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        maxnorm: number
+        p: number
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        maxnorm: number
+        p: number
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        maxnorm: number
+        p: number
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

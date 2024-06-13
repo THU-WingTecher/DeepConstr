@@ -2,47 +2,24 @@ args:
   dtype:
   - Tensor
   - number
-  - Tensor
   is_pos:
-  - false
   - false
   - false
   name:
   - x
   - n
-  - out
   required:
-  - true
   - true
   - true
 name: torch._C._special.special_hermite_polynomial_h
 package: torch
 pass_rate: 100
 rules:
-- - cot: The error is triggered because we are attempting to resize a tensor that
-      is not resizable. It appears that this 'out' tensor must match the shape of
-      the operation result. In this operation, the result shape is likely based on
-      the 'x' tensor's shape. Therefore, the 'out' tensor's rank and shape must match
-      those of the 'x' tensor.
-    length: 1
-    target:
-      choosen_dtype:
-        n: int
-        out: tensor
-        x: tensor
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: out.rank==x.rank and all(out.shape[i]==x.shape[i] for i in range(out.rank))
-  - f1_score: 74.21150278293136
-    overall_score: 100
-    precision: 100.0
-    recall: 58.99705014749264
 - - cot: synthesized
     length: 3
     target:
       choosen_dtype:
         n: int
-        out: tensor
         x: tensor
       msg: result type Float can't be cast to the desired output type Int
       package: torch
@@ -51,19 +28,29 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 61.72839506172839
-- - cot: Based on the given runtime information, the error occurs because the dimensions
-      of the output tensor 'out' are negative. To prevent this error, the dimensions
-      of 'out' must be non-negative.
+- - cot: default
     length: 1
     target:
       choosen_dtype:
-        n: int
-        out: tensor
-        x: tensor
+        n: number
+        x: Tensor
       msg: negative dimensions are not allowed
       package: torch
-    txt: all(out.shape[i] >= 0 for i in range(out.rank))
-  - f1_score: 95.63106796116506
-    overall_score: 100
-    precision: 100.0
-    recall: 91.62790697674417
+    txt: all(i >= 0 for i in x.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        n: number
+        x: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: x.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

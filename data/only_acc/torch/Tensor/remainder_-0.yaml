@@ -1,0 +1,125 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - other
+  required:
+  - true
+  - true
+name: torch.Tensor.remainder_
+package: torch
+pass_rate: 98.0
+rules:
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (6) must match the size of tensor b (5) at non-singleton
+        dimension 2
+      package: torch
+    txt: self.shape[2] == other.shape[2]
+  - f1_score: 76.72634271099744
+    overall_score: 100
+    precision: 100.0
+    recall: 62.24066390041494
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: output with shape [] doesn't match the broadcast shape [2, 4, 4, 4, 4,
+        4, 4]
+      package: torch
+    txt: self.shape == other.shape
+  - f1_score: 70.11494252873563
+    overall_score: 43.666666666666664
+    precision: 81.33333333333333
+    recall: 61.61616161616161
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: The size of tensor a (3) must match the size of tensor b (2) at non-singleton
+        dimension 2
+      package: torch
+    txt: self.dim == other.dim
+  - f1_score: 79.47019867549669
+    overall_score: 100
+    precision: 100.0
+    recall: 65.93406593406593
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: (dtype(self)==int32) and (dtype(self) == dtype(other))
+  - f1_score: 67.64374295377677
+    overall_score: 100
+    precision: 100.0
+    recall: 51.107325383304946
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        other: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in other.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        other: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and other.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        other: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in other.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        other: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and other.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

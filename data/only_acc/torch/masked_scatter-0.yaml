@@ -1,0 +1,111 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - mask
+  - source
+  required:
+  - true
+  - true
+  - true
+name: torch.masked_scatter
+package: torch
+pass_rate: 58.5
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        mask: tensor
+        self: tensor
+        source: tensor
+      msg: The size of tensor a (6) must match the size of tensor b (7) at non-singleton
+        dimension 3
+      package: torch
+    txt: self.shape[4] == 1
+  - f1_score: 93.0232558139535
+    overall_score: 100
+    precision: 100.0
+    recall: 86.95652173913044
+- - cot: 'The error is triggered because the mask tensor has a dtype of float, but
+      the `torch.masked_scatter` function only supports boolean masks. To prevent
+      this error, the mask tensor should have a dtype of bool. Therefore, the constraint
+      can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        mask: tensor
+        self: tensor
+        source: tensor
+      msg: masked_scatter_ only supports boolean masks, but got mask with dtype Float
+      package: torch
+    txt: mask.dtype == torch.bool
+  - f1_score: 97.08737864077668
+    overall_score: 100
+    precision: 100.0
+    recall: 94.33962264150942
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        mask: Tensor
+        self: Tensor
+        source: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in mask.shape) and all(i
+      >= 0 for i in source.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        mask: Tensor
+        self: Tensor
+        source: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and mask.rank <= 7 and source.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        mask: Tensor
+        self: Tensor
+        source: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in mask.shape) and all(i
+      >= 0 for i in source.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        mask: Tensor
+        self: Tensor
+        source: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and mask.rank <= 7 and source.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

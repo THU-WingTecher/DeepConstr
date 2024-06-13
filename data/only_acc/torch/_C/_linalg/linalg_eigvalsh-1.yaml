@@ -2,19 +2,15 @@ args:
   dtype:
   - Tensor
   - str
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   name:
   - self
   - UPLO
-  - out
   required:
   - true
   - false
-  - true
 name: torch._C._linalg.linalg_eigvalsh
 package: torch
 pass_rate: 95.63758389261746
@@ -28,7 +24,6 @@ rules:
     target:
       choosen_dtype:
         UPLO: str
-        out: tensor
         self: tensor
       msg: 'linalg.eigh: A must be batches of square matrices, but they are 1 by 6
         matrices'
@@ -45,7 +40,6 @@ rules:
     target:
       choosen_dtype:
         UPLO: str
-        out: tensor
         self: tensor
       msg: 'linalg.eigh: The input tensor A must have at least 2 dimensions.'
       package: torch
@@ -59,7 +53,6 @@ rules:
     target:
       choosen_dtype:
         UPLO: str
-        out: tensor
         self: tensor
       msg: Expected UPLO argument to be 'L' or 'U', but got BjLz
       package: torch
@@ -68,26 +61,11 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 90.6344410876133
-- - cot: ''
-    length: 1
-    target:
-      choosen_dtype:
-        UPLO: str
-        out: tensor
-        self: tensor
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
-  - f1_score: 76.92307692307692
-    overall_score: 100
-    precision: 100.0
-    recall: 62.5
 - - cot: divided
     length: 1
     target:
       choosen_dtype:
         UPLO: str
-        out: tensor
         self: tensor
       msg: negative dimensions are not allowed
       package: torch
@@ -96,17 +74,29 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 79.6116504854369
-- - cot: ''
+- - cot: default
     length: 1
     target:
       choosen_dtype:
         UPLO: str
-        out: tensor
-        self: tensor
-      msg: Expected out tensor to have dtype float, but got c10::Half instead
+        self: Tensor
+      msg: negative dimensions are not allowed
       package: torch
-    txt: dtype(out) == torch.float
-  - f1_score: 96.75849482923438
-    overall_score: 52.32659932659932
-    precision: 98.65319865319864
-    recall: 94.93519781718963
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        UPLO: str
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -1,0 +1,120 @@
+args:
+  dtype:
+  - tensor
+  - int
+  - float
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - x
+  - axis
+  - epsilon
+  - name
+  required:
+  - true
+  - false
+  - false
+  - false
+name: tf.math.l2_normalize
+package: null
+pass_rate: 94.33333333333334
+rules:
+- - cot: 'The error is due to an invalid reduction dimension. In this case, the dimension
+      is -4, which is less than the minimum valid dimension of 0 for reduction. So,
+      the constraint to prevent this error would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        epsilon: float
+        name: str
+        x: tensor
+      msg: '{{function_node __wrapped__Sum_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Invalid reduction dimension (-4 for input with 0 dimension(s) [Op:Sum]'
+      package: tensorflow
+    txt: (axis >= 0)
+  - f1_score: 61.75410492591111
+    overall_score: 45.833333333333336
+    precision: 85.66666666666667
+    recall: 48.2780212899186
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        axis: int
+        epsilon: float
+        name: str
+        x: tensor
+      msg: '{{function_node __wrapped__Sum_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Invalid reduction dimension (0 for input with 0 dimension(s) [Op:Sum]'
+      package: tensorflow
+    txt: (((axis < 0)) or (not(axis != 0))) and ((x.rank > 0))
+  - f1_score: 70.09345794392523
+    overall_score: 100
+    precision: 100.0
+    recall: 53.956834532374096
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        epsilon: float
+        name: str
+        x: tensor
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in x.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        epsilon: float
+        name: str
+        x: tensor
+      msg: Too large tensor shape
+      package: null
+    txt: x.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        epsilon: float
+        name: str
+        x: tensor
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in x.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        epsilon: float
+        name: str
+        x: tensor
+      msg: Too large tensor shape
+      package: null
+    txt: x.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

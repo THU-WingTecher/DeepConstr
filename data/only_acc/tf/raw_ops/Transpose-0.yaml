@@ -1,0 +1,114 @@
+args:
+  dtype:
+  - str
+  - list[int]
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - name
+  - perm
+  - x
+  required:
+  - false
+  - true
+  - true
+name: tf.raw_ops.Transpose
+package: tensorflow
+pass_rate: 7.000000000000001
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        perm: list[int]
+        x: tensor
+      msg: '{{function_node __wrapped__Transpose_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        transpose expects a vector of size 2. But input(1) is a vector of size 0 [Op:Transpose]'
+      package: tensorflow
+    txt: (len(perm) == 6) and (len(perm) == len(x.shape))
+  - f1_score: 91.74311926605505
+    overall_score: 100
+    precision: 100.0
+    recall: 84.74576271186442
+- - cot: 'The error occurs because the values in the ''perm'' array are not within
+      the valid range. From the error message, we can see that the value 8 is out
+      of the valid range [0, 6). This is because the ''perm'' array in the tf.raw_ops.Transpose
+      operation should contain indices that are within the range of the dimensions
+      of the ''x'' tensor. In this case, the ''x'' tensor is of shape [9, 5, 9, 2,
+      6, 9], which has 6 dimensions. Therefore, the valid values for the ''perm''
+      array should be in the range [0, 6). So, the constraint for the ''perm'' parameter
+      can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        perm: list[int]
+        x: tensor
+      msg: '{{function_node __wrapped__Transpose_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        -2 is out of range [0 .. 6) [Op:Transpose]'
+      package: tensorflow
+    txt: all(p >= 0 and p < len(x.shape) for p in perm)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        perm: list[int]
+        x: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in x.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        perm: list[int]
+        x: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: x.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        perm: list[int]
+        x: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in x.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        perm: list[int]
+        x: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: x.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

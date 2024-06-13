@@ -1,0 +1,120 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - List[int]
+  - List[int]
+  - List[int]
+  - bool
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - kernel_size
+  - stride
+  - padding
+  - dilation
+  - ceil_mode
+  - out
+  - indices
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch._C._nn.max_pool2d_with_indices
+package: torch
+pass_rate: 0
+rules:
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        dilation: List[int]
+        indices: Tensor
+        kernel_size: List[int]
+        out: Tensor
+        padding: List[int]
+        self: Tensor
+        stride: List[int]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape) and all(i
+      >= 0 for i in indices.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        dilation: List[int]
+        indices: Tensor
+        kernel_size: List[int]
+        out: Tensor
+        padding: List[int]
+        self: Tensor
+        stride: List[int]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7 and indices.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        dilation: List[int]
+        indices: Tensor
+        kernel_size: List[int]
+        out: Tensor
+        padding: List[int]
+        self: Tensor
+        stride: List[int]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape) and all(i
+      >= 0 for i in indices.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        dilation: List[int]
+        indices: Tensor
+        kernel_size: List[int]
+        out: Tensor
+        padding: List[int]
+        self: Tensor
+        stride: List[int]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7 and indices.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -1,0 +1,96 @@
+args:
+  dtype:
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - dy
+  - name
+  - y
+  required:
+  - true
+  - false
+  - true
+name: tf.raw_ops.SigmoidGrad
+package: tensorflow
+pass_rate: 28.666666666666668
+rules:
+- - cot: 'The error is triggered because the two input tensors, `dy` and `y`, have
+      a different number of elements. `dy` has 134,456 elements while `y` has 1,024
+      elements. To prevent this error, the number of elements in `dy` and `y` must
+      be the same. Therefore, the constraint would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        dy: tensor
+        name: str
+        y: tensor
+      msg: '{{function_node __wrapped__SigmoidGrad_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        The two arguments to a cwise op must have same number of elements, got 252
+        and 40 [Op:SigmoidGrad] name: MIPz'
+      package: tensorflow
+    txt: dy.size == y.size
+  - f1_score: 55.75221238938054
+    overall_score: 24.0
+    precision: 42.0
+    recall: 82.89473684210527
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dy: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+        y: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in dy.shape) and all(i >= 0 for i in y.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dy: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+        y: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: dy.rank <= 7 and y.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dy: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+        y: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in dy.shape) and all(i >= 0 for i in y.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dy: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+        y: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: dy.rank <= 7 and y.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

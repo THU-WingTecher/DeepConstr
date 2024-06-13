@@ -1,0 +1,90 @@
+args:
+  dtype:
+  - List[Tensor]
+  is_pos:
+  - true
+  name:
+  - tensors
+  required:
+  - true
+name: torch.hstack
+package: torch
+pass_rate: 77.95698924731182
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        tensors: list[tensor]
+      msg: hstack expects a non-empty TensorList
+      package: torch
+    txt: len(tensors) > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is triggered because the tensors in the input list have different
+      numbers of dimensions. It expects all tensors to have the same number of dimensions.
+      Let''s see what the args were. It seems the dimensions of the tensors in the
+      input list are not the same, so the number of dimensions for each tensor should
+      be corrected. Therefore, Left : tensors[i].dim. Op : ==, and Right : tensors[0].dim
+      for all i in range(1, len(tensors)).'
+    length: 1
+    target:
+      choosen_dtype:
+        tensors: list[tensor]
+      msg: 'Tensors must have same number of dimensions: got 6 and 9'
+      package: torch
+    txt: all(tensors[i].dim == tensors[0].dim for i in range(1, len(tensors)))
+  - f1_score: 67.79661016949153
+    overall_score: 100
+    precision: 100.0
+    recall: 51.28205128205129
+- - cot: default
+    length: 0
+    target:
+      choosen_dtype:
+        tensors: List[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: ''
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 0
+    target:
+      choosen_dtype:
+        tensors: List[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: ''
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 0
+    target:
+      choosen_dtype:
+        tensors: List[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: ''
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 0
+    target:
+      choosen_dtype:
+        tensors: List[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: ''
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -1,0 +1,100 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - Tensor
+  - number
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - index
+  - value
+  required:
+  - true
+  - true
+  - true
+  - true
+name: torch.Tensor.scatter
+package: torch
+pass_rate: 5.666666666666666
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        self: tensor
+        value: int
+      msg: 'scatter(): Expected dtype int64 for index'
+      package: torch
+    txt: dtype(index) == int64
+  - f1_score: 71.37192704203014
+    overall_score: 100
+    precision: 100.0
+    recall: 55.487053020961774
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        index: Tensor
+        self: Tensor
+        value: number
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in index.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        index: Tensor
+        self: Tensor
+        value: number
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and index.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        index: Tensor
+        self: Tensor
+        value: number
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in index.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        index: Tensor
+        self: Tensor
+        value: number
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and index.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

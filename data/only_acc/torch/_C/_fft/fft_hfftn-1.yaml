@@ -1,0 +1,160 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[List[int]]
+  - Optional[List[int]]
+  - Optional[str]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - s
+  - dim
+  - norm
+  - out
+  required:
+  - true
+  - false
+  - false
+  - false
+  - true
+name: torch._C._fft.fft_hfftn
+package: torch
+pass_rate: 7.000000000000001
+rules:
+- - cot: 'Based on the given runtime information, the error is caused by an invalid
+      normalization mode. The value provided for the `norm` parameter is "REFLECT",
+      which is not a valid normalization mode. The valid normalization modes for `norm`
+      are "ortho" and "backward". Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        norm: str
+        out: tensor
+        s: None
+        self: tensor
+      msg: 'Invalid normalization mode: "tqgB"'
+      package: torch
+    txt: norm in ["ortho", "backward"]
+  - f1_score: 93.60374414976597
+    overall_score: 100
+    precision: 100.0
+    recall: 87.97653958944281
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        norm: None
+        out: tensor
+        s: None
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 73.6318407960199
+    overall_score: 52.333333333333336
+    precision: 98.66666666666667
+    recall: 58.73015873015872
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        norm: str
+        out: tensor
+        s: None
+        self: tensor
+      msg: hfftn must transform at least one axis
+      package: torch
+    txt: self.dim >= 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: None
+        norm: str
+        out: tensor
+        s: None
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank == self.rank) and (out.shape == self.shape)
+  - f1_score: 34.16856492027335
+    overall_score: 14.0
+    precision: 25.0
+    recall: 53.956834532374096
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        norm: Optional[str]
+        out: Tensor
+        s: Optional[List[int]]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        norm: Optional[str]
+        out: Tensor
+        s: Optional[List[int]]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        norm: Optional[str]
+        out: Tensor
+        s: Optional[List[int]]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        norm: Optional[str]
+        out: Tensor
+        s: Optional[List[int]]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -1,0 +1,102 @@
+args:
+  dtype:
+  - Tensor
+  is_pos:
+  - true
+  name:
+  - self
+  required:
+  - true
+name: torch.Tensor.geqrf
+package: torch
+pass_rate: 98.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+      msg: 'torch.geqrf: input must have at least 2 dimensions.'
+      package: torch
+    txt: self.dim() >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is due to the fact that the ''geqrf_cpu'' function is not implemented
+      for tensors of type ''Int''. Therefore, we need to add a constraint to ensure
+      that the data type of the input tensor is not ''Int''. So, Left : dtype(self),
+      Op : !=, Right : ''Int''.'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+      msg: '"geqrf_cpu" not implemented for ''Int'''
+      package: torch
+    txt: dtype(self) != 'Int'
+  - f1_score: 67.01414743112436
+    overall_score: 100
+    precision: 100.0
+    recall: 50.391937290033596
+- - cot: The error is due to the function "geqrf_cpu" not being implemented for tensors
+      of type 'Bool'. Therefore, to prevent the error, the input tensor should not
+      be of type 'Bool'.
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+      msg: '"geqrf_cpu" not implemented for ''Bool'''
+      package: torch
+    txt: self.dtype != torch.bool
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

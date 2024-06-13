@@ -1,0 +1,234 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - bool
+  - Optional[float]
+  - Optional[float]
+  - Optional[float]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - output_size
+  - align_corners
+  - scales_d
+  - scales_h
+  - scales_w
+  - out
+  required:
+  - true
+  - true
+  - true
+  - false
+  - false
+  - false
+  - true
+name: torch._C._nn.upsample_trilinear3d
+package: torch
+pass_rate: 31.03448275862069
+rules:
+- - cot: 'The error is triggered because the size of the `output_size` argument is
+      0, while it is expected to be 3. To prevent this error, we need to ensure that
+      the `output_size` argument has a length of 3. The constraint for the `output_size`
+      parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        out: tensor
+        output_size: list[int]
+        scales_d: None
+        scales_h: float
+        scales_w: None
+        self: tensor
+      msg: It is expected output_size equals to 3, but got size 0
+      package: torch
+    txt: len(output_size) == 3
+  - f1_score: 40.63745019920319
+    overall_score: 15.75
+    precision: 25.5
+    recall: 100.0
+- - cot: 'The error occurs because the expected size of the output tensor is 5, but
+      the actual size is 4. Let''s see what the args were. The error message says
+      that the output_size parameter is [5, 5, -4]. The last dimension has a negative
+      value, which is causing the error. To prevent this error in the future and generate
+      constraints that do not trigger it, we need to ensure that all dimensions in
+      the output_size parameter are positive. The constraint for the output_size parameter
+      can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        out: tensor
+        output_size: list[int]
+        scales_d: float
+        scales_h: None
+        scales_w: float
+        self: tensor
+      msg: It is expected input_size equals to 5, but got size 4
+      package: torch
+    txt: all(d > 0 for d in output_size)
+  - f1_score: 31.73431734317343
+    overall_score: 13.75
+    precision: 21.5
+    recall: 60.56338028169014
+- - cot: 'The error occurs because the expected input_size is 5, but the actual input_size
+      is 4. From the runtime information, we can see that the input tensor `self`
+      has a shape of [7, 9, 9, 9]. To prevent this error in the future and generate
+      constraints that do not trigger it, we need to ensure that the input tensor
+      has a rank of 5.
+
+
+      The constraint for the input tensor rank can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        out: tensor
+        output_size: list[int]
+        scales_d: float
+        scales_h: float
+        scales_w: float
+        self: tensor
+      msg: It is expected input_size equals to 5, but got size 4
+      package: torch
+    txt: len(self.shape) == 5
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        align_corners: bool
+        out: tensor
+        output_size: list[int]
+        scales_d: float
+        scales_h: None
+        scales_w: float
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank)))
+      or (all(out.shape[i]==output_size[i] for i in range(len(output_size))))
+  - f1_score: 68.66197183098592
+    overall_score: 100
+    precision: 100.0
+    recall: 52.27882037533512
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        out: tensor
+        output_size: list[int]
+        scales_d: None
+        scales_h: float
+        scales_w: None
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: all(out.shape[i] == output_size[i] for i in range(out.rank))
+  - f1_score: 37.59573263402568
+    overall_score: 23.43010752688172
+    precision: 40.86021505376344
+    recall: 34.81428334897069
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        out: tensor
+        output_size: list[int]
+        scales_d: None
+        scales_h: float
+        scales_w: None
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank
+  - f1_score: 56.582633053221286
+    overall_score: 28.0
+    precision: 50.0
+    recall: 65.16129032258064
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        align_corners: bool
+        out: Tensor
+        output_size: List[int]
+        scales_d: Optional[float]
+        scales_h: Optional[float]
+        scales_w: Optional[float]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        align_corners: bool
+        out: Tensor
+        output_size: List[int]
+        scales_d: Optional[float]
+        scales_h: Optional[float]
+        scales_w: Optional[float]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        align_corners: bool
+        out: Tensor
+        output_size: List[int]
+        scales_d: Optional[float]
+        scales_h: Optional[float]
+        scales_w: Optional[float]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        align_corners: bool
+        out: Tensor
+        output_size: List[int]
+        scales_d: Optional[float]
+        scales_h: Optional[float]
+        scales_w: Optional[float]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

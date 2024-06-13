@@ -1,0 +1,111 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - split_sizes
+  - dim
+  required:
+  - true
+  - true
+  - false
+name: torch.split_with_sizes
+package: torch
+pass_rate: 3.5000000000000004
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+        split_sizes: list[int]
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 6)
+      package: torch
+    txt: ((6 < len(self.shape)) or (dim >= -len(self.shape))) and (len(split_sizes)
+      > 0)
+  - f1_score: 65.65656565656566
+    overall_score: 49.75
+    precision: 97.5
+    recall: 49.49238578680203
+- - cot: 'The error message suggests that the sum of split_sizes should be equal to
+      the size of the input tensor at dimension 0 (which is 3 in this case), but the
+      split_sizes argument is set to [1]. To prevent the error, the split_sizes argument
+      should be modified to sum exactly to 3. Therefore, the constraint can be formulated
+      as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: tensor
+        split_sizes: list[int]
+      msg: split_with_sizes expects split_sizes to sum exactly to 3 (input tensor's
+        size at dimension 0), but got split_sizes=[1]
+      package: torch
+    txt: split_sizes[0] == 3
+  - f1_score: 30.729166666666664
+    overall_score: 17.75
+    precision: 29.5
+    recall: 32.065217391304344
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: Tensor
+        split_sizes: List[int]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: Tensor
+        split_sizes: List[int]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: Tensor
+        split_sizes: List[int]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: Tensor
+        split_sizes: List[int]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

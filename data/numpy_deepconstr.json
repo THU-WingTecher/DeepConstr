@@ -1,0 +1,17 @@
+[
+    "numpy.all",
+    "numpy.arcsin",
+    "numpy.right_shift",
+    "numpy.logical_and",
+    "numpy.isfinite",
+    "numpy.add",
+    "numpy.greater",
+    "numpy.round",
+    "numpy.trunc",
+    "numpy.cumsum",
+    "numpy.emath.sqrt",
+    "numpy.arccos",
+    "numpy.logical_or",
+    "numpy.emath.log",
+    "numpy.reciprocal"
+]

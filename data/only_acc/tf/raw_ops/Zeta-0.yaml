@@ -1,0 +1,100 @@
+args:
+  dtype:
+  - str
+  - float32,float64
+  - float32,float64
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - name
+  - q
+  - x
+  required:
+  - false
+  - true
+  - true
+name: tf.raw_ops.Zeta
+package: tensorflow
+pass_rate: 65.33333333333333
+rules:
+- - cot: 'The error is caused by incompatible shapes between tensor "q" with shape
+      [5,7,7,2,2,2,2] and tensor "x" with shape [4,4,6,2,1,3,1]. To prevent this error,
+      the shapes of "q" and "x" should be broadcastable. This means that for each
+      dimension starting from the last, the size of the dimension in "q" should be
+      equal to the size of the dimension in "x" or one of them should be 1.
+
+
+      The constraint can be formulated as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        q: tensor
+        x: tensor
+      msg: '{{function_node __wrapped__Zeta_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [4,6,2,2,2,3,1] vs. [4,7,1,1,2,6,3] [Op:Zeta] name: QXtP'
+      package: tensorflow
+    txt: all(q.shape[i] == x.shape[i] or q.shape[i] == 1 or x.shape[i] == 1 for i
+      in range(-1, -min(len(q.shape), len(x.shape))-1, -1))
+  - f1_score: 90.66666666666667
+    overall_score: 48.33333333333333
+    precision: 90.66666666666666
+    recall: 90.66666666666666
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        q: float32,float64
+        x: float32,float64
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in q.shape) and all(i >= 0 for i in x.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        q: float32,float64
+        x: float32,float64
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: q.rank <= 7 and x.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        q: float32,float64
+        x: float32,float64
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in q.shape) and all(i >= 0 for i in x.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        q: float32,float64
+        x: float32,float64
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: q.rank <= 7 and x.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

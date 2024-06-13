@@ -1,0 +1,106 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - ind
+  - out
+  required:
+  - true
+  - false
+  - true
+name: torch._C._linalg.linalg_tensorinv
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        ind: int
+        out: tensor
+        self: tensor
+      msg: 'ArrayRef: invalid slice, N = 95; size = 2'
+      package: torch
+    txt: (((len(self) > 0) or (self.dim == out.dim)) and (ind < self.size(0))) and
+      (ind >= 0)
+  - f1_score: 72.58979206049149
+    overall_score: 48.75
+    precision: 96.0
+    recall: 58.35866261398176
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        ind: int
+        out: tensor
+        self: tensor
+      msg: Expected a strictly positive integer for 'ind', but got 0
+      package: torch
+    txt: ind > 0
+  - f1_score: 97.799511002445
+    overall_score: 100
+    precision: 100.0
+    recall: 95.69377990430623
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        ind: int
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        ind: int
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        ind: int
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        ind: int
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

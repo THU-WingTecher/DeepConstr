@@ -5,10 +5,8 @@ args:
   - bool
   - bool
   - bool
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   - false
   - false
@@ -19,14 +17,12 @@ args:
   - upper
   - left
   - unitriangular
-  - out
   required:
   - true
   - true
   - true
   - false
   - false
-  - true
 name: torch._C._linalg.linalg_solve_triangular
 package: torch
 pass_rate: 1.0
@@ -37,7 +33,6 @@ rules:
       choosen_dtype:
         B: tensor
         left: bool
-        out: tensor
         self: tensor
         unitriangular: bool
         upper: bool
@@ -55,7 +50,6 @@ rules:
       choosen_dtype:
         B: tensor
         left: bool
-        out: tensor
         self: tensor
         unitriangular: bool
         upper: bool
@@ -72,7 +66,6 @@ rules:
       choosen_dtype:
         B: tensor
         left: bool
-        out: tensor
         self: tensor
         unitriangular: bool
         upper: bool
@@ -84,3 +77,35 @@ rules:
     overall_score: 50.25
     precision: 94.5
     recall: 60.19108280254777
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        B: Tensor
+        left: bool
+        self: Tensor
+        unitriangular: bool
+        upper: bool
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in B.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        B: Tensor
+        left: bool
+        self: Tensor
+        unitriangular: bool
+        upper: bool
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and B.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

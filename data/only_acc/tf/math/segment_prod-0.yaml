@@ -1,0 +1,147 @@
+args:
+  dtype:
+  - tensor
+  - tensor
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - data
+  - segment_ids
+  - name
+  required:
+  - true
+  - true
+  - false
+name: tf.math.segment_prod
+package: null
+pass_rate: 13.333333333333334
+rules:
+- - cot: 'Based on the given runtime information, the error arises because the attribute
+      ''Tindices'' is expected to be one of int32 or int64, but it is provided as
+      a float. The tensors ''data'' and ''segment_ids'' are both provided as float32,
+      which is not compatible. So, the condition to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        data: tensor
+        name: str
+        segment_ids: tensor
+      msg: "Value for attr 'Tindices' of float is not in the list of allowed values:\
+        \ int32, int64\n\t; NodeDef: {{node SegmentProd}}; Op<name=SegmentProd; signature=data:T,\
+        \ segment_ids:Tindices -> output:T; attr=T:type,allowed=[DT_FLOAT, DT_DOUBLE,\
+        \ DT_INT32, DT_UINT8, DT_INT16, 10440210506161272279, DT_UINT16, DT_COMPLEX128,\
+        \ DT_HALF, DT_UINT32, DT_UINT64]; attr=Tindices:type,allowed=[DT_INT32, DT_INT64]>\
+        \ [Op:SegmentProd] name: UweC"
+      package: tensorflow
+    txt: dtype(segment_ids) in ["int32", "int64"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        data: tensor
+        name: str
+        segment_ids: tensor
+      msg: '{{function_node __wrapped__SegmentProd_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        input must be at least rank 1 [Op:SegmentProd] name: RFOB'
+      package: tensorflow
+    txt: (data.rank >= 1)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'segment_ids should be a vector. In other words, it should have only one
+      dimension. Therefore, the constraint should be:'
+    length: 1
+    target:
+      choosen_dtype:
+        data: tensor
+        name: str
+        segment_ids: tensor
+      msg: '{{function_node __wrapped__SegmentProd_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        segment_ids should be a vector. [Op:SegmentProd] name: KLcu'
+      package: tensorflow
+    txt: segment_ids.shape.rank == 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'segment_ids should be the same size as dimension 0 of input. We can formulate
+      the constraint as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        data: tensor
+        name: str
+        segment_ids: tensor
+      msg: '{{function_node __wrapped__SegmentProd_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        segment_ids should be the same size as dimension 0 of input. [Op:SegmentProd]
+        name: nhml'
+      package: tensorflow
+    txt: segment_ids.shape[0] == data.shape[0]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        data: tensor
+        name: str
+        segment_ids: tensor
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in data.shape) and all(i >= 0 for i in segment_ids.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        data: tensor
+        name: str
+        segment_ids: tensor
+      msg: Too large tensor shape
+      package: null
+    txt: data.rank <= 7 and segment_ids.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        data: tensor
+        name: str
+        segment_ids: tensor
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in data.shape) and all(i >= 0 for i in segment_ids.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        data: tensor
+        name: str
+        segment_ids: tensor
+      msg: Too large tensor shape
+      package: null
+    txt: data.rank <= 7 and segment_ids.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

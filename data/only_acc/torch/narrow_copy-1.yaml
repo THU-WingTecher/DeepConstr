@@ -4,10 +4,8 @@ args:
   - int
   - int
   - int
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   - false
   - false
@@ -16,9 +14,7 @@ args:
   - dim
   - start
   - length
-  - out
   required:
-  - true
   - true
   - true
   - true
@@ -33,7 +29,6 @@ rules:
       choosen_dtype:
         dim: int
         length: int
-        out: tensor
         self: tensor
         start: int
       msg: Expected self.dtype() == output.dtype() to be true, but got false.  (Could
@@ -57,7 +52,6 @@ rules:
       choosen_dtype:
         dim: int
         length: int
-        out: tensor
         self: tensor
         start: int
       msg: narrow() cannot be applied to a 0-dim tensor.
@@ -73,7 +67,6 @@ rules:
       choosen_dtype:
         dim: int
         length: int
-        out: tensor
         self: tensor
         start: int
       msg: start out of range (expected to be in range of [-4, 4], but got 91)
@@ -90,7 +83,6 @@ rules:
       choosen_dtype:
         dim: int
         length: int
-        out: tensor
         self: tensor
         start: int
       msg: start (0) + length (72) exceeds dimension size (9).
@@ -115,7 +107,6 @@ rules:
       choosen_dtype:
         dim: int
         length: int
-        out: tensor
         self: tensor
         start: int
       msg: start (5) + length (9) exceeds dimension size (9).
@@ -125,24 +116,6 @@ rules:
     overall_score: 37.833333333333336
     precision: 69.66666666666667
     recall: 49.1764705882353
-- - cot: synthesized
-    length: 5
-    target:
-      choosen_dtype:
-        dim: int
-        length: int
-        out: tensor
-        self: tensor
-        start: int
-      msg: start (6) + length (6) exceeds dimension size (9).
-      package: torch
-    txt: ((((start + length <= out.shape[dim]) and (start + length <= self.dim)) and
-      (start >= 0)) and (start + length <= self.shape[dim])) and (start + length >=
-      0)
-  - f1_score: 65.61679790026247
-    overall_score: 42.26666666666667
-    precision: 83.33333333333334
-    recall: 54.112554112554115
 - - cot: 'The error is triggered because the value of the "start" parameter is out
       of the valid range. The valid range for the "start" parameter is [-n, n-1],
       where n is the length of the given tensor along the specified dimension. In
@@ -159,7 +132,6 @@ rules:
       choosen_dtype:
         dim: int
         length: int
-        out: tensor
         self: tensor
         start: int
       msg: start out of range (expected to be in range of [-3, 3], but got 9)
@@ -179,7 +151,6 @@ rules:
       choosen_dtype:
         dim: int
         length: int
-        out: tensor
         self: tensor
         start: int
       msg: start (4) + length (7) exceeds dimension size (8).
@@ -200,7 +171,6 @@ rules:
       choosen_dtype:
         dim: int
         length: int
-        out: tensor
         self: tensor
         start: int
       msg: start (6) + length (5) exceeds dimension size (8).
@@ -210,30 +180,12 @@ rules:
     overall_score: 39.833333333333336
     precision: 73.66666666666667
     recall: 49.220489977728285
-- - cot: synthesized
-    length: 3
-    target:
-      choosen_dtype:
-        dim: int
-        length: int
-        out: tensor
-        self: tensor
-        start: int
-      msg: start (6) + length (4) exceeds dimension size (9).
-      package: torch
-    txt: ((start + length <= self.shape[dim]) and ((self.dim == out.dim))) and (self.dim
-      >= dim and self.dim >= dim + length)
-  - f1_score: 69.22060766182298
-    overall_score: 44.666666666666664
-    precision: 87.33333333333333
-    recall: 57.3304157549234
 - - cot: ''
     length: 1
     target:
       choosen_dtype:
         dim: int
         length: int
-        out: tensor
         self: tensor
         start: int
       msg: start (5) + length (-4) exceeds dimension size (9).
@@ -249,7 +201,6 @@ rules:
       choosen_dtype:
         dim: int
         length: int
-        out: tensor
         self: tensor
         start: int
       msg: start (7) + length (9) exceeds dimension size (9).
@@ -269,7 +220,6 @@ rules:
       choosen_dtype:
         dim: int
         length: int
-        out: tensor
         self: tensor
         start: int
       msg: start (3) + length (9) exceeds dimension size (9).
@@ -285,7 +235,6 @@ rules:
       choosen_dtype:
         dim: int
         length: int
-        out: tensor
         self: tensor
         start: int
       msg: start (6) + length (5) exceeds dimension size (9).
@@ -301,7 +250,6 @@ rules:
       choosen_dtype:
         dim: int
         length: int
-        out: tensor
         self: tensor
         start: int
       msg: start (2) + length (9) exceeds dimension size (9).
@@ -322,7 +270,6 @@ rules:
       choosen_dtype:
         dim: int
         length: int
-        out: tensor
         self: tensor
         start: int
       msg: start (2) + length (8) exceeds dimension size (9).
@@ -343,7 +290,6 @@ rules:
       choosen_dtype:
         dim: int
         length: int
-        out: tensor
         self: tensor
         start: int
       msg: start (2) + length (9) exceeds dimension size (3).
@@ -353,19 +299,33 @@ rules:
     overall_score: 46.833333333333336
     precision: 87.66666666666667
     recall: 50.190839694656496
-- - cot: ''
+- - cot: default
     length: 1
     target:
       choosen_dtype:
         dim: int
         length: int
-        out: tensor
-        self: tensor
+        self: Tensor
         start: int
-      msg: start (2) + length (8) exceeds dimension size (9).
+      msg: negative dimensions are not allowed
       package: torch
-    txt: self.dim == out.dim and self.shape == out.shape and start + length <= self.shape[-1]
-  - f1_score: 67.61229314420805
-    overall_score: 50.66666666666667
-    precision: 95.33333333333334
-    recall: 52.38095238095239
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        self: Tensor
+        start: int
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

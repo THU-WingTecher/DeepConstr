@@ -3,48 +3,28 @@ args:
   - Tensor
   - number
   - number
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   - false
   name:
   - self
   - other
   - alpha
-  - out
   required:
   - true
   - true
   - false
-  - true
 name: torch.add
 package: torch
 pass_rate: 100
 rules:
-- - cot: synthesized
-    length: 2
-    target:
-      choosen_dtype:
-        alpha: int
-        other: int
-        out: tensor
-        self: tensor
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: (out.shape == self.shape) and (out.rank == self.rank)
-  - f1_score: 90.9090909090909
-    overall_score: 100
-    precision: 100.0
-    recall: 83.33333333333334
 - - cot: ''
     length: 1
     target:
       choosen_dtype:
         alpha: int
         other: int
-        out: tensor
         self: tensor
       msg: result type Float can't be cast to the desired output type Int
       package: torch
@@ -53,3 +33,31 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 51.02040816326531
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: number
+        other: number
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: number
+        other: number
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

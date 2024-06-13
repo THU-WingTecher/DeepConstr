@@ -1,38 +1,20 @@
 args:
   dtype:
   - Tensor
-  - Tensor
   is_pos:
-  - false
   - false
   name:
   - x
-  - out
   required:
-  - true
   - true
 name: torch._C._special.special_scaled_modified_bessel_k1
 package: torch
 pass_rate: 93.0
 rules:
-- - cot: synthesized
-    length: 2
-    target:
-      choosen_dtype:
-        out: tensor
-        x: tensor
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: (out.shape == x.shape) and (out.rank==x.rank)
-  - f1_score: 93.24009324009324
-    overall_score: 100
-    precision: 100.0
-    recall: 87.33624454148472
 - - cot: ''
     length: 1
     target:
       choosen_dtype:
-        out: tensor
         x: tensor
       msg: result type Float can't be cast to the desired output type Int
       package: torch
@@ -41,3 +23,27 @@ rules:
     overall_score: 49.25
     precision: 92.5
     recall: 88.9423076923077
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        x: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in x.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        x: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: x.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -1,0 +1,117 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  - number
+  - number
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - alpha
+  - scale
+  - input_scale
+  required:
+  - true
+  - false
+  - false
+  - false
+name: torch._C._nn.elu
+package: torch
+pass_rate: 98.0
+rules:
+- - cot: The error is due to the fact that the function "elu_cpu" is not implemented
+      for the data type 'Int'. To prevent this error, the constraint should be added
+      to ensure that the data type of the input tensor is not 'Int'.
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        input_scale: int
+        scale: int
+        self: tensor
+      msg: '"elu_cpu" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype != 'Int'
+  - f1_score: 71.59904534606206
+    overall_score: 100
+    precision: 100.0
+    recall: 55.762081784386616
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        input_scale: int
+        scale: int
+        self: tensor
+      msg: '"elu_cpu" not implemented for ''Bool'''
+      package: torch
+    txt: self.dtype != torch.bool
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: number
+        input_scale: number
+        scale: number
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: number
+        input_scale: number
+        scale: number
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: number
+        input_scale: number
+        scale: number
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: number
+        input_scale: number
+        scale: number
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

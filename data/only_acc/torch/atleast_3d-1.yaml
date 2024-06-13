@@ -1,0 +1,61 @@
+args:
+  dtype:
+  - List[Tensor]
+  is_pos:
+  - true
+  name:
+  - tensors
+  required:
+  - true
+name: torch.atleast_3d
+package: torch
+pass_rate: 0
+rules:
+- - cot: default
+    length: 0
+    target:
+      choosen_dtype:
+        tensors: List[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: ''
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 0
+    target:
+      choosen_dtype:
+        tensors: List[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: ''
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 0
+    target:
+      choosen_dtype:
+        tensors: List[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: ''
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 0
+    target:
+      choosen_dtype:
+        tensors: List[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: ''
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

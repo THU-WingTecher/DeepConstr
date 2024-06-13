@@ -1,0 +1,105 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - dims
+  required:
+  - true
+  - true
+name: torch.Tensor.permute
+package: torch
+pass_rate: 51.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dims: list[int]
+        self: tensor
+      msg: 'permute(sparse_coo): number of dimensions in the tensor input does not
+        match the length of the desired ordering of dimensions i.e. input.dim() =
+        2 is not equal to len(dims) = 0'
+      package: torch
+    txt: self.dim() == len(dims)
+  - f1_score: 95.47038327526133
+    overall_score: 48.666666666666664
+    precision: 91.33333333333333
+    recall: 100.0
+- - cot: 'The error occurs because the dimension provided is out of the valid range.
+      From the runtime information, we can see that the value of `dim` is 6. To prevent
+      this error in the future and generate constraints that do not trigger it, we
+      need to ensure that the "dim" value is always within the valid range for the
+      given tensor. If we denote the shape of the tensor as `n`, the valid range for
+      the dimension would be `[-n, n-1]`.
+
+
+      The constraint for the `dim` parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dims: list[int]
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 6)
+      package: torch
+    txt: all(d >= -len(self.shape) and d < len(self.shape) for d in dims)
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dims: List[int]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dims: List[int]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dims: List[int]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dims: List[int]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

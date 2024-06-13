@@ -1,0 +1,109 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[List[int]]
+  - bool
+  - bool
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - unbiased
+  - keepdim
+  - out
+  required:
+  - true
+  - false
+  - false
+  - false
+  - true
+name: torch.var
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        keepdim: bool
+        out: tensor
+        self: tensor
+        unbiased: bool
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self) == int32
+  - f1_score: 67.22689075630252
+    overall_score: 100
+    precision: 100.0
+    recall: 50.632911392405056
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        keepdim: bool
+        out: Tensor
+        self: Tensor
+        unbiased: bool
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        keepdim: bool
+        out: Tensor
+        self: Tensor
+        unbiased: bool
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        keepdim: bool
+        out: Tensor
+        self: Tensor
+        unbiased: bool
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        keepdim: bool
+        out: Tensor
+        self: Tensor
+        unbiased: bool
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -40,3 +40,29 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: bfloat16,float16,float32,float64
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in x.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: bfloat16,float16,float32,float64
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: x.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

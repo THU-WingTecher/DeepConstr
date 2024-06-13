@@ -1,0 +1,97 @@
+args:
+  dtype:
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - dy
+  - name
+  - y
+  required:
+  - true
+  - false
+  - true
+name: tf.raw_ops.TanhGrad
+package: tensorflow
+pass_rate: 21.333333333333336
+rules:
+- - cot: 'The error occurs because the number of elements in the two input tensors,
+      `dy` and `y`, is not the same. The `dy` tensor has 1 element, while the `y`
+      tensor has 36 elements. To prevent this error, the number of elements in the
+      two tensors should be the same. Therefore, the constraint can be formulated
+      as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dy: tensor
+        name: str
+        y: tensor
+      msg: '{{function_node __wrapped__TanhGrad_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        The two arguments to a cwise op must have same number of elements, got 288
+        and 5 [Op:TanhGrad] name: Dfyu'
+      package: tensorflow
+    txt: (size(dy) == size(y))
+  - f1_score: 48.076923076923066
+    overall_score: 19.666666666666664
+    precision: 33.33333333333333
+    recall: 86.20689655172413
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dy: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+        y: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in dy.shape) and all(i >= 0 for i in y.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dy: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+        y: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: dy.rank <= 7 and y.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dy: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+        y: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in dy.shape) and all(i >= 0 for i in y.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dy: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+        y: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: dy.rank <= 7 and y.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

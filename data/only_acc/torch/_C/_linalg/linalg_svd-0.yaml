@@ -1,0 +1,92 @@
+args:
+  dtype:
+  - Tensor
+  - bool
+  - Optional[str]
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - A
+  - full_matrices
+  - driver
+  required:
+  - true
+  - false
+  - false
+name: torch._C._linalg.linalg_svd
+package: torch
+pass_rate: 43.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        driver: str
+        full_matrices: bool
+      msg: 'torch.linalg.svd: keyword argument `driver=` is only supported on CUDA
+        inputs with cuSOLVER backend.'
+      package: torch
+    txt: full_matrices == True
+  - f1_score: 20.55335968379447
+    overall_score: 9.5
+    precision: 13.0
+    recall: 49.056603773584904
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        A: Tensor
+        driver: Optional[str]
+        full_matrices: bool
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in A.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        A: Tensor
+        driver: Optional[str]
+        full_matrices: bool
+      msg: Too large tensor shape
+      package: torch
+    txt: A.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        A: Tensor
+        driver: Optional[str]
+        full_matrices: bool
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in A.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        A: Tensor
+        driver: Optional[str]
+        full_matrices: bool
+      msg: Too large tensor shape
+      package: torch
+    txt: A.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

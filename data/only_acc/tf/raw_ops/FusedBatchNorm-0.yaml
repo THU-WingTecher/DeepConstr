@@ -304,3 +304,48 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 53.44827586206896
+- - cot: default
+    length: 5
+    target:
+      choosen_dtype:
+        data_format: str
+        epsilon: float
+        exponential_avg_factor: float
+        is_training: bool
+        mean: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+        offset: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        scale: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        variance: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        x: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in mean.shape) and all(i >= 0 for i in offset.shape) and
+      all(i >= 0 for i in scale.shape) and all(i >= 0 for i in variance.shape) and
+      all(i >= 0 for i in x.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 5
+    target:
+      choosen_dtype:
+        data_format: str
+        epsilon: float
+        exponential_avg_factor: float
+        is_training: bool
+        mean: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+        offset: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        scale: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        variance: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        x: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: mean.rank <= 7 and offset.rank <= 7 and scale.rank <= 7 and variance.rank
+      <= 7 and x.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

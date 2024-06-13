@@ -1,0 +1,174 @@
+args:
+  dtype:
+  - tensor
+  - int
+  - tensor
+  - bool
+  - None
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - a
+  - axis
+  - out
+  - keepdims
+  - where
+  required:
+  - true
+  - false
+  - false
+  - false
+  - false
+name: numpy.all
+package: null
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        axis: int
+        keepdims: bool
+        out: tensor
+        where: None
+      msg: axis 7 is out of bounds for array of dimension 7
+      package: numpy
+    txt: axis >= -len(a.shape)
+  - f1_score: 74.04902789518174
+    overall_score: 51.66666666666667
+    precision: 97.33333333333334
+    recall: 59.754433833560704
+- - cot: The error is due to the mismatch in the dimensions of the 'out' tensor. The
+      function expects the 'out' tensor to have 6 dimensions, but it is found to have
+      7 dimensions. Therefore, the constraint to prevent this error is to ensure that
+      the 'out' tensor has 6 dimensions.
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        axis: int
+        keepdims: bool
+        out: tensor
+        where: None
+      msg: 'output parameter for reduction operation logical_and has the wrong number
+        of dimensions: Found 7 but expected 6'
+      package: numpy
+    txt: out.ndim == 6
+  - f1_score: 53.044263236819134
+    overall_score: 29.51006711409396
+    precision: 53.02013422818792
+    recall: 53.06841421725955
+- - cot: 'The error is due to the operands not being broadcastable together. The shapes
+      of the operands are (1,5,7,7,4,5) and (6,7,7,6,0,7,7). To prevent this error,
+      we need to ensure that for each dimension starting from the last, the size of
+      the dimension in the first operand is equal to the size of the dimension in
+      the second operand or one of them should be 1. We start from the last dimension
+      because broadcasting aligns dimensions from the end. Therefore, the constraint
+      to prevent the error can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        axis: int
+        keepdims: bool
+        out: tensor
+        where: None
+      msg: 'operands could not be broadcast together with remapped shapes [original->remapped]:
+        (1,5,7,7,4,5)->(1,5,7,newaxis,7,4,5) (6,7,7,6,0,7,7) () '
+      package: numpy
+    txt: all(a.shape[i] == out.shape[i] or a.shape[i] == 1 or out.shape[i] == 1 for
+      i in range(-1, -min(len(a.shape), len(out.shape))-1, -1))
+  - f1_score: 66.9178598342125
+    overall_score: 52.333333333333336
+    precision: 98.66666666666667
+    recall: 50.62713797035347
+- - cot: 'The error occurs because the ''axis'' argument provided is out of bounds
+      for the array with dimension 7. To prevent this error in the future, we need
+      to ensure that the ''axis'' value is always within the valid range for the given
+      array. If we denote the shape of the array as n, the valid range for the axis
+      would be [0, n-1]. Therefore, the constraint for the ''axis'' parameter can
+      be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        axis: int
+        keepdims: bool
+        out: tensor
+        where: None
+      msg: axis 7 is out of bounds for array of dimension 7
+      package: numpy
+    txt: axis >= 0 and axis < len(a.shape)
+  - f1_score: 62.505357807694594
+    overall_score: 42.64912280701755
+    precision: 79.2982456140351
+    recall: 51.58192061221645
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        a: tensor
+        axis: int
+        keepdims: bool
+        out: tensor
+        where: None
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in a.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        a: tensor
+        axis: int
+        keepdims: bool
+        out: tensor
+        where: None
+      msg: Too large tensor shape
+      package: null
+    txt: a.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        a: tensor
+        axis: int
+        keepdims: bool
+        out: tensor
+        where: None
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in a.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        a: tensor
+        axis: int
+        keepdims: bool
+        out: tensor
+        where: None
+      msg: Too large tensor shape
+      package: null
+    txt: a.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

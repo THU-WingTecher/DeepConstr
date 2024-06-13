@@ -4,10 +4,8 @@ args:
   - Optional[List[int]]
   - bool
   - bool
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   - false
   - false
@@ -16,33 +14,15 @@ args:
   - dim
   - unbiased
   - keepdim
-  - out
   required:
   - true
   - false
   - false
   - false
-  - true
 name: torch.std
 package: torch
 pass_rate: 100
 rules:
-- - cot: ''
-    length: 1
-    target:
-      choosen_dtype:
-        dim: None
-        keepdim: bool
-        out: tensor
-        self: tensor
-        unbiased: bool
-      msg: result type Float can't be cast to the desired output type Int
-      package: torch
-    txt: dtype(self) == dtype(out)
-  - f1_score: 68.72852233676976
-    overall_score: 100
-    precision: 100.0
-    recall: 52.35602094240838
 - - cot: "The error is triggered because the input tensor has an integer data type,\
       \ but the `torch.std` function only supports floating point and complex data\
       \ types. To prevent this error, we need to ensure that the input tensor has\
@@ -52,7 +32,6 @@ rules:
       choosen_dtype:
         dim: None
         keepdim: bool
-        out: tensor
         self: tensor
         unbiased: bool
       msg: std and var only support floating point and complex dtypes
@@ -62,19 +41,33 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 100.0
-- - cot: ''
+- - cot: default
     length: 1
     target:
       choosen_dtype:
-        dim: None
+        dim: Optional[List[int]]
         keepdim: bool
-        out: tensor
-        self: tensor
+        self: Tensor
         unbiased: bool
-      msg: Trying to resize storage that is not resizable
+      msg: negative dimensions are not allowed
       package: torch
-    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
-  - f1_score: 67.18924972004478
-    overall_score: 100
-    precision: 100.0
-    recall: 50.5902192242833
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        keepdim: bool
+        self: Tensor
+        unbiased: bool
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

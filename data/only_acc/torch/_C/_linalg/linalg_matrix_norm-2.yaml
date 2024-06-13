@@ -1,0 +1,196 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  - List[int]
+  - bool
+  - None
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - ord
+  - dim
+  - keepdim
+  - dtype
+  - out
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - true
+name: torch._C._linalg.linalg_matrix_norm
+package: torch
+pass_rate: 53.65853658536586
+rules:
+- - cot: ord should be a positive integer or float, but in this case, it is -4. Therefore,
+      the constraint should be ord > 0.
+    length: 1
+    target:
+      choosen_dtype:
+        dim: list[int]
+        dtype: None
+        keepdim: bool
+        ord: int
+        out: tensor
+        self: tensor
+      msg: 'linalg.matrix_norm: Order -4 not supported.'
+      package: torch
+    txt: ord > 0
+  - f1_score: 87.25314183123879
+    overall_score: 43.5
+    precision: 81.0
+    recall: 94.55252918287938
+- - cot: 'Based on the given runtime information, the error message indicates that
+      the ''dim'' argument is not a 2-tuple. The expected ''dim'' should be a 2-tuple,
+      but the received ''dim'' is an empty list. Therefore, the constraint to prevent
+      the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: list[int]
+        dtype: None
+        keepdim: bool
+        ord: int
+        out: tensor
+        self: tensor
+      msg: 'linalg.matrix_norm: dim must be a 2-tuple. Got '
+      package: torch
+    txt: len(dim) == 2
+  - f1_score: 85.9598853868195
+    overall_score: 100
+    precision: 100.0
+    recall: 75.37688442211056
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: list[int]
+        dtype: None
+        keepdim: bool
+        ord: int
+        out: tensor
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-3, 2], but got 6)
+      package: torch
+    txt: (6 < len(self.shape)) and (all(d >= -len(self.shape) and d < len(self.shape)
+      for d in dim))
+  - f1_score: 61.61137440758294
+    overall_score: 46.02054794520548
+    precision: 89.04109589041096
+    recall: 47.10144927536232
+- - cot: 'The error occurs because the order (ord) specified for the matrix norm calculation
+      is 7, which is not supported. To prevent this error, the order should be a valid
+      value. In this case, the valid values for order are integers between 1 and 6.
+      Therefore, the condition to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: list[int]
+        dtype: None
+        keepdim: bool
+        ord: int
+        out: tensor
+        self: tensor
+      msg: 'linalg.matrix_norm: Order 7 not supported.'
+      package: torch
+    txt: 1 <= ord <= 6
+  - f1_score: 92.25092250922508
+    overall_score: 45.80821917808219
+    precision: 85.61643835616438
+    recall: 100.0
+- - cot: 'The error is triggered because the dimensions provided for calculating the
+      matrix norm are not different. The given dimensions are (-4, -4), and it should
+      be (3, 3). Therefore, the condition that prevents the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: list[int]
+        dtype: None
+        keepdim: bool
+        ord: int
+        out: tensor
+        self: tensor
+      msg: 'linalg.matrix_norm: dims must be different. Got (3, 3)'
+      package: torch
+    txt: dim[0] != dim[1]
+  - f1_score: 87.02823507192545
+    overall_score: 52.48453608247423
+    precision: 98.96907216494846
+    recall: 77.65855850794898
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: List[int]
+        dtype: None
+        keepdim: bool
+        ord: number
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: List[int]
+        dtype: None
+        keepdim: bool
+        ord: number
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: List[int]
+        dtype: None
+        keepdim: bool
+        ord: number
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: List[int]
+        dtype: None
+        keepdim: bool
+        ord: number
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

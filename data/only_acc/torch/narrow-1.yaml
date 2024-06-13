@@ -1,0 +1,131 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - Tensor
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - start
+  - length
+  required:
+  - true
+  - true
+  - true
+  - true
+name: torch.narrow
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: 'Based on the given runtime information, the constraint to prevent the error
+      is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        self: tensor
+        start: tensor
+      msg: start must be an 0-dim integral Tensor.
+      package: torch
+    txt: start.dim() == 0 and start.dtype == torch.int
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        self: tensor
+        start: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 2)
+      package: torch
+    txt: dim < len(self.shape)
+  - f1_score: 36.31379715441848
+    overall_score: 22.696969696969695
+    precision: 39.39393939393939
+    recall: 33.68038740920096
+- - cot: 'The constraint to prevent the error can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        self: tensor
+        start: tensor
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 9)
+      package: torch
+    txt: dim >= -7 and dim < 7
+  - f1_score: 61.479530763706016
+    overall_score: 30.02020202020202
+    precision: 54.04040404040404
+    recall: 71.29372570794004
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        self: Tensor
+        start: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in start.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        self: Tensor
+        start: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and start.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        self: Tensor
+        start: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in start.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        length: int
+        self: Tensor
+        start: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and start.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

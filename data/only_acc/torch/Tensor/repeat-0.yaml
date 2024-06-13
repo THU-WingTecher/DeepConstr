@@ -1,0 +1,103 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - repeats
+  required:
+  - true
+  - true
+name: torch.Tensor.repeat
+package: torch
+pass_rate: 99.0
+rules:
+- - cot: "Based on the given runtime information, the error is triggered because the\
+      \ number of dimensions in the `repeats` list is smaller than the number of dimensions\
+      \ in the `self` tensor. \n\nTo prevent this error, we can add a constraint to\
+      \ check if the number of dimensions in `repeats` is equal to or greater than\
+      \ the number of dimensions in `self`."
+    length: 1
+    target:
+      choosen_dtype:
+        repeats: list[int]
+        self: tensor
+      msg: Number of dimensions of repeat dims can not be smaller than number of dimensions
+        of tensor
+      package: torch
+    txt: len(repeats) >= self.dim()
+  - f1_score: 68.02721088435375
+    overall_score: 100
+    precision: 100.0
+    recall: 51.54639175257733
+- - cot: 'The error occurs because the repeat values contain a negative dimension
+      (-4). To prevent this error, the repeat values should be non-negative. Therefore,
+      the constraint would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        repeats: list[int]
+        self: tensor
+      msg: 'Trying to create tensor with negative dimension -4: [-4, -4, -4, -4, 5,
+        -4, -4, -4, -4]'
+      package: torch
+    txt: all(repeat >= 0 for repeat in repeats)
+  - f1_score: 92.87925696594425
+    overall_score: 100
+    precision: 100.0
+    recall: 86.70520231213872
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        repeats: List[int]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        repeats: List[int]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        repeats: List[int]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        repeats: List[int]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

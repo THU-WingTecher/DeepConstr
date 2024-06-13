@@ -1,0 +1,123 @@
+args:
+  dtype:
+  - str
+  - bfloat16,float16,float32,float64,uint8,int8,uint16,int16,int32,uint32,uint64,int64,complex64,complex128
+  - bfloat16,float16,float32,float64,uint8,int8,uint16,int16,int32,uint32,uint64,int64,complex64,complex128
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - name
+  - x
+  - y
+  required:
+  - false
+  - true
+  - true
+name: tf.raw_ops.RealDiv
+package: tensorflow
+pass_rate: 92.66666666666666
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: '{{function_node __wrapped__RealDiv_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [9,9,9,9,9,9] vs. [3,9,8,1,8,5,8] [Op:RealDiv] name:
+        dmHk'
+      package: tensorflow
+    txt: (all(x.shape[i] == y.shape[i] or x.shape[i] == 1 or y.shape[i] == 1 for i
+      in range(-1, -min(len(x.shape), len(y.shape))-1, -1))) and (len(x) == len(y))
+  - f1_score: 90.9090909090909
+    overall_score: 100
+    precision: 100.0
+    recall: 83.33333333333334
+- - cot: "The error is due to the mismatch of data types between the input tensors\
+      \ x and y. The first input tensor x has a data type of i32 (integer), while\
+      \ the second input tensor y has a data type of f32 (float). Therefore, to prevent\
+      \ the error, the data types of both input tensors x and y should be the same.\
+      \ \n\nThe constraint to prevent the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: "Could not find device for node: {{node RealDiv}} = RealDiv[T=DT_INT32]\n\
+        All kernels registered for op RealDiv:\n  device='XLA_CPU_JIT'; T in [DT_FLOAT,\
+        \ DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16, DT_INT8, DT_COMPLEX64, DT_INT64,\
+        \ DT_BFLOAT16, DT_UINT16, DT_COMPLEX128, DT_HALF, DT_UINT32, DT_UINT64]\n\
+        \  device='XLA_GPU_JIT'; T in [DT_FLOAT, DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16,\
+        \ DT_INT8, DT_COMPLEX64, DT_INT64, DT_BFLOAT16, DT_UINT16, DT_COMPLEX128,\
+        \ DT_HALF, DT_UINT32, DT_UINT64]\n  device='GPU'; T in [DT_COMPLEX128]\n \
+        \ device='GPU'; T in [DT_COMPLEX64]\n  device='GPU'; T in [DT_DOUBLE]\n  device='GPU';\
+        \ T in [DT_FLOAT]\n  device='GPU'; T in [DT_HALF]\n  device='GPU'; T in [DT_BFLOAT16]\n\
+        \  device='CPU'; T in [DT_COMPLEX128]\n  device='CPU'; T in [DT_COMPLEX64]\n\
+        \  device='CPU'; T in [DT_BFLOAT16]\n  device='CPU'; T in [DT_DOUBLE]\n  device='CPU';\
+        \ T in [DT_HALF]\n  device='CPU'; T in [DT_FLOAT]\n [Op:RealDiv] name: IDQd"
+      package: tensorflow
+    txt: x.dtype == y.dtype
+  - f1_score: 75.91623036649214
+    overall_score: 51.333333333333336
+    precision: 96.66666666666667
+    recall: 62.5
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        x: bfloat16,float16,float32,float64,uint8,int8,uint16,int16,int32,uint32,uint64,int64,complex64,complex128
+        y: bfloat16,float16,float32,float64,uint8,int8,uint16,int16,int32,uint32,uint64,int64,complex64,complex128
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in x.shape) and all(i >= 0 for i in y.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        x: bfloat16,float16,float32,float64,uint8,int8,uint16,int16,int32,uint32,uint64,int64,complex64,complex128
+        y: bfloat16,float16,float32,float64,uint8,int8,uint16,int16,int32,uint32,uint64,int64,complex64,complex128
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: x.rank <= 7 and y.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        x: bfloat16,float16,float32,float64,uint8,int8,uint16,int16,int32,uint32,uint64,int64,complex64,complex128
+        y: bfloat16,float16,float32,float64,uint8,int8,uint16,int16,int32,uint32,uint64,int64,complex64,complex128
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in x.shape) and all(i >= 0 for i in y.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        x: bfloat16,float16,float32,float64,uint8,int8,uint16,int16,int32,uint32,uint64,int64,complex64,complex128
+        y: bfloat16,float16,float32,float64,uint8,int8,uint16,int16,int32,uint32,uint64,int64,complex64,complex128
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: x.rank <= 7 and y.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

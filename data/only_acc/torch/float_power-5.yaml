@@ -2,46 +2,24 @@ args:
   dtype:
   - Tensor
   - number
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   name:
   - self
   - exponent
-  - out
   required:
-  - true
   - true
   - true
 name: torch.float_power
 package: torch
 pass_rate: 100
 rules:
-- - cot: The error is triggered because the output tensor has dtype Float, but the
-      operation's result requires dtype Double. To prevent this error, the dtype of
-      the output tensor should be changed to Double.
-    length: 1
-    target:
-      choosen_dtype:
-        exponent: int
-        out: tensor
-        self: tensor
-      msg: the output given to float_power has dtype Float but the operation's result
-        requires dtype Double
-      package: torch
-    txt: dtype(out) == Double
-  - f1_score: 100.0
-    overall_score: 100
-    precision: 100.0
-    recall: 100.0
 - - cot: ''
     length: 1
     target:
       choosen_dtype:
         exponent: int
-        out: tensor
         self: tensor
       msg: Trying to resize storage that is not resizable
       package: torch
@@ -50,3 +28,29 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 67.72009029345372
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        exponent: number
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        exponent: number
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

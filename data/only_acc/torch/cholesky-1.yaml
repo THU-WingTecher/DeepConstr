@@ -1,0 +1,96 @@
+args:
+  dtype:
+  - Tensor
+  - bool
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - upper
+  - out
+  required:
+  - true
+  - false
+  - true
+name: torch.cholesky
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: "The error is triggered because the input tensor \"self\" is not a batch\
+      \ of square matrices. The last two dimensions of \"self\" should be equal, indicating\
+      \ that it represents a square matrix. \n\nTo prevent this error, we need to\
+      \ enforce the constraint that the last two dimensions of \"self\" are the same.\
+      \ Let's denote the shape of \"self\" as (batch_size, n). The constraint can\
+      \ be expressed as:"
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+        upper: bool
+      msg: 'cholesky: A must be batches of square matrices, but they are 1 by 7 matrices'
+      package: torch
+    txt: self.shape[-1] == self.shape[-2]
+  - f1_score: 67.72009029345372
+    overall_score: 100
+    precision: 100.0
+    recall: 51.19453924914675
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        out: Tensor
+        self: Tensor
+        upper: bool
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        out: Tensor
+        self: Tensor
+        upper: bool
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        out: Tensor
+        self: Tensor
+        upper: bool
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        out: Tensor
+        self: Tensor
+        upper: bool
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

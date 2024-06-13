@@ -1,0 +1,91 @@
+args:
+  dtype:
+  - int
+  - float
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - n
+  - d
+  - out
+  required:
+  - true
+  - false
+  - true
+name: torch._C._fft.fft_fftfreq
+package: torch
+pass_rate: 63.33333333333333
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        d: float
+        n: int
+        out: tensor
+      msg: upper bound and larger bound inconsistent with step sign
+      package: torch
+    txt: n > 0
+  - f1_score: 70.09345794392523
+    overall_score: 100
+    precision: 100.0
+    recall: 53.956834532374096
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        d: float
+        n: int
+        out: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        d: float
+        n: int
+        out: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        d: float
+        n: int
+        out: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        d: float
+        n: int
+        out: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

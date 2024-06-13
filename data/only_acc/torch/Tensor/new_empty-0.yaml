@@ -1,0 +1,101 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - None
+  - None
+  - Optional[Device]
+  - Optional[bool]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - size
+  - dtype
+  - layout
+  - device
+  - pin_memory
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+name: torch.Tensor.new_empty
+package: torch
+pass_rate: 74.66666666666667
+rules:
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        device: Optional[Device]
+        dtype: None
+        layout: None
+        pin_memory: Optional[bool]
+        self: Tensor
+        size: List[int]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        device: Optional[Device]
+        dtype: None
+        layout: None
+        pin_memory: Optional[bool]
+        self: Tensor
+        size: List[int]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        device: Optional[Device]
+        dtype: None
+        layout: None
+        pin_memory: Optional[bool]
+        self: Tensor
+        size: List[int]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        device: Optional[Device]
+        dtype: None
+        layout: None
+        pin_memory: Optional[bool]
+        self: Tensor
+        size: List[int]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

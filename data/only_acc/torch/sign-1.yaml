@@ -1,15 +1,11 @@
 args:
   dtype:
   - Tensor
-  - Tensor
   is_pos:
   - true
-  - false
   name:
   - self
-  - out
   required:
-  - true
   - true
 name: torch.sign
 package: torch
@@ -19,20 +15,6 @@ rules:
     length: 1
     target:
       choosen_dtype:
-        out: tensor
-        self: tensor
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
-  - f1_score: 74.21150278293136
-    overall_score: 100
-    precision: 100.0
-    recall: 58.99705014749264
-- - cot: ''
-    length: 1
-    target:
-      choosen_dtype:
-        out: tensor
         self: tensor
       msg: Found dtype Float but expected Int
       package: torch
@@ -41,3 +23,27 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

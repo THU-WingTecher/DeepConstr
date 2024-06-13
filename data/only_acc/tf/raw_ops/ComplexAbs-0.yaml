@@ -1,0 +1,86 @@
+args:
+  dtype:
+  - str
+  - complex64,complex128
+  is_pos:
+  - false
+  - false
+  name:
+  - name
+  - x
+  required:
+  - false
+  - true
+name: tf.raw_ops.ComplexAbs
+package: tensorflow
+pass_rate: 2.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+      msg: "Value for attr 'T' of float is not in the list of allowed values: complex64,\
+        \ complex128\n\t; NodeDef: {{node ComplexAbs}}; Op<name=ComplexAbs; signature=x:T\
+        \ -> y:Tout; attr=T:type,default=DT_COMPLEX64,allowed=[DT_COMPLEX64, DT_COMPLEX128];\
+        \ attr=Tout:type,default=DT_FLOAT,allowed=[DT_FLOAT, DT_DOUBLE]> [Op:ComplexAbs]\
+        \ name: xlbG"
+      package: tensorflow
+    txt: dtype(x) in ["complex64", "complex128"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: complex64,complex128
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in x.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: complex64,complex128
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: x.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: complex64,complex128
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in x.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: complex64,complex128
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: x.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

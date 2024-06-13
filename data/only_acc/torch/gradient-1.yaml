@@ -1,0 +1,121 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  - List[int]
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - spacing
+  - dim
+  - edge_order
+  required:
+  - true
+  - true
+  - true
+  - false
+name: torch.gradient
+package: torch
+pass_rate: 67.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: list[int]
+        edge_order: int
+        self: tensor
+        spacing: int
+      msg: torch.gradient only supports edge_order=1 and edge_order=2.
+      package: torch
+    txt: edge_order == 2
+  - f1_score: 98.84678747940691
+    overall_score: 100
+    precision: 100.0
+    recall: 97.71986970684038
+- - cot: "The error occurs because the given dimension value, 37, is out of the valid\
+      \ range. To prevent this error, we need to ensure that the dimension values\
+      \ provided are within the valid range for the given tensor. If we denote the\
+      \ shape of the tensor as n, the valid range for the dimension would be [-n,\
+      \ n-1]. In this case, the shape of the tensor is [6, 6], so the valid range\
+      \ for the dimension would be [-2, 1]. \n\nThe constraint for the 'dim' parameter\
+      \ can be expressed as:"
+    length: 1
+    target:
+      choosen_dtype:
+        dim: list[int]
+        edge_order: int
+        self: tensor
+        spacing: int
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 37)
+      package: torch
+    txt: all(d >= -len(self.shape) and d < len(self.shape) for d in dim)
+  - f1_score: 65.81196581196582
+    overall_score: 41.5
+    precision: 77.0
+    recall: 57.46268656716419
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: List[int]
+        edge_order: int
+        self: Tensor
+        spacing: number
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: List[int]
+        edge_order: int
+        self: Tensor
+        spacing: number
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: List[int]
+        edge_order: int
+        self: Tensor
+        spacing: number
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: List[int]
+        edge_order: int
+        self: Tensor
+        spacing: number
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

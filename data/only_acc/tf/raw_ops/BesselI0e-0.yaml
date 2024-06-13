@@ -1,0 +1,90 @@
+args:
+  dtype:
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  is_pos:
+  - false
+  - false
+  name:
+  - name
+  - x
+  required:
+  - false
+  - true
+name: tf.raw_ops.BesselI0e
+package: tensorflow
+pass_rate: 98.0
+rules:
+- - cot: "Based on the given runtime information, the error arises because the attribute\
+      \ 'T' of the function tf.raw_ops.BesselI0e is expected to be one of bfloat16,\
+      \ half, float, or double. However, the tensor 'x' is provided as int32, which\
+      \ is not compatible. \n\nTo prevent the error, the 'x' tensor should be converted\
+      \ to one of the allowed types. The condition that makes the error disappear\
+      \ is:"
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: bfloat16,\
+        \ half, float, double\n\t; NodeDef: {{node BesselI0e}}; Op<name=BesselI0e;\
+        \ signature=x:T -> y:T; attr=T:type,allowed=[DT_BFLOAT16, DT_HALF, DT_FLOAT,\
+        \ DT_DOUBLE]> [Op:BesselI0e] name: gTHX"
+      package: tensorflow
+    txt: dtype(x) in ["bfloat16", "half", "float", "double"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in x.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: x.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in x.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: x.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

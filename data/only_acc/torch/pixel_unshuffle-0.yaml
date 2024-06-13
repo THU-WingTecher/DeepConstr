@@ -1,0 +1,83 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - downscale_factor
+  required:
+  - true
+  - true
+name: torch.pixel_unshuffle
+package: torch
+pass_rate: 10.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        downscale_factor: int
+        self: tensor
+      msg: pixel_unshuffle expects input to have at least 3 dimensions, but got input
+        with 2 dimension(s)
+      package: torch
+    txt: self.rank >= 3
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        downscale_factor: int
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        downscale_factor: int
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        downscale_factor: int
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        downscale_factor: int
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -3,19 +3,15 @@ args:
   - Tensor
   - number
   - number
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   - false
   name:
   - self
   - threshold
   - value
-  - out
   required:
-  - true
   - true
   - true
   - true
@@ -23,21 +19,6 @@ name: torch.threshold
 package: torch
 pass_rate: 100
 rules:
-- - cot: ''
-    length: 1
-    target:
-      choosen_dtype:
-        out: tensor
-        self: tensor
-        threshold: int
-        value: int
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
-  - f1_score: 75.47169811320754
-    overall_score: 100
-    precision: 100.0
-    recall: 60.60606060606061
 - - cot: The error is triggered because the result type of Float cannot be cast to
       the desired output type of Int. Let's see what the arguments were. The output
       tensor `out` has a type of `Tensor<i32>`, while the input tensor `self` has
@@ -46,7 +27,6 @@ rules:
     length: 1
     target:
       choosen_dtype:
-        out: tensor
         self: tensor
         threshold: int
         value: int
@@ -57,3 +37,31 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 75.75757575757575
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+        threshold: number
+        value: number
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+        threshold: number
+        value: number
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

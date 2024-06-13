@@ -1,0 +1,149 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - index
+  - src
+  required:
+  - true
+  - true
+  - true
+  - true
+name: torch.Tensor.scatter_
+package: torch
+pass_rate: 7.638888888888889
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        self: tensor
+        src: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 9)
+      package: torch
+    txt: (dim >= -len(self.shape) and dim < len(self.shape)) and (-4 >= -len(self.shape)
+      and -4 < len(self.shape))
+  - f1_score: 76.3586956521739
+    overall_score: 48.333333333333336
+    precision: 93.66666666666667
+    recall: 64.44954128440367
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        self: tensor
+        src: tensor
+      msg: 'scatter(): Expected dtype int64 for index'
+      package: torch
+    txt: index.dtype() == int64
+  - f1_score: 93.75
+    overall_score: 100
+    precision: 100.0
+    recall: 88.23529411764706
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        self: tensor
+        src: tensor
+      msg: Index tensor must have the same number of dimensions as self tensor
+      package: torch
+    txt: (index.dim() == self.dim()) and (index.dim == src.dim)
+  - f1_score: 83.21775312066575
+    overall_score: 100
+    precision: 100.0
+    recall: 71.25890736342043
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        self: tensor
+        src: tensor
+      msg: Expected index [8, 5, 6, 2, 4] to be smaller than self [3, 2, 8, 8, 4]
+        apart from dimension 1 and to be smaller size than src [6, 1, 6, 6, 9]
+      package: torch
+    txt: index.size(0) <= self.size(0)
+  - f1_score: 40.13924322995113
+    overall_score: 18.52901023890785
+    precision: 31.058020477815703
+    recall: 56.72552724745336
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        index: Tensor
+        self: Tensor
+        src: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in index.shape) and
+      all(i >= 0 for i in src.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        index: Tensor
+        self: Tensor
+        src: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and index.rank <= 7 and src.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        index: Tensor
+        self: Tensor
+        src: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in index.shape) and
+      all(i >= 0 for i in src.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        index: Tensor
+        self: Tensor
+        src: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and index.rank <= 7 and src.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

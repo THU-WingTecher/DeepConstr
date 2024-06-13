@@ -2,34 +2,42 @@ args:
   dtype:
   - Tensor
   - number
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   name:
   - self
   - other
-  - out
   required:
-  - true
   - true
   - true
 name: torch.eq
 package: torch
 pass_rate: 100
 rules:
-- - cot: synthesized
-    length: 2
+- - cot: default
+    length: 1
     target:
       choosen_dtype:
-        other: int
-        out: tensor
-        self: tensor
-      msg: Trying to resize storage that is not resizable
+        other: number
+        self: Tensor
+      msg: negative dimensions are not allowed
       package: torch
-    txt: (out.shape==self.shape) and (out.rank == self.rank)
-  - f1_score: 93.67681498829039
-    overall_score: 100
-    precision: 100.0
-    recall: 88.10572687224669
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        other: number
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

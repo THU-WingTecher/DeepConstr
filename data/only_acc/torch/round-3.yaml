@@ -2,17 +2,13 @@ args:
   dtype:
   - Tensor
   - int
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   name:
   - self
   - decimals
-  - out
   required:
-  - true
   - true
   - true
 name: torch.round
@@ -24,21 +20,6 @@ rules:
     target:
       choosen_dtype:
         decimals: int
-        out: tensor
-        self: tensor
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
-  - f1_score: 73.93715341959334
-    overall_score: 100
-    precision: 100.0
-    recall: 58.65102639296187
-- - cot: ''
-    length: 1
-    target:
-      choosen_dtype:
-        decimals: int
-        out: tensor
         self: tensor
       msg: Found dtype Int but expected Float
       package: torch
@@ -55,7 +36,6 @@ rules:
     target:
       choosen_dtype:
         decimals: int
-        out: tensor
         self: tensor
       msg: '"round_cpu" not implemented for ''Int'''
       package: torch
@@ -64,3 +44,29 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 90.9090909090909
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        decimals: int
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        decimals: int
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

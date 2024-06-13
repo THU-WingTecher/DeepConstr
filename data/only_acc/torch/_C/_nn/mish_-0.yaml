@@ -1,0 +1,89 @@
+args:
+  dtype:
+  - Tensor
+  is_pos:
+  - true
+  name:
+  - self
+  required:
+  - true
+name: torch._C._nn.mish_
+package: torch
+pass_rate: 97.33333333333334
+rules:
+- - cot: The error is due to the function "mish_cpu" not being implemented for the
+      data type 'Int'. Therefore, a constraint needs to be formulated to ensure that
+      the input tensor has a data type other than 'Int'.
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+      msg: '"mish_cpu" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype != 'Int'
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: 'The error occurs because the "mish_cpu" operation is not implemented for
+      ''Bool'' type tensor. Therefore, the dtype of ''self'' must not be ''Bool''.
+      So, Left : self.dtype, Op : !=, and Right : ''Bool''.'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+      msg: '"mish_cpu" not implemented for ''Bool'''
+      package: torch
+    txt: self.dtype != 'Bool'
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

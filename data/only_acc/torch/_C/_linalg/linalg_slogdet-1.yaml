@@ -1,0 +1,80 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - A
+  - sign
+  - logabsdet
+  required:
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch._C._linalg.linalg_slogdet
+package: torch
+pass_rate: 0
+rules:
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        A: Tensor
+        logabsdet: Tensor
+        sign: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in A.shape) and all(i >= 0 for i in sign.shape) and all(i
+      >= 0 for i in logabsdet.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        A: Tensor
+        logabsdet: Tensor
+        sign: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: A.rank <= 7 and sign.rank <= 7 and logabsdet.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        A: Tensor
+        logabsdet: Tensor
+        sign: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in A.shape) and all(i >= 0 for i in sign.shape) and all(i
+      >= 0 for i in logabsdet.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        A: Tensor
+        logabsdet: Tensor
+        sign: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: A.rank <= 7 and sign.rank <= 7 and logabsdet.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

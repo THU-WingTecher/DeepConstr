@@ -1,0 +1,230 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - bool
+  - float
+  - float
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - running_mean
+  - running_var
+  - weight
+  - bias
+  - training
+  - momentum
+  - eps
+  required:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+name: torch.nn.functional.batch_norm
+package: torch
+pass_rate: 4.186046511627907
+rules:
+- - cot: "The error is due to the mismatch in the number of elements in the `running_mean`\
+      \ tensor. The expected number of elements is 9, but the actual number of elements\
+      \ is 63000. Therefore, the size of the `running_mean` tensor should be [9] or\
+      \ [1, 9]. \n\nThe constraint to prevent the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        bias: tensor
+        eps: float
+        input: tensor
+        momentum: float
+        running_mean: tensor
+        running_var: None
+        training: bool
+        weight: tensor
+      msg: running_mean should contain 8 elements not 531441
+      package: torch
+    txt: running_mean.shape[0] == 9
+  - f1_score: 22.395833333333336
+    overall_score: 10.166666666666668
+    precision: 14.333333333333334
+    recall: 51.19047619047619
+- - cot: 'The error is due to an incorrect size of the ''running_mean'' tensor. The
+      ''running_mean'' tensor should have the same size as the feature dimension of
+      the ''input'' tensor. In this case, the feature dimension of ''input'' tensor
+      is 5. Therefore, ''running_mean'' should also contain 5 elements. So, len(running_mean)
+      should equal to input.shape[1]. Op : ==, and Right : input.shape[1].'
+    length: 1
+    target:
+      choosen_dtype:
+        bias: tensor
+        eps: float
+        input: tensor
+        momentum: float
+        running_mean: tensor
+        running_var: None
+        training: bool
+        weight: tensor
+      msg: running_mean should contain 5 elements not 1
+      package: torch
+    txt: len(running_mean) == input.shape[1]
+  - f1_score: 68.41046277665995
+    overall_score: 31.333333333333332
+    precision: 56.666666666666664
+    recall: 86.29441624365482
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      size of the running_mean tensor is not 0. The running_mean tensor should contain
+      0 elements, but it contains 1 element. Therefore, the size of the running_mean
+      tensor should be 0. The constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        bias: tensor
+        eps: float
+        input: tensor
+        momentum: float
+        running_mean: tensor
+        running_var: None
+        training: bool
+        weight: tensor
+      msg: running_mean should contain 0 elements not 1
+      package: torch
+    txt: len(running_mean) == 0
+  - f1_score: 47.557937646259525
+    overall_score: 25.82608695652174
+    precision: 45.65217391304348
+    recall: 49.62974633685205
+- - cot: 'The constraint that prevents the error is that the size of the `running_mean`
+      tensor should be 0. Therefore, the constraint is:'
+    length: 1
+    target:
+      choosen_dtype:
+        bias: tensor
+        eps: float
+        input: tensor
+        momentum: float
+        running_mean: tensor
+        running_var: None
+        training: bool
+        weight: None
+      msg: running_mean should contain 0 elements not 1
+      package: torch
+    txt: running_mean.shape[0] == 0
+  - f1_score: 50.29462079452575
+    overall_score: 28.41899441340782
+    precision: 50.83798882681564
+    recall: 49.76274521150397
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        bias: None
+        eps: float
+        input: tensor
+        momentum: float
+        running_mean: tensor
+        running_var: None
+        training: bool
+        weight: tensor
+      msg: running_mean should contain 0 elements not 1
+      package: torch
+    txt: ((len(running_mean) == 0) and (eps > 0 and 0 <= momentum <= 1 and len(running_mean)
+      == input.shape[1])) or ((eps >= 0))
+  - f1_score: 62.20483847602491
+    overall_score: 35.45121951219512
+    precision: 68.90243902439023
+    recall: 56.69395299709533
+- - cot: default
+    length: 5
+    target:
+      choosen_dtype:
+        bias: Optional[Tensor]
+        eps: float
+        input: Tensor
+        momentum: float
+        running_mean: Optional[Tensor]
+        running_var: Optional[Tensor]
+        training: bool
+        weight: Optional[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape) and all(i >= 0 for i in running_mean.shape)
+      and all(i >= 0 for i in running_var.shape) and all(i >= 0 for i in weight.shape)
+      and all(i >= 0 for i in bias.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 5
+    target:
+      choosen_dtype:
+        bias: Optional[Tensor]
+        eps: float
+        input: Tensor
+        momentum: float
+        running_mean: Optional[Tensor]
+        running_var: Optional[Tensor]
+        training: bool
+        weight: Optional[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7 and running_mean.rank <= 7 and running_var.rank <= 7 and
+      weight.rank <= 7 and bias.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 5
+    target:
+      choosen_dtype:
+        bias: Optional[Tensor]
+        eps: float
+        input: Tensor
+        momentum: float
+        running_mean: Optional[Tensor]
+        running_var: Optional[Tensor]
+        training: bool
+        weight: Optional[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape) and all(i >= 0 for i in running_mean.shape)
+      and all(i >= 0 for i in running_var.shape) and all(i >= 0 for i in weight.shape)
+      and all(i >= 0 for i in bias.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 5
+    target:
+      choosen_dtype:
+        bias: Optional[Tensor]
+        eps: float
+        input: Tensor
+        momentum: float
+        running_mean: Optional[Tensor]
+        running_var: Optional[Tensor]
+        training: bool
+        weight: Optional[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7 and running_mean.rank <= 7 and running_var.rank <= 7 and
+      weight.rank <= 7 and bias.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

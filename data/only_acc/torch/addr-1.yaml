@@ -1,0 +1,120 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - number
+  - number
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - vec1
+  - vec2
+  - beta
+  - alpha
+  - out
+  required:
+  - true
+  - true
+  - true
+  - false
+  - false
+  - true
+name: torch.addr
+package: torch
+pass_rate: 4.522613065326634
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        out: tensor
+        self: tensor
+        vec1: tensor
+        vec2: tensor
+      msg: 'addr: Expected 1-D argument vec1, but got 4-D'
+      package: torch
+    txt: (vec1.ndims() == 1) and (vec2.ndims() == 1)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        alpha: number
+        beta: number
+        out: Tensor
+        self: Tensor
+        vec1: Tensor
+        vec2: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in vec1.shape) and all(i
+      >= 0 for i in vec2.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        alpha: number
+        beta: number
+        out: Tensor
+        self: Tensor
+        vec1: Tensor
+        vec2: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and vec1.rank <= 7 and vec2.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        alpha: number
+        beta: number
+        out: Tensor
+        self: Tensor
+        vec1: Tensor
+        vec2: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in vec1.shape) and all(i
+      >= 0 for i in vec2.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        alpha: number
+        beta: number
+        out: Tensor
+        self: Tensor
+        vec1: Tensor
+        vec2: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and vec1.rank <= 7 and vec2.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -1,0 +1,94 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - List[int]
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - k
+  - dims
+  required:
+  - true
+  - false
+  - false
+name: torch.Tensor.rot90
+package: torch
+pass_rate: 28.333333333333332
+rules:
+- - cot: 'The error is due to an invalid number of rotation dimensions. The expected
+      number of rotation dimensions is 2, but the function received 0 dimensions.
+      To prevent this error, we need to ensure that the number of rotation dimensions
+      is always 2. The constraint for the `dims` parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dims: list[int]
+        k: int
+        self: tensor
+      msg: expected total rotation dims == 2, but got dims = 0
+      package: torch
+    txt: len(dims) == 2
+  - f1_score: 96.72977624784853
+    overall_score: 49.833333333333336
+    precision: 93.66666666666667
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dims: List[int]
+        k: int
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dims: List[int]
+        k: int
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dims: List[int]
+        k: int
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dims: List[int]
+        k: int
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

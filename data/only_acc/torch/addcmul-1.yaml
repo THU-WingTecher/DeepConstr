@@ -4,10 +4,8 @@ args:
   - Tensor
   - Tensor
   - number
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   - false
   - false
@@ -16,41 +14,19 @@ args:
   - tensor1
   - tensor2
   - value
-  - out
   required:
   - true
   - true
   - true
   - false
-  - true
 name: torch.addcmul
 package: torch
 pass_rate: 96.42857142857143
 rules:
-- - cot: synthesized
-    length: 5
-    target:
-      choosen_dtype:
-        out: tensor
-        self: tensor
-        tensor1: tensor
-        tensor2: tensor
-        value: int
-      msg: The size of tensor a (4) must match the size of tensor b (9) at non-singleton
-        dimension 3
-      package: torch
-    txt: ((((self.dim == tensor1.dim and self.shape[1] == tensor1.shape[1]) or (tensor1.dim()
-      == tensor2.dim() and tensor1.shape[3] == tensor2.shape[3])) and (self.shape
-      == tensor2.shape)) and (tensor1.shape == tensor2.shape)) or (out.shape == self.shape)
-  - f1_score: 96.74185463659147
-    overall_score: 48.85
-    precision: 96.5
-    recall: 96.98492462311557
 - - cot: divided
     length: 1
     target:
       choosen_dtype:
-        out: tensor
         self: tensor
         tensor1: tensor
         tensor2: tensor
@@ -66,7 +42,6 @@ rules:
     length: 1
     target:
       choosen_dtype:
-        out: tensor
         self: tensor
         tensor1: tensor
         tensor2: tensor
@@ -83,23 +58,6 @@ rules:
     length: 1
     target:
       choosen_dtype:
-        out: tensor
-        self: tensor
-        tensor1: tensor
-        tensor2: tensor
-        value: int
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
-  - f1_score: 74.49392712550608
-    overall_score: 100
-    precision: 100.0
-    recall: 59.354838709677416
-- - cot: ''
-    length: 1
-    target:
-      choosen_dtype:
-        out: tensor
         self: tensor
         tensor1: tensor
         tensor2: tensor
@@ -111,3 +69,34 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 51.40186915887851
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        self: Tensor
+        tensor1: Tensor
+        tensor2: Tensor
+        value: number
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in tensor1.shape) and
+      all(i >= 0 for i in tensor2.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        self: Tensor
+        tensor1: Tensor
+        tensor2: Tensor
+        value: number
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and tensor1.rank <= 7 and tensor2.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

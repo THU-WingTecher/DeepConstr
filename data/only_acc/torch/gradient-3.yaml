@@ -1,0 +1,85 @@
+args:
+  dtype:
+  - Tensor
+  - List[number]
+  - Optional[int]
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - spacing
+  - dim
+  - edge_order
+  required:
+  - true
+  - true
+  - false
+  - false
+name: torch.gradient
+package: torch
+pass_rate: 0
+rules:
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: Optional[int]
+        edge_order: int
+        self: Tensor
+        spacing: List[number]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: Optional[int]
+        edge_order: int
+        self: Tensor
+        spacing: List[number]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: Optional[int]
+        edge_order: int
+        self: Tensor
+        spacing: List[number]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: Optional[int]
+        edge_order: int
+        self: Tensor
+        spacing: List[number]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

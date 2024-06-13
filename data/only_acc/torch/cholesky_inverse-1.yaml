@@ -1,0 +1,122 @@
+args:
+  dtype:
+  - Tensor
+  - bool
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - upper
+  - out
+  required:
+  - true
+  - false
+  - true
+name: torch.cholesky_inverse
+package: torch
+pass_rate: 86.33333333333333
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+        upper: bool
+      msg: 'cholesky_inverse: A must be batches of square matrices, but they are 1
+        by 6 matrices'
+      package: torch
+    txt: self.shape[-2] == self.shape[-1]
+  - f1_score: 68.02721088435375
+    overall_score: 100
+    precision: 100.0
+    recall: 51.54639175257733
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      input tensor `self` does not have at least 2 dimensions. To prevent this error,
+      we can formulate the constraint as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+        upper: bool
+      msg: 'cholesky_inverse: The input tensor A must have at least 2 dimensions.'
+      package: torch
+    txt: self.dim >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+        upper: bool
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.shape == self.shape) and (out.rank==self.rank)
+  - f1_score: 79.7872340425532
+    overall_score: 100
+    precision: 100.0
+    recall: 66.3716814159292
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        out: Tensor
+        self: Tensor
+        upper: bool
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        out: Tensor
+        self: Tensor
+        upper: bool
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        out: Tensor
+        self: Tensor
+        upper: bool
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        out: Tensor
+        self: Tensor
+        upper: bool
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

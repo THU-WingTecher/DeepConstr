@@ -1,0 +1,114 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - output_size
+  required:
+  - true
+  - true
+name: torch._C._nn.adaptive_avg_pool3d
+package: torch
+pass_rate: 14.046822742474916
+rules:
+- - cot: 'output_size must be a list of 3 integers. The error occurs because output_size
+      does not have exactly 3 elements. Therefore, the constraint to prevent the error
+      is:'
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: list[int]
+        self: tensor
+      msg: 'adaptive_avg_pool3d: output_size must be 3'
+      package: torch
+    txt: len(output_size) == 3
+  - f1_score: 98.57612267250822
+    overall_score: 100
+    precision: 100.0
+    recall: 97.19222462203024
+- - cot: 'The error indicates that the ''output_size'' argument contains elements
+      that are less than 0. The received ''output_size'' is {7, 1,-4}, which includes
+      -4 that does not satisfy the requirement ''>= 0''. Therefore, Left: output_size,
+      Op: ''>='', and Right: 0.'
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: list[int]
+        self: tensor
+      msg: 'adaptive_avg_pool2d: elements of output_size must be greater than or equal
+        to 0 but received {7, 1,-4}'
+      package: torch
+    txt: all(o>=0 for o in output_size)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: list[int]
+        self: tensor
+      msg: 'adaptive_avg_pool3d(): Expected 4D or 5D tensor, but got []'
+      package: torch
+    txt: self.ndim() == 5
+  - f1_score: 78.32167832167833
+    overall_score: 100
+    precision: 100.0
+    recall: 64.36781609195403
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: List[int]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: List[int]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: List[int]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        output_size: List[int]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

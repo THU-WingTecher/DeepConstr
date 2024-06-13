@@ -1,0 +1,171 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - bool
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - tol
+  - hermitian
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+name: torch._C._linalg.linalg_matrix_rank
+package: torch
+pass_rate: 81.95876288659794
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        hermitian: bool
+        input: tensor
+        out: tensor
+        tol: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (2) at non-singleton
+        dimension 5
+      package: torch
+    txt: ((input.shape == tol.shape) or (input.dim() == tol.dim() and input.shape[4]
+      == tol.shape[4])) and (out.dim == 2)
+  - f1_score: 70.29876977152901
+    overall_score: 100
+    precision: 100.0
+    recall: 54.20054200542006
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        input: tensor
+        out: tensor
+        tol: tensor
+      msg: 'torch.linalg.matrix_rank: The input tensor input must have at least 2
+        dimensions.'
+      package: torch
+    txt: input.dim() >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        input: tensor
+        out: tensor
+        tol: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==input.rank and all(out.shape[i]==input.shape[i] for i in range(out.rank))
+  - f1_score: 63.962316431144366
+    overall_score: 41.15789473684211
+    precision: 76.31578947368422
+    recall: 55.051035009062296
+- - cot: 'The error occurs because the function expects square matrices (matrices
+      with the same number of rows and columns), but it is receiving a 6 by 3 matrix.
+      To prevent this error, we need to ensure that the input matrices are always
+      square. We can express this constraint as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        input: tensor
+        out: tensor
+        tol: tensor
+      msg: 'linalg.eigh: A must be batches of square matrices, but they are 3 by 7
+        matrices'
+      package: torch
+    txt: input.shape[-1] == input.shape[-2]
+  - f1_score: 75.70093457943926
+    overall_score: 100
+    precision: 100.0
+    recall: 60.902255639097746
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        hermitian: bool
+        input: tensor
+        out: tensor
+        tol: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (5) at non-singleton
+        dimension 6
+      package: torch
+    txt: ((input.size(3) == tol.size(3)) or (input.shape[2] == tol.shape[2])) and
+      (input.dim == 5 and tol.dim == 5)
+  - f1_score: 70.65217391304348
+    overall_score: 100
+    precision: 100.0
+    recall: 54.621848739495796
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        hermitian: bool
+        input: Tensor
+        out: Tensor
+        tol: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape) and all(i >= 0 for i in tol.shape) and all(i
+      >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        hermitian: bool
+        input: Tensor
+        out: Tensor
+        tol: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7 and tol.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        hermitian: bool
+        input: Tensor
+        out: Tensor
+        tol: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape) and all(i >= 0 for i in tol.shape) and all(i
+      >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        hermitian: bool
+        input: Tensor
+        out: Tensor
+        tol: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7 and tol.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

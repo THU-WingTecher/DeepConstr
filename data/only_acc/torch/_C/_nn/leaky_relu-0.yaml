@@ -1,0 +1,99 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - negative_slope
+  required:
+  - true
+  - false
+name: torch._C._nn.leaky_relu
+package: torch
+pass_rate: 97.33333333333334
+rules:
+- - cot: The error is due to the fact that the function `leaky_relu_cpu` is not implemented
+      for the data type 'Int'. The constraint that needs to be formulated to prevent
+      this error is to ensure that the data type of 'self' is not 'Int'.
+    length: 1
+    target:
+      choosen_dtype:
+        negative_slope: int
+        self: tensor
+      msg: '"leaky_relu_cpu" not implemented for ''Int'''
+      package: torch
+    txt: self.dtype != 'Int'
+  - f1_score: 70.14809041309431
+    overall_score: 100
+    precision: 100.0
+    recall: 54.021608643457384
+- - cot: The error is due to the fact that the function "leaky_relu_cpu" is not implemented
+      for the data type 'Bool'. To prevent this error, the data type of the input
+      tensor ('self') should not be 'Bool'.
+    length: 1
+    target:
+      choosen_dtype:
+        negative_slope: int
+        self: tensor
+      msg: '"leaky_relu_cpu" not implemented for ''Bool'''
+      package: torch
+    txt: self.dtype != 'Bool'
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        negative_slope: number
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        negative_slope: number
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        negative_slope: number
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        negative_slope: number
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

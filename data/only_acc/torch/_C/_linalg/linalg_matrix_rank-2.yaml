@@ -175,3 +175,34 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 100.0
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        atol: Optional[Tensor]
+        hermitian: bool
+        input: Tensor
+        rtol: Optional[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape) and all(i >= 0 for i in atol.shape) and
+      all(i >= 0 for i in rtol.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        atol: Optional[Tensor]
+        hermitian: bool
+        input: Tensor
+        rtol: Optional[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7 and atol.rank <= 7 and rtol.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

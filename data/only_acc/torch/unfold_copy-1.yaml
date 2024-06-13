@@ -4,10 +4,8 @@ args:
   - int
   - int
   - int
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   - false
   - false
@@ -16,9 +14,7 @@ args:
   - dimension
   - size
   - step
-  - out
   required:
-  - true
   - true
   - true
   - true
@@ -32,7 +28,6 @@ rules:
     target:
       choosen_dtype:
         dimension: int
-        out: tensor
         self: tensor
         size: int
         step: int
@@ -48,7 +43,6 @@ rules:
     target:
       choosen_dtype:
         dimension: int
-        out: tensor
         self: tensor
         size: int
         step: int
@@ -65,7 +59,6 @@ rules:
     target:
       choosen_dtype:
         dimension: int
-        out: tensor
         self: tensor
         size: int
         step: int
@@ -83,7 +76,6 @@ rules:
     target:
       choosen_dtype:
         dimension: int
-        out: tensor
         self: tensor
         size: int
         step: int
@@ -104,7 +96,6 @@ rules:
     target:
       choosen_dtype:
         dimension: int
-        out: tensor
         self: tensor
         size: int
         step: int
@@ -116,28 +107,11 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 94.76190476190477
-- - cot: synthesized
-    length: 2
-    target:
-      choosen_dtype:
-        dimension: int
-        out: tensor
-        self: tensor
-        size: int
-        step: int
-      msg: Expected out tensor to have dtype float, but got int instead
-      package: torch
-    txt: (dtype(out) == float) and (dtype(out) == dtype(self))
-  - f1_score: 98.76543209876544
-    overall_score: 100
-    precision: 100.0
-    recall: 97.56097560975611
 - - cot: divided
     length: 1
     target:
       choosen_dtype:
         dimension: int
-        out: tensor
         self: tensor
         size: int
         step: int
@@ -148,3 +122,33 @@ rules:
     overall_score: 47.6524064171123
     precision: 89.3048128342246
     recall: 47.816228943505365
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dimension: int
+        self: Tensor
+        size: int
+        step: int
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dimension: int
+        self: Tensor
+        size: int
+        step: int
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

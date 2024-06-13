@@ -1,0 +1,179 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[float]
+  - Optional[float]
+  - bool
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - atol
+  - rtol
+  - hermitian
+  - out
+  required:
+  - true
+  - false
+  - false
+  - false
+  - true
+name: torch._C._linalg.linalg_matrix_rank
+package: torch
+pass_rate: 91.85185185185185
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        atol: None
+        hermitian: bool
+        out: tensor
+        rtol: float
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: all(self.shape[i] == out.shape[i] for i in range(self.rank))
+  - f1_score: 75.18796992481204
+    overall_score: 100
+    precision: 100.0
+    recall: 60.24096385542168
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        atol: None
+        hermitian: bool
+        out: tensor
+        rtol: None
+        self: tensor
+      msg: 'torch.linalg.matrix_rank: The input tensor input must have at least 2
+        dimensions.'
+      package: torch
+    txt: self.dim() >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is that the input matrix `self` must be batches of square matrices. Therefore,
+      the correct formula is:'
+    length: 1
+    target:
+      choosen_dtype:
+        atol: float
+        hermitian: bool
+        out: tensor
+        rtol: None
+        self: tensor
+      msg: 'linalg.eigh: A must be batches of square matrices, but they are 4 by 2
+        matrices'
+      package: torch
+    txt: self.shape[-2] == self.shape[-1]
+  - f1_score: 79.14893617021276
+    overall_score: 100
+    precision: 100.0
+    recall: 65.49295774647888
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        atol: float
+        hermitian: bool
+        out: tensor
+        rtol: None
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank
+  - f1_score: 68.36976560442454
+    overall_score: 52.57983193277311
+    precision: 99.15966386554622
+    recall: 52.170418006430864
+- - cot: The error is due to negative dimensions in the input tensor. To prevent this
+      error, a constraint can be added to ensure that all dimensions of the input
+      tensor are non-negative.
+    length: 1
+    target:
+      choosen_dtype:
+        atol: float
+        hermitian: bool
+        out: tensor
+        rtol: float
+        self: tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(dim >= 0 for dim in self.shape)
+  - f1_score: 95.65217391304348
+    overall_score: 100
+    precision: 100.0
+    recall: 91.66666666666667
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        atol: Optional[float]
+        hermitian: bool
+        out: Tensor
+        rtol: Optional[float]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        atol: Optional[float]
+        hermitian: bool
+        out: Tensor
+        rtol: Optional[float]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        atol: Optional[float]
+        hermitian: bool
+        out: Tensor
+        rtol: Optional[float]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        atol: Optional[float]
+        hermitian: bool
+        out: Tensor
+        rtol: Optional[float]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

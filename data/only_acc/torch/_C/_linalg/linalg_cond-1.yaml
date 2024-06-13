@@ -1,0 +1,100 @@
+args:
+  dtype:
+  - Tensor
+  - str
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - p
+  required:
+  - true
+  - true
+name: torch._C._linalg.linalg_cond
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        p: str
+        self: tensor
+      msg: 'linalg.cond got an invalid norm type: Ndca'
+      package: torch
+    txt: p == 'fro'
+  - f1_score: 89.02077151335313
+    overall_score: 100
+    precision: 100.0
+    recall: 80.21390374331551
+- - cot: 'The error message indicates that the input tensor to the function torch._C._linalg.linalg_cond
+      must be batches of square matrices, but the given tensor is a 5 by 3 matrix.
+      In a square matrix, all dimensions are equal. Therefore, to prevent this error,
+      we need to ensure that the last two dimensions of the input tensor are equal.
+      Let''s denote the tensor as ''self''. The constraint can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        p: str
+        self: tensor
+      msg: 'linalg.cond(ord=fro): A must be batches of square matrices, but they are
+        2 by 9 matrices'
+      package: torch
+    txt: self.shape[-1] == self.shape[-2]
+  - f1_score: 68.02721088435375
+    overall_score: 100
+    precision: 100.0
+    recall: 51.54639175257733
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        p: str
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        p: str
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        p: str
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        p: str
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

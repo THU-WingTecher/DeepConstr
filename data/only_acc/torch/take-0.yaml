@@ -1,0 +1,124 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - index
+  required:
+  - true
+  - true
+name: torch.take
+package: torch
+pass_rate: 31.103678929765888
+rules:
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        index: tensor
+        self: tensor
+      msg: 'take(): Expected a long tensor for index, but got Float'
+      package: torch
+    txt: index.dtype == torch.int64
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: "The error occurs because the indices provided are out of the valid range\
+      \ for the given tensor. Let's see what the arguments were. It related with `index=Tensor<i64>[3,\
+      \ 7]`, where the index value 7 is out of range for the tensor with shape [1,\
+      \ 6, 6, 6]. To prevent this error in the future and generate constraints that\
+      \ do not trigger it, we need to ensure that all elements in the `index` tensor\
+      \ are within the valid range for the corresponding dimension of the `self` tensor.\
+      \ \n\nIf we denote the shape of the `self` tensor as `[n0, n1, n2, ..., nk]`\
+      \ and the shape of the `index` tensor as `[m0, m1, m2, ..., mk]`, the valid\
+      \ range for each index value would be `[0, n0-1]` for the first dimension, `[0,\
+      \ n1-1]` for the second dimension, and so on. \n\nThe constraint for the `index`\
+      \ tensor can be expressed as:"
+    length: 1
+    target:
+      choosen_dtype:
+        index: tensor
+        self: tensor
+      msg: 'out of range: tried to access index -257758 on a tensor of 216 elements.'
+      package: torch
+    txt: all(0 <= index[i] < self.shape[i] for i in range(len(index.shape)))
+  - f1_score: 47.47320061255743
+    overall_score: 28.833333333333336
+    precision: 51.66666666666667
+    recall: 43.90934844192635
+- - cot: 'Error is triggered because the index value is out of range. Let''s see what
+      the args were. It seems the index value -211220 is out of range for the self
+      tensor with 137781 elements. To prevent this error, we need to ensure that the
+      index values are within the valid range for the given tensor. If we denote the
+      shape of the tensor as n, the valid range for the index would be [0, n-1]. The
+      constraint for the ''index'' parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        index: tensor
+        self: tensor
+      msg: 'out of range: tried to access index 761395 on a tensor of 459270 elements.'
+      package: torch
+    txt: all(i >= 0 and i < len(self.shape) for i in index)
+  - f1_score: 44.62151394422311
+    overall_score: 21.666666666666668
+    precision: 37.333333333333336
+    recall: 55.44554455445545
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        index: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in index.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        index: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and index.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        index: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in index.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        index: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and index.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -1,0 +1,128 @@
+args:
+  dtype:
+  - tensor
+  - tensor
+  - int
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - data
+  - segment_ids
+  - num_segments
+  - name
+  required:
+  - true
+  - true
+  - true
+  - false
+name: tf.math.unsorted_segment_sqrt_n
+package: null
+pass_rate: 35.333333333333336
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        data: tensor
+        name: str
+        num_segments: int
+        segment_ids: tensor
+      msg: "Value for attr 'Tindices' of float is not in the list of allowed values:\
+        \ int32, int64\n\t; NodeDef: {{node UnsortedSegmentSum}}; Op<name=UnsortedSegmentSum;\
+        \ signature=data:T, segment_ids:Tindices, num_segments:Tnumsegments -> output:T;\
+        \ attr=T:type,allowed=[DT_FLOAT, DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16,\
+        \ 10440210506161272279, DT_UINT16, DT_COMPLEX128, DT_HALF, DT_UINT32, DT_UINT64];\
+        \ attr=Tindices:type,allowed=[DT_INT32, DT_INT64]; attr=Tnumsegments:type,default=DT_INT32,allowed=[DT_INT32,\
+        \ DT_INT64]> [Op:UnsortedSegmentSum]"
+      package: tensorflow
+    txt: (dtype(data) == "float32") and (dtype(segment_ids) in ["int32", "int64"])
+  - f1_score: 73.34963325183375
+    overall_score: 100
+    precision: 100.0
+    recall: 57.91505791505792
+- - cot: 'The error occurs because the value of `segment_ids[0,0,0,0,0,4]` is 976563,
+      which is out of the valid range [0, 7). To prevent this error in the future
+      and generate constraints that do not trigger it, we need to ensure that all
+      values in the `segment_ids` tensor are within the valid range.
+
+
+      The constraint for the `segment_ids` parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        data: tensor
+        name: str
+        num_segments: int
+        segment_ids: tensor
+      msg: '{{function_node __wrapped__UnsortedSegmentSum_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        segment_ids[0,0,0,0,0,4] = 976563 is out of range [0, 7) [Op:UnsortedSegmentSum]'
+      package: tensorflow
+    txt: all(s >= 0 and s < 7 for s in segment_ids)
+  - f1_score: 62.60575296108292
+    overall_score: 33.833333333333336
+    precision: 61.66666666666667
+    recall: 63.573883161512036
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        data: tensor
+        name: str
+        num_segments: int
+        segment_ids: tensor
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in data.shape) and all(i >= 0 for i in segment_ids.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        data: tensor
+        name: str
+        num_segments: int
+        segment_ids: tensor
+      msg: Too large tensor shape
+      package: null
+    txt: data.rank <= 7 and segment_ids.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        data: tensor
+        name: str
+        num_segments: int
+        segment_ids: tensor
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in data.shape) and all(i >= 0 for i in segment_ids.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        data: tensor
+        name: str
+        num_segments: int
+        segment_ids: tensor
+      msg: Too large tensor shape
+      package: null
+    txt: data.rank <= 7 and segment_ids.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -1,0 +1,80 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - eigenvalues
+  - eigenvectors
+  required:
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch._C._linalg.linalg_eig
+package: torch
+pass_rate: 0
+rules:
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        eigenvalues: Tensor
+        eigenvectors: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in eigenvalues.shape)
+      and all(i >= 0 for i in eigenvectors.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        eigenvalues: Tensor
+        eigenvectors: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and eigenvalues.rank <= 7 and eigenvectors.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        eigenvalues: Tensor
+        eigenvectors: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in eigenvalues.shape)
+      and all(i >= 0 for i in eigenvectors.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        eigenvalues: Tensor
+        eigenvectors: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and eigenvalues.rank <= 7 and eigenvectors.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

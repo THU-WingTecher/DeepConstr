@@ -5,10 +5,8 @@ args:
   - Optional[int]
   - bool
   - str
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   - false
   - false
@@ -19,14 +17,12 @@ args:
   - dim
   - keepdim
   - interpolation
-  - out
   required:
   - true
   - true
   - false
   - false
   - false
-  - true
 name: torch.nanquantile
 package: torch
 pass_rate: 99.66442953020133
@@ -41,7 +37,6 @@ rules:
         dim: None
         interpolation: str
         keepdim: bool
-        out: tensor
         q: float
         self: tensor
       msg: quantile() q must be in the range [0, 1] but got 7
@@ -62,7 +57,6 @@ rules:
         dim: None
         interpolation: str
         keepdim: bool
-        out: tensor
         q: float
         self: tensor
       msg: quantile() interpolation must be one of linear, lower, higher, midpoint
@@ -80,7 +74,6 @@ rules:
         dim: int
         interpolation: str
         keepdim: bool
-        out: tensor
         q: float
         self: tensor
       msg: Dimension out of range (expected to be in range of [-2, 1], but got 8)
@@ -94,27 +87,9 @@ rules:
     length: 1
     target:
       choosen_dtype:
-        dim: None
-        interpolation: str
-        keepdim: bool
-        out: tensor
-        q: float
-        self: tensor
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
-  - f1_score: 75.66204287515764
-    overall_score: 100
-    precision: 100.0
-    recall: 60.85192697768763
-- - cot: ''
-    length: 1
-    target:
-      choosen_dtype:
         dim: int
         interpolation: str
         keepdim: bool
-        out: tensor
         q: float
         self: tensor
       msg: quantile() input tensor must be non-empty
@@ -124,23 +99,6 @@ rules:
     overall_score: 51.80952380952381
     precision: 97.61904761904762
     recall: 98.1038374717833
-- - cot: ''
-    length: 1
-    target:
-      choosen_dtype:
-        dim: None
-        interpolation: str
-        keepdim: bool
-        out: tensor
-        q: float
-        self: tensor
-      msg: quantile() out tensor must be same dtype as the input tensor
-      package: torch
-    txt: out.dtype == self.dtype
-  - f1_score: 72.5943970767357
-    overall_score: 100
-    precision: 100.0
-    recall: 56.97896749521989
 - - cot: divided
     length: 1
     target:
@@ -148,7 +106,6 @@ rules:
         dim: int
         interpolation: str
         keepdim: bool
-        out: tensor
         q: float
         self: tensor
       msg: quantile() input tensor must be either float or double dtype
@@ -158,3 +115,35 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 51.090909090909086
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: Optional[int]
+        interpolation: str
+        keepdim: bool
+        q: float
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: Optional[int]
+        interpolation: str
+        keepdim: bool
+        q: float
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

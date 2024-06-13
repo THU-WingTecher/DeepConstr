@@ -1,0 +1,137 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - bool
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - A
+  - B
+  - left
+  - check_errors
+  required:
+  - true
+  - true
+  - false
+  - false
+name: torch._C._linalg.linalg_solve_ex
+package: torch
+pass_rate: 86.33333333333333
+rules:
+- - cot: 'Based on the given runtime information, the error can be prevented by ensuring
+      that the last two dimensions of matrix A are square matrices. In other words,
+      the number of rows and columns in each square matrix of A should be the same.
+
+
+      The constraint that prevents the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        B: tensor
+        check_errors: bool
+        left: bool
+      msg: 'linalg.solve: A must be batches of square matrices, but they are 1 by
+        7 matrices'
+      package: torch
+    txt: A.shape[-1] == A.shape[-2]
+  - f1_score: 67.41573033707866
+    overall_score: 100
+    precision: 100.0
+    recall: 50.847457627118644
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        A: tensor
+        B: tensor
+        check_errors: bool
+        left: bool
+      msg: 'linalg.solve: The input tensor A must have at least 2 dimensions.'
+      package: torch
+    txt: (A.dim() >= 2) and (B.dim >= 2)
+  - f1_score: 96.93053311793216
+    overall_score: 100
+    precision: 100.0
+    recall: 94.04388714733544
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        A: tensor
+        B: tensor
+        check_errors: bool
+        left: bool
+      msg: 'linalg.solve: Incompatible shapes of A and B for the equation AX = B (5x5
+        and 6x6)'
+      package: torch
+    txt: (len(A) == len(B)) and (A.shape == B.shape)
+  - f1_score: 82.41758241758242
+    overall_score: 100
+    precision: 100.0
+    recall: 70.09345794392523
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        A: Tensor
+        B: Tensor
+        check_errors: bool
+        left: bool
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in A.shape) and all(i >= 0 for i in B.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        A: Tensor
+        B: Tensor
+        check_errors: bool
+        left: bool
+      msg: Too large tensor shape
+      package: torch
+    txt: A.rank <= 7 and B.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        A: Tensor
+        B: Tensor
+        check_errors: bool
+        left: bool
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in A.shape) and all(i >= 0 for i in B.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        A: Tensor
+        B: Tensor
+        check_errors: bool
+        left: bool
+      msg: Too large tensor shape
+      package: torch
+    txt: A.rank <= 7 and B.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

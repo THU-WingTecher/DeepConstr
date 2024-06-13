@@ -1,0 +1,202 @@
+args:
+  dtype:
+  - tensor
+  - tensor
+  - None
+  - tensor
+  - str
+  - str
+  - bool
+  is_pos:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - x1
+  - x2
+  - out
+  - where
+  - casting
+  - order
+  - subok
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+name: numpy.logical_and
+package: null
+pass_rate: 1.6666666666666667
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        casting: str
+        order: str
+        out: None
+        subok: bool
+        where: tensor
+        x1: tensor
+        x2: tensor
+      msg: Cannot cast array data from dtype('float32') to dtype('bool') according
+        to the rule 'safe'
+      package: numpy
+    txt: (dtype(x2)==dtype(where)) and (dtype(x1) == dtype(x2) == 'bool')
+  - f1_score: 83.10249307479225
+    overall_score: 100
+    precision: 100.0
+    recall: 71.09004739336493
+- - cot: "The error is triggered because the value of the 'casting' parameter is 'kEXY',\
+      \ which is not one of the allowed values ('no', 'equiv', 'safe', 'same_kind',\
+      \ or 'unsafe'). To prevent the error, the 'casting' parameter should be set\
+      \ to one of the allowed values. \n\nTherefore, the constraint for preventing\
+      \ the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        casting: str
+        order: str
+        out: None
+        subok: bool
+        where: tensor
+        x1: tensor
+        x2: tensor
+      msg: casting must be one of 'no', 'equiv', 'safe', 'same_kind', or 'unsafe'
+        (got 'kEXY')
+      package: numpy
+    txt: casting in ['no', 'equiv', 'safe', 'same_kind', 'unsafe']
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: "The error is triggered because of an invalid input for the 'order' parameter.\
+      \ From the error message, we can see that the 'order' parameter must be one\
+      \ of 'C', 'F', 'A', or 'K'. However, the current input to 'order' is 'cjbQ'\
+      \ which is not a valid value. \n\nTherefore, the condition to make the error\
+      \ disappear would be that the 'order' parameter is one of 'C', 'F', 'A', or\
+      \ 'K'."
+    length: 1
+    target:
+      choosen_dtype:
+        casting: str
+        order: str
+        out: None
+        subok: bool
+        where: tensor
+        x1: tensor
+        x2: tensor
+      msg: order must be one of 'C', 'F', 'A', or 'K' (got 'cjbQ')
+      package: numpy
+    txt: order in ['C', 'F', 'A', 'K']
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is due to the shapes of ''x1'' and ''x2'' not being broadcastable.
+      The shape of ''x1'' is () and the shape of ''x2'' is (4,4,4). Broadcasting in
+      tensor operations requires that the trailing dimensions of the tensors are either
+      1 or the same. So, for each dimension starting from the last, the size of the
+      dimension in ''x1'' should be equal to the size of the dimension in ''x2'' or
+      one of them should be 1. We start from the last dimension because broadcasting
+      aligns dimensions from the end. Therefore, the constraint to prevent the error
+      is:'
+    length: 1
+    target:
+      choosen_dtype:
+        casting: str
+        order: str
+        out: None
+        subok: bool
+        where: tensor
+        x1: tensor
+        x2: tensor
+      msg: 'operands could not be broadcast together with shapes () (4,4,4) (6,1) '
+      package: numpy
+    txt: all(x1.shape[i] == x2.shape[i] or x1.shape[i] == 1 or x2.shape[i] == 1 for
+      i in range(-1, -min(len(x1.shape), len(x2.shape))-1, -1))
+  - f1_score: 75.88206773947775
+    overall_score: 33.70469798657718
+    precision: 61.40939597315436
+    recall: 99.27987144013629
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        casting: str
+        order: str
+        out: None
+        subok: bool
+        where: tensor
+        x1: tensor
+        x2: tensor
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in x1.shape) and all(i >= 0 for i in x2.shape) and all(i
+      >= 0 for i in where.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        casting: str
+        order: str
+        out: None
+        subok: bool
+        where: tensor
+        x1: tensor
+        x2: tensor
+      msg: Too large tensor shape
+      package: null
+    txt: x1.rank <= 7 and x2.rank <= 7 and where.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        casting: str
+        order: str
+        out: None
+        subok: bool
+        where: tensor
+        x1: tensor
+        x2: tensor
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in x1.shape) and all(i >= 0 for i in x2.shape) and all(i
+      >= 0 for i in where.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        casting: str
+        order: str
+        out: None
+        subok: bool
+        where: tensor
+        x1: tensor
+        x2: tensor
+      msg: Too large tensor shape
+      package: null
+    txt: x1.rank <= 7 and x2.rank <= 7 and where.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

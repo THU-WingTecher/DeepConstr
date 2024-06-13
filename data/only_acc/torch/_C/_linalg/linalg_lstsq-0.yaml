@@ -1,0 +1,213 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[float]
+  - Optional[str]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - b
+  - rcond
+  - driver
+  required:
+  - true
+  - true
+  - false
+  - false
+name: torch._C._linalg.linalg_lstsq
+package: torch
+pass_rate: 88.66666666666667
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        b: tensor
+        driver: None
+        rcond: float
+        self: tensor
+      msg: 'torch.linalg.lstsq: input.dim() must be greater or equal to other.dim()
+        and (input.dim() - other.dim()) <= 1'
+      package: torch
+    txt: (self.dim() - b.dim()) <= 1
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        b: tensor
+        driver: None
+        rcond: None
+        self: tensor
+      msg: 'torch.linalg.lstsq: input must have at least 2 dimensions.'
+      package: torch
+    txt: self.dim >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        b: tensor
+        driver: None
+        rcond: None
+        self: tensor
+      msg: 'torch.linalg.lstsq: input.size(-2) should match other.size(-2)'
+      package: torch
+    txt: self.size(-2) == b.size(-2)
+  - f1_score: 73.60308285163777
+    overall_score: 34.833333333333336
+    precision: 63.66666666666667
+    recall: 87.21461187214612
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        b: tensor
+        driver: str
+        rcond: None
+        self: tensor
+      msg: 'torch.linalg.lstsq: parameter `driver` should be one of (gels, gelsy,
+        gelsd, gelss)'
+      package: torch
+    txt: driver in ['gels', 'gelsy', 'gelsd', 'gelss']
+  - f1_score: 83.68200836820084
+    overall_score: 100
+    precision: 100.0
+    recall: 71.94244604316546
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        b: tensor
+        driver: None
+        rcond: float
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (5) at non-singleton
+        dimension 1
+      package: torch
+    txt: self.shape[1] == b.shape[1]
+  - f1_score: 67.34006734006734
+    overall_score: 100
+    precision: 100.0
+    recall: 50.76142131979695
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        b: tensor
+        driver: None
+        rcond: float
+        self: tensor
+      msg: 'torch.linalg.lstsq: input.size(-2) should match other.size(-1)'
+      package: torch
+    txt: self.size(-2) == b.size(-1)
+  - f1_score: 95.4692556634304
+    overall_score: 52.166666666666664
+    precision: 98.33333333333333
+    recall: 92.76729559748426
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        b: tensor
+        driver: None
+        rcond: None
+        self: tensor
+      msg: 'torch.linalg.lstsq: Expected input and other to have the same dtype, but
+        got input''s dtype Int and other''s dtype Float'
+      package: torch
+    txt: self.dtype == b.dtype
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: Based on the given values, the error is triggered because the -2 dimension
+      of the input tensor does not match the -2 dimension of the other tensor in the
+      `torch.linalg.lstsq` function. Let's see what the args were. It seems the shapes
+      of 'self' and 'b' are inconsistent, specifically at the -2 dimension. Therefore,
+      self.shape[-2] should be the same as b.shape[-2].
+    length: 1
+    target:
+      choosen_dtype:
+        b: tensor
+        driver: None
+        rcond: float
+        self: tensor
+      msg: 'torch.linalg.lstsq: input.size(-2) should match other.size(-2)'
+      package: torch
+    txt: self.shape[-2] == b.shape[-2]
+  - f1_score: 64.86486486486486
+    overall_score: 51.0
+    precision: 96.0
+    recall: 48.97959183673469
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        b: Tensor
+        driver: Optional[str]
+        rcond: Optional[float]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in b.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        b: Tensor
+        driver: Optional[str]
+        rcond: Optional[float]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and b.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        b: Tensor
+        driver: Optional[str]
+        rcond: Optional[float]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in b.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        b: Tensor
+        driver: Optional[str]
+        rcond: Optional[float]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and b.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

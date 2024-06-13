@@ -1,0 +1,92 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[str]
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - A
+  - driver
+  - out
+  required:
+  - true
+  - false
+  - true
+name: torch._C._linalg.linalg_svdvals
+package: torch
+pass_rate: 40.5
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        A: tensor
+        driver: str
+        out: tensor
+      msg: 'torch.linalg.svd: keyword argument `driver=` is only supported on CUDA
+        inputs with cuSOLVER backend.'
+      package: torch
+    txt: driver == 'zEME'
+  - f1_score: 37.88819875776397
+    overall_score: 18.25
+    precision: 30.5
+    recall: 50.0
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        A: Tensor
+        driver: Optional[str]
+        out: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in A.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        A: Tensor
+        driver: Optional[str]
+        out: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: A.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        A: Tensor
+        driver: Optional[str]
+        out: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in A.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        A: Tensor
+        driver: Optional[str]
+        out: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: A.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

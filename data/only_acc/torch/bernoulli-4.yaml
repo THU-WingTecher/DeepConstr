@@ -1,0 +1,88 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[Generator]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - p
+  - generator
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+error: <class 'TypeError'>
+name: torch.bernoulli
+package: torch
+pass_rate: 0
+rules:
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        generator: Optional[Generator]
+        out: Tensor
+        p: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in p.shape) and all(i
+      >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        generator: Optional[Generator]
+        out: Tensor
+        p: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and p.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        generator: Optional[Generator]
+        out: Tensor
+        p: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in p.shape) and all(i
+      >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        generator: Optional[Generator]
+        out: Tensor
+        p: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and p.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

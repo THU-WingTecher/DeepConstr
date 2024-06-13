@@ -1,0 +1,69 @@
+args:
+  dtype:
+  - number
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - exponent
+  required:
+  - true
+  - true
+name: torch.float_power
+package: torch
+pass_rate: 0
+rules:
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        exponent: Tensor
+        self: number
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in exponent.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        exponent: Tensor
+        self: number
+      msg: Too large tensor shape
+      package: torch
+    txt: exponent.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        exponent: Tensor
+        self: number
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in exponent.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        exponent: Tensor
+        self: number
+      msg: Too large tensor shape
+      package: torch
+    txt: exponent.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

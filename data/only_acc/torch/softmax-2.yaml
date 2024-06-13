@@ -1,0 +1,165 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - None
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - dtype
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+name: torch.softmax
+package: torch
+pass_rate: 92.0
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        out: tensor
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got 3)
+      package: torch
+    txt: (70 >= -len(self.shape)) and (-6 <= dim < 6)
+  - f1_score: 79.05138339920948
+    overall_score: 100
+    precision: 100.0
+    recall: 65.359477124183
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.shape == self.shape) and (out.rank == self.rank)
+  - f1_score: 92.59259259259261
+    overall_score: 100
+    precision: 100.0
+    recall: 86.20689655172414
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        out: tensor
+        self: tensor
+      msg: Expected out tensor to have dtype float, but got int instead
+      package: torch
+    txt: dtype(out) == dtype(self)
+  - f1_score: 99.83361064891847
+    overall_score: 100
+    precision: 100.0
+    recall: 99.66777408637874
+- - cot: 'The error is due to the function `torch.softmax` not being implemented for
+      the data type `Int`. To prevent this error, the input tensor `self` should have
+      a data type other than `Int`, such as `float`. So, the constraint would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        out: tensor
+        self: tensor
+      msg: '"softmax_kernel_impl" not implemented for ''Int'''
+      package: torch
+    txt: dtype(self) != Int
+  - f1_score: 68.80733944954127
+    overall_score: 100
+    precision: 100.0
+    recall: 52.44755244755245
+- - cot: 'The error is due to the fact that the softmax function does not have an
+      implementation for the ''Bool'' data type. Therefore, the input tensor should
+      not have a data type of ''Bool''. The constraint to prevent this error would
+      be:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        out: tensor
+        self: tensor
+      msg: '"softmax_kernel_impl" not implemented for ''Bool'''
+      package: torch
+    txt: self.dtype != torch.bool
+  - f1_score: 98.52216748768473
+    overall_score: 100
+    precision: 100.0
+    recall: 97.0873786407767
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -1,0 +1,135 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[int]
+  - Optional[int]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - repeats
+  - dim
+  - output_size
+  required:
+  - true
+  - true
+  - false
+  - false
+name: torch.repeat_interleave
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        output_size: int
+        repeats: tensor
+        self: tensor
+      msg: repeats must be 0-dim or 1-dim tensor
+      package: torch
+    txt: repeats.dim() == 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Error is triggered because the size of tensor "repeats" (7) does not match
+      the size of tensor "self" (15) along dimension 0. To prevent the error, we need
+      to ensure that the size of "repeats" and "self" along dimension 0 are the same.
+      Therefore, the constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        output_size: None
+        repeats: tensor
+        self: tensor
+      msg: repeats must have the same size as input along dim, but got repeats.size(0)
+        = 4 and input.size(0) = 35
+      package: torch
+    txt: repeats.size(0) == self.size(0)
+  - f1_score: 18.181818181818183
+    overall_score: 8.5
+    precision: 11.0
+    recall: 52.38095238095237
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: None
+        output_size: int
+        repeats: tensor
+        self: tensor
+      msg: repeats must have the same size as input along dim, but got repeats.size(0)
+        = 4 and input.size(0) = 4608
+      package: torch
+    txt: (repeats.size(0) == self.size(-3)) and (repeats.size(0) == self.size(0))
+  - f1_score: 22.13740458015267
+    overall_score: 8.75
+    precision: 14.499999999999998
+    recall: 46.774193548387096
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[int]
+        output_size: Optional[int]
+        repeats: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in repeats.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[int]
+        output_size: Optional[int]
+        repeats: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and repeats.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[int]
+        output_size: Optional[int]
+        repeats: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in repeats.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[int]
+        output_size: Optional[int]
+        repeats: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and repeats.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

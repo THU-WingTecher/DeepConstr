@@ -1,0 +1,119 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[List[int]]
+  - Optional[List[int]]
+  - Optional[str]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - s
+  - dim
+  - norm
+  required:
+  - true
+  - false
+  - false
+  - false
+name: torch._C._fft.fft_rfftn
+package: torch
+pass_rate: 98.0
+rules:
+- - cot: 'The error is triggered because the normalization mode "JXAr" is not a valid
+      mode. The valid normalization modes are "backward" and "forward". Therefore,
+      the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        norm: str
+        s: None
+        self: tensor
+      msg: 'Invalid normalization mode: "CwJA"'
+      package: torch
+    txt: norm in ["backward", "forward"]
+  - f1_score: 96.61835748792271
+    overall_score: 100
+    precision: 100.0
+    recall: 93.45794392523365
+- - cot: "Based on the given error message, the error can be prevented by ensuring\
+      \ that the input tensor `self` has at least one axis to transform. \n\nThe constraint\
+      \ to prevent the error can be formulated as:"
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        norm: None
+        s: None
+        self: tensor
+      msg: rfftn must transform at least one axis
+      package: torch
+    txt: self.dim() > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        norm: Optional[str]
+        s: Optional[List[int]]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        norm: Optional[str]
+        s: Optional[List[int]]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        norm: Optional[str]
+        s: Optional[List[int]]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        norm: Optional[str]
+        s: Optional[List[int]]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

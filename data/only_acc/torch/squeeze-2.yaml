@@ -1,0 +1,83 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - dim
+  required:
+  - true
+  - true
+name: torch.squeeze
+package: torch
+pass_rate: 69.0
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: list[int]
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 35)
+      package: torch
+    txt: (all(d >= -len(self.shape) and d < len(self.shape) for d in dim)) and (35
+      >= -len(self.shape))
+  - f1_score: 88.76811594202898
+    overall_score: 42.333333333333336
+    precision: 81.66666666666667
+    recall: 97.22222222222221
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: List[int]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: List[int]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: List[int]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: List[int]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

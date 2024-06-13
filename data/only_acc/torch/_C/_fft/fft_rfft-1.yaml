@@ -1,0 +1,214 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[int]
+  - int
+  - Optional[str]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - n
+  - dim
+  - norm
+  - out
+  required:
+  - true
+  - false
+  - false
+  - false
+  - true
+name: torch._C._fft.fft_rfft
+package: torch
+pass_rate: 91.33333333333333
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        n: int
+        norm: None
+        out: tensor
+        self: tensor
+      msg: rfft expects a complex output tensor, but got Float
+      package: torch
+    txt: out.dtype == torch.complex128
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        n: None
+        norm: str
+        out: tensor
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-3, 2], but got 3)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 63.94399066511085
+    overall_score: 48.666666666666664
+    precision: 91.33333333333333
+    recall: 49.19210053859964
+- - cot: 'The error is caused by an invalid normalization mode. The value provided
+      for ''norm'' is "gQij" which is not a valid normalization mode. The valid normalization
+      modes are "backward", "ortho", "forward", and "none". Therefore, the constraint
+      to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        n: None
+        norm: str
+        out: tensor
+        self: tensor
+      msg: 'Invalid normalization mode: "PtJP"'
+      package: torch
+    txt: norm in ["backward", "ortho", "forward", "none"]
+  - f1_score: 92.87925696594425
+    overall_score: 100
+    precision: 100.0
+    recall: 86.70520231213872
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        n: int
+        norm: None
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
+  - f1_score: 73.34200260078025
+    overall_score: 50.0
+    precision: 94.0
+    recall: 60.12793176972282
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        n: None
+        norm: str
+        out: tensor
+        self: tensor
+      msg: Dimension specified as 0 but tensor has no dimensions
+      package: torch
+    txt: self.dim() > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error occurs because the dimension provided is out of the valid range.
+      The valid range for the dimension would be [-len(self.shape), len(self.shape)-1].
+      To prevent this error in the future and generate constraints that do not trigger
+      it, we need to ensure that the "dim" value is always within the valid range
+      for the given tensor. The constraint for the ''dim'' parameter can be expressed
+      as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        n: int
+        norm: None
+        out: tensor
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-1, 0], but got 1)
+      package: torch
+    txt: dim >= -len(self.shape) and dim < len(self.shape)
+  - f1_score: 99.66442953020133
+    overall_score: 52.66555183946488
+    precision: 99.33110367892976
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        n: int
+        norm: None
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank)))
+      and (out.shape[0] == n//2+1)
+  - f1_score: 71.42857142857143
+    overall_score: 100
+    precision: 100.0
+    recall: 55.55555555555556
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        n: Optional[int]
+        norm: Optional[str]
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        n: Optional[int]
+        norm: Optional[str]
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        n: Optional[int]
+        norm: Optional[str]
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        n: Optional[int]
+        norm: Optional[str]
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

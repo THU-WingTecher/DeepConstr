@@ -1,0 +1,121 @@
+args:
+  dtype:
+  - list[int]
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  - list[int]
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - begin
+  - input
+  - name
+  - size
+  required:
+  - true
+  - true
+  - false
+  - true
+name: tf.raw_ops.Slice
+package: tensorflow
+pass_rate: 2.666666666666667
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        begin: list[int]
+        input: tensor
+        name: str
+        size: list[int]
+      msg: "Value for attr 'Index' of float is not in the list of allowed values:\
+        \ int32, int64\n\t; NodeDef: {{node Slice}}; Op<name=Slice; signature=input:T,\
+        \ begin:Index, size:Index -> output:T; attr=T:type; attr=Index:type,allowed=[DT_INT32,\
+        \ DT_INT64]> [Op:Slice]"
+      package: tensorflow
+    txt: len(begin) == 2
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        begin: list[int]
+        input: tensor
+        name: str
+        size: list[int]
+      msg: '{{function_node __wrapped__Slice_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Expected begin and size arguments to be 1-D tensors of size 3, but got shapes
+        [2] and [0] instead. [Op:Slice]'
+      package: tensorflow
+    txt: (((len(begin) == 3) or (len(size)==len(input.shape))) or (len(begin) == 4))
+      and (len(begin)==len(input.shape))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        begin: list[int]
+        input: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+        size: list[int]
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in input.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        begin: list[int]
+        input: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+        size: list[int]
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: input.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        begin: list[int]
+        input: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+        size: list[int]
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in input.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        begin: list[int]
+        input: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+        size: list[int]
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: input.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -1,0 +1,122 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - List[int]
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - source
+  - destination
+  required:
+  - true
+  - true
+  - true
+name: torch.movedim
+package: torch
+pass_rate: 98.4536082474227
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        destination: list[int]
+        self: tensor
+        source: list[int]
+      msg: 'movedim: Invalid source or destination dims: source ([13, 51, 49, 20]
+        dims) should contain the same number of dims as destination ([] dims)'
+      package: torch
+    txt: destination.dim() == source.dim()
+  - f1_score: 96.38554216867469
+    overall_score: 100
+    precision: 100.0
+    recall: 93.02325581395348
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        destination: list[int]
+        self: tensor
+        source: list[int]
+      msg: Dimension out of range (expected to be in range of [-3, 2], but got 6)
+      package: torch
+    txt: (all(d >= -len(self.shape) and d < len(self.shape) for d in source)) and
+      (all(d >= -len(self.shape) and d < len(self.shape) for d in destination))
+  - f1_score: 90.7215368009728
+    overall_score: 43.63197969543147
+    precision: 84.26395939086294
+    recall: 98.25101358349856
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        destination: list[int]
+        self: tensor
+        source: list[int]
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 8)
+      package: torch
+    txt: ((all(d >= -7 and d < 6 for d in destination)) and (all(d >= -len(self.shape)
+      and d < len(self.shape) for d in source))) and (destination[i] >= -len(self.shape))
+  - f1_score: 66.77908937605396
+    overall_score: 100
+    precision: 100.0
+    recall: 50.12658227848101
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        destination: List[int]
+        self: Tensor
+        source: List[int]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        destination: List[int]
+        self: Tensor
+        source: List[int]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        destination: List[int]
+        self: Tensor
+        source: List[int]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        destination: List[int]
+        self: Tensor
+        source: List[int]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

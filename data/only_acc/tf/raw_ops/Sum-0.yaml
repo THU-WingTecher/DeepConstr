@@ -1,0 +1,118 @@
+args:
+  dtype:
+  - list[int]
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - bool
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - axis
+  - input
+  - keep_dims
+  - name
+  required:
+  - true
+  - true
+  - false
+  - false
+name: tf.raw_ops.Sum
+package: tensorflow
+pass_rate: 80.0
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        axis: list[int]
+        input: tensor
+        keep_dims: bool
+        name: str
+      msg: '{{function_node __wrapped__Sum_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Invalid reduction dimension (44 for input with 2 dimension(s) [Op:Sum]'
+      package: tensorflow
+    txt: ((all(axis[i] < input.rank for i in range(len(axis)))) and (all(axis[i] >=
+      -input.rank for i in range(len(axis))))) and ((len(axis) < len(input.shape)))
+  - f1_score: 68.57142857142857
+    overall_score: 41.5
+    precision: 80.0
+    recall: 60.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        axis: list[int]
+        input: tensor
+        keep_dims: bool
+        name: str
+      msg: '{{function_node __wrapped__Sum_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Invalid reduction dimension (9 for input with 7 dimension(s) [Op:Sum]'
+      package: tensorflow
+    txt: (all(input.shape[axis[i]] == 1 for i in range(len(axis))))
+  - f1_score: 84.76821192052981
+    overall_score: 45.66666666666667
+    precision: 85.33333333333334
+    recall: 84.21052631578947
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        axis: list[int]
+        input: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        keep_dims: bool
+        name: str
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in input.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        axis: list[int]
+        input: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        keep_dims: bool
+        name: str
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: input.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        axis: list[int]
+        input: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        keep_dims: bool
+        name: str
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in input.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        axis: list[int]
+        input: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        keep_dims: bool
+        name: str
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: input.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

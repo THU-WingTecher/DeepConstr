@@ -4,9 +4,7 @@ args:
   - Optional[Tensor]
   - Optional[Tensor]
   - bool
-  - Tensor
   is_pos:
-  - false
   - false
   - false
   - false
@@ -16,13 +14,11 @@ args:
   - atol
   - rtol
   - hermitian
-  - out
   required:
   - true
   - false
   - false
   - false
-  - true
 name: torch._C._linalg.linalg_matrix_rank
 package: torch
 pass_rate: 46.400000000000006
@@ -37,7 +33,6 @@ rules:
         atol: tensor
         hermitian: bool
         input: tensor
-        out: tensor
         rtol: None
       msg: The size of tensor a (9) must match the size of tensor b (3) at non-singleton
         dimension 6
@@ -47,22 +42,6 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 57.603686635944705
-- - cot: ''
-    length: 1
-    target:
-      choosen_dtype:
-        atol: tensor
-        hermitian: bool
-        input: tensor
-        out: tensor
-        rtol: None
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: out.rank==input.rank and all(out.shape[i]==input.shape[i] for i in range(out.rank))
-  - f1_score: 70.27406886858749
-    overall_score: 100
-    precision: 100.0
-    recall: 54.17118093174431
 - - cot: 'The error is triggered because the input matrix A is not a batch of square
       matrices. The last two dimensions of A are 6 by 8, which indicates that A is
       not a square matrix. To prevent the error, the input A should be a batch of
@@ -76,7 +55,6 @@ rules:
         atol: None
         hermitian: bool
         input: tensor
-        out: tensor
         rtol: None
       msg: 'linalg.eigh: A must be batches of square matrices, but they are 5 by 8
         matrices'
@@ -93,7 +71,6 @@ rules:
         atol: tensor
         hermitian: bool
         input: tensor
-        out: tensor
         rtol: None
       msg: This function doesn't handle types other than float and double
       package: torch
@@ -109,7 +86,6 @@ rules:
         atol: None
         hermitian: bool
         input: tensor
-        out: tensor
         rtol: tensor
       msg: 'torch.linalg.matrix_rank: The input tensor input must have at least 2
         dimensions.'
@@ -129,7 +105,6 @@ rules:
         atol: tensor
         hermitian: bool
         input: tensor
-        out: tensor
         rtol: tensor
       msg: negative dimensions are not allowed
       package: torch
@@ -138,3 +113,34 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 89.60573476702508
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        atol: Optional[Tensor]
+        hermitian: bool
+        input: Tensor
+        rtol: Optional[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape) and all(i >= 0 for i in atol.shape) and
+      all(i >= 0 for i in rtol.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        atol: Optional[Tensor]
+        hermitian: bool
+        input: Tensor
+        rtol: Optional[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7 and atol.rank <= 7 and rtol.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

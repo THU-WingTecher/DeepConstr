@@ -1,0 +1,145 @@
+args:
+  dtype:
+  - tensor
+  - tensor
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - data
+  - segment_ids
+  - name
+  required:
+  - true
+  - true
+  - false
+name: tf.math.segment_min
+package: null
+pass_rate: 30.313588850174217
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        data: tensor
+        name: str
+        segment_ids: tensor
+      msg: "Value for attr 'Tindices' of float is not in the list of allowed values:\
+        \ int32, int64\n\t; NodeDef: {{node SegmentMin}}; Op<name=SegmentMin; signature=data:T,\
+        \ segment_ids:Tindices -> output:T; attr=T:type,allowed=[DT_FLOAT, DT_DOUBLE,\
+        \ DT_INT32, DT_UINT8, DT_INT16, DT_INT8, DT_INT64, DT_BFLOAT16, DT_UINT16,\
+        \ DT_HALF, DT_UINT32, DT_UINT64]; attr=Tindices:type,allowed=[DT_INT32, DT_INT64]>\
+        \ [Op:SegmentMin] name: mRtF"
+      package: tensorflow
+    txt: dtype(segment_ids) in ["int32", "int64"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        data: tensor
+        name: str
+        segment_ids: tensor
+      msg: '{{function_node __wrapped__SegmentMin_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        input must be at least rank 1 [Op:SegmentMin] name: YgcA'
+      package: tensorflow
+    txt: (data.rank > 0)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'segment_ids should be a vector. This means that it should have a rank of
+      1, which indicates that it should have only one dimension. Therefore, the constraint
+      to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        data: tensor
+        name: str
+        segment_ids: tensor
+      msg: '{{function_node __wrapped__SegmentMin_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        segment_ids should be a vector. [Op:SegmentMin] name: vmCG'
+      package: tensorflow
+    txt: segment_ids.rank == 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'segment_ids should be the same size as dimension 0 of input. We can formulate
+      the constraint as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        data: tensor
+        name: str
+        segment_ids: tensor
+      msg: '{{function_node __wrapped__SegmentMin_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        segment_ids should be the same size as dimension 0 of input. [Op:SegmentMin]
+        name: ZDMY'
+      package: tensorflow
+    txt: segment_ids.shape[0] == data.shape[0]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        data: tensor
+        name: str
+        segment_ids: tensor
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in data.shape) and all(i >= 0 for i in segment_ids.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        data: tensor
+        name: str
+        segment_ids: tensor
+      msg: Too large tensor shape
+      package: null
+    txt: data.rank <= 7 and segment_ids.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        data: tensor
+        name: str
+        segment_ids: tensor
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in data.shape) and all(i >= 0 for i in segment_ids.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        data: tensor
+        name: str
+        segment_ids: tensor
+      msg: Too large tensor shape
+      package: null
+    txt: data.rank <= 7 and segment_ids.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

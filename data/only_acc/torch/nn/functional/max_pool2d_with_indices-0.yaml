@@ -1,0 +1,189 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - Optional[List[int]]
+  - List[int]
+  - List[int]
+  - bool
+  - bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - kernel_size
+  - stride
+  - padding
+  - dilation
+  - ceil_mode
+  - return_indices
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+name: torch.nn.functional.max_pool2d_with_indices
+package: torch
+pass_rate: 6.367041198501873
+rules:
+- - cot: synthesized
+    length: 4
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        dilation: list[int]
+        input: tensor
+        kernel_size: list[int]
+        padding: list[int]
+        return_indices: bool
+        stride: None
+      msg: 'max_pool2d: kernel_size must either be a single int, or a tuple of two
+        ints'
+      package: torch
+    txt: ((not len(dilation) == 1) and (len(padding) == len(kernel_size))) and ((len(padding)
+      == 1) and (len(dilation) == 1 or len(dilation) == 2))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        dilation: list[int]
+        input: tensor
+        kernel_size: list[int]
+        padding: list[int]
+        return_indices: bool
+        stride: None
+      msg: pad should be at most half of effective kernel size, but got pad=1, kernel_size=8
+        and dilation=-4
+      package: torch
+    txt: padding[0] <= (kernel_size[0] - 1) / 2
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        dilation: list[int]
+        input: tensor
+        kernel_size: list[int]
+        padding: list[int]
+        return_indices: bool
+        stride: None
+      msg: non-empty 3D or 4D (batch mode) tensor expected for input
+      package: torch
+    txt: len(input.shape) in [3, 4]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is caused because the padding for the function "torch.nn.functional.max_pool2d_with_indices"
+      is not as expected. What the args were? The function expects a non-negative
+      padding value, but found a negative value of -1. Therefore, Left : padding which
+      is the padding value should be corrected. It says that it should be non-negative,
+      so Op : >=, and Right : 0.'
+    length: 1
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        dilation: list[int]
+        input: tensor
+        kernel_size: list[int]
+        padding: list[int]
+        return_indices: bool
+        stride: None
+      msg: 'pad must be non-negative, but got pad: -1'
+      package: torch
+    txt: all(i>=0 for i in padding)
+  - f1_score: 88.49270664505673
+    overall_score: 100
+    precision: 100.0
+    recall: 79.36046511627907
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        dilation: List[int]
+        input: Tensor
+        kernel_size: List[int]
+        padding: List[int]
+        return_indices: bool
+        stride: Optional[List[int]]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        dilation: List[int]
+        input: Tensor
+        kernel_size: List[int]
+        padding: List[int]
+        return_indices: bool
+        stride: Optional[List[int]]
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        dilation: List[int]
+        input: Tensor
+        kernel_size: List[int]
+        padding: List[int]
+        return_indices: bool
+        stride: Optional[List[int]]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        dilation: List[int]
+        input: Tensor
+        kernel_size: List[int]
+        padding: List[int]
+        return_indices: bool
+        stride: Optional[List[int]]
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

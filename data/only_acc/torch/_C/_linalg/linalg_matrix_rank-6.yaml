@@ -3,48 +3,28 @@ args:
   - Tensor
   - float
   - bool
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   - false
   name:
   - self
   - tol
   - hermitian
-  - out
   required:
   - true
   - true
   - false
-  - true
 name: torch._C._linalg.linalg_matrix_rank
 package: torch
 pass_rate: 98.21428571428571
 rules:
-- - cot: ''
-    length: 1
-    target:
-      choosen_dtype:
-        hermitian: bool
-        out: tensor
-        self: tensor
-        tol: float
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
-  - f1_score: 72.46376811594203
-    overall_score: 100
-    precision: 100.0
-    recall: 56.81818181818182
 - - cot: 'The error is indicating that the input tensor ''self'' must have at least
       2 dimensions. Therefore, we can formulate a constraint as follows:'
     length: 1
     target:
       choosen_dtype:
         hermitian: bool
-        out: tensor
         self: tensor
         tol: float
       msg: 'torch.linalg.matrix_rank: The input tensor input must have at least 2
@@ -61,7 +41,6 @@ rules:
     target:
       choosen_dtype:
         hermitian: bool
-        out: tensor
         self: tensor
         tol: float
       msg: 'linalg.eigh: A must be batches of square matrices, but they are 3 by 1
@@ -72,27 +51,11 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 64.86486486486487
-- - cot: divided
-    length: 1
-    target:
-      choosen_dtype:
-        hermitian: bool
-        out: tensor
-        self: tensor
-        tol: float
-      msg: negative dimensions are not allowed
-      package: torch
-    txt: all(out.shape[i] >= 0 for i in range(len(out.shape)))
-  - f1_score: 93.91304347826087
-    overall_score: 100
-    precision: 100.0
-    recall: 88.52459016393443
 - - cot: ''
     length: 1
     target:
       choosen_dtype:
         hermitian: bool
-        out: tensor
         self: tensor
         tol: float
       msg: 'linalg.svd: Expected a floating point or complex tensor as input. Got
@@ -103,3 +66,31 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 66.78966789667896
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        self: Tensor
+        tol: float
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        self: Tensor
+        tol: float
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

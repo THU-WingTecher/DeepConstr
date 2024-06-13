@@ -1,0 +1,118 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[int]
+  - int
+  - Optional[str]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - n
+  - dim
+  - norm
+  required:
+  - true
+  - false
+  - false
+  - false
+name: torch._C._fft.fft_hfft
+package: torch
+pass_rate: 26.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        n: None
+        norm: None
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 6)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 67.82608695652175
+    overall_score: 48.5
+    precision: 91.0
+    recall: 54.05940594059406
+- - cot: 'The error is caused by an invalid number of data points specified. The function
+      is trying to perform a FFT on dimension 0 of the input tensor, but the number
+      of data points in that dimension is 0. Therefore, a valid constraint to prevent
+      the error would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        n: None
+        norm: str
+        self: tensor
+      msg: Invalid number of data points (0) specified
+      package: torch
+    txt: (self.size(dim) > 0)
+  - f1_score: 56.97151424287857
+    overall_score: 34.666666666666664
+    precision: 63.33333333333333
+    recall: 51.77111716621254
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        n: Optional[int]
+        norm: Optional[str]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        n: Optional[int]
+        norm: Optional[str]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        n: Optional[int]
+        norm: Optional[str]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        n: Optional[int]
+        norm: Optional[str]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

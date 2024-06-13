@@ -1,0 +1,149 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - Tensor
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - index
+  - sparse_grad
+  required:
+  - true
+  - true
+  - true
+  - false
+name: torch.gather
+package: torch
+pass_rate: 1.3333333333333335
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        self: tensor
+        sparse_grad: bool
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 6)
+      package: torch
+    txt: (dim >= -len(self.shape)) and (-4 < len(self.shape))
+  - f1_score: 74.11300919842313
+    overall_score: 48.5
+    precision: 94.0
+    recall: 61.17136659436009
+- - cot: 'The error is triggered because the dtype of the index tensor is expected
+      to be int64, but it is provided as int32. To prevent this error, the dtype of
+      the index tensor should be corrected to int64. Therefore, the condition that
+      prevents the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        self: tensor
+        sparse_grad: bool
+      msg: 'gather(): Expected dtype int64 for index'
+      package: torch
+    txt: dtype(index) == "int64"
+  - f1_score: 94.48818897637796
+    overall_score: 100
+    precision: 100.0
+    recall: 89.55223880597015
+- - cot: Index tensor must have the same number of dimensions as input tensor.
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        self: tensor
+        sparse_grad: bool
+      msg: Index tensor must have the same number of dimensions as input tensor
+      package: torch
+    txt: dim(index) == dim(self)
+  - f1_score: 89.02077151335313
+    overall_score: 100
+    precision: 100.0
+    recall: 80.21390374331551
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        self: tensor
+        sparse_grad: bool
+      msg: Size does not match at dimension 0 expected index [7, 3, 3, 3, 3, 3, 3]
+        to be smaller than self [1, 4, 4, 4, 4, 4, 4] apart from dimension 3
+      package: torch
+    txt: all(index[i] < self.shape[i] for i in range(len(index)))
+  - f1_score: 74.81296758104737
+    overall_score: 100
+    precision: 100.0
+    recall: 59.76095617529881
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        index: Tensor
+        self: Tensor
+        sparse_grad: bool
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in index.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        index: Tensor
+        self: Tensor
+        sparse_grad: bool
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and index.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        index: Tensor
+        self: Tensor
+        sparse_grad: bool
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in index.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        index: Tensor
+        self: Tensor
+        sparse_grad: bool
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and index.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

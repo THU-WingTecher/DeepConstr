@@ -4,10 +4,8 @@ args:
   - List[int]
   - bool
   - Optional[float]
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   - false
   - false
@@ -16,39 +14,20 @@ args:
   - output_size
   - align_corners
   - scales
-  - out
   required:
   - true
   - true
   - true
   - false
-  - true
 name: torch._C._nn.upsample_linear1d
 package: torch
 pass_rate: 96.33507853403141
 rules:
 - - cot: synthesized
-    length: 2
-    target:
-      choosen_dtype:
-        align_corners: bool
-        out: tensor
-        output_size: list[int]
-        scales: None
-        self: tensor
-      msg: It is expected output_size equals to 1, but got size 0
-      package: torch
-    txt: (len(output_size) == 1) and (len(self.shape) == 3)
-  - f1_score: 92.80742459396751
-    overall_score: 100
-    precision: 100.0
-    recall: 86.58008658008657
-- - cot: synthesized
     length: 3
     target:
       choosen_dtype:
         align_corners: bool
-        out: tensor
         output_size: list[int]
         scales: float
         self: tensor
@@ -66,24 +45,6 @@ rules:
     target:
       choosen_dtype:
         align_corners: bool
-        out: tensor
-        output_size: list[int]
-        scales: float
-        self: tensor
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: (self.shape == out.shape) or (out.rank == self.rank and all(out.shape[i]
-      == self.shape[i] for i in range(out.rank)))
-  - f1_score: 68.13591831362004
-    overall_score: 50.17021276595745
-    precision: 97.3404255319149
-    recall: 52.41125929354587
-- - cot: synthesized
-    length: 2
-    target:
-      choosen_dtype:
-        align_corners: bool
-        out: tensor
         output_size: list[int]
         scales: float
         self: tensor
@@ -94,20 +55,33 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 71.21212121212122
-- - cot: synthesized
-    length: 2
+- - cot: default
+    length: 1
     target:
       choosen_dtype:
         align_corners: bool
-        out: tensor
-        output_size: list[int]
-        scales: float
-        self: tensor
-      msg: Non-empty 3D data tensor expected but got a tensor with sizes [1, 0, 7]
+        output_size: List[int]
+        scales: Optional[float]
+        self: Tensor
+      msg: negative dimensions are not allowed
       package: torch
-    txt: (self.dim() == 3 and all(output_size[i] != 0 for i in range(3))) and (len(self.shape)
-      == 3 and self.shape[1] != 0)
-  - f1_score: 67.63636363636364
-    overall_score: 100
-    precision: 100.0
-    recall: 51.098901098901095
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        output_size: List[int]
+        scales: Optional[float]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

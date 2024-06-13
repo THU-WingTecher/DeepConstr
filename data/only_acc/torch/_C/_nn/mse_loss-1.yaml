@@ -1,0 +1,106 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - int
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - target
+  - reduction
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+name: torch._C._nn.mse_loss
+package: torch
+pass_rate: 13.0
+rules:
+- - cot: "Error is triggered because the size of tensor a (9) does not match the size\
+      \ of tensor b (6) at non-singleton dimension 2. To prevent this error, we need\
+      \ to ensure that the dimensions and shape of the tensors are consistent. \n\n\
+      Let's formulate the constraint:"
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        reduction: int
+        self: tensor
+        target: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (8) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.dim == target.dim and self.shape == target.shape
+  - f1_score: 94.7867298578199
+    overall_score: 100
+    precision: 100.0
+    recall: 90.09009009009009
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        out: Tensor
+        reduction: int
+        self: Tensor
+        target: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in target.shape) and
+      all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        out: Tensor
+        reduction: int
+        self: Tensor
+        target: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and target.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        out: Tensor
+        reduction: int
+        self: Tensor
+        target: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in target.shape) and
+      all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        out: Tensor
+        reduction: int
+        self: Tensor
+        target: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and target.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

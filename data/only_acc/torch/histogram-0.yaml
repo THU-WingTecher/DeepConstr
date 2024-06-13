@@ -1,0 +1,123 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[Tensor]
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - bins
+  - weight
+  - density
+  required:
+  - true
+  - true
+  - false
+  - false
+name: torch.histogram
+package: torch
+pass_rate: 42.0
+rules:
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      bins tensor should have one dimension, but it has 0 dimensions in dimension
+      0. To prevent this error, we need to check if the bins tensor has exactly one
+      dimension in dimension 0. The constraint can be formulated as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        bins: tensor
+        density: bool
+        self: tensor
+        weight: tensor
+      msg: 'torch.histogramdd: bins tensor should have one dimension, but got 7 dimensions
+        in the bins tensor for dimension 0'
+      package: torch
+    txt: bins.dim() == 1
+  - f1_score: 95.65217391304348
+    overall_score: 52.5
+    precision: 99.0
+    recall: 92.5233644859813
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        bins: tensor
+        density: bool
+        self: tensor
+        weight: tensor
+      msg: 'torch.histogramdd: if weight tensor is provided it should have the same
+        shape as the input tensor excluding its innermost dimension, but got input
+        with shape [9, 1] and weight with shape [729]'
+      package: torch
+    txt: (weight.shape[1] == self.shape[-1])
+  - f1_score: 17.934782608695652
+    overall_score: 8.5
+    precision: 11.0
+    recall: 48.52941176470588
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        bins: Tensor
+        density: bool
+        self: Tensor
+        weight: Optional[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in bins.shape) and all(i
+      >= 0 for i in weight.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        bins: Tensor
+        density: bool
+        self: Tensor
+        weight: Optional[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and bins.rank <= 7 and weight.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        bins: Tensor
+        density: bool
+        self: Tensor
+        weight: Optional[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in bins.shape) and all(i
+      >= 0 for i in weight.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        bins: Tensor
+        density: bool
+        self: Tensor
+        weight: Optional[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and bins.rank <= 7 and weight.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

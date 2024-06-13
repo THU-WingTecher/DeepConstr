@@ -3,22 +3,18 @@ args:
   - Tensor
   - Tensor
   - Optional[int]
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   - false
   name:
   - self
   - other
   - dim
-  - out
   required:
   - true
   - true
   - false
-  - true
 name: torch.cross
 package: torch
 pass_rate: 99.56896551724138
@@ -30,7 +26,6 @@ rules:
       choosen_dtype:
         dim: int
         other: tensor
-        out: tensor
         self: tensor
       msg: 'linalg.cross: inputs must have the same number of dimensions.'
       package: torch
@@ -45,7 +40,6 @@ rules:
       choosen_dtype:
         dim: int
         other: tensor
-        out: tensor
         self: tensor
       msg: Dimension out of range (expected to be in range of [-2, 1], but got 3)
       package: torch
@@ -60,7 +54,6 @@ rules:
       choosen_dtype:
         dim: int
         other: tensor
-        out: tensor
         self: tensor
       msg: 'linalg.cross: inputs dimension 0 must have length 3. Got 1 and 7'
       package: torch
@@ -81,7 +74,6 @@ rules:
       choosen_dtype:
         dim: int
         other: tensor
-        out: tensor
         self: tensor
       msg: Dimension specified as 0 but tensor has no dimensions
       package: torch
@@ -91,27 +83,11 @@ rules:
     precision: 100.0
     recall: 70.09345794392523
 - - cot: synthesized
-    length: 2
-    target:
-      choosen_dtype:
-        dim: None
-        other: tensor
-        out: tensor
-        self: tensor
-      msg: Expected out tensor to have dtype float, but got int instead
-      package: torch
-    txt: (dtype(out) == float) and (dtype(out) == dtype(self))
-  - f1_score: 100.0
-    overall_score: 100
-    precision: 100.0
-    recall: 100.0
-- - cot: synthesized
     length: 3
     target:
       choosen_dtype:
         dim: int
         other: tensor
-        out: tensor
         self: tensor
       msg: expected scalar type Half but found Float
       package: torch
@@ -121,29 +97,12 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 85.97014925373134
-- - cot: synthesized
-    length: 2
-    target:
-      choosen_dtype:
-        dim: int
-        other: tensor
-        out: tensor
-        self: tensor
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: (out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank)))
-      and (out.shape == self.shape)
-  - f1_score: 69.57605985037408
-    overall_score: 100
-    precision: 100.0
-    recall: 53.346080305927345
 - - cot: divided
     length: 1
     target:
       choosen_dtype:
         dim: int
         other: tensor
-        out: tensor
         self: tensor
       msg: The size of tensor a (9) must match the size of tensor b (7) at non-singleton
         dimension 6
@@ -153,3 +112,31 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 50.22026431718062
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[int]
+        other: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in other.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[int]
+        other: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and other.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

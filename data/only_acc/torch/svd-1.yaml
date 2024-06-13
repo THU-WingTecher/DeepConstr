@@ -1,0 +1,104 @@
+args:
+  dtype:
+  - Tensor
+  - bool
+  - bool
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - some
+  - compute_uv
+  - U
+  - S
+  - V
+  required:
+  - true
+  - false
+  - false
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.svd
+package: torch
+pass_rate: 0
+rules:
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        S: Tensor
+        U: Tensor
+        V: Tensor
+        compute_uv: bool
+        self: Tensor
+        some: bool
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in U.shape) and all(i
+      >= 0 for i in S.shape) and all(i >= 0 for i in V.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        S: Tensor
+        U: Tensor
+        V: Tensor
+        compute_uv: bool
+        self: Tensor
+        some: bool
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and U.rank <= 7 and S.rank <= 7 and V.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        S: Tensor
+        U: Tensor
+        V: Tensor
+        compute_uv: bool
+        self: Tensor
+        some: bool
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in U.shape) and all(i
+      >= 0 for i in S.shape) and all(i >= 0 for i in V.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        S: Tensor
+        U: Tensor
+        V: Tensor
+        compute_uv: bool
+        self: Tensor
+        some: bool
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and U.rank <= 7 and S.rank <= 7 and V.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

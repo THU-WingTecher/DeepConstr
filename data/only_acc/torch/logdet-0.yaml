@@ -1,0 +1,90 @@
+args:
+  dtype:
+  - Tensor
+  is_pos:
+  - true
+  name:
+  - self
+  required:
+  - true
+name: torch.logdet
+package: torch
+pass_rate: 89.0
+rules:
+- - cot: 'The error occurs due to the fact that the input tensor to the torch.logdet
+      function is not a batch of square matrices. In other words, the last two dimensions
+      of the tensor are not equal. If we denote the tensor as ''self'', the constraint
+      for this problem can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+      msg: 'logdet: A must be batches of square matrices, but they are 6 by 7 matrices'
+      package: torch
+    txt: self.shape[-1] == self.shape[-2]
+  - f1_score: 67.34006734006734
+    overall_score: 100
+    precision: 100.0
+    recall: 50.76142131979695
+- - cot: The error is triggered because the input tensor A must have at least 2 dimensions.
+      To prevent this error, we can add a constraint that checks if the dimension
+      of the input tensor A is greater than or equal to 2.
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+      msg: 'logdet: The input tensor A must have at least 2 dimensions.'
+      package: torch
+    txt: self.dim >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

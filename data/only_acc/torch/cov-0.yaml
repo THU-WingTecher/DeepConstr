@@ -1,0 +1,122 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - Optional[Tensor]
+  - Optional[Tensor]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - correction
+  - fweights
+  - aweights
+  required:
+  - true
+  - false
+  - false
+  - false
+name: torch.cov
+package: torch
+pass_rate: 26.333333333333332
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        aweights: tensor
+        correction: int
+        fweights: tensor
+        self: tensor
+      msg: 'cov(): expected input to have two or fewer dimensions but got an input
+        with 7 dimensions'
+      package: torch
+    txt: self.ndims() <= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: "The error message states that the function expected the tensor `fweights`\
+      \ to have one or fewer dimensions, but it received `fweights` with 5 dimensions.\
+      \ \n\nTo prevent this error, we can add a constraint that checks the number\
+      \ of dimensions of `fweights`:"
+    length: 1
+    target:
+      choosen_dtype:
+        aweights: None
+        correction: int
+        fweights: tensor
+        self: tensor
+      msg: 'cov(): expected fweights to have one or fewer dimensions but got fweights
+        with 2 dimensions'
+      package: torch
+    txt: fweights.ndim <= 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        aweights: Optional[Tensor]
+        correction: int
+        fweights: Optional[Tensor]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in fweights.shape) and
+      all(i >= 0 for i in aweights.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        aweights: Optional[Tensor]
+        correction: int
+        fweights: Optional[Tensor]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and fweights.rank <= 7 and aweights.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        aweights: Optional[Tensor]
+        correction: int
+        fweights: Optional[Tensor]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in fweights.shape) and
+      all(i >= 0 for i in aweights.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        aweights: Optional[Tensor]
+        correction: int
+        fweights: Optional[Tensor]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and fweights.rank <= 7 and aweights.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

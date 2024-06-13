@@ -1,0 +1,97 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[Tensor]
+  - int
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - target
+  - weight
+  - reduction
+  - out
+  required:
+  - true
+  - true
+  - false
+  - false
+  - true
+name: torch._C._nn.binary_cross_entropy
+package: torch
+pass_rate: 0
+rules:
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        out: Tensor
+        reduction: int
+        self: Tensor
+        target: Tensor
+        weight: Optional[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in target.shape) and
+      all(i >= 0 for i in weight.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        out: Tensor
+        reduction: int
+        self: Tensor
+        target: Tensor
+        weight: Optional[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and target.rank <= 7 and weight.rank <= 7 and out.rank <=
+      7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        out: Tensor
+        reduction: int
+        self: Tensor
+        target: Tensor
+        weight: Optional[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in target.shape) and
+      all(i >= 0 for i in weight.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        out: Tensor
+        reduction: int
+        self: Tensor
+        target: Tensor
+        weight: Optional[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and target.rank <= 7 and weight.rank <= 7 and out.rank <=
+      7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

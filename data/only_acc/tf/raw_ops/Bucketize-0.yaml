@@ -1,0 +1,77 @@
+args:
+  dtype:
+  - list[float]
+  - int32,int64,float32,float64
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - boundaries
+  - input
+  - name
+  required:
+  - true
+  - true
+  - false
+name: tf.raw_ops.Bucketize
+package: tensorflow
+pass_rate: 93.5
+rules:
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        boundaries: list[float]
+        input: int32,int64,float32,float64
+        name: str
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in input.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        boundaries: list[float]
+        input: int32,int64,float32,float64
+        name: str
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: input.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        boundaries: list[float]
+        input: int32,int64,float32,float64
+        name: str
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in input.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        boundaries: list[float]
+        input: int32,int64,float32,float64
+        name: str
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: input.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

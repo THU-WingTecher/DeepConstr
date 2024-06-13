@@ -1,0 +1,225 @@
+args:
+  dtype:
+  - int
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - block_size
+  - data_format
+  - input
+  - name
+  required:
+  - true
+  - false
+  - true
+  - false
+name: tf.nn.depth_to_space
+package: tensorflow
+pass_rate: 1.3333333333333335
+rules:
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      value for the attribute ''data_format'' is "FeBo", which is not in the allowed
+      values: "NHWC", "NCHW", "NCHW_VECT_C". Therefore, the constraint to prevent
+      the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        block_size: int
+        data_format: str
+        input: tensor
+        name: str
+      msg: "Value for attr 'data_format' of \"hynU\" is not in the list of allowed\
+        \ values: \"NHWC\", \"NCHW\", \"NCHW_VECT_C\"\n\t; NodeDef: {{node DepthToSpace}};\
+        \ Op<name=DepthToSpace; signature=input:T -> output:T; attr=T:type; attr=block_size:int,min=2;\
+        \ attr=data_format:string,default=\"NHWC\",allowed=[\"NHWC\", \"NCHW\", \"\
+        NCHW_VECT_C\"]> [Op:DepthToSpace] name: twEy"
+      package: tensorflow
+    txt: data_format in ["NHWC", "NCHW", "NCHW_VECT_C"]
+  - f1_score: 92.59259259259261
+    overall_score: 100
+    precision: 100.0
+    recall: 86.20689655172414
+- - cot: The error is due to the block_size value being larger than the dimensions
+      of the input tensor. The block_size should be less than or equal to the smallest
+      dimension of the input tensor.
+    length: 1
+    target:
+      choosen_dtype:
+        block_size: int
+        data_format: str
+        input: tensor
+        name: str
+      msg: "Could not find device for node: {{node DepthToSpace}} = DepthToSpace[T=DT_FLOAT,\
+        \ block_size=5, data_format=\"NCHW\"]\nAll kernels registered for op DepthToSpace:\n\
+        \  device='XLA_CPU_JIT'; T in [DT_FLOAT, DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16,\
+        \ 930109355527764061, DT_HALF, DT_UINT32, DT_UINT64, DT_FLOAT8_E5M2, DT_FLOAT8_E4M3FN]\n\
+        \  device='XLA_GPU_JIT'; T in [DT_FLOAT, DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16,\
+        \ 930109355527764061, DT_HALF, DT_UINT32, DT_UINT64, DT_FLOAT8_E5M2, DT_FLOAT8_E4M3FN]\n\
+        \  device='CPU'; T in [DT_VARIANT]; data_format in [\"NHWC\"]\n  device='CPU';\
+        \ T in [DT_RESOURCE]; data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_STRING];\
+        \ data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_BOOL]; data_format in\
+        \ [\"NHWC\"]\n  device='CPU'; T in [DT_COMPLEX128]; data_format in [\"NHWC\"\
+        ]\n  device='CPU'; T in [DT_COMPLEX64]; data_format in [\"NHWC\"]\n  device='CPU';\
+        \ T in [DT_DOUBLE]; data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_FLOAT];\
+        \ data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_BFLOAT16]; data_format\
+        \ in [\"NHWC\"]\n  device='CPU'; T in [DT_HALF]; data_format in [\"NHWC\"\
+        ]\n  device='CPU'; T in [DT_INT32]; data_format in [\"NHWC\"]\n  device='CPU';\
+        \ T in [DT_INT8]; data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_UINT8];\
+        \ data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_INT16]; data_format\
+        \ in [\"NHWC\"]\n  device='CPU'; T in [DT_UINT16]; data_format in [\"NHWC\"\
+        ]\n  device='CPU'; T in [DT_UINT32]; data_format in [\"NHWC\"]\n  device='CPU';\
+        \ T in [DT_INT64]; data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_UINT64];\
+        \ data_format in [\"NHWC\"]\n  device='GPU'; T in [DT_QINT8]\n  device='GPU';\
+        \ T in [DT_BFLOAT16]\n  device='GPU'; T in [DT_HALF]\n  device='GPU'; T in\
+        \ [DT_FLOAT]\n [Op:DepthToSpace] name: LmkV"
+      package: tensorflow
+    txt: block_size <= min(input.shape)
+  - f1_score: 64.8910411622276
+    overall_score: 47.666666666666664
+    precision: 89.33333333333333
+    recall: 50.95057034220532
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        block_size: int
+        data_format: str
+        input: tensor
+        name: str
+      msg: "Value for attr 'block_size' of -4 must be at least minimum 2\n\t; NodeDef:\
+        \ {{node DepthToSpace}}; Op<name=DepthToSpace; signature=input:T -> output:T;\
+        \ attr=T:type; attr=block_size:int,min=2; attr=data_format:string,default=\"\
+        NHWC\",allowed=[\"NHWC\", \"NCHW\", \"NCHW_VECT_C\"]> [Op:DepthToSpace] name:\
+        \ yaxD"
+      package: tensorflow
+    txt: block_size >= 1
+  - f1_score: 50.495049504950494
+    overall_score: 20.0
+    precision: 34.0
+    recall: 98.07692307692308
+- - cot: "Based on the given runtime information, the error is triggered because the\
+      \ value of 'block_size' is set to 1, which is below the minimum allowed value.\
+      \ To prevent the error, the 'block_size' should be set to a value greater than\
+      \ or equal to the minimum allowed value. The minimum allowed value for 'block_size'\
+      \ is 2. \n\nTherefore, the constraint to prevent the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        block_size: int
+        data_format: str
+        input: tensor
+        name: str
+      msg: "Value for attr 'block_size' of 1 must be at least minimum 2\n\t; NodeDef:\
+        \ {{node DepthToSpace}}; Op<name=DepthToSpace; signature=input:T -> output:T;\
+        \ attr=T:type; attr=block_size:int,min=2; attr=data_format:string,default=\"\
+        NHWC\",allowed=[\"NHWC\", \"NCHW\", \"NCHW_VECT_C\"]> [Op:DepthToSpace] name:\
+        \ qwkB"
+      package: tensorflow
+    txt: block_size >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        block_size: int
+        data_format: str
+        input: tensor
+        name: str
+      msg: "Could not find device for node: {{node DepthToSpace}} = DepthToSpace[T=DT_FLOAT,\
+        \ block_size=2, data_format=\"NCHW\"]\nAll kernels registered for op DepthToSpace:\n\
+        \  device='XLA_CPU_JIT'; T in [DT_FLOAT, DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16,\
+        \ 930109355527764061, DT_HALF, DT_UINT32, DT_UINT64, DT_FLOAT8_E5M2, DT_FLOAT8_E4M3FN]\n\
+        \  device='XLA_GPU_JIT'; T in [DT_FLOAT, DT_DOUBLE, DT_INT32, DT_UINT8, DT_INT16,\
+        \ 930109355527764061, DT_HALF, DT_UINT32, DT_UINT64, DT_FLOAT8_E5M2, DT_FLOAT8_E4M3FN]\n\
+        \  device='CPU'; T in [DT_VARIANT]; data_format in [\"NHWC\"]\n  device='CPU';\
+        \ T in [DT_RESOURCE]; data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_STRING];\
+        \ data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_BOOL]; data_format in\
+        \ [\"NHWC\"]\n  device='CPU'; T in [DT_COMPLEX128]; data_format in [\"NHWC\"\
+        ]\n  device='CPU'; T in [DT_COMPLEX64]; data_format in [\"NHWC\"]\n  device='CPU';\
+        \ T in [DT_DOUBLE]; data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_FLOAT];\
+        \ data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_BFLOAT16]; data_format\
+        \ in [\"NHWC\"]\n  device='CPU'; T in [DT_HALF]; data_format in [\"NHWC\"\
+        ]\n  device='CPU'; T in [DT_INT32]; data_format in [\"NHWC\"]\n  device='CPU';\
+        \ T in [DT_INT8]; data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_UINT8];\
+        \ data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_INT16]; data_format\
+        \ in [\"NHWC\"]\n  device='CPU'; T in [DT_UINT16]; data_format in [\"NHWC\"\
+        ]\n  device='CPU'; T in [DT_UINT32]; data_format in [\"NHWC\"]\n  device='CPU';\
+        \ T in [DT_INT64]; data_format in [\"NHWC\"]\n  device='CPU'; T in [DT_UINT64];\
+        \ data_format in [\"NHWC\"]\n  device='GPU'; T in [DT_QINT8]\n  device='GPU';\
+        \ T in [DT_BFLOAT16]\n  device='GPU'; T in [DT_HALF]\n  device='GPU'; T in\
+        \ [DT_FLOAT]\n [Op:DepthToSpace] name: SBFB"
+      package: tensorflow
+    txt: (data_format in ["NHWC", "NCHW"]) and (input.rank == 4)
+  - f1_score: 63.27272727272728
+    overall_score: 30.499999999999996
+    precision: 57.99999999999999
+    recall: 69.60000000000001
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        block_size: int
+        data_format: str
+        input: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in input.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        block_size: int
+        data_format: str
+        input: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: input.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        block_size: int
+        data_format: str
+        input: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in input.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        block_size: int
+        data_format: str
+        input: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: input.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

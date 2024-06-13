@@ -1,0 +1,101 @@
+args:
+  dtype:
+  - tensor
+  - list[int]
+  - bool
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input_tensor
+  - axis
+  - keepdims
+  - name
+  required:
+  - true
+  - false
+  - false
+  - false
+name: tf.math.reduce_std
+package: null
+pass_rate: 26.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        axis: list[int]
+        input_tensor: tensor
+        keepdims: bool
+        name: str
+      msg: '{{function_node __wrapped__Mean_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Invalid reduction dimension (60 for input with 7 dimension(s) [Op:Mean]'
+      package: tensorflow
+    txt: (i< input_tensor.rank for i in axis)
+  - f1_score: 54.31309904153355
+    overall_score: 31.333333333333332
+    precision: 56.666666666666664
+    recall: 52.14723926380368
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        axis: list[int]
+        input_tensor: tensor
+        keepdims: bool
+        name: str
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in input_tensor.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        axis: list[int]
+        input_tensor: tensor
+        keepdims: bool
+        name: str
+      msg: Too large tensor shape
+      package: null
+    txt: input_tensor.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        axis: list[int]
+        input_tensor: tensor
+        keepdims: bool
+        name: str
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in input_tensor.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        axis: list[int]
+        input_tensor: tensor
+        keepdims: bool
+        name: str
+      msg: Too large tensor shape
+      package: null
+    txt: input_tensor.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -1,0 +1,122 @@
+args:
+  dtype:
+  - List[Tensor]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - tensors
+  - out
+  required:
+  - true
+  - true
+name: torch.hstack
+package: torch
+pass_rate: 50.5
+rules:
+- - cot: Wrap the final formula with
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        tensors: list[tensor]
+      msg: hstack expects a non-empty TensorList
+      package: torch
+    txt: len(tensors) > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        tensors: list[tensor]
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == len(tensors)
+  - f1_score: 59.04365904365905
+    overall_score: 38.5
+    precision: 71.0
+    recall: 50.5338078291815
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        tensors: list[tensor]
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.shape[0] == tensors[0].shape[0]
+  - f1_score: 60.73752711496746
+    overall_score: 38.0
+    precision: 70.0
+    recall: 53.63984674329502
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        tensors: list[tensor]
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == tensors[0].rank and all(out.shape[i] == tensors[0].shape[i] for
+      i in range(out.rank))
+  - f1_score: 67.91171477079797
+    overall_score: 100
+    precision: 100.0
+    recall: 51.41388174807199
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        out: Tensor
+        tensors: List[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        out: Tensor
+        tensors: List[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        out: Tensor
+        tensors: List[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        out: Tensor
+        tensors: List[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

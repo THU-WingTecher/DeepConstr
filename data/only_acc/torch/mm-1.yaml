@@ -1,0 +1,143 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - mat2
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.mm
+package: torch
+pass_rate: 86.5979381443299
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        mat2: tensor
+        out: tensor
+        self: tensor
+      msg: self must be a matrix
+      package: torch
+    txt: self.dim() == 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is triggered because the mat2 argument is not a matrix. Let''s
+      see the runtime information. mat2 has a shape of [7, 9, 9, 9]. To be a matrix,
+      it should have only two dimensions. Therefore, the condition to prevent the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        mat2: tensor
+        out: tensor
+        self: tensor
+      msg: mat2 must be a matrix
+      package: torch
+    txt: mat2.dim() == 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is caused because the shapes of mat1 and mat2 cannot be multiplied.
+      In this case, the shapes are (4x2 and 1x2). We need to ensure that the number
+      of columns in mat1 (self) matches the number of rows in mat2 for matrix multiplication
+      to be possible. The constraint will therefore be:'
+    length: 1
+    target:
+      choosen_dtype:
+        mat2: tensor
+        out: tensor
+        self: tensor
+      msg: mat1 and mat2 shapes cannot be multiplied (4x1 and 4x5)
+      package: torch
+    txt: self.shape[-1] == mat2.shape[-2]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: '`out` tensor is empty, which means it has no shape. To prevent the error,
+      `out` tensor should have the same shape as the result of the operation. In this
+      case, the result shape is `self.shape`. Therefore, the constraint would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        mat2: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.shape == self.shape
+  - f1_score: 65.59957692477192
+    overall_score: 51.1958762886598
+    precision: 96.3917525773196
+    recall: 49.717431094603796
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        mat2: Tensor
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in mat2.shape) and all(i
+      >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        mat2: Tensor
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and mat2.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        mat2: Tensor
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in mat2.shape) and all(i
+      >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        mat2: Tensor
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and mat2.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

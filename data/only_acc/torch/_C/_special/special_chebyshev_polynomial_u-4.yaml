@@ -1,0 +1,69 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  is_pos:
+  - false
+  - false
+  name:
+  - x
+  - n
+  required:
+  - true
+  - true
+name: torch._C._special.special_chebyshev_polynomial_u
+package: torch
+pass_rate: 0
+rules:
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        n: number
+        x: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in x.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        n: number
+        x: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: x.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        n: number
+        x: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in x.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        n: number
+        x: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: x.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

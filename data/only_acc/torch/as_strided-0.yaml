@@ -1,0 +1,85 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - List[int]
+  - Optional[int]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - size
+  - stride
+  - storage_offset
+  required:
+  - true
+  - true
+  - true
+  - false
+name: torch.as_strided
+package: torch
+pass_rate: 61.33333333333333
+rules:
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+        size: List[int]
+        storage_offset: Optional[int]
+        stride: List[int]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+        size: List[int]
+        storage_offset: Optional[int]
+        stride: List[int]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+        size: List[int]
+        storage_offset: Optional[int]
+        stride: List[int]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+        size: List[int]
+        storage_offset: Optional[int]
+        stride: List[int]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

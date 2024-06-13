@@ -1,15 +1,11 @@
 args:
   dtype:
   - Tensor
-  - Tensor
   is_pos:
-  - false
   - false
   name:
   - A
-  - out
   required:
-  - true
   - true
 name: torch._C._linalg.linalg_det
 package: torch
@@ -23,7 +19,6 @@ rules:
     target:
       choosen_dtype:
         A: tensor
-        out: tensor
       msg: 'linalg.det: A must be batches of square matrices, but they are 1 by 6
         matrices'
       package: torch
@@ -37,7 +32,6 @@ rules:
     target:
       choosen_dtype:
         A: tensor
-        out: tensor
       msg: 'linalg.det: The input tensor A must have at least 2 dimensions.'
       package: torch
     txt: A.dim >= 2
@@ -50,7 +44,6 @@ rules:
     target:
       choosen_dtype:
         A: tensor
-        out: tensor
       msg: 'linalg.det: A must be batches of square matrices, but they are 9 by 8
         matrices'
       package: torch
@@ -60,28 +53,11 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 90.6344410876133
-- - cot: 'The error is triggered because we are trying to resize the storage of the
-      output tensor, which is not resizable. To prevent this error, the shape and
-      rank of the output tensor should match the shape and rank of the input tensor.
-      Therefore, the constraint to prevent the error is:'
-    length: 1
-    target:
-      choosen_dtype:
-        A: tensor
-        out: tensor
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: out.rank == A.rank and all(out.shape[i] == A.shape[i] for i in range(out.rank))
-  - f1_score: 67.6465580841042
-    overall_score: 52.83277591973244
-    precision: 99.66555183946488
-    recall: 51.19835065716004
 - - cot: ''
     length: 1
     target:
       choosen_dtype:
         A: tensor
-        out: tensor
       msg: Expected out tensor to have dtype float, but got int instead
       package: torch
     txt: dtype(out) == torch.float32
@@ -95,7 +71,6 @@ rules:
     target:
       choosen_dtype:
         A: tensor
-        out: tensor
       msg: 'linalg.det: Expected a floating point or complex tensor as input. Got
         Int'
       package: torch
@@ -104,16 +79,27 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 100.0
-- - cot: ''
+- - cot: default
     length: 1
     target:
       choosen_dtype:
-        A: tensor
-        out: tensor
-      msg: Expected out tensor to have dtype c10::complex<float>, but got float instead
+        A: Tensor
+      msg: negative dimensions are not allowed
       package: torch
-    txt: dtype(out) == dtype(A)
-  - f1_score: 92.30769230769229
-    overall_score: 100
-    precision: 100.0
-    recall: 85.71428571428571
+    txt: all(i >= 0 for i in A.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        A: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: A.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -1,0 +1,123 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[float]
+  - Optional[str]
+  - Tensor
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - b
+  - rcond
+  - driver
+  - solution
+  - residuals
+  - rank
+  - singular_values
+  required:
+  - true
+  - true
+  - false
+  - false
+  - true
+  - true
+  - true
+  - true
+name: torch._C._linalg.linalg_lstsq
+package: torch
+pass_rate: 0
+rules:
+- - cot: default
+    length: 6
+    target:
+      choosen_dtype:
+        b: Tensor
+        driver: Optional[str]
+        rank: Tensor
+        rcond: Optional[float]
+        residuals: Tensor
+        self: Tensor
+        singular_values: Tensor
+        solution: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in b.shape) and all(i
+      >= 0 for i in solution.shape) and all(i >= 0 for i in residuals.shape) and all(i
+      >= 0 for i in rank.shape) and all(i >= 0 for i in singular_values.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 6
+    target:
+      choosen_dtype:
+        b: Tensor
+        driver: Optional[str]
+        rank: Tensor
+        rcond: Optional[float]
+        residuals: Tensor
+        self: Tensor
+        singular_values: Tensor
+        solution: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and b.rank <= 7 and solution.rank <= 7 and residuals.rank
+      <= 7 and rank.rank <= 7 and singular_values.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 6
+    target:
+      choosen_dtype:
+        b: Tensor
+        driver: Optional[str]
+        rank: Tensor
+        rcond: Optional[float]
+        residuals: Tensor
+        self: Tensor
+        singular_values: Tensor
+        solution: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in b.shape) and all(i
+      >= 0 for i in solution.shape) and all(i >= 0 for i in residuals.shape) and all(i
+      >= 0 for i in rank.shape) and all(i >= 0 for i in singular_values.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 6
+    target:
+      choosen_dtype:
+        b: Tensor
+        driver: Optional[str]
+        rank: Tensor
+        rcond: Optional[float]
+        residuals: Tensor
+        self: Tensor
+        singular_values: Tensor
+        solution: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and b.rank <= 7 and solution.rank <= 7 and residuals.rank
+      <= 7 and rank.rank <= 7 and singular_values.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

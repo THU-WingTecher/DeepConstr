@@ -2,17 +2,13 @@ args:
   dtype:
   - Tensor
   - Tensor
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   name:
   - self
   - other
-  - out
   required:
-  - true
   - true
   - true
 name: torch.floor_divide
@@ -27,7 +23,6 @@ rules:
     target:
       choosen_dtype:
         other: tensor
-        out: tensor
         self: tensor
       msg: The size of tensor a (6) must match the size of tensor b (9) at non-singleton
         dimension 1
@@ -37,18 +32,29 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 62.63048016701461
-- - cot: synthesized
+- - cot: default
     length: 2
     target:
       choosen_dtype:
-        other: tensor
-        out: tensor
-        self: tensor
-      msg: Trying to resize storage that is not resizable
+        other: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
       package: torch
-    txt: (out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank)))
-      and (out.rank==other.rank and all(out.shape[i]==other.shape[i] for i in range(out.rank)))
-  - f1_score: 74.81296758104737
-    overall_score: 100
-    precision: 100.0
-    recall: 59.76095617529881
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in other.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        other: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and other.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

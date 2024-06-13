@@ -1,0 +1,140 @@
+args:
+  dtype:
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - name
+  - x
+  - y
+  required:
+  - false
+  - true
+  - true
+name: tf.raw_ops.FloorDiv
+package: tensorflow
+pass_rate: 97.0
+rules:
+- - cot: "The error is caused because the shapes of ''x'' and ''y'' are not broadcastable.\
+      \ To prevent the error, we need to ensure that the shapes of ''x'' and ''y''\
+      \ are broadcastable. \n\nThe conditions to check for broadcastability are:\n\
+      1. The number of dimensions in ''x'' and ''y'' should be the same (len(x.shape)\
+      \ == len(y.shape)).\n2. For each dimension starting from the last, the size\
+      \ of the dimension in ''x'' should be equal to the size of the dimension in\
+      \ ''y'' or one of them should be 1 (all(x.shape[i] == y.shape[i] or x.shape[i]\
+      \ == 1 or y.shape[i] == 1 for i in range(-1, -min(len(x.shape), len(y.shape))-1,\
+      \ -1))).\n\nTherefore, the constraint to prevent the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: '{{function_node __wrapped__FloorDiv_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [7,8,3,7,8,3,5] vs. [5,5,5,5,5,5,5] [Op:FloorDiv] name:
+        RgSm'
+      package: tensorflow
+    txt: len(x.shape) == len(y.shape) and all(x.shape[i] == y.shape[i] or x.shape[i]
+      == 1 or y.shape[i] == 1 for i in range(-1, -min(len(x.shape), len(y.shape))-1,
+      -1))
+  - f1_score: 90.70294784580497
+    overall_score: 100
+    precision: 100.0
+    recall: 82.9875518672199
+- - cot: "Based on the given runtime information, the error occurs because the function\
+      \ is trying to perform the FloorDiv operation on a float tensor and an int32\
+      \ tensor. However, both tensors must have the same data type for the operation\
+      \ to be valid. \n\nTo prevent this error, the data type of tensor y should be\
+      \ changed to float to match the data type of tensor x. \n\nTherefore, the constraint\
+      \ that prevents the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: 'cannot compute FloorDiv as input #1(zero-based) was expected to be a int32
+        tensor but is a float tensor [Op:FloorDiv] name: ZnOE'
+      package: tensorflow
+    txt: dtype(y) == dtype(x)
+  - f1_score: 99.25558312655089
+    overall_score: 100
+    precision: 100.0
+    recall: 98.52216748768474
+- - cot: 'The error is caused because the dimensions of y are negative, which is not
+      allowed. To prevent this error, the dimensions of y should be non-negative.
+      So, we can add the constraint: "all(y.shape[i] >= 0 for i in range(y.rank))".
+      Wrap the final formula with'
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+        y: tensor
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(y.shape[i] >= 0 for i in range(y.rank))
+  - f1_score: 93.71980676328502
+    overall_score: 100
+    precision: 100.0
+    recall: 88.18181818181819
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        x: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        y: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in x.shape) and all(i >= 0 for i in y.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        x: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        y: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: x.rank <= 7 and y.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        x: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        y: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in x.shape) and all(i >= 0 for i in y.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        x: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        y: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: x.rank <= 7 and y.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

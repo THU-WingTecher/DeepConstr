@@ -1,0 +1,118 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[List[int]]
+  - List[int]
+  - Optional[str]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - s
+  - dim
+  - norm
+  required:
+  - true
+  - false
+  - false
+  - false
+name: torch._C._fft.fft_fft2
+package: torch
+pass_rate: 90.66666666666666
+rules:
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      normalization mode "wGzo" is not a valid mode. The valid modes for normalization
+      are "backward" and "forward". Therefore, the constraint to prevent the error
+      is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: list[int]
+        norm: str
+        s: None
+        self: tensor
+      msg: 'Invalid normalization mode: "wGzo"'
+      package: torch
+    txt: norm in ["backward", "forward"]
+  - f1_score: 96.93053311793216
+    overall_score: 100
+    precision: 100.0
+    recall: 94.04388714733544
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: list[int]
+        norm: None
+        s: None
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 29)
+      package: torch
+    txt: all(d >= -2 and d < 2 for d in dim)
+  - f1_score: 90.6344410876133
+    overall_score: 100
+    precision: 100.0
+    recall: 82.8729281767956
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: List[int]
+        norm: Optional[str]
+        s: Optional[List[int]]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: List[int]
+        norm: Optional[str]
+        s: Optional[List[int]]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: List[int]
+        norm: Optional[str]
+        s: Optional[List[int]]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: List[int]
+        norm: Optional[str]
+        s: Optional[List[int]]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

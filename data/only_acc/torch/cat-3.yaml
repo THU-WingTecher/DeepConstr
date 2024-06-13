@@ -1,0 +1,141 @@
+args:
+  dtype:
+  - List[Tensor]
+  - int
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - tensors
+  - dim
+  - out
+  required:
+  - true
+  - false
+  - true
+name: torch.cat
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: Based on the given runtime information, the error is triggered because the
+      `tensors` argument is an empty list. To prevent the error, the `tensors` argument
+      should be a non-empty list.
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        out: tensor
+        tensors: list[tensor]
+      msg: 'torch.cat(): expected a non-empty list of Tensors'
+      package: torch
+    txt: len(tensors) > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        out: tensor
+        tensors: list[tensor]
+      msg: Dimension out of range (expected to be in range of [-5, 4], but got 6)
+      package: torch
+    txt: dim >= -len(tensors[0].shape)
+  - f1_score: 65.76271186440678
+    overall_score: 51.5
+    precision: 97.0
+    recall: 49.743589743589745
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        out: tensor
+        tensors: list[tensor]
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: '
+
+      all(out.shape[i] == tensors[0].shape[i] for i in range(1, out.rank))'
+  - f1_score: 65.9966499162479
+    overall_score: 52.25
+    precision: 98.5
+    recall: 49.62216624685139
+- - cot: 'Error is caused because the shape of the tensor to be concatenated is too
+      large. The shape of the tensor is [9, 9, 9, 9, 9, 9, 9, 9, 9]. Therefore, Left
+      : len(tensors[0].shape) which is the number of dimensions of the tensor should
+      be corrected. It says that cannot be 9, so Op : !=, and Right : 9. Also, it
+      should be less than or equal to 3, so Op : <=, and Right : 3.'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        out: tensor
+        tensors: list[tensor]
+      msg: 'Too large tensor shape: shape = [9, 9, 9, 9, 9, 9, 9, 9, 9]'
+      package: torch
+    txt: len(tensors[0].shape) <= 3
+  - f1_score: 39.242457608456284
+    overall_score: 21.0
+    precision: 36.0
+    recall: 43.12681510164569
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        out: Tensor
+        tensors: List[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        out: Tensor
+        tensors: List[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        out: Tensor
+        tensors: List[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        out: Tensor
+        tensors: List[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

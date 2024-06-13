@@ -3,22 +3,18 @@ args:
   - Tensor
   - int
   - None
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   - false
   name:
   - self
   - dim
   - dtype
-  - out
   required:
   - true
   - true
   - false
-  - true
 name: torch.log_softmax
 package: torch
 pass_rate: 100
@@ -29,7 +25,6 @@ rules:
       choosen_dtype:
         dim: int
         dtype: None
-        out: tensor
         self: tensor
       msg: Dimension out of range (expected to be in range of [-2, 1], but got 39)
       package: torch
@@ -44,22 +39,6 @@ rules:
       choosen_dtype:
         dim: int
         dtype: None
-        out: tensor
-        self: tensor
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
-  - f1_score: 72.46376811594203
-    overall_score: 100
-    precision: 100.0
-    recall: 56.81818181818182
-- - cot: ''
-    length: 1
-    target:
-      choosen_dtype:
-        dim: int
-        dtype: None
-        out: tensor
         self: tensor
       msg: Expected out tensor to have dtype float, but got int instead
       package: torch
@@ -74,7 +53,6 @@ rules:
       choosen_dtype:
         dim: int
         dtype: None
-        out: tensor
         self: tensor
       msg: '"log_softmax_lastdim_kernel_impl" not implemented for ''Int'''
       package: torch
@@ -83,3 +61,31 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 94.7867298578199
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

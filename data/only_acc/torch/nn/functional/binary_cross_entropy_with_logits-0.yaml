@@ -1,0 +1,171 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[Tensor]
+  - Optional[bool]
+  - Optional[bool]
+  - str
+  - Optional[Tensor]
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - target
+  - weight
+  - size_average
+  - reduce
+  - reduction
+  - pos_weight
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+name: torch.nn.functional.binary_cross_entropy_with_logits
+package: torch
+pass_rate: 19.063545150501675
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        input: tensor
+        pos_weight: None
+        reduce: None
+        reduction: str
+        size_average: bool
+        target: tensor
+        weight: tensor
+      msg: Target size (torch.Size([3, 9, 9, 9])) must be the same as input size (torch.Size([1,
+        9]))
+      package: torch
+    txt: input.shape == target.shape
+  - f1_score: 30.985915492957748
+    overall_score: 12.166666666666666
+    precision: 18.333333333333332
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        input: tensor
+        pos_weight: None
+        reduce: bool
+        reduction: str
+        size_average: bool
+        target: tensor
+        weight: None
+      msg: Target size (torch.Size([4, 7, 1, 3, 7, 7])) must be the same as input
+        size (torch.Size([4, 7, 1, 3, 7]))
+      package: torch
+    txt: (target.size() == input.size()) and (target.dim == input.dim)
+  - f1_score: 94.7867298578199
+    overall_score: 100
+    precision: 100.0
+    recall: 90.09009009009009
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        input: tensor
+        pos_weight: tensor
+        reduce: bool
+        reduction: str
+        size_average: bool
+        target: tensor
+        weight: None
+      msg: The size of tensor a (7) must match the size of tensor b (6) at non-singleton
+        dimension 3
+      package: torch
+    txt: (input.dim == target.dim and input.shape == target.shape) and (input.shape[3]
+      == target.shape[3] + 1)
+  - f1_score: 95.84664536741214
+    overall_score: 100
+    precision: 100.0
+    recall: 92.02453987730061
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        input: Tensor
+        pos_weight: Optional[Tensor]
+        reduce: Optional[bool]
+        reduction: str
+        size_average: Optional[bool]
+        target: Tensor
+        weight: Optional[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape) and all(i >= 0 for i in target.shape) and
+      all(i >= 0 for i in weight.shape) and all(i >= 0 for i in pos_weight.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        input: Tensor
+        pos_weight: Optional[Tensor]
+        reduce: Optional[bool]
+        reduction: str
+        size_average: Optional[bool]
+        target: Tensor
+        weight: Optional[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7 and target.rank <= 7 and weight.rank <= 7 and pos_weight.rank
+      <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        input: Tensor
+        pos_weight: Optional[Tensor]
+        reduce: Optional[bool]
+        reduction: str
+        size_average: Optional[bool]
+        target: Tensor
+        weight: Optional[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape) and all(i >= 0 for i in target.shape) and
+      all(i >= 0 for i in weight.shape) and all(i >= 0 for i in pos_weight.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        input: Tensor
+        pos_weight: Optional[Tensor]
+        reduce: Optional[bool]
+        reduction: str
+        size_average: Optional[bool]
+        target: Tensor
+        weight: Optional[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7 and target.rank <= 7 and weight.rank <= 7 and pos_weight.rank
+      <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

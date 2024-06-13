@@ -78,3 +78,31 @@ rules:
     overall_score: 41.401088929219604
     precision: 81.0
     recall: 46.15384615384616
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: Tensor
+        split_size: int
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: Tensor
+        split_size: int
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

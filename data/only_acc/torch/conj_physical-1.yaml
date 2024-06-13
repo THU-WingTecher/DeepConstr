@@ -1,40 +1,20 @@
 args:
   dtype:
   - Tensor
-  - Tensor
   is_pos:
   - true
-  - false
   name:
   - self
-  - out
   required:
-  - true
   - true
 name: torch.conj_physical
 package: torch
 pass_rate: 100
 rules:
-- - cot: '`out` tensor shape should be matched with the operation results. In this
-      operation, the result shape is `self.shape`. Therefore, the constraint to prevent
-      the error is:'
-    length: 1
-    target:
-      choosen_dtype:
-        out: tensor
-        self: tensor
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
-  - f1_score: 73.34963325183375
-    overall_score: 100
-    precision: 100.0
-    recall: 57.91505791505792
 - - cot: ''
     length: 1
     target:
       choosen_dtype:
-        out: tensor
         self: tensor
       msg: Found dtype Int but expected Float
       package: torch
@@ -43,19 +23,27 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 100.0
-- - cot: 'Based on the given runtime information, the error occurs because the output
-      tensor has negative dimensions, which is not allowed. To prevent this error,
-      we need to ensure that all dimensions of the output tensor are positive. We
-      can formulate the constraint as follows:'
+- - cot: default
     length: 1
     target:
       choosen_dtype:
-        out: tensor
-        self: tensor
+        self: Tensor
       msg: negative dimensions are not allowed
       package: torch
-    txt: all(dim >= 0 for dim in out.shape)
-  - f1_score: 90.24390243902437
-    overall_score: 100
-    precision: 100.0
-    recall: 82.22222222222221
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

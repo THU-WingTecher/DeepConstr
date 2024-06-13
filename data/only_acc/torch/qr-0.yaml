@@ -1,0 +1,86 @@
+args:
+  dtype:
+  - Tensor
+  - bool
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - some
+  required:
+  - true
+  - false
+name: torch.qr
+package: torch
+pass_rate: 97.5
+rules:
+- - cot: "Based on the given error message, the input tensor to the torch.qr function\
+      \ must have at least two dimensions. The error happens because the tensor provided\
+      \ has fewer than 2 dimensions. Therefore, the condition to prevent this error\
+      \ is to ensure that the dimension of the tensor is at least 2. \n\nThe condition\
+      \ can be formulated as:"
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        some: bool
+      msg: 'linalg.qr: The input tensor A must have at least 2 dimensions.'
+      package: torch
+    txt: self.dim() >= 2
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+        some: bool
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+        some: bool
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+        some: bool
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+        some: bool
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

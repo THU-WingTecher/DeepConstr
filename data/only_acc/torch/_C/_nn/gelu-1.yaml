@@ -2,19 +2,15 @@ args:
   dtype:
   - Tensor
   - str
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   name:
   - self
   - approximate
-  - out
   required:
   - true
   - false
-  - true
 name: torch._C._nn.gelu
 package: torch
 pass_rate: 100
@@ -24,7 +20,6 @@ rules:
     target:
       choosen_dtype:
         approximate: str
-        out: tensor
         self: tensor
       msg: approximate argument must be either none or tanh.
       package: torch
@@ -38,21 +33,6 @@ rules:
     target:
       choosen_dtype:
         approximate: str
-        out: tensor
-        self: tensor
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
-  - f1_score: 75.18796992481204
-    overall_score: 100
-    precision: 100.0
-    recall: 60.24096385542168
-- - cot: ''
-    length: 1
-    target:
-      choosen_dtype:
-        approximate: str
-        out: tensor
         self: tensor
       msg: Found dtype Int but expected Float
       package: torch
@@ -61,17 +41,29 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 100.0
-- - cot: synthesized
-    length: 2
+- - cot: default
+    length: 1
     target:
       choosen_dtype:
         approximate: str
-        out: tensor
-        self: tensor
-      msg: '"GeluKernelImpl" not implemented for ''Int'''
+        self: Tensor
+      msg: negative dimensions are not allowed
       package: torch
-    txt: (dtype(out) == dtype(self)) and (self.dtype == "Float")
-  - f1_score: 95.23809523809523
-    overall_score: 100
-    precision: 100.0
-    recall: 90.9090909090909
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        approximate: str
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

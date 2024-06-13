@@ -1,0 +1,146 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[int]
+  - int
+  - Optional[str]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - n
+  - dim
+  - norm
+  - out
+  required:
+  - true
+  - false
+  - false
+  - false
+  - true
+name: torch._C._fft.fft_ihfft
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        n: None
+        norm: str
+        out: tensor
+        self: tensor
+      msg: ihfft expects a complex output tensor, but got Float
+      package: torch
+    txt: out.dtype == torch.complex128
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        n: None
+        norm: str
+        out: tensor
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-4, 3], but got 33)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 65.7210401891253
+    overall_score: 49.33333333333333
+    precision: 92.66666666666666
+    recall: 50.91575091575093
+- - cot: 'The error is caused by an invalid normalization mode. The value provided
+      for ''norm'' is "full", which is not a valid normalization mode for the function
+      fft_ihfft. The valid normalization modes for ''norm'' are "ortho" and "none".
+
+
+      Therefore, the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        n: None
+        norm: str
+        out: tensor
+        self: tensor
+      msg: 'Invalid normalization mode: "EbUw"'
+      package: torch
+    txt: norm in ["ortho", "none"]
+  - f1_score: 92.7357032457496
+    overall_score: 100
+    precision: 100.0
+    recall: 86.45533141210375
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        n: Optional[int]
+        norm: Optional[str]
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        n: Optional[int]
+        norm: Optional[str]
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        n: Optional[int]
+        norm: Optional[str]
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        n: Optional[int]
+        norm: Optional[str]
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

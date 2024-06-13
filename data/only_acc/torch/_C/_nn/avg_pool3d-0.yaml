@@ -1,0 +1,250 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - List[int]
+  - List[int]
+  - bool
+  - bool
+  - Optional[int]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - kernel_size
+  - stride
+  - padding
+  - ceil_mode
+  - count_include_pad
+  - divisor_override
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+name: torch._C._nn.avg_pool3d
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: synthesized
+    length: 5
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: int
+        kernel_size: list[int]
+        padding: list[int]
+        self: tensor
+        stride: list[int]
+      msg: 'avg_pool3d: kernel_size must be a single int, or a tuple of three ints'
+      package: torch
+    txt: (((len(kernel_size) == 1) and (len(padding) == 3)) or (len(stride) == 3))
+      and ((len(kernel_size) == 3) and (len(padding) == 3))
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: None
+        kernel_size: list[int]
+        padding: list[int]
+        self: tensor
+        stride: list[int]
+      msg: non-empty 4D or 5D (batch mode) tensor expected for input
+      package: torch
+    txt: self.dim() == 5
+  - f1_score: 81.64948453608247
+    overall_score: 100
+    precision: 100.0
+    recall: 68.98954703832753
+- - cot: 'The error is triggered because the padding value is negative. Let''s see
+      what the args were. The padding value is [-3, 8, -2], and it must be non-negative.
+      Therefore, the padding value should be corrected. It says that it must be non-negative,
+      so the formula would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: None
+        kernel_size: list[int]
+        padding: list[int]
+        self: tensor
+        stride: list[int]
+      msg: 'pad must be non-negative, but got pad: -3'
+      package: torch
+    txt: all(i>=0 for i in padding)
+  - f1_score: 80.35320088300222
+    overall_score: 100
+    precision: 100.0
+    recall: 67.15867158671587
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: int
+        kernel_size: list[int]
+        padding: list[int]
+        self: tensor
+        stride: list[int]
+      msg: pad should be at most half of effective kernel size, but got pad=3, kernel_size=5
+        and dilation=1
+      package: torch
+    txt: ((divisor_override >= -1) and (padding[2] <= (kernel_size[2] - 1) / 2)) and
+      (padding[0] <= kernel_size[0] / 2)
+  - f1_score: 65.82397262164324
+    overall_score: 32.77966101694915
+    precision: 63.559322033898304
+    recall: 68.25596703108006
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      padding value is greater than half of the effective kernel size. The padding
+      value should be at most half of the kernel size.
+
+
+      To prevent the error, the following constraint should be satisfied:'
+    length: 1
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: None
+        kernel_size: list[int]
+        padding: list[int]
+        self: tensor
+        stride: list[int]
+      msg: pad should be at most half of effective kernel size, but got pad=3, kernel_size=5
+        and dilation=1
+      package: torch
+    txt: padding[0] <= 2 and padding[1] <= 2 and padding[2] <= 0
+  - f1_score: 72.70291990356282
+    overall_score: 35.77777777777778
+    precision: 65.55555555555556
+    recall: 81.59951894167168
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: None
+        kernel_size: list[int]
+        padding: list[int]
+        self: tensor
+        stride: list[int]
+      msg: 'stride should be greater than zero, but got dT: 5 dH: -1 dW: -1'
+      package: torch
+    txt: all(i>0 for i in stride)
+  - f1_score: 75.10917030567686
+    overall_score: 100
+    precision: 100.0
+    recall: 60.13986013986015
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      padding value is greater than half of the effective kernel size. The formula
+      to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: None
+        kernel_size: list[int]
+        padding: list[int]
+        self: tensor
+        stride: list[int]
+      msg: pad should be at most half of effective kernel size, but got pad=2, kernel_size=3
+        and dilation=1
+      package: torch
+    txt: padding[i] <= (kernel_size[i] - 1) / 2
+  - f1_score: 53.70187561697927
+    overall_score: 31.07017543859649
+    precision: 56.14035087719298
+    recall: 51.466414380321666
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: Optional[int]
+        kernel_size: List[int]
+        padding: List[int]
+        self: Tensor
+        stride: List[int]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: Optional[int]
+        kernel_size: List[int]
+        padding: List[int]
+        self: Tensor
+        stride: List[int]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: Optional[int]
+        kernel_size: List[int]
+        padding: List[int]
+        self: Tensor
+        stride: List[int]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: Optional[int]
+        kernel_size: List[int]
+        padding: List[int]
+        self: Tensor
+        stride: List[int]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

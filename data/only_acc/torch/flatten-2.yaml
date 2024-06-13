@@ -1,0 +1,107 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - int
+  - str
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - start_dim
+  - end_dim
+  - out_dim
+  required:
+  - true
+  - true
+  - true
+  - true
+name: torch.flatten
+package: torch
+pass_rate: 57.99999999999999
+rules:
+- - cot: "The error occurs because the `start_dim` provided is out of the valid range.\
+      \ The value of `start_dim` is -3, which is less than the minimum valid value\
+      \ of -2. To prevent this error in the future and generate constraints that do\
+      \ not trigger it, we need to ensure that the `start_dim` value is always within\
+      \ the valid range for the given tensor. If we denote the shape of the tensor\
+      \ as `n`, the valid range for the `start_dim` parameter would be `[-n, n-1]`.\
+      \ \n\nThe constraint for the `start_dim` parameter can be expressed as:"
+    length: 1
+    target:
+      choosen_dtype:
+        end_dim: int
+        out_dim: str
+        self: tensor
+        start_dim: int
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 3)
+      package: torch
+    txt: start_dim >= -len(self.shape) and start_dim < len(self.shape) and end_dim
+      >= -len(self.shape) and end_dim < len(self.shape)
+  - f1_score: 86.62533215234721
+    overall_score: 43.75
+    precision: 81.5
+    recall: 92.43856332703214
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        end_dim: int
+        out_dim: str
+        self: Tensor
+        start_dim: int
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        end_dim: int
+        out_dim: str
+        self: Tensor
+        start_dim: int
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        end_dim: int
+        out_dim: str
+        self: Tensor
+        start_dim: int
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        end_dim: int
+        out_dim: str
+        self: Tensor
+        start_dim: int
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

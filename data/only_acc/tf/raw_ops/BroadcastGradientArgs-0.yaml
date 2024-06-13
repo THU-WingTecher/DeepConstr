@@ -1,0 +1,125 @@
+args:
+  dtype:
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - name
+  - s0
+  - s1
+  required:
+  - false
+  - true
+  - true
+name: tf.raw_ops.BroadcastGradientArgs
+package: tensorflow
+pass_rate: 1.5
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        s0: tensor
+        s1: tensor
+      msg: "Value for attr 'T' of float is not in the list of allowed values: int32,\
+        \ int64\n\t; NodeDef: {{node BroadcastGradientArgs}}; Op<name=BroadcastGradientArgs;\
+        \ signature=s0:T, s1:T -> r0:T, r1:T; attr=T:type,default=DT_INT32,allowed=[DT_INT32,\
+        \ DT_INT64]> [Op:BroadcastGradientArgs] name: zxzM"
+      package: tensorflow
+    txt: dtype(s0) in ["int32", "int64"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        s0: tensor
+        s1: tensor
+      msg: 'cannot compute BroadcastGradientArgs as input #1(zero-based) was expected
+        to be a int32 tensor but is a float tensor [Op:BroadcastGradientArgs] name:
+        ckmN'
+      package: tensorflow
+    txt: (dtype(s1) == int32) and (dtype(s1) == dtype(s0))
+  - f1_score: 99.25558312655089
+    overall_score: 100
+    precision: 100.0
+    recall: 98.52216748768474
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        s0: tensor
+        s1: tensor
+      msg: '{{function_node __wrapped__BroadcastGradientArgs_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        In[0] must be a vector.[3,8,8,8,9,8] [Op:BroadcastGradientArgs] name: fwpw'
+      package: tensorflow
+    txt: (s0.rank == 1) and (s1.dim == 1)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        s0: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        s1: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in s0.shape) and all(i >= 0 for i in s1.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        s0: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        s1: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: s0.rank <= 7 and s1.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        s0: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        s1: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in s0.shape) and all(i >= 0 for i in s1.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        name: str
+        s0: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        s1: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: s0.rank <= 7 and s1.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

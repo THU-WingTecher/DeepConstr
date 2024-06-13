@@ -1,0 +1,260 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - int
+  - float
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - target
+  - reduction
+  - delta
+  - out
+  required:
+  - true
+  - true
+  - false
+  - false
+  - true
+name: torch._C._nn.huber_loss
+package: torch
+pass_rate: 89.84771573604061
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        delta: float
+        out: tensor
+        reduction: int
+        self: tensor
+        target: tensor
+      msg: The size of tensor a (3) must match the size of tensor b (7) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.shape[2] == target.shape[2]
+  - f1_score: 72.85974499089252
+    overall_score: 100
+    precision: 100.0
+    recall: 57.306590257879655
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        delta: float
+        out: tensor
+        reduction: int
+        self: tensor
+        target: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank
+  - f1_score: 50.133333333333326
+    overall_score: 26.5
+    precision: 47.0
+    recall: 53.714285714285715
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        delta: float
+        out: tensor
+        reduction: int
+        self: tensor
+        target: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.shape == target.shape) and (out.rank == target.rank)
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        delta: float
+        out: tensor
+        reduction: int
+        self: tensor
+        target: tensor
+      msg: huber_loss does not support non-positive values for delta.
+      package: torch
+    txt: delta > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        delta: float
+        out: tensor
+        reduction: int
+        self: tensor
+        target: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: ((reduction!=-1) and (dtype(self)==dtype(target))) and (dtype(out)==dtype(self))
+  - f1_score: 67.34006734006734
+    overall_score: 100
+    precision: 100.0
+    recall: 50.76142131979695
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        delta: float
+        out: tensor
+        reduction: int
+        self: tensor
+        target: tensor
+      msg: '"huber_cpu" not implemented for ''Int'''
+      package: torch
+    txt: target.dtype != torch.int32
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is due to the fact that the function "huber_cpu" is not implemented
+      for integers (''Long'' data type). To prevent this error, the input tensors
+      should have a data type other than ''Long''. Therefore, the constraint should
+      be:'
+    length: 1
+    target:
+      choosen_dtype:
+        delta: float
+        out: tensor
+        reduction: int
+        self: tensor
+        target: tensor
+      msg: '"huber_cpu" not implemented for ''Long'''
+      package: torch
+    txt: self.dtype != torch.int64
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        delta: float
+        out: tensor
+        reduction: int
+        self: tensor
+        target: tensor
+      msg: '"huber_cpu" not implemented for ''Bool'''
+      package: torch
+    txt: target.dtype != torch.bool
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        delta: float
+        out: tensor
+        reduction: int
+        self: tensor
+        target: tensor
+      msg: '''complex32'''
+      package: torch
+    txt: len(target) > 0
+  - f1_score: 63.48122866894199
+    overall_score: 49.5
+    precision: 93.0
+    recall: 48.18652849740933
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        delta: float
+        out: tensor
+        reduction: int
+        self: tensor
+        target: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (5) at non-singleton
+        dimension 0
+      package: torch
+    txt: self.shape == target.shape
+  - f1_score: 85.65310492505354
+    overall_score: 100
+    precision: 100.0
+    recall: 74.90636704119851
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        delta: float
+        out: Tensor
+        reduction: int
+        self: Tensor
+        target: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in target.shape) and
+      all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        delta: float
+        out: Tensor
+        reduction: int
+        self: Tensor
+        target: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and target.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        delta: float
+        out: Tensor
+        reduction: int
+        self: Tensor
+        target: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in target.shape) and
+      all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        delta: float
+        out: Tensor
+        reduction: int
+        self: Tensor
+        target: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and target.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

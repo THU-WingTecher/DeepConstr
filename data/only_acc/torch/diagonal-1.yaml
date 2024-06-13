@@ -1,0 +1,93 @@
+args:
+  dtype:
+  - Tensor
+  - str
+  - str
+  - str
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - outdim
+  - dim1
+  - dim2
+  - offset
+  required:
+  - true
+  - true
+  - true
+  - true
+  - false
+name: torch.diagonal
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim1: str
+        dim2: str
+        offset: int
+        outdim: str
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim1: str
+        dim2: str
+        offset: int
+        outdim: str
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim1: str
+        dim2: str
+        offset: int
+        outdim: str
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim1: str
+        dim2: str
+        offset: int
+        outdim: str
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

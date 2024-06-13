@@ -2,17 +2,13 @@ args:
   dtype:
   - Tensor
   - int
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   name:
   - self
   - dim
-  - out
   required:
-  - true
   - true
   - true
 name: torch.logcumsumexp
@@ -24,7 +20,6 @@ rules:
     target:
       choosen_dtype:
         dim: int
-        out: tensor
         self: tensor
       msg: Dimension out of range (expected to be in range of [-2, 1], but got 13)
       package: torch
@@ -33,26 +28,11 @@ rules:
     overall_score: 49.0
     precision: 92.0
     recall: 67.89667896678966
-- - cot: ''
-    length: 1
-    target:
-      choosen_dtype:
-        dim: int
-        out: tensor
-        self: tensor
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
-  - f1_score: 73.12614259597805
-    overall_score: 100
-    precision: 100.0
-    recall: 57.636887608069166
 - - cot: divided
     length: 1
     target:
       choosen_dtype:
         dim: int
-        out: tensor
         self: tensor
       msg: Dimension out of range (expected to be in range of [-1, 0], but got 1)
       package: torch
@@ -61,20 +41,6 @@ rules:
     overall_score: 52.5
     precision: 99.0
     recall: 70.46263345195729
-- - cot: ''
-    length: 1
-    target:
-      choosen_dtype:
-        dim: int
-        out: tensor
-        self: tensor
-      msg: expected scalar_type Float but found Int
-      package: torch
-    txt: dtype(out) == dtype(self)
-  - f1_score: 100.0
-    overall_score: 100
-    precision: 100.0
-    recall: 100.0
 - - cot: 'The error is due to the function "logcumsumexp_out_cpu" not being implemented
       for tensors of type ''Int''. To prevent this error, the data type of the input
       tensor should be changed to a floating-point type. So, Left : dtype(self), Op
@@ -83,7 +49,6 @@ rules:
     target:
       choosen_dtype:
         dim: int
-        out: tensor
         self: tensor
       msg: '"logcumsumexp_out_cpu" not implemented for ''Int'''
       package: torch
@@ -99,7 +64,6 @@ rules:
     target:
       choosen_dtype:
         dim: int
-        out: tensor
         self: tensor
       msg: '"logcumsumexp_out_cpu" not implemented for ''Bool'''
       package: torch
@@ -113,7 +77,6 @@ rules:
     target:
       choosen_dtype:
         dim: int
-        out: tensor
         self: tensor
       msg: '''complex32'''
       package: torch
@@ -122,3 +85,29 @@ rules:
     overall_score: 51.5
     precision: 97.0
     recall: 51.19751743893058
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

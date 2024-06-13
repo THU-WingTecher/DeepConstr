@@ -1,0 +1,91 @@
+args:
+  dtype:
+  - Tensor
+  - str
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - index
+  required:
+  - true
+  - true
+  - true
+name: torch.select
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        dim: str
+        index: int
+        self: tensor
+      msg: Name 'ZXiy' not found in Tensor[None, None, None, None].
+      package: torch
+    txt: ((index < self.dim()) or (dim in valid_dimensions)) and (index >= 0)
+  - f1_score: 66.88963210702342
+    overall_score: 100
+    precision: 100.0
+    recall: 50.25125628140703
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: str
+        index: int
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: str
+        index: int
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: str
+        index: int
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: str
+        index: int
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

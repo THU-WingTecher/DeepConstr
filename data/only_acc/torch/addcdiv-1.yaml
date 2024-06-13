@@ -1,0 +1,156 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - number
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - tensor1
+  - tensor2
+  - value
+  - out
+  required:
+  - true
+  - true
+  - true
+  - false
+  - true
+name: torch.addcdiv
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+        tensor1: tensor
+        tensor2: tensor
+        value: int
+      msg: The size of tensor a (8) must match the size of tensor b (9) at non-singleton
+        dimension 1
+      package: torch
+    txt: (self.dim == tensor1.dim and self.shape == tensor1.shape) and (self.dim ==
+      tensor2.dim and self.shape == tensor2.shape)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: "The error is triggered because we are trying to resize the storage of the\
+      \ output tensor, which is not resizable. To prevent this error, we need to ensure\
+      \ that the shape and rank of the output tensor are the same as the input tensor.\
+      \ \n\nThe constraint to prevent the error can be formulated as follows:"
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+        tensor1: tensor
+        tensor2: tensor
+        value: int
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 73.64341085271319
+    overall_score: 100
+    precision: 100.0
+    recall: 58.282208588957054
+- - cot: 'The error is triggered because the result type Float cannot be cast to the
+      desired output type Int. To prevent this error, the dtypes of the input tensors
+      (self, tensor1, tensor2) should be consistent with each other and with the desired
+      output type Int.
+
+
+      Wrap the final formula with'
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+        tensor1: tensor
+        tensor2: tensor
+        value: int
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self) == dtype(tensor1) == dtype(tensor2) == Int
+  - f1_score: 67.41154562383615
+    overall_score: 100
+    precision: 100.0
+    recall: 50.84269662921349
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        out: Tensor
+        self: Tensor
+        tensor1: Tensor
+        tensor2: Tensor
+        value: number
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in tensor1.shape) and
+      all(i >= 0 for i in tensor2.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        out: Tensor
+        self: Tensor
+        tensor1: Tensor
+        tensor2: Tensor
+        value: number
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and tensor1.rank <= 7 and tensor2.rank <= 7 and out.rank <=
+      7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        out: Tensor
+        self: Tensor
+        tensor1: Tensor
+        tensor2: Tensor
+        value: number
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in tensor1.shape) and
+      all(i >= 0 for i in tensor2.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        out: Tensor
+        self: Tensor
+        tensor1: Tensor
+        tensor2: Tensor
+        value: number
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and tensor1.rank <= 7 and tensor2.rank <= 7 and out.rank <=
+      7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

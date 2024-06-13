@@ -1,0 +1,117 @@
+args:
+  dtype:
+  - tensor
+  - int
+  - None
+  - tensor
+  - str
+  - str
+  - None
+  - bool
+  is_pos:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - x1
+  - x2
+  - out
+  - where
+  - casting
+  - order
+  - dtype
+  - subok
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+name: numpy.right_shift
+package: null
+pass_rate: 0.0
+rules:
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        casting: str
+        dtype: None
+        order: str
+        out: None
+        subok: bool
+        where: tensor
+        x1: tensor
+        x2: int
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in x1.shape) and all(i >= 0 for i in where.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        casting: str
+        dtype: None
+        order: str
+        out: None
+        subok: bool
+        where: tensor
+        x1: tensor
+        x2: int
+      msg: Too large tensor shape
+      package: null
+    txt: x1.rank <= 7 and where.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        casting: str
+        dtype: None
+        order: str
+        out: None
+        subok: bool
+        where: tensor
+        x1: tensor
+        x2: int
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in x1.shape) and all(i >= 0 for i in where.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        casting: str
+        dtype: None
+        order: str
+        out: None
+        subok: bool
+        where: tensor
+        x1: tensor
+        x2: int
+      msg: Too large tensor shape
+      package: null
+    txt: x1.rank <= 7 and where.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

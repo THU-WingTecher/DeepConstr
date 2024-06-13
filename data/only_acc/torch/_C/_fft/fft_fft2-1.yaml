@@ -1,0 +1,169 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[List[int]]
+  - List[int]
+  - Optional[str]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - s
+  - dim
+  - norm
+  - out
+  required:
+  - true
+  - false
+  - false
+  - false
+  - true
+name: torch._C._fft.fft_fft2
+package: torch
+pass_rate: 19.666666666666664
+rules:
+- - cot: 'The error is triggered because the output tensor is of type Float, but the
+      function fftn expects a complex output tensor. Let''s see what the args were.
+      It seems ''out'' is the problem as it is of type Float. Therefore, the data
+      type of ''out'' should be corrected, which is ''out''.dtype. So, Left : ''out''.dtype.
+      It says that expected complex, so Op : ==, and Right : complex.
+
+
+      In summary, the constraint should be:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: list[int]
+        norm: None
+        out: tensor
+        s: None
+        self: tensor
+      msg: fftn expects a complex output tensor, but got Float
+      package: torch
+    txt: '''out''.dtype == complex'
+  - f1_score: 97.08737864077668
+    overall_score: 100
+    precision: 100.0
+    recall: 94.33962264150942
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: list[int]
+        norm: str
+        out: tensor
+        s: None
+        self: tensor
+      msg: '''complex32'''
+      package: torch
+    txt: all(dim[i] < self.dim() and self.size(dim[i]) == 1 for i in range(len(dim)))
+  - f1_score: 71.25506072874494
+    overall_score: 32.33333333333333
+    precision: 58.666666666666664
+    recall: 90.72164948453607
+- - cot: 'Based on the given values, Error is triggered because the `dim` argument
+      is an empty list. The `dim` argument should be a list of integers with length
+      equal to the number of dimensions of the input tensor `self`. Let''s see what
+      the args were. It seems `dim` and `self.dim()` are not the same, so `dim` and
+      `self.dim()` should be corrected. Therefore, Left : len(dim). Op : ==, and Right
+      : self.dim()'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: list[int]
+        norm: None
+        out: tensor
+        s: None
+        self: tensor
+      msg: '''complex32'''
+      package: torch
+    txt: len(dim) == self.dim()
+  - f1_score: 65.4891304347826
+    overall_score: 43.166666666666664
+    precision: 80.33333333333333
+    recall: 55.27522935779816
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: list[int]
+        norm: str
+        out: tensor
+        s: None
+        self: tensor
+      msg: '''complex32'''
+      package: torch
+    txt: (self.dim() == out.dim()) and (len(dim) <= self.dim)
+  - f1_score: 63.427109974424546
+    overall_score: 42.833333333333336
+    precision: 82.66666666666667
+    recall: 51.45228215767634
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: List[int]
+        norm: Optional[str]
+        out: Tensor
+        s: Optional[List[int]]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: List[int]
+        norm: Optional[str]
+        out: Tensor
+        s: Optional[List[int]]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: List[int]
+        norm: Optional[str]
+        out: Tensor
+        s: Optional[List[int]]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: List[int]
+        norm: Optional[str]
+        out: Tensor
+        s: Optional[List[int]]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

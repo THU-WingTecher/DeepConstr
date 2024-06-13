@@ -1,0 +1,147 @@
+args:
+  dtype:
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - a
+  - name
+  - x
+  required:
+  - true
+  - false
+  - true
+name: tf.raw_ops.Polygamma
+package: tensorflow
+pass_rate: 98.66666666666667
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        a: tensor
+        name: str
+        x: tensor
+      msg: '{{function_node __wrapped__Polygamma_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Incompatible shapes: [3,9] vs. [8,8,8,8] [Op:Polygamma] name: EKDO'
+      package: tensorflow
+    txt: (len(a) == len(x)) and (all(a.shape[i] == x.shape[i] or a.shape[i] == 1 or
+      x.shape[i] == 1 for i in range(-1, -min(len(a.shape), len(x.shape))-1, -1)))
+  - f1_score: 92.87925696594425
+    overall_score: 100
+    precision: 100.0
+    recall: 86.70520231213872
+- - cot: 'Based on the given runtime information, the error arises because the function
+      is trying to perform the Polygamma operation on a float tensor and an int32
+      tensor. However, both tensors in the generated arguments must have the same
+      data type.
+
+
+      To prevent this error, the data type of the int32 tensor should be modified
+      to match the data type of the float tensor. Therefore, the constraint that should
+      be added is:'
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        name: str
+        x: tensor
+      msg: 'cannot compute Polygamma as input #1(zero-based) was expected to be a
+        float tensor but is a int32 tensor [Op:Polygamma] name: NRKB'
+      package: tensorflow
+    txt: dtype(x) == dtype(a)
+  - f1_score: 78.94736842105264
+    overall_score: 100
+    precision: 100.0
+    recall: 65.21739130434783
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        a: tensor
+        name: str
+        x: tensor
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: float,\
+        \ double\n\t; NodeDef: {{node Polygamma}}; Op<name=Polygamma; signature=a:T,\
+        \ x:T -> z:T; attr=T:type,allowed=[DT_FLOAT, DT_DOUBLE]> [Op:Polygamma] name:\
+        \ hgBS"
+      package: tensorflow
+    txt: (dtype(a) in ["float", "double"]) and (dtype(x) in ["float32", "float64"])
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        name: str
+        x: tensor
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(d >= 0 for d in a.shape)
+  - f1_score: 87.50000000000001
+    overall_score: 100
+    precision: 100.0
+    recall: 77.77777777777779
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        a: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+        x: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in a.shape) and all(i >= 0 for i in x.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        a: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+        x: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: a.rank <= 7 and x.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        a: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+        x: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in a.shape) and all(i >= 0 for i in x.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        a: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+        x: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: a.rank <= 7 and x.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -14,4 +14,30 @@ args:
 name: tf.raw_ops.Relu
 package: tensorflow
 pass_rate: 100
-rules: []
+rules:
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        features: float32,float64,int32,uint8,int16,int8,int64,bfloat16,uint16,float16,uint32,uint64,qint8
+        name: str
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in features.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        features: float32,float64,int32,uint8,int16,int8,int64,bfloat16,uint16,float16,uint32,uint64,qint8
+        name: str
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: features.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

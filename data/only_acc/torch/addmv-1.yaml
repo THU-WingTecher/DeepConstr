@@ -5,10 +5,8 @@ args:
   - Tensor
   - number
   - number
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   - false
   - false
@@ -19,37 +17,16 @@ args:
   - vec
   - beta
   - alpha
-  - out
   required:
   - true
   - true
   - true
   - false
   - false
-  - true
 name: torch.addmv
 package: torch
 pass_rate: 0.0
 rules:
-- - cot: synthesized
-    length: 4
-    target:
-      choosen_dtype:
-        alpha: int
-        beta: int
-        mat: tensor
-        out: tensor
-        self: tensor
-        vec: tensor
-      msg: vector + matrix @ vector expected, got 4, 5, 6
-      package: torch
-    txt: (((mat[-1] == vec[-2]) or (len(vec) != 0 and mat.shape[-1] == len(vec)))
-      or (len(out.shape) == 1)) and (len(mat.shape) == 2, len(self.shape) == 1, len(vec.shape)
-      == 1, len(out.shape) == len(self.shape))
-  - f1_score: 48.484848484848484
-    overall_score: 16.75
-    precision: 32.0
-    recall: 100.0
 - - cot: synthesized
     length: 2
     target:
@@ -57,7 +34,6 @@ rules:
         alpha: int
         beta: int
         mat: tensor
-        out: tensor
         self: tensor
         vec: tensor
       msg: vector + matrix @ vector expected, got 6, 0, 1
@@ -68,24 +44,6 @@ rules:
     overall_score: 20.75
     precision: 38.5
     recall: 60.15625
-- - cot: synthesized
-    length: 4
-    target:
-      choosen_dtype:
-        alpha: int
-        beta: int
-        mat: tensor
-        out: tensor
-        self: tensor
-        vec: tensor
-      msg: vector + matrix @ vector expected, got 7, 2, 0
-      package: torch
-    txt: (((out.shape[-1] == self.shape[0]) or ((self.shape[-2] == vec.shape[-1])))
-      or (mat[-1] == out[-2])) or (mat.shape[1] == vec.shape[0])
-  - f1_score: 45.53775743707093
-    overall_score: 20.75
-    precision: 40.0
-    recall: 52.85524568393094
 - - cot: divided
     length: 1
     target:
@@ -93,7 +51,6 @@ rules:
         alpha: int
         beta: int
         mat: tensor
-        out: tensor
         self: tensor
         vec: tensor
       msg: vector + matrix @ vector expected, got 7, 7, 0
@@ -103,23 +60,6 @@ rules:
     overall_score: 20.75
     precision: 35.5
     recall: 50.0
-- - cot: divided
-    length: 1
-    target:
-      choosen_dtype:
-        alpha: int
-        beta: int
-        mat: tensor
-        out: tensor
-        self: tensor
-        vec: tensor
-      msg: vector + matrix @ vector expected, got 0, 0, 1
-      package: torch
-    txt: len(out.shape) == 1
-  - f1_score: 53.33333333333333
-    overall_score: 21.181818181818183
-    precision: 36.36363636363637
-    recall: 100.0
 - - cot: 'The error is because the input matrices and vectors do not have the correct
       dimensions. The torch.addmv function expects the input mat to be a 2D matrix
       and vec to be a 1D vector, but they are not in the given case. The formula to
@@ -131,7 +71,6 @@ rules:
         alpha: int
         beta: int
         mat: tensor
-        out: tensor
         self: tensor
         vec: tensor
       msg: vector + matrix @ vector expected, got 7, 2, 0
@@ -150,7 +89,6 @@ rules:
         alpha: int
         beta: int
         mat: tensor
-        out: tensor
         self: tensor
         vec: tensor
       msg: Dimension specified as 0 but tensor has no dimensions
@@ -160,21 +98,36 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 100.0
-- - cot: synthesized
+- - cot: default
     length: 3
     target:
       choosen_dtype:
-        alpha: int
-        beta: int
-        mat: tensor
-        out: tensor
-        self: tensor
-        vec: tensor
-      msg: size mismatch, got input (4), mat (8x6), vec (5)
+        alpha: number
+        beta: number
+        mat: Tensor
+        self: Tensor
+        vec: Tensor
+      msg: negative dimensions are not allowed
       package: torch
-    txt: ((mat.shape[0] == vec.shape[0] and mat.shape[1] == self.shape[0] and out.shape[0]
-      == mat.shape[0]) and (self.size(0) == mat.size(0))) and (mat.shape[1] == self.shape[0])
-  - f1_score: 99.74424552429667
-    overall_score: 100
-    precision: 100.0
-    recall: 99.48979591836735
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in mat.shape) and all(i
+      >= 0 for i in vec.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        alpha: number
+        beta: number
+        mat: Tensor
+        self: Tensor
+        vec: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and mat.rank <= 7 and vec.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

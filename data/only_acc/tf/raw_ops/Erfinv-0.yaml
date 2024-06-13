@@ -1,0 +1,89 @@
+args:
+  dtype:
+  - str
+  - bfloat16,float16,float32,float64
+  is_pos:
+  - false
+  - false
+  name:
+  - name
+  - x
+  required:
+  - false
+  - true
+name: tf.raw_ops.Erfinv
+package: tensorflow
+pass_rate: 85.5
+rules:
+- - cot: "Based on the given runtime information, the error arises because the attribute\
+      \ 'x' is of type int32, but it is expected to be one of the allowed types: bfloat16,\
+      \ half, float, double.\n\nTo prevent this error, the attribute 'x' should be\
+      \ corrected to match one of the allowed types. \n\nTherefore, the constraint\
+      \ that prevents the error is:"
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: tensor
+      msg: "Value for attr 'T' of int32 is not in the list of allowed values: bfloat16,\
+        \ half, float, double\n\t; NodeDef: {{node Erfinv}}; Op<name=Erfinv; signature=x:T\
+        \ -> y:T; attr=T:type,allowed=[DT_BFLOAT16, DT_HALF, DT_FLOAT, DT_DOUBLE]>\
+        \ [Op:Erfinv] name: JgOC"
+      package: tensorflow
+    txt: dtype(x) in ["bfloat16", "half", "float", "double"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: bfloat16,float16,float32,float64
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in x.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: bfloat16,float16,float32,float64
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: x.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: bfloat16,float16,float32,float64
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in x.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        name: str
+        x: bfloat16,float16,float32,float64
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: x.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

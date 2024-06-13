@@ -1,0 +1,240 @@
+args:
+  dtype:
+  - list[int]
+  - int
+  - int
+  - list[int]
+  - int
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  - int
+  - int
+  - list[int]
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - begin
+  - begin_mask
+  - ellipsis_mask
+  - end
+  - end_mask
+  - input
+  - name
+  - new_axis_mask
+  - shrink_axis_mask
+  - strides
+  required:
+  - true
+  - false
+  - false
+  - true
+  - false
+  - true
+  - false
+  - false
+  - false
+  - true
+name: tf.raw_ops.StridedSlice
+package: tensorflow
+pass_rate: 34.04255319148936
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        begin: list[int]
+        begin_mask: int
+        ellipsis_mask: int
+        end: list[int]
+        end_mask: int
+        input: tensor
+        name: str
+        new_axis_mask: int
+        shrink_axis_mask: int
+        strides: list[int]
+      msg: "Value for attr 'Index' of float is not in the list of allowed values:\
+        \ int16, int32, int64\n\t; NodeDef: {{node StridedSlice}}; Op<name=StridedSlice;\
+        \ signature=input:T, begin:Index, end:Index, strides:Index -> output:T; attr=T:type;\
+        \ attr=Index:type,allowed=[DT_INT16, DT_INT32, DT_INT64]; attr=begin_mask:int,default=0;\
+        \ attr=end_mask:int,default=0; attr=ellipsis_mask:int,default=0; attr=new_axis_mask:int,default=0;\
+        \ attr=shrink_axis_mask:int,default=0> [Op:StridedSlice]"
+      package: tensorflow
+    txt: len(begin) > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is caused because the shapes of begin, end, and strides are not
+      consistent. Based on the runtime information, the shapes of begin, end, and
+      strides are [9], [0], and [0] respectively. However, they are expected to be
+      1D tensors of equal size.
+
+
+      To prevent this error, the shapes of begin, end, and strides should be corrected.
+      They should all have the same size, which can be determined based on the specific
+      requirements of the function.
+
+
+      The condition that prevents the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        begin: list[int]
+        begin_mask: int
+        ellipsis_mask: int
+        end: list[int]
+        end_mask: int
+        input: tensor
+        name: str
+        new_axis_mask: int
+        shrink_axis_mask: int
+        strides: list[int]
+      msg: '{{function_node __wrapped__StridedSlice_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Expected begin, end, and strides to be 1D equal size tensors, but got shapes
+        [9], [0], and [0] instead. [Op:StridedSlice]'
+      package: tensorflow
+    txt: len(begin) == len(end) == len(strides)
+  - f1_score: 93.75
+    overall_score: 100
+    precision: 100.0
+    recall: 88.23529411764706
+- - cot: The error occurs because the given runtime information has multiple ellipses
+      in the slice specification, which is not allowed. To prevent this error, the
+      ellipsis_mask should be set to 0, indicating that there are no ellipses in the
+      slice specification.
+    length: 1
+    target:
+      choosen_dtype:
+        begin: list[int]
+        begin_mask: int
+        ellipsis_mask: int
+        end: list[int]
+        end_mask: int
+        input: tensor
+        name: str
+        new_axis_mask: int
+        shrink_axis_mask: int
+        strides: list[int]
+      msg: '{{function_node __wrapped__StridedSlice_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Multiple ellipses in slice spec not allowed [Op:StridedSlice]'
+      package: tensorflow
+    txt: ellipsis_mask == 0
+  - f1_score: 82.87292817679558
+    overall_score: 100
+    precision: 100.0
+    recall: 70.75471698113208
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        begin: list[int]
+        begin_mask: int
+        ellipsis_mask: int
+        end: list[int]
+        end_mask: int
+        input: tensor
+        name: str
+        new_axis_mask: int
+        shrink_axis_mask: int
+        strides: list[int]
+      msg: '{{function_node __wrapped__StridedSlice_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Index out of range using input dim 3; input has only 3 dims [Op:StridedSlice]'
+      package: tensorflow
+    txt: (6 < len(input.shape))
+  - f1_score: 77.78324085130295
+    overall_score: 41.96551724137931
+    precision: 77.93103448275862
+    recall: 77.63600673022995
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        begin: list[int]
+        begin_mask: int
+        ellipsis_mask: int
+        end: list[int]
+        end_mask: int
+        input: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+        new_axis_mask: int
+        shrink_axis_mask: int
+        strides: list[int]
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in input.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        begin: list[int]
+        begin_mask: int
+        ellipsis_mask: int
+        end: list[int]
+        end_mask: int
+        input: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+        new_axis_mask: int
+        shrink_axis_mask: int
+        strides: list[int]
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: input.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        begin: list[int]
+        begin_mask: int
+        ellipsis_mask: int
+        end: list[int]
+        end_mask: int
+        input: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+        new_axis_mask: int
+        shrink_axis_mask: int
+        strides: list[int]
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in input.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        begin: list[int]
+        begin_mask: int
+        ellipsis_mask: int
+        end: list[int]
+        end_mask: int
+        input: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+        new_axis_mask: int
+        shrink_axis_mask: int
+        strides: list[int]
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: input.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -1,33 +1,16 @@
 args:
   dtype:
   - Tensor
-  - Tensor
   is_pos:
   - true
-  - false
   name:
   - self
-  - out
   required:
-  - true
   - true
 name: torch.asin
 package: torch
 pass_rate: 91.33333333333333
 rules:
-- - cot: ''
-    length: 1
-    target:
-      choosen_dtype:
-        out: tensor
-        self: tensor
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
-  - f1_score: 73.89162561576354
-    overall_score: 100
-    precision: 100.0
-    recall: 58.59375
 - - cot: 'The error is triggered because the result type Float cannot be cast to the
       desired output type Int in the torch.asin function. This is due to the ''out''
       argument being an integer tensor, while the ''self'' argument is a float tensor.
@@ -37,7 +20,6 @@ rules:
     length: 1
     target:
       choosen_dtype:
-        out: tensor
         self: tensor
       msg: result type Float can't be cast to the desired output type Int
       package: torch
@@ -46,3 +28,27 @@ rules:
     overall_score: 50.333333333333336
     precision: 94.66666666666667
     recall: 72.63427109974425
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

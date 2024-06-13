@@ -132,3 +132,36 @@ rules:
     overall_score: 60.13664596273292
     precision: 93.0
     recall: 99.78540772532189
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        append: Optional[Tensor]
+        dim: int
+        n: int
+        prepend: Optional[Tensor]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in prepend.shape) and
+      all(i >= 0 for i in append.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        append: Optional[Tensor]
+        dim: int
+        n: int
+        prepend: Optional[Tensor]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and prepend.rank <= 7 and append.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

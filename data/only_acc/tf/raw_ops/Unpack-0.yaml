@@ -1,0 +1,120 @@
+args:
+  dtype:
+  - int
+  - str
+  - int
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - axis
+  - name
+  - num
+  - value
+  required:
+  - false
+  - false
+  - true
+  - true
+name: tf.raw_ops.Unpack
+package: tensorflow
+pass_rate: 3.3333333333333335
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        axis: int
+        name: str
+        num: int
+        value: tensor
+      msg: '{{function_node __wrapped__Unpack_num_4_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        axis = 21 not in [-5, 5) [Op:Unpack] name: sBVy'
+      package: tensorflow
+    txt: (-2 <= axis < 2) and ((axis >= 0))
+  - f1_score: 70.58823529411767
+    overall_score: 49.5
+    precision: 96.0
+    recall: 55.81395348837209
+- - cot: 'The error is caused by the mismatch between the expected shape of the input
+      tensor and the actual shape of the input tensor. The expected shape of the input
+      tensor is [67, ...], but the actual shape of the input tensor is [1, 1, ...].
+      Therefore, the constraint that prevents the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        name: str
+        num: int
+        value: tensor
+      msg: '{{function_node __wrapped__Unpack_num_5_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Input shape axis 0 must equal 5, got shape [7,7] [Op:Unpack] name: aSaR'
+      package: tensorflow
+    txt: shape(value)[0] == 67
+  - f1_score: 84.98583569405099
+    overall_score: 100
+    precision: 100.0
+    recall: 73.89162561576354
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        name: str
+        num: int
+        value: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in value.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        name: str
+        num: int
+        value: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: value.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        name: str
+        num: int
+        value: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in value.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        axis: int
+        name: str
+        num: int
+        value: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: value.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

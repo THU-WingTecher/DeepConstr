@@ -1,0 +1,163 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[List[int]]
+  - List[int]
+  - Optional[str]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - s
+  - dim
+  - norm
+  - out
+  required:
+  - true
+  - false
+  - false
+  - false
+  - true
+name: torch._C._fft.fft_rfft2
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: Based on the given runtime information, the error occurs because the `dim`
+      argument is empty, which means there are no dimensions specified for the transformation.
+      To prevent this error, the `dim` argument should be a non-empty list with at
+      least one axis specified for the transformation.
+    length: 1
+    target:
+      choosen_dtype:
+        dim: list[int]
+        norm: str
+        out: tensor
+        s: None
+        self: tensor
+      msg: rfftn must transform at least one axis
+      package: torch
+    txt: len(dim) > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: list[int]
+        norm: None
+        out: tensor
+        s: None
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 7)
+      package: torch
+    txt: dim[2] >= -len(self.shape)
+  - f1_score: 62.178702570379436
+    overall_score: 45.333333333333336
+    precision: 84.66666666666667
+    recall: 49.129593810444874
+- - cot: The error is due to an invalid normalization mode. The value provided for
+      'norm' is "mqLo", which is not a valid normalization mode. The valid normalization
+      modes are "backward" and "ortho". Therefore, the value for 'norm' should be
+      corrected to either "backward" or "ortho", which is ["backward", "ortho"].
+    length: 1
+    target:
+      choosen_dtype:
+        dim: list[int]
+        norm: str
+        out: tensor
+        s: None
+        self: tensor
+      msg: 'Invalid normalization mode: "mqLo"'
+      package: torch
+    txt: norm in ["backward", "ortho"]
+  - f1_score: 87.33624454148472
+    overall_score: 100
+    precision: 100.0
+    recall: 77.51937984496124
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: list[int]
+        norm: None
+        out: tensor
+        s: None
+        self: tensor
+      msg: rfftn expects a complex output tensor, but got Float
+      package: torch
+    txt: self.dtype() == torch.complex128
+  - f1_score: 92.87925696594425
+    overall_score: 100
+    precision: 100.0
+    recall: 86.70520231213872
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: List[int]
+        norm: Optional[str]
+        out: Tensor
+        s: Optional[List[int]]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: List[int]
+        norm: Optional[str]
+        out: Tensor
+        s: Optional[List[int]]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: List[int]
+        norm: Optional[str]
+        out: Tensor
+        s: Optional[List[int]]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: List[int]
+        norm: Optional[str]
+        out: Tensor
+        s: Optional[List[int]]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

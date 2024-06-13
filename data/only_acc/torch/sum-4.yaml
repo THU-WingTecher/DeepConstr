@@ -4,10 +4,8 @@ args:
   - Optional[List[int]]
   - bool
   - None
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   - false
   - false
@@ -16,30 +14,42 @@ args:
   - dim
   - keepdim
   - dtype
-  - out
   required:
   - true
   - false
   - false
   - false
-  - true
 name: torch.sum
 package: torch
 pass_rate: 99.66666666666667
 rules:
-- - cot: divided
+- - cot: default
     length: 1
     target:
       choosen_dtype:
-        dim: None
+        dim: Optional[List[int]]
         dtype: None
         keepdim: bool
-        out: tensor
-        self: tensor
-      msg: Trying to resize storage that is not resizable
+        self: Tensor
+      msg: negative dimensions are not allowed
       package: torch
-    txt: all(out.shape[i] == self.shape[i] for i in range(out.rank))
-  - f1_score: 66.815144766147
-    overall_score: 100
-    precision: 100.0
-    recall: 50.16722408026756
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        dtype: None
+        keepdim: bool
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

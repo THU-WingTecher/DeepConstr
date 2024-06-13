@@ -1,0 +1,78 @@
+args:
+  dtype:
+  - number
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - out
+  required:
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.bitwise_and
+package: torch
+pass_rate: 0
+rules:
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        other: Tensor
+        out: Tensor
+        self: number
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in other.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        other: Tensor
+        out: Tensor
+        self: number
+      msg: Too large tensor shape
+      package: torch
+    txt: other.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        other: Tensor
+        out: Tensor
+        self: number
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in other.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        other: Tensor
+        out: Tensor
+        self: number
+      msg: Too large tensor shape
+      package: torch
+    txt: other.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

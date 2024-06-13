@@ -1,0 +1,116 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[Tensor]
+  - Optional[Tensor]
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - min
+  - max
+  required:
+  - true
+  - false
+  - false
+name: torch.clamp_
+package: torch
+pass_rate: 38.333333333333336
+rules:
+- - cot: 'Based on the given values, the error is triggered because the dimensions
+      of ''max'', ''min'' and ''self'' tensors do not match. The tensors should have
+      the same shape in order to use the torch.clamp_ function. Therefore, the dimensions
+      and shape of ''max'', ''min'' and ''self'' are what need to be corrected. The
+      condition to make the error disappear would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        max: tensor
+        min: tensor
+        self: tensor
+      msg: The size of tensor a (5) must match the size of tensor b (9) at non-singleton
+        dimension 3
+      package: torch
+    txt: max.dim == min.dim == self.dim and max.shape == min.shape == self.shape
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Error is triggered because the size of tensor a (5) must match the size
+      of tensor b (6) at non-singleton dimension 2. Let''s see what the args were.
+      The size of dimension 2 of tensor a is 5, while the size of dimension 2 of tensor
+      b is 6. Therefore, the condition to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        max: None
+        min: tensor
+        self: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (8) at non-singleton
+        dimension 2
+      package: torch
+    txt: min.shape[2] == self.shape[2]
+  - f1_score: 78.22685788787483
+    overall_score: 100
+    precision: 100.0
+    recall: 64.23982869379014
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        max: Optional[Tensor]
+        min: Optional[Tensor]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in min.shape) and all(i
+      >= 0 for i in max.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        max: Optional[Tensor]
+        min: Optional[Tensor]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and min.rank <= 7 and max.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        max: Optional[Tensor]
+        min: Optional[Tensor]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in min.shape) and all(i
+      >= 0 for i in max.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        max: Optional[Tensor]
+        min: Optional[Tensor]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and min.rank <= 7 and max.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

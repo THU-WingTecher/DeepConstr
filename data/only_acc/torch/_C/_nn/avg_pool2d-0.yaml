@@ -1,0 +1,128 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - List[int]
+  - List[int]
+  - bool
+  - bool
+  - Optional[int]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - kernel_size
+  - stride
+  - padding
+  - ceil_mode
+  - count_include_pad
+  - divisor_override
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+name: torch._C._nn.avg_pool2d
+package: torch
+pass_rate: 0.5025125628140703
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: int
+        kernel_size: list[int]
+        padding: list[int]
+        self: tensor
+        stride: list[int]
+      msg: 'avg_pool2d: kernel_size must either be a single int, or a tuple of two
+        ints'
+      package: torch
+    txt: (len(kernel_size) == 2) and (len(padding) == 2)
+  - f1_score: 98.98989898989899
+    overall_score: 50.5
+    precision: 98.0
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: Optional[int]
+        kernel_size: List[int]
+        padding: List[int]
+        self: Tensor
+        stride: List[int]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: Optional[int]
+        kernel_size: List[int]
+        padding: List[int]
+        self: Tensor
+        stride: List[int]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: Optional[int]
+        kernel_size: List[int]
+        padding: List[int]
+        self: Tensor
+        stride: List[int]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        count_include_pad: bool
+        divisor_override: Optional[int]
+        kernel_size: List[int]
+        padding: List[int]
+        self: Tensor
+        stride: List[int]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

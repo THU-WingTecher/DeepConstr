@@ -1,16 +1,12 @@
 args:
   dtype:
   - tensor
-  - None
   is_pos:
   - true
-  - false
   name:
   - x
-  - out
   required:
   - true
-  - false
 name: numpy.reciprocal
 package: null
 pass_rate: 7.000000000000001
@@ -22,7 +18,6 @@ rules:
     length: 1
     target:
       choosen_dtype:
-        out: None
         x: tensor
       msg: The truth value of an array with more than one element is ambiguous. Use
         a.any() or a.all()
@@ -32,3 +27,27 @@ rules:
     overall_score: 8.666666666666666
     precision: 11.333333333333332
     recall: 12.439024390243903
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        x: tensor
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in x.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        x: tensor
+      msg: Too large tensor shape
+      package: null
+    txt: x.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

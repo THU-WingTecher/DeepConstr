@@ -67,3 +67,37 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 88.88888888888889
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        _random_samples: Optional[Tensor]
+        input: Tensor
+        kernel_size: List[int]
+        output_ratio: Optional[List[float]]
+        output_size: Optional[List[int]]
+        return_indices: bool
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape) and all(i >= 0 for i in _random_samples.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        _random_samples: Optional[Tensor]
+        input: Tensor
+        kernel_size: List[int]
+        output_ratio: Optional[List[float]]
+        output_size: Optional[List[int]]
+        return_indices: bool
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7 and _random_samples.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

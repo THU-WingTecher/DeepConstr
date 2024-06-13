@@ -1,0 +1,129 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.bitwise_xor
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: "Error is triggered because the size of tensor \"a\" (9) must match the size\
+      \ of tensor \"b\" (8) at non-singleton dimension 2. The tensors that are causing\
+      \ the error are \"self\" and \"other\". \n\nTo prevent this error, we need to\
+      \ ensure that the dimensions and shape of \"self\" and \"other\" are consistent.\
+      \ Therefore, the constraint can be formulated as:"
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (8) must match the size of tensor b (9) at non-singleton
+        dimension 5
+      package: torch
+    txt: self.dim == other.dim and self.shape == other.shape
+  - f1_score: 94.19152276295132
+    overall_score: 100
+    precision: 100.0
+    recall: 89.02077151335311
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: '"bitwise_xor_cpu" not implemented for ''Float'''
+      package: torch
+    txt: dtype(out) != "Float"
+  - f1_score: 85.348506401138
+    overall_score: 100
+    precision: 100.0
+    recall: 74.44168734491315
+- - cot: "The error is due to an inconsistency in the data types of the input tensors.\
+      \ The 'self' and 'other' tensors are of type Float, while the 'out' tensor expects\
+      \ a Long type. To prevent this error, all tensors should have the same data\
+      \ type. \n\nThe condition to prevent this error would be:"
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Long
+      package: torch
+    txt: dtype(self) == dtype(other) == dtype(out)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        other: Tensor
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in other.shape) and
+      all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        other: Tensor
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and other.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        other: Tensor
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in other.shape) and
+      all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        other: Tensor
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and other.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

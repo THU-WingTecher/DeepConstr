@@ -1,0 +1,88 @@
+args:
+  dtype:
+  - Tensor
+  - str
+  - Tensor
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - A
+  - mode
+  - Q
+  - R
+  required:
+  - true
+  - false
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch._C._linalg.linalg_qr
+package: torch
+pass_rate: 0
+rules:
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        A: Tensor
+        Q: Tensor
+        R: Tensor
+        mode: str
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in A.shape) and all(i >= 0 for i in Q.shape) and all(i >=
+      0 for i in R.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        A: Tensor
+        Q: Tensor
+        R: Tensor
+        mode: str
+      msg: Too large tensor shape
+      package: torch
+    txt: A.rank <= 7 and Q.rank <= 7 and R.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        A: Tensor
+        Q: Tensor
+        R: Tensor
+        mode: str
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in A.shape) and all(i >= 0 for i in Q.shape) and all(i >=
+      0 for i in R.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        A: Tensor
+        Q: Tensor
+        R: Tensor
+        mode: str
+      msg: Too large tensor shape
+      package: torch
+    txt: A.rank <= 7 and Q.rank <= 7 and R.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

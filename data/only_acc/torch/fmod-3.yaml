@@ -2,47 +2,24 @@ args:
   dtype:
   - Tensor
   - number
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   name:
   - self
   - other
-  - out
   required:
-  - true
   - true
   - true
 name: torch.fmod
 package: torch
 pass_rate: 100
 rules:
-- - cot: '`out` tensor is of shape [0, 9, 9, 9, 9] and `self` tensor is of shape [8,
-      9, 2, 7]. The error is triggered because we are trying to resize the `out` tensor
-      which is not resizable. To prevent this error, the shape of the `out` tensor
-      should match the shape of the operation result, which is the shape of the `self`
-      tensor. Therefore, the condition to prevent the error is:'
-    length: 1
-    target:
-      choosen_dtype:
-        other: int
-        out: tensor
-        self: tensor
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
-  - f1_score: 74.07407407407409
-    overall_score: 100
-    precision: 100.0
-    recall: 58.82352941176471
 - - cot: synthesized
     length: 2
     target:
       choosen_dtype:
         other: int
-        out: tensor
         self: tensor
       msg: result type Float can't be cast to the desired output type Int
       package: torch
@@ -51,22 +28,6 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 50.76142131979695
-- - cot: The error is triggered because the result type Float cannot be cast to the
-      desired output type Bool. To prevent this error, the output type should be changed
-      to Float.
-    length: 1
-    target:
-      choosen_dtype:
-        other: int
-        out: tensor
-        self: tensor
-      msg: result type Float can't be cast to the desired output type Bool
-      package: torch
-    txt: dtype(out) == Float
-  - f1_score: 78.27788649706457
-    overall_score: 100
-    precision: 100.0
-    recall: 64.30868167202571
 - - cot: The error is caused because the dimensions of the output tensor are negative.
       To prevent this error, we need to ensure that the dimensions of the output tensor
       are non-negative.
@@ -74,7 +35,6 @@ rules:
     target:
       choosen_dtype:
         other: int
-        out: tensor
         self: tensor
       msg: negative dimensions are not allowed
       package: torch
@@ -83,3 +43,29 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 90.78341013824884
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        other: number
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        other: number
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -4,10 +4,8 @@ args:
   - int
   - bool
   - None
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   - false
   - false
@@ -16,13 +14,11 @@ args:
   - dim
   - keepdim
   - dtype
-  - out
   required:
   - true
   - true
   - false
   - false
-  - true
 name: torch.prod
 package: torch
 pass_rate: 33.5
@@ -34,7 +30,6 @@ rules:
         dim: int
         dtype: None
         keepdim: bool
-        out: tensor
         self: tensor
       msg: Dimension out of range (expected to be in range of [-2, 1], but got 99)
       package: torch
@@ -43,19 +38,33 @@ rules:
     overall_score: 48.75
     precision: 91.5
     recall: 66.30434782608695
-- - cot: ''
+- - cot: default
     length: 1
     target:
       choosen_dtype:
         dim: int
         dtype: None
         keepdim: bool
-        out: tensor
-        self: tensor
-      msg: Trying to resize storage that is not resizable
+        self: Tensor
+      msg: negative dimensions are not allowed
       package: torch
-    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
-  - f1_score: 72.59528130671507
-    overall_score: 100
-    precision: 100.0
-    recall: 56.98005698005698
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        keepdim: bool
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -1,0 +1,119 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - Optional[int]
+  - Optional[int]
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - repeats
+  - dim
+  - output_size
+  required:
+  - true
+  - true
+  - false
+  - false
+name: torch.repeat_interleave
+package: torch
+pass_rate: 5.0
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        output_size: None
+        repeats: int
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 84)
+      package: torch
+    txt: ((dim >= -len(self.shape) and dim < len(self.shape)) or (96 < len(self.shape)))
+      and (dim >= -2 and dim < 2)
+  - f1_score: 78.74015748031496
+    overall_score: 100
+    precision: 100.0
+    recall: 64.93506493506493
+- - cot: 'The error occurs because the output_size parameter is expected to be 7,
+      but it is given as -2. To prevent this error, we need to ensure that the output_size
+      is a positive integer value. The constraint for the output_size parameter can
+      be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        output_size: int
+        repeats: int
+        self: tensor
+      msg: 'repeat_interleave: Invalid output_size, expected 4 but got 71'
+      package: torch
+    txt: output_size > 0
+  - f1_score: 35.690235690235696
+    overall_score: 16.25
+    precision: 26.5
+    recall: 54.639175257731964
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: Optional[int]
+        output_size: Optional[int]
+        repeats: int
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: Optional[int]
+        output_size: Optional[int]
+        repeats: int
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: Optional[int]
+        output_size: Optional[int]
+        repeats: int
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: Optional[int]
+        output_size: Optional[int]
+        repeats: int
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -1,0 +1,102 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[List[int]]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - other
+  - dims
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+name: torch._C._linalg.linalg_tensorsolve
+package: torch
+pass_rate: 10.5
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dims: None
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: cannot create std::vector larger than max_size()
+      package: torch
+    txt: other.shape[0] * other.shape[1] * other.shape[2] * other.shape[3] <= out.shape[-1]
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        dims: Optional[List[int]]
+        other: Tensor
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in other.shape) and
+      all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        dims: Optional[List[int]]
+        other: Tensor
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and other.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        dims: Optional[List[int]]
+        other: Tensor
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in other.shape) and
+      all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        dims: Optional[List[int]]
+        other: Tensor
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and other.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

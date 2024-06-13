@@ -1,0 +1,105 @@
+args:
+  dtype:
+  - list[int]
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - bool
+  - str
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - axis
+  - input
+  - keep_dims
+  - name
+  required:
+  - true
+  - true
+  - false
+  - false
+name: tf.raw_ops.Prod
+package: tensorflow
+pass_rate: 2.666666666666667
+rules:
+- - cot: The error occurred because the reduction dimension specified is invalid.
+      The input tensor has 5 dimensions, indexed from 0 to 4. Therefore, the maximum
+      valid reduction dimension would be 4. To prevent this error, the reduction dimension
+      should be less than the number of dimensions in the input tensor.
+    length: 1
+    target:
+      choosen_dtype:
+        axis: tensor
+        input: tensor
+        keep_dims: bool
+        name: str
+      msg: '{{function_node __wrapped__Prod_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        Invalid reduction dimension (512323 for input with 7 dimension(s) [Op:Prod]
+        name: iogA'
+      package: tensorflow
+    txt: (i < input.rank for i in axis)
+  - f1_score: 45.91836734693877
+    overall_score: 18.0
+    precision: 30.0
+    recall: 97.82608695652173
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        axis: list[int]
+        input: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        keep_dims: bool
+        name: str
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in input.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        axis: list[int]
+        input: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        keep_dims: bool
+        name: str
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: input.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        axis: list[int]
+        input: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        keep_dims: bool
+        name: str
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in input.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        axis: list[int]
+        input: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        keep_dims: bool
+        name: str
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: input.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

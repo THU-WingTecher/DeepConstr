@@ -1,0 +1,92 @@
+args:
+  dtype:
+  - tensor
+  - int
+  - tensor
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - a
+  - axis
+  - out
+  required:
+  - true
+  - false
+  - false
+name: numpy.cumsum
+package: null
+pass_rate: 0.33333333333333337
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        axis: int
+        out: tensor
+      msg: 'operands could not be broadcast together with remapped shapes [original->remapped]:
+        (2,5,7,7,1,5,2)->(2,5,7,7,1,5,2) (3,6,6,6,6,6,6)->(3,6,6,6,6,6,6) '
+      package: numpy
+    txt: a.shape[i] == 1
+  - f1_score: 66.29892457385323
+    overall_score: 51.36065573770492
+    precision: 96.72131147540983
+    recall: 50.43520847710424
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        a: tensor
+        axis: int
+        out: tensor
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in a.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        a: tensor
+        axis: int
+        out: tensor
+      msg: Too large tensor shape
+      package: null
+    txt: a.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        a: tensor
+        axis: int
+        out: tensor
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in a.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        a: tensor
+        axis: int
+        out: tensor
+      msg: Too large tensor shape
+      package: null
+    txt: a.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -2,17 +2,13 @@ args:
   dtype:
   - Tensor
   - Tensor
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   name:
   - self
   - other
-  - out
   required:
-  - true
   - true
   - true
 name: torch.bitwise_and
@@ -24,7 +20,6 @@ rules:
     target:
       choosen_dtype:
         other: tensor
-        out: tensor
         self: tensor
       msg: The size of tensor a (8) must match the size of tensor b (9) at non-singleton
         dimension 1
@@ -34,27 +29,11 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 93.75
-- - cot: synthesized
-    length: 2
-    target:
-      choosen_dtype:
-        other: tensor
-        out: tensor
-        self: tensor
-      msg: '"bitwise_and_cpu" not implemented for ''Float'''
-      package: torch
-    txt: (dtype(self) != float) and (dtype(out) in ["int8", "int16", "int32", "int64",
-      "uint8", "uint16", "uint32", "uint64"])
-  - f1_score: 81.96721311475409
-    overall_score: 100
-    precision: 100.0
-    recall: 69.44444444444444
 - - cot: ''
     length: 1
     target:
       choosen_dtype:
         other: tensor
-        out: tensor
         self: tensor
       msg: result type Float can't be cast to the desired output type Short
       package: torch
@@ -63,20 +42,29 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 97.40259740259741
-- - cot: '`out` tensor is trying to be resized to match the shape of the operation
-      result, but it is not resizable. To prevent this error, the shape of the `out`
-      tensor should match the shape of the operation result. Therefore, the constraint
-      would be:'
-    length: 1
+- - cot: default
+    length: 2
     target:
       choosen_dtype:
-        other: tensor
-        out: tensor
-        self: tensor
-      msg: Trying to resize storage that is not resizable
+        other: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
       package: torch
-    txt: out.shape == self.shape
-  - f1_score: 73.17073170731707
-    overall_score: 100
-    precision: 100.0
-    recall: 57.692307692307686
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in other.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        other: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and other.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

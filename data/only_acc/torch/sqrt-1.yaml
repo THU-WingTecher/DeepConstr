@@ -1,38 +1,20 @@
 args:
   dtype:
   - Tensor
-  - Tensor
   is_pos:
   - true
-  - false
   name:
   - self
-  - out
   required:
-  - true
   - true
 name: torch.sqrt
 package: torch
 pass_rate: 100
 rules:
-- - cot: ''
-    length: 1
-    target:
-      choosen_dtype:
-        out: tensor
-        self: tensor
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
-  - f1_score: 74.16563658838072
-    overall_score: 100
-    precision: 100.0
-    recall: 58.93909626719057
 - - cot: synthesized
     length: 3
     target:
       choosen_dtype:
-        out: tensor
         self: tensor
       msg: result type Float can't be cast to the desired output type Int
       package: torch
@@ -41,19 +23,27 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 78.94736842105263
-- - cot: "The error is caused because the shape of the output tensor is [7, 5, -1,\
-      \ -1, -1, -1, -1], which contains negative dimensions. Negative dimensions are\
-      \ not allowed. To prevent this error, the shape of the output tensor should\
-      \ not contain any negative dimensions. \n\nWrap the final formula with"
+- - cot: default
     length: 1
     target:
       choosen_dtype:
-        out: tensor
-        self: tensor
+        self: Tensor
       msg: negative dimensions are not allowed
       package: torch
-    txt: all(dim >= 0 for dim in out.shape)
-  - f1_score: 95.98715890850724
-    overall_score: 100
-    precision: 100.0
-    recall: 92.28395061728396
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

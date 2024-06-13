@@ -1,0 +1,95 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - values
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.heaviside
+package: torch
+pass_rate: 21.0
+rules:
+- - cot: 'Based on the given runtime information, the constraint that prevents the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        self: tensor
+        values: tensor
+      msg: The size of tensor a (7) must match the size of tensor b (3) at non-singleton
+        dimension 3
+      package: torch
+    txt: self.shape[2] == values.shape[2]
+  - f1_score: 73.34963325183375
+    overall_score: 100
+    precision: 100.0
+    recall: 57.91505791505792
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        out: Tensor
+        self: Tensor
+        values: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in values.shape) and
+      all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        out: Tensor
+        self: Tensor
+        values: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and values.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        out: Tensor
+        self: Tensor
+        values: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in values.shape) and
+      all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        out: Tensor
+        self: Tensor
+        values: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and values.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

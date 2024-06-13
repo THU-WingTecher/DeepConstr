@@ -1,0 +1,106 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Optional[Tensor]
+  - int
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - target
+  - weight
+  - reduction
+  required:
+  - true
+  - true
+  - false
+  - false
+name: torch._C._nn.binary_cross_entropy
+package: torch
+pass_rate: 1.0033444816053512
+rules:
+- - cot: 'Error is triggered because the size of tensor `a` (2) must match the size
+      of tensor `b` (7) at non-singleton dimension 6. Let''s see what the args were.
+      It seems the dimensions and shape of `a` and `b` are inconsistent. Therefore,
+      the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        reduction: int
+        self: tensor
+        target: tensor
+        weight: None
+      msg: The size of tensor a (2) must match the size of tensor b (7) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.dim == target.dim and self.shape == target.shape
+  - f1_score: 84.9056603773585
+    overall_score: 100
+    precision: 100.0
+    recall: 73.77049180327869
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        reduction: int
+        self: Tensor
+        target: Tensor
+        weight: Optional[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in target.shape) and
+      all(i >= 0 for i in weight.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        reduction: int
+        self: Tensor
+        target: Tensor
+        weight: Optional[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and target.rank <= 7 and weight.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        reduction: int
+        self: Tensor
+        target: Tensor
+        weight: Optional[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in target.shape) and
+      all(i >= 0 for i in weight.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        reduction: int
+        self: Tensor
+        target: Tensor
+        weight: Optional[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and target.rank <= 7 and weight.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -1,0 +1,121 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - end
+  - weight
+  - out
+  required:
+  - true
+  - true
+  - true
+  - true
+name: torch.lerp
+package: torch
+pass_rate: 69.5
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        end: tensor
+        out: tensor
+        self: tensor
+        weight: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (8) at non-singleton
+        dimension 2
+      package: torch
+    txt: (all(self.shape[i] == weight.shape[i] or self.shape[i] == 1 or weight.shape[i]
+      == 1 for i in range(-1, -min(len(self.shape), len(weight.shape))-1, -1))) and
+      (all(self.shape[i] == end.shape[i] or self.shape[i] == 1 or end.shape[i] ==
+      1 for i in range(-1, -min(len(self.shape), len(end.shape))-1, -1)))
+  - f1_score: 94.43099273607749
+    overall_score: 50.25
+    precision: 97.5
+    recall: 91.54929577464789
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        end: tensor
+        out: tensor
+        self: tensor
+        weight: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 72.29791099000909
+    overall_score: 51.64864864864865
+    precision: 97.2972972972973
+    recall: 57.519068647129664
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        end: Tensor
+        out: Tensor
+        self: Tensor
+        weight: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in end.shape) and all(i
+      >= 0 for i in weight.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        end: Tensor
+        out: Tensor
+        self: Tensor
+        weight: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and end.rank <= 7 and weight.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        end: Tensor
+        out: Tensor
+        self: Tensor
+        weight: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in end.shape) and all(i
+      >= 0 for i in weight.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        end: Tensor
+        out: Tensor
+        self: Tensor
+        weight: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and end.rank <= 7 and weight.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

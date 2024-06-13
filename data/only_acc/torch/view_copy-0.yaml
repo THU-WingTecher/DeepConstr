@@ -1,0 +1,101 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - size
+  required:
+  - true
+  - true
+name: torch.view_copy
+package: torch
+pass_rate: 56.99999999999999
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        size: list[int]
+      msg: shape '[]' is invalid for input of size 81
+      package: torch
+    txt: all(self.shape[i] == size[i] for i in range(len(self.shape)))
+  - f1_score: 55.26315789473684
+    overall_score: 34.5
+    precision: 63.0
+    recall: 49.21875
+- - cot: 'The error is caused by an invalid shape dimension of -4. The size argument
+      passed to torch.view_copy has a dimension with a value of -4, which is not a
+      valid shape dimension.
+
+
+      To prevent this error, the shape dimension should be a positive integer or zero.
+      So we can formulate the constraint as:'
+    length: 1
+    target:
+      choosen_dtype:
+        self: tensor
+        size: list[int]
+      msg: invalid shape dimension -4
+      package: torch
+    txt: (size[i] >= 0 for i in range(len(size)))
+  - f1_score: 75.046904315197
+    overall_score: 100
+    precision: 100.0
+    recall: 60.06006006006006
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+        size: List[int]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+        size: List[int]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+        size: List[int]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+        size: List[int]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

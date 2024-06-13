@@ -1,0 +1,76 @@
+args:
+  dtype:
+  - List[Tensor]
+  is_pos:
+  - true
+  name:
+  - tensors
+  required:
+  - true
+name: torch.dstack
+package: torch
+pass_rate: 83.0
+rules:
+- - cot: 'Error is triggered because of an empty TensorList. Let''s see what the args
+      were. The tensors list is empty. Therefore, we need to check if the list is
+      not empty before calling the dstack function. Left: len(tensors), Op: >, Right:
+      0.'
+    length: 1
+    target:
+      choosen_dtype:
+        tensors: list[tensor]
+      msg: dstack expects a non-empty TensorList
+      package: torch
+    txt: len(tensors) > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 0
+    target:
+      choosen_dtype:
+        tensors: List[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: ''
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 0
+    target:
+      choosen_dtype:
+        tensors: List[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: ''
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 0
+    target:
+      choosen_dtype:
+        tensors: List[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: ''
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 0
+    target:
+      choosen_dtype:
+        tensors: List[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: ''
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

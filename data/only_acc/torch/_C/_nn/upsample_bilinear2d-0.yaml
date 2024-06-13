@@ -1,0 +1,109 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[List[int]]
+  - bool
+  - Optional[List[float]]
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - output_size
+  - align_corners
+  - scale_factors
+  required:
+  - true
+  - false
+  - true
+  - false
+name: torch._C._nn.upsample_bilinear2d
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: 'The error occurs because the size of the ''output_size'' list does not match
+      the number of spatial dimensions in the input tensor. The error message suggests
+      that the size of ''output_size'' should be equal to the number of spatial dimensions.
+
+
+      To prevent this error, we need to ensure that the size of the ''output_size''
+      list is equal to the number of spatial dimensions in the ''input'' tensor. We
+      can express this constraint as:'
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        input: tensor
+        output_size: list[int]
+        scale_factors: None
+      msg: Expected static_cast<int64_t>(output_size->size()) == spatial_dimensions
+        to be true, but got false.  (Could this error message be improved?  If so,
+        please report an enhancement request to PyTorch.)
+      package: torch
+    txt: len(output_size) == len(input.shape) - 2
+  - f1_score: 24.242424242424246
+    overall_score: 10.0
+    precision: 14.000000000000002
+    recall: 90.32258064516128
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        input: Tensor
+        output_size: Optional[List[int]]
+        scale_factors: Optional[List[float]]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        input: Tensor
+        output_size: Optional[List[int]]
+        scale_factors: Optional[List[float]]
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        input: Tensor
+        output_size: Optional[List[int]]
+        scale_factors: Optional[List[float]]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        align_corners: bool
+        input: Tensor
+        output_size: Optional[List[int]]
+        scale_factors: Optional[List[float]]
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -1,40 +1,20 @@
 args:
   dtype:
   - Tensor
-  - Tensor
   is_pos:
   - true
-  - false
   name:
   - self
-  - out
   required:
-  - true
   - true
 name: torch.signbit
 package: torch
 pass_rate: 100
 rules:
-- - cot: 'The error indicates that the function `torch.signbit` does not support non-boolean
-      outputs. To prevent the error, the output tensor `out` should be of boolean
-      type. Therefore, the constraint can be formulated as:'
-    length: 1
-    target:
-      choosen_dtype:
-        out: tensor
-        self: tensor
-      msg: signbit does not support non-boolean outputs.
-      package: torch
-    txt: out.dtype == torch.bool
-  - f1_score: 100.0
-    overall_score: 100
-    precision: 100.0
-    recall: 100.0
 - - cot: ''
     length: 1
     target:
       choosen_dtype:
-        out: tensor
         self: tensor
       msg: Trying to resize storage that is not resizable
       package: torch
@@ -43,3 +23,27 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 68.96551724137932
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

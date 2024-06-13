@@ -1,0 +1,233 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[int]
+  - int
+  - Optional[str]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - n
+  - dim
+  - norm
+  - out
+  required:
+  - true
+  - false
+  - false
+  - false
+  - true
+name: torch._C._fft.fft_fft
+package: torch
+pass_rate: 0.2
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        n: None
+        norm: str
+        out: tensor
+        self: tensor
+      msg: fft expects a complex output tensor, but got Float
+      package: torch
+    txt: ((self.size() == out.size()) and (out.dim(1) == 2)) and ('out'.dtype == torch.complex64)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        n: int
+        norm: str
+        out: tensor
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-3, 2], but got 14)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 64.38356164383562
+    overall_score: 50.0
+    precision: 94.0
+    recall: 48.95833333333333
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        n: None
+        norm: None
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==self.rank
+  - f1_score: 68.4931506849315
+    overall_score: 100
+    precision: 100.0
+    recall: 52.083333333333336
+- - cot: The error is due to an invalid number of data points specified. The function
+      is trying to perform FFT on a tensor with shape [1, 6, 6]. However, the number
+      of data points specified is 0, which is invalid. Therefore, the constraint to
+      prevent this error is that the number of data points specified should be greater
+      than 0.
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        n: int
+        norm: str
+        out: tensor
+        self: tensor
+      msg: Invalid number of data points (0) specified
+      package: torch
+    txt: (n > 0)
+  - f1_score: 92.9368029739777
+    overall_score: 100
+    precision: 100.0
+    recall: 86.80555555555556
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        n: None
+        norm: None
+        out: tensor
+        self: tensor
+      msg: 'MKL FFT error: Intel MKL DFTI ERROR: Inconsistent configuration parameters'
+      package: torch
+    txt: ((self.shape == out.shape) and (self.dim == out.dim)) and (self.dim() ==
+      dim)
+  - f1_score: 66.71114076050699
+    overall_score: 100
+    precision: 100.0
+    recall: 50.050050050050054
+- - cot: The error is due to an invalid normalization mode. The function is trying
+      to use the normalization mode "pECE", which is not a valid mode. The valid normalization
+      modes are "forward", "backward", and "ortho". Therefore, the constraint to prevent
+      the error is `norm in ["forward", "backward", "ortho"]`. Wrap the final formula
+      with
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        n: int
+        norm: str
+        out: tensor
+        self: tensor
+      msg: 'Invalid normalization mode: "pECE"'
+      package: torch
+    txt: (norm in ["forward", "backward", "ortho"])
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: 'Based on the given runtime information, the error is caused by an invalid
+      normalization mode "bdLV". The valid normalization modes are "forward" and "backward".
+      To prevent the error, the normalization mode should be either "forward" or "backward".
+      Therefore, the constraint is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        n: int
+        norm: str
+        out: tensor
+        self: tensor
+      msg: 'Invalid normalization mode: "bdLV"'
+      package: torch
+    txt: norm in ["forward", "backward"]
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        n: None
+        norm: str
+        out: tensor
+        self: tensor
+      msg: 'Invalid normalization mode: "phnp"'
+      package: torch
+    txt: (norm in ["phnp"]) or (norm in ["backward", "ortho"])
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        n: Optional[int]
+        norm: Optional[str]
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        n: Optional[int]
+        norm: Optional[str]
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        n: Optional[int]
+        norm: Optional[str]
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        n: Optional[int]
+        norm: Optional[str]
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

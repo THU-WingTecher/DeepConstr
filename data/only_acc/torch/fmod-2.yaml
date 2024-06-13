@@ -1,0 +1,202 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - other
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.fmod
+package: torch
+pass_rate: 94.94949494949495
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (7) at non-singleton
+        dimension 5
+      package: torch
+    txt: self.shape[1] == other.shape[1]
+  - f1_score: 75.90132827324477
+    overall_score: 100
+    precision: 100.0
+    recall: 61.16207951070336
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: all(other.shape[i]==out.shape[i] for i in range(other.rank))
+  - f1_score: 53.24384787472036
+    overall_score: 32.75
+    precision: 59.5
+    recall: 48.17813765182187
+- - cot: 'The error is triggered because we are trying to resize the ''out'' tensor,
+      which has a shape of [3, 2, 4, 4, 4, 4, 4], to match the result of the operation.
+      The result shape is determined by the shape of the ''self'' tensor, which has
+      a shape of [8, 8, 7, 6, 2, 5, 8].
+
+
+      To prevent this error, the shape of the ''out'' tensor should be the same as
+      the shape of the ''self'' tensor. Therefore, the constraint should be:'
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.shape == self.shape
+  - f1_score: 64.06117247238743
+    overall_score: 42.0
+    precision: 78.0
+    recall: 54.34887073522346
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank
+  - f1_score: 74.57627118644068
+    overall_score: 52.5
+    precision: 99.0
+    recall: 59.818731117824775
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: (all(out.shape[i] >= 0 for i in range(out.rank))) and (all(i >= 0 for i in
+      self.shape))
+  - f1_score: 69.20415224913494
+    overall_score: 100
+    precision: 100.0
+    recall: 52.910052910052904
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank)))
+      and (out.shape == other.shape)
+  - f1_score: 67.79661016949153
+    overall_score: 100
+    precision: 100.0
+    recall: 51.28205128205129
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (7) at non-singleton
+        dimension 5
+      package: torch
+    txt: self.dim(6) == other.dim(1)
+  - f1_score: 75.66539923954373
+    overall_score: 100
+    precision: 100.0
+    recall: 60.85626911314984
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        other: tensor
+        out: tensor
+        self: tensor
+      msg: result type Float can't be cast to the desired output type Int
+      package: torch
+    txt: dtype(self) == dtype(other) and dtype(other) == dtype(out)
+  - f1_score: 86.65207877461707
+    overall_score: 100
+    precision: 100.0
+    recall: 76.44787644787645
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        other: Tensor
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in other.shape) and
+      all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        other: Tensor
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and other.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        other: Tensor
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in other.shape) and
+      all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        other: Tensor
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and other.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

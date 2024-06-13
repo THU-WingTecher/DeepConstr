@@ -1,0 +1,82 @@
+args:
+  dtype:
+  - List[Tensor]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - tensors
+  - out
+  required:
+  - true
+  - true
+name: torch.column_stack
+package: torch
+pass_rate: 15.5
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        tensors: list[tensor]
+      msg: column_stack expects a non-empty TensorList
+      package: torch
+    txt: len(tensors) > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        out: Tensor
+        tensors: List[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        out: Tensor
+        tensors: List[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        out: Tensor
+        tensors: List[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        out: Tensor
+        tensors: List[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

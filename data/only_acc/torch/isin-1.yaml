@@ -4,9 +4,7 @@ args:
   - Tensor
   - bool
   - bool
-  - Tensor
   is_pos:
-  - false
   - false
   - false
   - false
@@ -16,36 +14,15 @@ args:
   - test_elements
   - assume_unique
   - invert
-  - out
   required:
   - true
   - true
   - false
   - false
-  - true
 name: torch.isin
 package: torch
 pass_rate: 100
 rules:
-- - cot: "The error is due to the mismatch in the data types of the 'out' tensor.\
-      \ The expected data type is bool, but the actual data type is float. To prevent\
-      \ this error, the 'out' tensor should have a data type of bool. \n\nThe constraint\
-      \ can be formulated as:"
-    length: 1
-    target:
-      choosen_dtype:
-        assume_unique: bool
-        elements: tensor
-        invert: bool
-        out: tensor
-        test_elements: tensor
-      msg: Expected out tensor to have dtype bool, but got float instead
-      package: torch
-    txt: dtype(out) == bool
-  - f1_score: 100.0
-    overall_score: 100
-    precision: 100.0
-    recall: 100.0
 - - cot: synthesized
     length: 2
     target:
@@ -53,7 +30,6 @@ rules:
         assume_unique: bool
         elements: tensor
         invert: bool
-        out: tensor
         test_elements: tensor
       msg: Trying to resize storage that is not resizable
       package: torch
@@ -62,3 +38,33 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 81.9672131147541
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        assume_unique: bool
+        elements: Tensor
+        invert: bool
+        test_elements: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in elements.shape) and all(i >= 0 for i in test_elements.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        assume_unique: bool
+        elements: Tensor
+        invert: bool
+        test_elements: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: elements.rank <= 7 and test_elements.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

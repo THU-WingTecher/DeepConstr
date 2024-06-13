@@ -1,0 +1,85 @@
+args:
+  dtype:
+  - Tensor
+  - str
+  - str
+  - str
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - start_dim
+  - end_dim
+  - out_dim
+  required:
+  - true
+  - true
+  - true
+  - true
+name: torch.flatten
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        end_dim: str
+        out_dim: str
+        self: Tensor
+        start_dim: str
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        end_dim: str
+        out_dim: str
+        self: Tensor
+        start_dim: str
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        end_dim: str
+        out_dim: str
+        self: Tensor
+        start_dim: str
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        end_dim: str
+        out_dim: str
+        self: Tensor
+        start_dim: str
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -2,19 +2,15 @@ args:
   dtype:
   - tensor
   - tensor
-  - None
   is_pos:
   - true
   - true
-  - false
   name:
   - x1
   - x2
-  - out
   required:
   - true
   - true
-  - false
 name: numpy.logical_or
 package: null
 pass_rate: 0.33333333333333337
@@ -23,7 +19,6 @@ rules:
     length: 1
     target:
       choosen_dtype:
-        out: None
         x1: tensor
         x2: tensor
       msg: 'operands could not be broadcast together with shapes (4,6,7,6,6,6,6) (1,2,3,3,5,1,7) '
@@ -42,7 +37,6 @@ rules:
     length: 1
     target:
       choosen_dtype:
-        out: None
         x1: tensor
         x2: tensor
       msg: The truth value of an array with more than one element is ambiguous. Use
@@ -60,7 +54,6 @@ rules:
     length: 1
     target:
       choosen_dtype:
-        out: None
         x1: tensor
         x2: tensor
       msg: The truth value of an array with more than one element is ambiguous. Use
@@ -71,3 +64,29 @@ rules:
     overall_score: 49.33333333333333
     precision: 92.66666666666666
     recall: 82.08661417322834
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        x1: tensor
+        x2: tensor
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in x1.shape) and all(i >= 0 for i in x2.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        x1: tensor
+        x2: tensor
+      msg: Too large tensor shape
+      package: null
+    txt: x1.rank <= 7 and x2.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

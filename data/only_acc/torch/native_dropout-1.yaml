@@ -1,0 +1,96 @@
+args:
+  dtype:
+  - Tensor
+  - float
+  - Optional[bool]
+  - Tensor
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - p
+  - train
+  - out0
+  - out1
+  required:
+  - true
+  - true
+  - false
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.native_dropout
+package: torch
+pass_rate: 0
+rules:
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        input: Tensor
+        out0: Tensor
+        out1: Tensor
+        p: float
+        train: Optional[bool]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape) and all(i >= 0 for i in out0.shape) and
+      all(i >= 0 for i in out1.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        input: Tensor
+        out0: Tensor
+        out1: Tensor
+        p: float
+        train: Optional[bool]
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7 and out0.rank <= 7 and out1.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        input: Tensor
+        out0: Tensor
+        out1: Tensor
+        p: float
+        train: Optional[bool]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape) and all(i >= 0 for i in out0.shape) and
+      all(i >= 0 for i in out1.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        input: Tensor
+        out0: Tensor
+        out1: Tensor
+        p: float
+        train: Optional[bool]
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7 and out0.rank <= 7 and out1.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

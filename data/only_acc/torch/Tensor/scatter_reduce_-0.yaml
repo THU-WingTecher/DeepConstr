@@ -1,0 +1,207 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - Tensor
+  - Tensor
+  - str
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - index
+  - src
+  - reduce
+  - include_self
+  required:
+  - true
+  - true
+  - true
+  - true
+  - true
+  - false
+name: torch.Tensor.scatter_reduce_
+package: torch
+pass_rate: 2.7586206896551726
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        include_self: bool
+        index: tensor
+        reduce: str
+        self: tensor
+        src: tensor
+      msg: Dimension out of range (expected to be in range of [-4, 3], but got 5)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 73.9247311827957
+    overall_score: 48.83333333333333
+    precision: 91.66666666666666
+    recall: 61.93693693693694
+- - cot: 'The error is due to the mismatch in the data types of the index tensor.
+      The function expects the index tensor to be of type int64, but it is of type
+      float32. To prevent the error, the data type of the index tensor should be changed
+      to int64. So, the constraint is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        include_self: bool
+        index: tensor
+        reduce: str
+        self: tensor
+        src: tensor
+      msg: 'scatter(): Expected dtype int64 for index'
+      package: torch
+    txt: index.dtype == int64
+  - f1_score: 96.15384615384615
+    overall_score: 100
+    precision: 100.0
+    recall: 92.59259259259258
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        include_self: bool
+        index: tensor
+        reduce: str
+        self: tensor
+        src: tensor
+      msg: Index tensor must have the same number of dimensions as self tensor
+      package: torch
+    txt: (index.dim() == self.dim()) and (index.dim == src.dim)
+  - f1_score: 86.20689655172413
+    overall_score: 100
+    precision: 100.0
+    recall: 75.75757575757575
+- - cot: 'The error occurs because the provided index tensor has a dimension that
+      is larger than the corresponding dimension in the self tensor, and the index
+      tensor is also larger in size than the src tensor in all dimensions.
+
+
+      To prevent this error, we need to ensure that the index tensor is smaller than
+      the self tensor in all dimensions except for dimension 1, and that the index
+      tensor is smaller than the src tensor in all dimensions.
+
+
+      Let''s denote the shape of the index tensor as n and the shape of the self tensor
+      as m. The constraint for the index tensor can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        include_self: bool
+        index: tensor
+        reduce: str
+        self: tensor
+        src: tensor
+      msg: Expected index [3, 6, 6, 6, 6] to be smaller than self [1, 9, 9, 9, 9]
+        apart from dimension 1 and to be smaller size than src [7, 4, 4, 4, 4]
+      package: torch
+    txt: all(index.shape[i] < self.shape[i] for i in range(len(index.shape)) if i
+      != 1) and all(index.shape[i] < src.shape[i] for i in range(len(index.shape)))
+  - f1_score: 78.84362680683311
+    overall_score: 100
+    precision: 100.0
+    recall: 65.0759219088937
+- - cot: 'The error message states that the "reduce" argument must be either "sum",
+      "prod", "mean", "amax", or "amin", but it received "djfK". To prevent this error,
+      the "reduce" argument should be one of the valid values. Therefore, the condition
+      is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        include_self: bool
+        index: tensor
+        reduce: str
+        self: tensor
+        src: tensor
+      msg: reduce argument must be either sum, prod, mean, amax or amin, got gEbJ
+      package: torch
+    txt: reduce in ['sum', 'prod', 'mean', 'amax', 'amin']
+  - f1_score: 86.09865470852019
+    overall_score: 100
+    precision: 100.0
+    recall: 75.59055118110236
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        include_self: bool
+        index: Tensor
+        reduce: str
+        self: Tensor
+        src: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in index.shape) and
+      all(i >= 0 for i in src.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        include_self: bool
+        index: Tensor
+        reduce: str
+        self: Tensor
+        src: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and index.rank <= 7 and src.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        include_self: bool
+        index: Tensor
+        reduce: str
+        self: Tensor
+        src: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in index.shape) and
+      all(i >= 0 for i in src.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        include_self: bool
+        index: Tensor
+        reduce: str
+        self: Tensor
+        src: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and index.rank <= 7 and src.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

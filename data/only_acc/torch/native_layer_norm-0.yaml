@@ -1,0 +1,115 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - float
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - normalized_shape
+  - weight
+  - bias
+  - eps
+  required:
+  - true
+  - true
+  - false
+  - false
+  - true
+name: torch.native_layer_norm
+package: torch
+pass_rate: 0.33333333333333337
+rules:
+- - cot: 'The error is triggered because the normalized_shape parameter is expected
+      to be at least 1-dimensional, but it is an empty list. To prevent this error,
+      we need to ensure that normalized_shape has at least one element. The constraint
+      for the normalized_shape parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        bias: None
+        eps: float
+        input: tensor
+        normalized_shape: list[int]
+        weight: tensor
+      msg: Expected normalized_shape to be at least 1-dimensional, i.e., containing
+        at least one element, but got normalized_shape = []
+      package: torch
+    txt: len(normalized_shape) >= 1
+  - f1_score: 96.89119170984456
+    overall_score: 100
+    precision: 100.0
+    recall: 93.96984924623115
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        bias: Optional[Tensor]
+        eps: float
+        input: Tensor
+        normalized_shape: List[int]
+        weight: Optional[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape) and all(i >= 0 for i in weight.shape) and
+      all(i >= 0 for i in bias.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        bias: Optional[Tensor]
+        eps: float
+        input: Tensor
+        normalized_shape: List[int]
+        weight: Optional[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7 and weight.rank <= 7 and bias.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        bias: Optional[Tensor]
+        eps: float
+        input: Tensor
+        normalized_shape: List[int]
+        weight: Optional[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape) and all(i >= 0 for i in weight.shape) and
+      all(i >= 0 for i in bias.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        bias: Optional[Tensor]
+        eps: float
+        input: Tensor
+        normalized_shape: List[int]
+        weight: Optional[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7 and weight.rank <= 7 and bias.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

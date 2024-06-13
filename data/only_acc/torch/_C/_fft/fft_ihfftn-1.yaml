@@ -1,0 +1,148 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[List[int]]
+  - Optional[List[int]]
+  - Optional[str]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - s
+  - dim
+  - norm
+  - out
+  required:
+  - true
+  - false
+  - false
+  - false
+  - true
+name: torch._C._fft.fft_ihfftn
+package: torch
+pass_rate: 44.0
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: None
+        norm: None
+        out: tensor
+        s: None
+        self: tensor
+      msg: ihfftn expects a complex output tensor, but got Float
+      package: torch
+    txt: (self.size(1) == 2) and (out.dtype == torch.complex128)
+  - f1_score: 99.00990099009901
+    overall_score: 100
+    precision: 100.0
+    recall: 98.0392156862745
+- - cot: 'The error is triggered because the fft_ihfftn function requires at least
+      one axis to be transformed. Let''s see what the arguments were. The self tensor
+      is the input tensor to be transformed. To prevent the error, we can add a constraint
+      that checks if the number of axes to transform is greater than 0. Therefore,
+      the constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        norm: str
+        out: tensor
+        s: None
+        self: tensor
+      msg: ihfftn must transform at least one axis
+      package: torch
+    txt: self.shape.dim > 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the error is triggered because the
+      normalization mode "BHEC" is not a valid mode for the function. The valid normalization
+      modes are "forward" and "backward". Therefore, the constraint to prevent the
+      error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        norm: str
+        out: tensor
+        s: None
+        self: tensor
+      msg: 'Invalid normalization mode: "BHEC"'
+      package: torch
+    txt: norm in ["forward", "backward"]
+  - f1_score: 98.84678747940691
+    overall_score: 100
+    precision: 100.0
+    recall: 97.71986970684038
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        norm: Optional[str]
+        out: Tensor
+        s: Optional[List[int]]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        norm: Optional[str]
+        out: Tensor
+        s: Optional[List[int]]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        norm: Optional[str]
+        out: Tensor
+        s: Optional[List[int]]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        norm: Optional[str]
+        out: Tensor
+        s: Optional[List[int]]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

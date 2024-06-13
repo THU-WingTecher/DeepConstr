@@ -1,0 +1,271 @@
+args:
+  dtype:
+  - list[int]
+  - str
+  - int16,int32,int64
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - indices
+  - name
+  - params
+  required:
+  - true
+  - false
+  - true
+name: tf.raw_ops.GatherNd
+package: tensorflow
+pass_rate: 2.0
+rules:
+- - cot: 'Based on the given runtime information, the constraint that can prevent
+      the error is as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        indices: tensor
+        name: str
+        params: tensor
+      msg: "Could not find device for node: {{node GatherNd}} = GatherNd[Tindices=DT_INT16,\
+        \ Tparams=DT_FLOAT]\nAll kernels registered for op GatherNd:\n  device='XLA_CPU_JIT';\
+        \ Tindices in [DT_INT32, DT_INT16, DT_INT64]; Tparams in [DT_FLOAT, DT_DOUBLE,\
+        \ DT_INT32, DT_UINT8, DT_INT16, 930109355527764061, DT_HALF, DT_UINT32, DT_UINT64,\
+        \ DT_FLOAT8_E5M2, DT_FLOAT8_E4M3FN]\n  device='XLA_GPU_JIT'; Tindices in [DT_INT32,\
+        \ DT_INT16, DT_INT64]; Tparams in [DT_FLOAT, DT_DOUBLE, DT_INT32, DT_UINT8,\
+        \ DT_INT16, 930109355527764061, DT_HALF, DT_UINT32, DT_UINT64, DT_FLOAT8_E5M2,\
+        \ DT_FLOAT8_E4M3FN]\n  device='GPU'; Tparams in [DT_COMPLEX128]; Tindices\
+        \ in [DT_INT64]\n  device='GPU'; Tparams in [DT_COMPLEX128]; Tindices in [DT_INT32]\n\
+        \  device='GPU'; Tparams in [DT_COMPLEX64]; Tindices in [DT_INT64]\n  device='GPU';\
+        \ Tparams in [DT_COMPLEX64]; Tindices in [DT_INT32]\n  device='GPU'; Tparams\
+        \ in [DT_DOUBLE]; Tindices in [DT_INT64]\n  device='GPU'; Tparams in [DT_DOUBLE];\
+        \ Tindices in [DT_INT32]\n  device='GPU'; Tparams in [DT_FLOAT]; Tindices\
+        \ in [DT_INT64]\n  device='GPU'; Tparams in [DT_FLOAT]; Tindices in [DT_INT32]\n\
+        \  device='GPU'; Tparams in [DT_BFLOAT16]; Tindices in [DT_INT64]\n  device='GPU';\
+        \ Tparams in [DT_BFLOAT16]; Tindices in [DT_INT32]\n  device='GPU'; Tparams\
+        \ in [DT_HALF]; Tindices in [DT_INT64]\n  device='GPU'; Tparams in [DT_HALF];\
+        \ Tindices in [DT_INT32]\n  device='GPU'; Tparams in [DT_INT64]; Tindices\
+        \ in [DT_INT64]\n  device='GPU'; Tparams in [DT_INT64]; Tindices in [DT_INT32]\n\
+        \  device='GPU'; Tparams in [DT_INT32]; Tindices in [DT_INT64]\n  device='GPU';\
+        \ Tparams in [DT_INT32]; Tindices in [DT_INT32]\n  device='CPU'; Tparams in\
+        \ [DT_QINT32]; Tindices in [DT_INT64]\n  device='CPU'; Tparams in [DT_QINT32];\
+        \ Tindices in [DT_INT32]\n  device='CPU'; Tparams in [DT_QUINT8]; Tindices\
+        \ in [DT_INT64]\n  device='CPU'; Tparams in [DT_QUINT8]; Tindices in [DT_INT32]\n\
+        \  device='CPU'; Tparams in [DT_QINT8]; Tindices in [DT_INT64]\n  device='CPU';\
+        \ Tparams in [DT_QINT8]; Tindices in [DT_INT32]\n  device='CPU'; Tparams in\
+        \ [DT_VARIANT]; Tindices in [DT_INT64]\n  device='CPU'; Tparams in [DT_VARIANT];\
+        \ Tindices in [DT_INT32]\n  device='CPU'; Tparams in [DT_RESOURCE]; Tindices\
+        \ in [DT_INT64]\n  device='CPU'; Tparams in [DT_RESOURCE]; Tindices in [DT_INT32]\n\
+        \  device='CPU'; Tparams in [DT_STRING]; Tindices in [DT_INT64]\n  device='CPU';\
+        \ Tparams in [DT_STRING]; Tindices in [DT_INT32]\n  device='CPU'; Tparams\
+        \ in [DT_BOOL]; Tindices in [DT_INT64]\n  device='CPU'; Tparams in [DT_BOOL];\
+        \ Tindices in [DT_INT32]\n  device='CPU'; Tparams in [DT_COMPLEX128]; Tindices\
+        \ in [DT_INT64]\n  device='CPU'; Tparams in [DT_COMPLEX128]; Tindices in [DT_INT32]\n\
+        \  device='CPU'; Tparams in [DT_COMPLEX64]; Tindices in [DT_INT64]\n  device='CPU';\
+        \ Tparams in [DT_COMPLEX64]; Tindices in [DT_INT32]\n  device='CPU'; Tparams\
+        \ in [DT_DOUBLE]; Tindices in [DT_INT64]\n  device='CPU'; Tparams in [DT_DOUBLE];\
+        \ Tindices in [DT_INT32]\n  device='CPU'; Tparams in [DT_FLOAT]; Tindices\
+        \ in [DT_INT64]\n  device='CPU'; Tparams in [DT_FLOAT]; Tindices in [DT_INT32]\n\
+        \  device='CPU'; Tparams in [DT_BFLOAT16]; Tindices in [DT_INT64]\n  device='CPU';\
+        \ Tparams in [DT_BFLOAT16]; Tindices in [DT_INT32]\n  device='CPU'; Tparams\
+        \ in [DT_HALF]; Tindices in [DT_INT64]\n  device='CPU'; Tparams in [DT_HALF];\
+        \ Tindices in [DT_INT32]\n  device='CPU'; Tparams in [DT_INT32]; Tindices\
+        \ in [DT_INT64]\n  device='CPU'; Tparams in [DT_INT32]; Tindices in [DT_INT32]\n\
+        \  device='CPU'; Tparams in [DT_INT8]; Tindices in [DT_INT64]\n  device='CPU';\
+        \ Tparams in [DT_INT8]; Tindices in [DT_INT32]\n  device='CPU'; Tparams in\
+        \ [DT_UINT8]; Tindices in [DT_INT64]\n  device='CPU'; Tparams in [DT_UINT8];\
+        \ Tindices in [DT_INT32]\n  device='CPU'; Tparams in [DT_INT16]; Tindices\
+        \ in [DT_INT64]\n  device='CPU'; Tparams in [DT_INT16]; Tindices in [DT_INT32]\n\
+        \  device='CPU'; Tparams in [DT_UINT16]; Tindices in [DT_INT64]\n  device='CPU';\
+        \ Tparams in [DT_UINT16]; Tindices in [DT_INT32]\n  device='CPU'; Tparams\
+        \ in [DT_UINT32]; Tindices in [DT_INT64]\n  device='CPU'; Tparams in [DT_UINT32];\
+        \ Tindices in [DT_INT32]\n  device='CPU'; Tparams in [DT_INT64]; Tindices\
+        \ in [DT_INT64]\n  device='CPU'; Tparams in [DT_INT64]; Tindices in [DT_INT32]\n\
+        \  device='CPU'; Tparams in [DT_UINT64]; Tindices in [DT_INT64]\n  device='CPU';\
+        \ Tparams in [DT_UINT64]; Tindices in [DT_INT32]\n [Op:GatherNd] name: yRiT"
+      package: tensorflow
+    txt: (indices[1] < params.shape.rank)
+  - f1_score: 29.520295202952035
+    overall_score: 13.0
+    precision: 20.0
+    recall: 56.33802816901409
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        indices: tensor
+        name: str
+        params: tensor
+      msg: "Could not find device for node: {{node GatherNd}} = GatherNd[Tindices=DT_INT16,\
+        \ Tparams=DT_INT32]\nAll kernels registered for op GatherNd:\n  device='XLA_CPU_JIT';\
+        \ Tindices in [DT_INT32, DT_INT16, DT_INT64]; Tparams in [DT_FLOAT, DT_DOUBLE,\
+        \ DT_INT32, DT_UINT8, DT_INT16, 930109355527764061, DT_HALF, DT_UINT32, DT_UINT64,\
+        \ DT_FLOAT8_E5M2, DT_FLOAT8_E4M3FN]\n  device='XLA_GPU_JIT'; Tindices in [DT_INT32,\
+        \ DT_INT16, DT_INT64]; Tparams in [DT_FLOAT, DT_DOUBLE, DT_INT32, DT_UINT8,\
+        \ DT_INT16, 930109355527764061, DT_HALF, DT_UINT32, DT_UINT64, DT_FLOAT8_E5M2,\
+        \ DT_FLOAT8_E4M3FN]\n  device='GPU'; Tparams in [DT_COMPLEX128]; Tindices\
+        \ in [DT_INT64]\n  device='GPU'; Tparams in [DT_COMPLEX128]; Tindices in [DT_INT32]\n\
+        \  device='GPU'; Tparams in [DT_COMPLEX64]; Tindices in [DT_INT64]\n  device='GPU';\
+        \ Tparams in [DT_COMPLEX64]; Tindices in [DT_INT32]\n  device='GPU'; Tparams\
+        \ in [DT_DOUBLE]; Tindices in [DT_INT64]\n  device='GPU'; Tparams in [DT_DOUBLE];\
+        \ Tindices in [DT_INT32]\n  device='GPU'; Tparams in [DT_FLOAT]; Tindices\
+        \ in [DT_INT64]\n  device='GPU'; Tparams in [DT_FLOAT]; Tindices in [DT_INT32]\n\
+        \  device='GPU'; Tparams in [DT_BFLOAT16]; Tindices in [DT_INT64]\n  device='GPU';\
+        \ Tparams in [DT_BFLOAT16]; Tindices in [DT_INT32]\n  device='GPU'; Tparams\
+        \ in [DT_HALF]; Tindices in [DT_INT64]\n  device='GPU'; Tparams in [DT_HALF];\
+        \ Tindices in [DT_INT32]\n  device='GPU'; Tparams in [DT_INT64]; Tindices\
+        \ in [DT_INT64]\n  device='GPU'; Tparams in [DT_INT64]; Tindices in [DT_INT32]\n\
+        \  device='GPU'; Tparams in [DT_INT32]; Tindices in [DT_INT64]\n  device='GPU';\
+        \ Tparams in [DT_INT32]; Tindices in [DT_INT32]\n  device='CPU'; Tparams in\
+        \ [DT_QINT32]; Tindices in [DT_INT64]\n  device='CPU'; Tparams in [DT_QINT32];\
+        \ Tindices in [DT_INT32]\n  device='CPU'; Tparams in [DT_QUINT8]; Tindices\
+        \ in [DT_INT64]\n  device='CPU'; Tparams in [DT_QUINT8]; Tindices in [DT_INT32]\n\
+        \  device='CPU'; Tparams in [DT_QINT8]; Tindices in [DT_INT64]\n  device='CPU';\
+        \ Tparams in [DT_QINT8]; Tindices in [DT_INT32]\n  device='CPU'; Tparams in\
+        \ [DT_VARIANT]; Tindices in [DT_INT64]\n  device='CPU'; Tparams in [DT_VARIANT];\
+        \ Tindices in [DT_INT32]\n  device='CPU'; Tparams in [DT_RESOURCE]; Tindices\
+        \ in [DT_INT64]\n  device='CPU'; Tparams in [DT_RESOURCE]; Tindices in [DT_INT32]\n\
+        \  device='CPU'; Tparams in [DT_STRING]; Tindices in [DT_INT64]\n  device='CPU';\
+        \ Tparams in [DT_STRING]; Tindices in [DT_INT32]\n  device='CPU'; Tparams\
+        \ in [DT_BOOL]; Tindices in [DT_INT64]\n  device='CPU'; Tparams in [DT_BOOL];\
+        \ Tindices in [DT_INT32]\n  device='CPU'; Tparams in [DT_COMPLEX128]; Tindices\
+        \ in [DT_INT64]\n  device='CPU'; Tparams in [DT_COMPLEX128]; Tindices in [DT_INT32]\n\
+        \  device='CPU'; Tparams in [DT_COMPLEX64]; Tindices in [DT_INT64]\n  device='CPU';\
+        \ Tparams in [DT_COMPLEX64]; Tindices in [DT_INT32]\n  device='CPU'; Tparams\
+        \ in [DT_DOUBLE]; Tindices in [DT_INT64]\n  device='CPU'; Tparams in [DT_DOUBLE];\
+        \ Tindices in [DT_INT32]\n  device='CPU'; Tparams in [DT_FLOAT]; Tindices\
+        \ in [DT_INT64]\n  device='CPU'; Tparams in [DT_FLOAT]; Tindices in [DT_INT32]\n\
+        \  device='CPU'; Tparams in [DT_BFLOAT16]; Tindices in [DT_INT64]\n  device='CPU';\
+        \ Tparams in [DT_BFLOAT16]; Tindices in [DT_INT32]\n  device='CPU'; Tparams\
+        \ in [DT_HALF]; Tindices in [DT_INT64]\n  device='CPU'; Tparams in [DT_HALF];\
+        \ Tindices in [DT_INT32]\n  device='CPU'; Tparams in [DT_INT32]; Tindices\
+        \ in [DT_INT64]\n  device='CPU'; Tparams in [DT_INT32]; Tindices in [DT_INT32]\n\
+        \  device='CPU'; Tparams in [DT_INT8]; Tindices in [DT_INT64]\n  device='CPU';\
+        \ Tparams in [DT_INT8]; Tindices in [DT_INT32]\n  device='CPU'; Tparams in\
+        \ [DT_UINT8]; Tindices in [DT_INT64]\n  device='CPU'; Tparams in [DT_UINT8];\
+        \ Tindices in [DT_INT32]\n  device='CPU'; Tparams in [DT_INT16]; Tindices\
+        \ in [DT_INT64]\n  device='CPU'; Tparams in [DT_INT16]; Tindices in [DT_INT32]\n\
+        \  device='CPU'; Tparams in [DT_UINT16]; Tindices in [DT_INT64]\n  device='CPU';\
+        \ Tparams in [DT_UINT16]; Tindices in [DT_INT32]\n  device='CPU'; Tparams\
+        \ in [DT_UINT32]; Tindices in [DT_INT64]\n  device='CPU'; Tparams in [DT_UINT32];\
+        \ Tindices in [DT_INT32]\n  device='CPU'; Tparams in [DT_INT64]; Tindices\
+        \ in [DT_INT64]\n  device='CPU'; Tparams in [DT_INT64]; Tindices in [DT_INT32]\n\
+        \  device='CPU'; Tparams in [DT_UINT64]; Tindices in [DT_INT64]\n  device='CPU';\
+        \ Tparams in [DT_UINT64]; Tindices in [DT_INT32]\n [Op:GatherNd] name: mDQR"
+      package: tensorflow
+    txt: indices[0] == params.shape[0]
+  - f1_score: 28.57142857142857
+    overall_score: 12.75
+    precision: 19.5
+    recall: 53.42465753424658
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        indices: tensor
+        name: str
+        params: tensor
+      msg: '{{function_node __wrapped__GatherNd_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        params must be at least a vector [Op:GatherNd] name: HDDF'
+      package: tensorflow
+    txt: (len(indices) >= 1) and (len(params.shape) >= 1)
+  - f1_score: 86.81055155875299
+    overall_score: 100
+    precision: 100.0
+    recall: 76.69491525423729
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        indices: tensor
+        name: str
+        params: tensor
+      msg: '{{function_node __wrapped__GatherNd_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        indices[2,3,1,2,2,3] = [-966907, -907408, 989657, -940648] does not index
+        into param shape [4,9,9,9,9,9,9], node name: GatherNd [Op:GatherNd] name:
+        bSmr'
+      package: tensorflow
+    txt: (all(indices[i] >= 0 and indices[i] < params.shape[i] for i in range(len(indices))))
+      or (indices.rank == params.rank)
+  - f1_score: 65.40642722117202
+    overall_score: 44.75
+    precision: 86.5
+    recall: 52.58358662613981
+- - cot: 'The error is triggered because the innermost dimension length of the indices
+      tensor is greater than the rank of the params tensor. Let''s see what the args
+      were. The indices tensor had a shape of [5, 9, 3, 9, 9, 9, 9] and the params
+      tensor had a shape of [5, 8, 8, 8, 8, 8, 8]. To prevent this error, we need
+      to ensure that the length of the innermost dimension of the indices tensor is
+      less than or equal to the rank of the params tensor. Therefore, the constraint
+      to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        indices: tensor
+        name: str
+        params: tensor
+      msg: '{{function_node __wrapped__GatherNd_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        index innermost dimension length must be <= params rank; saw: 3 vs. 1 [Op:GatherNd]
+        name: AFqP'
+      package: tensorflow
+    txt: indices[-1] <= params.shape.rank
+  - f1_score: 74.22680412371133
+    overall_score: 48.0
+    precision: 90.0
+    recall: 63.1578947368421
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        indices: list[int]
+        name: str
+        params: int16,int32,int64
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in params.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        indices: list[int]
+        name: str
+        params: int16,int32,int64
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: params.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        indices: list[int]
+        name: str
+        params: int16,int32,int64
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in params.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        indices: list[int]
+        name: str
+        params: int16,int32,int64
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: params.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

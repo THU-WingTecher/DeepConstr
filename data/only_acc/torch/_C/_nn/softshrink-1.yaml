@@ -1,0 +1,122 @@
+args:
+  dtype:
+  - Tensor
+  - number
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - lambd
+  - out
+  required:
+  - true
+  - false
+  - true
+name: torch._C._nn.softshrink
+package: torch
+pass_rate: 92.0
+rules:
+- - cot: 'The error occurs because the value of the "lambd" parameter is less than
+      0. To prevent this error in the future, we need to ensure that the "lambd" value
+      is always greater than or equal to 0. The constraint for the "lambd" parameter
+      can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        lambd: int
+        out: tensor
+        self: tensor
+      msg: lambda must be greater or equal to 0, but found to be -3.
+      package: torch
+    txt: lambd >= 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        lambd: int
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
+  - f1_score: 74.44168734491315
+    overall_score: 100
+    precision: 100.0
+    recall: 59.28853754940712
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        lambd: int
+        out: tensor
+        self: tensor
+      msg: Found dtype Float but expected Int
+      package: torch
+    txt: dtype(out) == dtype(self)
+  - f1_score: 99.83361064891847
+    overall_score: 100
+    precision: 100.0
+    recall: 99.66777408637874
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        lambd: number
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        lambd: number
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        lambd: number
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        lambd: number
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

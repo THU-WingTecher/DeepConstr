@@ -2,17 +2,13 @@ args:
   dtype:
   - Tensor
   - str
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   name:
   - self
   - p
-  - out
   required:
-  - true
   - true
   - true
 name: torch._C._linalg.linalg_cond
@@ -26,7 +22,6 @@ rules:
     length: 1
     target:
       choosen_dtype:
-        out: tensor
         p: str
         self: tensor
       msg: 'linalg.cond(ord=GeWE): A must be batches of square matrices, but they
@@ -43,7 +38,6 @@ rules:
     length: 1
     target:
       choosen_dtype:
-        out: tensor
         p: str
         self: tensor
       msg: 'linalg.cond(ord=ejFR): The input tensor A must have at least 2 dimensions.'
@@ -57,7 +51,6 @@ rules:
     length: 2
     target:
       choosen_dtype:
-        out: tensor
         p: str
         self: tensor
       msg: 'linalg.cond got an invalid norm type: OTeF'
@@ -71,7 +64,6 @@ rules:
     length: 1
     target:
       choosen_dtype:
-        out: tensor
         p: str
         self: tensor
       msg: 'linalg.cond got an invalid norm type: inf'
@@ -85,21 +77,6 @@ rules:
     length: 1
     target:
       choosen_dtype:
-        out: tensor
-        p: str
-        self: tensor
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
-  - f1_score: 67.4933529273632
-    overall_score: 52.832214765100666
-    precision: 99.66442953020133
-    recall: 51.02332985924204
-- - cot: ''
-    length: 1
-    target:
-      choosen_dtype:
-        out: tensor
         p: str
         self: tensor
       msg: 'linalg.cond: Expected result to be safely castable from Float dtype, but
@@ -110,26 +87,10 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 91.43730886850153
-- - cot: ''
-    length: 1
-    target:
-      choosen_dtype:
-        out: tensor
-        p: str
-        self: tensor
-      msg: 'linalg.inv: Expected a floating point or complex tensor as input. Got
-        Int'
-      package: torch
-    txt: dtype(out) == dtype(self) == float
-  - f1_score: 99.66777408637873
-    overall_score: 100
-    precision: 100.0
-    recall: 99.33774834437087
 - - cot: synthesized
     length: 2
     target:
       choosen_dtype:
-        out: tensor
         p: str
         self: tensor
       msg: 'linalg.inv: Low precision dtypes not supported. Got Half'
@@ -139,3 +100,29 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 99.33554817275747
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        p: str
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        p: str
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

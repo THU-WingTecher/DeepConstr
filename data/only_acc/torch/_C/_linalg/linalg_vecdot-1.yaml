@@ -1,0 +1,167 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - int
+  - Tensor
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  name:
+  - x
+  - y
+  - dim
+  - out
+  required:
+  - true
+  - true
+  - false
+  - true
+name: torch._C._linalg.linalg_vecdot
+package: torch
+pass_rate: 98.96373056994818
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        out: tensor
+        x: tensor
+        y: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (7) at non-singleton
+        dimension 3
+      package: torch
+    txt: out.dim == x.dim and out.dim == y.dim and out.shape == x.shape and out.shape
+      == y.shape
+  - f1_score: 94.33962264150942
+    overall_score: 100
+    precision: 100.0
+    recall: 89.28571428571428
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        out: tensor
+        x: tensor
+        y: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 56)
+      package: torch
+    txt: ((dim >= -len(x.shape) and dim < len(x.shape)) or (dim >= -len(out.shape)))
+      and (-2 <= dim < 2)
+  - f1_score: 82.74428274428276
+    overall_score: 100
+    precision: 100.0
+    recall: 70.56737588652483
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        out: tensor
+        x: tensor
+        y: tensor
+      msg: 'linalg.vecdot: Expected out of dtypeFloat but found Int'
+      package: torch
+    txt: out.dtype == torch.float
+  - f1_score: 96.80589680589681
+    overall_score: 100
+    precision: 100.0
+    recall: 93.8095238095238
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        out: tensor
+        x: tensor
+        y: tensor
+      msg: 'linalg.vecdot: Expected a floating point or complex tensor as input. Got
+        Int'
+      package: torch
+    txt: dtype(out) == dtype(x)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        out: tensor
+        x: tensor
+        y: tensor
+      msg: 'linalg.vecdot: Expected x and y to have the same dtype, but found x of
+        type Float and y of type Int instead'
+      package: torch
+    txt: dtype(x) == dtype(y)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        out: Tensor
+        x: Tensor
+        y: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in x.shape) and all(i >= 0 for i in y.shape) and all(i >=
+      0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        out: Tensor
+        x: Tensor
+        y: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: x.rank <= 7 and y.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        out: Tensor
+        x: Tensor
+        y: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in x.shape) and all(i >= 0 for i in y.shape) and all(i >=
+      0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        out: Tensor
+        x: Tensor
+        y: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: x.rank <= 7 and y.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

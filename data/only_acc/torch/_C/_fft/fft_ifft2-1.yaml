@@ -4,10 +4,8 @@ args:
   - Optional[List[int]]
   - List[int]
   - Optional[str]
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   - false
   - false
@@ -16,33 +14,15 @@ args:
   - s
   - dim
   - norm
-  - out
   required:
   - true
   - false
   - false
   - false
-  - true
 name: torch._C._fft.fft_ifft2
 package: torch
 pass_rate: 100
 rules:
-- - cot: divided
-    length: 1
-    target:
-      choosen_dtype:
-        dim: list[int]
-        norm: None
-        out: tensor
-        s: None
-        self: tensor
-      msg: fftn expects a complex output tensor, but got Float
-      package: torch
-    txt: out.dtype == torch.complex64
-  - f1_score: 97.24473257698541
-    overall_score: 100
-    precision: 100.0
-    recall: 94.6372239747634
 - - cot: The error is due to an invalid normalization mode. The value provided for
       'norm' is "YQgZ", which is not a valid normalization mode. The valid normalization
       modes for the function are "forward", "backward", and "ortho". Therefore, the
@@ -52,7 +32,6 @@ rules:
       choosen_dtype:
         dim: list[int]
         norm: str
-        out: tensor
         s: None
         self: tensor
       msg: 'Invalid normalization mode: "YQgZ"'
@@ -62,22 +41,6 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 92.59259259259258
-- - cot: ''
-    length: 1
-    target:
-      choosen_dtype:
-        dim: list[int]
-        norm: str
-        out: tensor
-        s: None
-        self: tensor
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
-  - f1_score: 81.85538881309687
-    overall_score: 100
-    precision: 100.0
-    recall: 69.28406466512702
 - - cot: "Based on the given runtime information, the error message states that the\
       \ dimension specified is 75, but the tensor has no dimensions. To prevent this\
       \ error, we need to ensure that the dimension specified is valid and matches\
@@ -88,7 +51,6 @@ rules:
       choosen_dtype:
         dim: list[int]
         norm: None
-        out: tensor
         s: None
         self: tensor
       msg: Dimension specified as 75 but tensor has no dimensions
@@ -98,3 +60,33 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 93.16770186335404
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: List[int]
+        norm: Optional[str]
+        s: Optional[List[int]]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: List[int]
+        norm: Optional[str]
+        s: Optional[List[int]]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

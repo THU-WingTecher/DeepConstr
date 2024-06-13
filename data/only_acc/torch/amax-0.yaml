@@ -1,0 +1,98 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - keepdim
+  required:
+  - true
+  - false
+  - false
+name: torch.amax
+package: torch
+pass_rate: 69.5
+rules:
+- - cot: 'The error occurs because the dimension provided is out of the valid range.
+      The valid range for the dimension would be [-7, 6] for the given tensor with
+      shape [1, 1, 1, 1, 1, 1, 1]. To prevent this error in the future and generate
+      constraints that do not trigger it, we need to ensure that the "dim" value is
+      always within the valid range for the given tensor.
+
+
+      The constraint for the ''dim'' parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: list[int]
+        keepdim: bool
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 92)
+      package: torch
+    txt: all(d >= -len(self.shape) and d < len(self.shape) for d in dim)
+  - f1_score: 84.61538461538463
+    overall_score: 41.5
+    precision: 77.0
+    recall: 93.90243902439023
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: List[int]
+        keepdim: bool
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: List[int]
+        keepdim: bool
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: List[int]
+        keepdim: bool
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: List[int]
+        keepdim: bool
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

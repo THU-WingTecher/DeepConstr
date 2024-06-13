@@ -4,10 +4,8 @@ args:
   - Optional[List[int]]
   - bool
   - None
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   - false
   - false
@@ -16,13 +14,11 @@ args:
   - dim
   - keepdim
   - dtype
-  - out
   required:
   - true
   - false
   - false
   - false
-  - true
 name: torch.nanmean
 package: torch
 pass_rate: 100
@@ -34,24 +30,6 @@ rules:
         dim: None
         dtype: None
         keepdim: bool
-        out: tensor
-        self: tensor
-      msg: 'nanmean(): expected input to have floating point or complex dtype but
-        got Int'
-      package: torch
-    txt: out.dtype == float
-  - f1_score: 64.94845360824743
-    overall_score: 50.25
-    precision: 94.5
-    recall: 49.47643979057592
-- - cot: ''
-    length: 1
-    target:
-      choosen_dtype:
-        dim: None
-        dtype: None
-        keepdim: bool
-        out: tensor
         self: tensor
       msg: 'nanmean(): expected input to have floating point or complex dtype but
         got Int'
@@ -61,19 +39,33 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 51.02040816326531
-- - cot: ''
+- - cot: default
     length: 1
     target:
       choosen_dtype:
-        dim: None
+        dim: Optional[List[int]]
         dtype: None
         keepdim: bool
-        out: tensor
-        self: tensor
-      msg: Trying to resize storage that is not resizable
+        self: Tensor
+      msg: negative dimensions are not allowed
       package: torch
-    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
-  - f1_score: 67.34006734006734
-    overall_score: 100
-    precision: 100.0
-    recall: 50.76142131979695
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        dtype: None
+        keepdim: bool
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

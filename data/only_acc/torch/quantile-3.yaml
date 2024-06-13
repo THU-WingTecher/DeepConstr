@@ -1,0 +1,183 @@
+args:
+  dtype:
+  - Tensor
+  - float
+  - Optional[int]
+  - bool
+  - str
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - q
+  - dim
+  - keepdim
+  - interpolation
+  - out
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - true
+name: torch.quantile
+package: torch
+pass_rate: 20.0
+rules:
+- - cot: 'The error occurs because the value of the "q" parameter is outside the valid
+      range. The valid range for the "q" parameter is [0, 1]. To prevent this error
+      in the future and generate constraints that do not trigger it, we need to ensure
+      that the "q" value is always within the valid range. The constraint for the
+      "q" parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        interpolation: str
+        keepdim: bool
+        out: tensor
+        q: float
+        self: tensor
+      msg: quantile() q must be in the range [0, 1] but got 2
+      package: torch
+    txt: q >= 0 and q <= 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error is triggered because the interpolation method provided is not
+      one of the valid options. The valid options for the interpolation method are
+      ''linear'', ''lower'', ''higher'', ''midpoint'', or ''nearest''. However, the
+      provided interpolation method is ''SeqW'', which is not a valid option.
+
+
+      To prevent this error in the future and generate constraints that do not trigger
+      it, we need to ensure that the interpolation method is always one of the valid
+      options. The constraint for the ''interpolation'' parameter can be expressed
+      as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        interpolation: str
+        keepdim: bool
+        out: tensor
+        q: float
+        self: tensor
+      msg: quantile() interpolation must be one of linear, lower, higher, midpoint
+        or nearest, but got yOMi
+      package: torch
+    txt: interpolation in ['linear', 'lower', 'higher', 'midpoint', 'nearest']
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        interpolation: str
+        keepdim: bool
+        out: tensor
+        q: float
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-3, 2], but got -4)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 73.558648111332
+    overall_score: 49.25
+    precision: 92.5
+    recall: 61.05610561056105
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        interpolation: str
+        keepdim: bool
+        out: tensor
+        q: float
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 71.81328545780968
+    overall_score: 100
+    precision: 100.0
+    recall: 56.022408963585434
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[int]
+        interpolation: str
+        keepdim: bool
+        out: Tensor
+        q: float
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[int]
+        interpolation: str
+        keepdim: bool
+        out: Tensor
+        q: float
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[int]
+        interpolation: str
+        keepdim: bool
+        out: Tensor
+        q: float
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[int]
+        interpolation: str
+        keepdim: bool
+        out: Tensor
+        q: float
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

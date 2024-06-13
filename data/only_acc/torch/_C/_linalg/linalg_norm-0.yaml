@@ -1,0 +1,130 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[number]
+  - Optional[List[int]]
+  - bool
+  - None
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - ord
+  - dim
+  - keepdim
+  - dtype
+  required:
+  - true
+  - false
+  - false
+  - false
+  - false
+name: torch._C._linalg.linalg_norm
+package: torch
+pass_rate: 68.33333333333333
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        ord: int
+        self: tensor
+      msg: 'linalg.matrix_norm: Order 18 not supported.'
+      package: torch
+    txt: (ord != 3) and (ord != 0)
+  - f1_score: 78.23439878234399
+    overall_score: 44.333333333333336
+    precision: 85.66666666666667
+    recall: 71.98879551820728
+- - cot: 'The error occurs because the input tensor is 0D, but the ''ord'' argument
+      is specified without specifying ''dim''. When ''ord'' is specified without ''dim'',
+      the input tensor must be 1D or 2D. Therefore, the input tensor''s dimensionality
+      should be either 1 or 2. So, len(self.shape) should be in [1, 2], Op : in, and
+      Right : [1, 2].'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        ord: None
+        self: tensor
+      msg: 'linalg.norm: If dim is not specified but ord is, the input must be 1D
+        or 2D. Got 4D.'
+      package: torch
+    txt: len(self.shape) in [1, 2]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        dtype: None
+        keepdim: bool
+        ord: Optional[number]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        dtype: None
+        keepdim: bool
+        ord: Optional[number]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        dtype: None
+        keepdim: bool
+        ord: Optional[number]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        dtype: None
+        keepdim: bool
+        ord: Optional[number]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

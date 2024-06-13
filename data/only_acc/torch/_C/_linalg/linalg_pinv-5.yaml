@@ -3,22 +3,18 @@ args:
   - Tensor
   - float
   - bool
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   - false
   name:
   - self
   - rcond
   - hermitian
-  - out
   required:
   - true
   - true
   - false
-  - true
 name: torch._C._linalg.linalg_pinv
 package: torch
 pass_rate: 100
@@ -33,7 +29,6 @@ rules:
     target:
       choosen_dtype:
         hermitian: bool
-        out: tensor
         rcond: float
         self: tensor
       msg: 'linalg.eigh: A must be batches of square matrices, but they are 2 by 7
@@ -54,7 +49,6 @@ rules:
     target:
       choosen_dtype:
         hermitian: bool
-        out: tensor
         rcond: float
         self: tensor
       msg: 'linalg.pinv(Float{[]}): expected a tensor with 2 or more dimensions of
@@ -65,31 +59,11 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 100.0
-- - cot: "The error occurs when trying to resize the storage of the output tensor,\
-      \ which is not resizable. In this case, the output tensor is represented by\
-      \ the variable \"out\". To prevent the error, we need to ensure that the shape\
-      \ and rank of the output tensor match the shape and rank of the input tensor.\
-      \ \n\nConstraint:"
-    length: 1
-    target:
-      choosen_dtype:
-        hermitian: bool
-        out: tensor
-        rcond: float
-        self: tensor
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
-  - f1_score: 78.53403141361257
-    overall_score: 100
-    precision: 100.0
-    recall: 64.65517241379311
 - - cot: ''
     length: 1
     target:
       choosen_dtype:
         hermitian: bool
-        out: tensor
         rcond: float
         self: tensor
       msg: 'linalg.pinv: Expected result to be safely castable from ComplexDouble
@@ -107,7 +81,6 @@ rules:
     target:
       choosen_dtype:
         hermitian: bool
-        out: tensor
         rcond: float
         self: tensor
       msg: negative dimensions are not allowed
@@ -117,3 +90,31 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 69.17098445595855
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        rcond: float
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        hermitian: bool
+        rcond: float
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

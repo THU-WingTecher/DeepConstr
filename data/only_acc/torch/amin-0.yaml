@@ -1,0 +1,125 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - bool
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - keepdim
+  required:
+  - true
+  - false
+  - false
+name: torch.amin
+package: torch
+pass_rate: 86.0
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: list[int]
+        keepdim: bool
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 55)
+      package: torch
+    txt: (55 < len(self.shape)) and (dim[0] >= -len(self.shape) and dim[0] < len(self.shape)
+      and dim[1] >= -len(self.shape) and dim[1] < len(self.shape))
+  - f1_score: 80.8080808080808
+    overall_score: 100
+    precision: 100.0
+    recall: 67.79661016949152
+- - cot: 'The error is due to an empty "dim" argument. The function is expecting a
+      non-empty "dim" argument to specify the dimensions along which to compute the
+      minimum. To prevent this error, the "dim" argument should not be empty. So,
+      the condition to prevent the error would be:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: list[int]
+        keepdim: bool
+        self: tensor
+      msg: 'amin(): Expected reduction dim to be specified for input.numel() == 0.
+        Specify the reduction dim with the ''dim'' argument.'
+      package: torch
+    txt: len(dim) > 0
+  - f1_score: 66.99751861042182
+    overall_score: 100
+    precision: 100.0
+    recall: 50.373134328358205
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: list[int]
+        keepdim: bool
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 9)
+      package: torch
+    txt: (-2 >= -len(self.shape) and -2 < len(self.shape)) and (all(d >= -len(self.shape)
+      and d < len(self.shape) for d in dim))
+  - f1_score: 90.53708439897699
+    overall_score: 45.75
+    precision: 88.5
+    recall: 92.67015706806282
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: List[int]
+        keepdim: bool
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: List[int]
+        keepdim: bool
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: List[int]
+        keepdim: bool
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: List[int]
+        keepdim: bool
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -68,3 +68,37 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 93.75
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        dilation: List[int]
+        kernel_size: List[int]
+        padding: List[int]
+        self: Tensor
+        stride: List[int]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        ceil_mode: bool
+        dilation: List[int]
+        kernel_size: List[int]
+        padding: List[int]
+        self: Tensor
+        stride: List[int]
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

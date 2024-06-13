@@ -3,22 +3,18 @@ args:
   - Tensor
   - Tensor
   - bool
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   - false
   name:
   - self
   - rcond
   - hermitian
-  - out
   required:
   - true
   - true
   - false
-  - true
 name: torch._C._linalg.linalg_pinv
 package: torch
 pass_rate: 99.27797833935018
@@ -28,7 +24,6 @@ rules:
     target:
       choosen_dtype:
         hermitian: bool
-        out: tensor
         rcond: tensor
         self: tensor
       msg: The size of tensor a (9) must match the size of tensor b (8) at non-singleton
@@ -39,27 +34,11 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 72.46376811594205
-- - cot: ''
-    length: 1
-    target:
-      choosen_dtype:
-        hermitian: bool
-        out: tensor
-        rcond: tensor
-        self: tensor
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank))
-  - f1_score: 72.63922518159806
-    overall_score: 100
-    precision: 100.0
-    recall: 57.03422053231939
 - - cot: divided
     length: 1
     target:
       choosen_dtype:
         hermitian: bool
-        out: tensor
         rcond: tensor
         self: tensor
       msg: 'linalg.pinv(Float{[]}): expected a tensor with 2 or more dimensions of
@@ -70,31 +49,11 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 90.88145896656535
-- - cot: 'The error is due to the mismatch between the expected output dtype (ComplexDouble)
-      and the actual output dtype (Int). In order to prevent this error, the dtype
-      of the output tensor should be the same as or compatible with the dtype of the
-      input tensor. This can be expressed in the form of the following constraint:'
-    length: 1
-    target:
-      choosen_dtype:
-        hermitian: bool
-        out: tensor
-        rcond: tensor
-        self: tensor
-      msg: 'linalg.pinv: Expected result to be safely castable from ComplexDouble
-        dtype, but got result with dtype Int'
-      package: torch
-    txt: dtype(out)==dtype(self)
-  - f1_score: 100.0
-    overall_score: 100
-    precision: 100.0
-    recall: 100.0
 - - cot: divided
     length: 1
     target:
       choosen_dtype:
         hermitian: bool
-        out: tensor
         rcond: tensor
         self: tensor
       msg: 'linalg.pinv(ComplexDouble{[]}): expected a tensor with 2 or more dimensions
@@ -110,7 +69,6 @@ rules:
     target:
       choosen_dtype:
         hermitian: bool
-        out: tensor
         rcond: tensor
         self: tensor
       msg: 'linalg.eigh: A must be batches of square matrices, but they are 9 by 1
@@ -129,7 +87,6 @@ rules:
     target:
       choosen_dtype:
         hermitian: bool
-        out: tensor
         rcond: tensor
         self: tensor
       msg: negative dimensions are not allowed
@@ -139,3 +96,31 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 80.28673835125448
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        hermitian: bool
+        rcond: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in rcond.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        hermitian: bool
+        rcond: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and rcond.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

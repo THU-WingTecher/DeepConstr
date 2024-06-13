@@ -1,0 +1,109 @@
+args:
+  dtype:
+  - List[Tensor]
+  - str
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - tensors
+  - dim
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch.cat
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: str
+        out: tensor
+        tensors: list[tensor]
+      msg: expected a non-empty list of Tensors
+      package: torch
+    txt: len(tensors) != 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: The error is due to the value of 'dim' in the torch.cat function. The value
+      provided for 'dim' is 'AnIx', which is not found in the given tensors. Therefore,
+      the value of 'dim' should be corrected to a valid dimension index that exists
+      in all the tensors. Let's denote the valid dimension index as 'dim_index'.
+    length: 1
+    target:
+      choosen_dtype:
+        dim: str
+        out: tensor
+        tensors: list[tensor]
+      msg: Name 'AnIx' not found in Tensor[None, None, None, None, None, None, None,
+        None, None].
+      package: torch
+    txt: dim == dim_index
+  - f1_score: 13.953488372093023
+    overall_score: 10.5
+    precision: 15.0
+    recall: 13.043478260869565
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: str
+        out: Tensor
+        tensors: List[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: str
+        out: Tensor
+        tensors: List[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: str
+        out: Tensor
+        tensors: List[Tensor]
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: str
+        out: Tensor
+        tensors: List[Tensor]
+      msg: Too large tensor shape
+      package: torch
+    txt: out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

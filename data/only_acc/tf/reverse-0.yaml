@@ -1,0 +1,113 @@
+args:
+  dtype:
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  - str
+  - float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - axis
+  - name
+  - tensor
+  required:
+  - true
+  - false
+  - true
+name: tf.reverse
+package: tensorflow
+pass_rate: 70.66666666666667
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        axis: tensor
+        name: str
+        tensor: tensor
+      msg: "Value for attr 'Tidx' of float is not in the list of allowed values: int32,\
+        \ int64\n\t; NodeDef: {{node ReverseV2}}; Op<name=ReverseV2; signature=tensor:T,\
+        \ axis:Tidx -> output:T; attr=Tidx:type,default=DT_INT32,allowed=[DT_INT32,\
+        \ DT_INT64]; attr=T:type,allowed=[DT_UINT8, DT_INT8, DT_UINT16, DT_INT16,\
+        \ DT_INT32, 5951096766385938332, DT_FLOAT, DT_DOUBLE, DT_COMPLEX64, DT_COMPLEX128,\
+        \ DT_STRING]> [Op:ReverseV2] name: evje"
+      package: tensorflow
+    txt: dtype(axis) in ["int32", "int64"]
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: The error is due to an invalid argument for the axis parameter. The axis
+      parameter should be a 1-dimensional tensor, but it was provided as an empty
+      tensor (0-dimension). Therefore, the constraint to prevent this error is
+    length: 1
+    target:
+      choosen_dtype:
+        axis: tensor
+        name: str
+        tensor: tensor
+      msg: '{{function_node __wrapped__ReverseV2_device_/job:localhost/replica:0/task:0/device:CPU:0}}
+        ''dims'' must be 1-dimension, not 5 [Op:ReverseV2] name: DAXD'
+      package: tensorflow
+    txt: axis.dim == 1
+  - f1_score: 74.44168734491315
+    overall_score: 100
+    precision: 100.0
+    recall: 59.28853754940712
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        axis: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+        tensor: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in axis.shape) and all(i >= 0 for i in tensor.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        axis: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+        tensor: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: axis.rank <= 7 and tensor.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        axis: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+        tensor: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in axis.shape) and all(i >= 0 for i in tensor.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        axis: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+        name: str
+        tensor: float16,float32,float64,uint8,complex64,complex128,int8,int16,int32,int64,bool
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: axis.rank <= 7 and tensor.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

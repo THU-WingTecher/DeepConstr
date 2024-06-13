@@ -2,17 +2,13 @@ args:
   dtype:
   - Tensor
   - Tensor
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   name:
   - self
   - other
-  - out
   required:
-  - true
   - true
   - true
 name: torch.bitwise_or
@@ -24,7 +20,6 @@ rules:
     target:
       choosen_dtype:
         other: tensor
-        out: tensor
         self: tensor
       msg: The size of tensor a (0) must match the size of tensor b (9) at non-singleton
         dimension 6
@@ -34,20 +29,6 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 60.00000000000001
-- - cot: divided
-    length: 1
-    target:
-      choosen_dtype:
-        other: tensor
-        out: tensor
-        self: tensor
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: all(out.shape[i]==self.shape[i] for i in range(self.rank))
-  - f1_score: 52.67727930535457
-    overall_score: 33.333333333333336
-    precision: 60.66666666666667
-    recall: 46.54731457800512
 - - cot: 'The given runtime information states that the function torch.bitwise_or
       is not implemented for the data type ''Float''. Therefore, to prevent the error,
       the data type of the input tensors should be changed to one of the allowed types:
@@ -56,7 +37,6 @@ rules:
     target:
       choosen_dtype:
         other: tensor
-        out: tensor
         self: tensor
       msg: '"bitwise_or_cpu" not implemented for ''Float'''
       package: torch
@@ -67,3 +47,29 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 68.73563218390805
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        other: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in other.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        other: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and other.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

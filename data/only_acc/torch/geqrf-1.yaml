@@ -1,0 +1,80 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - a
+  - tau
+  required:
+  - true
+  - true
+  - true
+error: <class 'TypeError'>
+name: torch.geqrf
+package: torch
+pass_rate: 0
+rules:
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        a: Tensor
+        self: Tensor
+        tau: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in a.shape) and all(i
+      >= 0 for i in tau.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        a: Tensor
+        self: Tensor
+        tau: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and a.rank <= 7 and tau.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        a: Tensor
+        self: Tensor
+        tau: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in a.shape) and all(i
+      >= 0 for i in tau.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        a: Tensor
+        self: Tensor
+        tau: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and a.rank <= 7 and tau.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

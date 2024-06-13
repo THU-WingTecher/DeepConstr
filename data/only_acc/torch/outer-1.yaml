@@ -2,17 +2,13 @@ args:
   dtype:
   - Tensor
   - Tensor
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   name:
   - self
   - vec2
-  - out
   required:
-  - true
   - true
   - true
 name: torch.outer
@@ -23,7 +19,6 @@ rules:
     length: 2
     target:
       choosen_dtype:
-        out: tensor
         self: tensor
         vec2: tensor
       msg: 'outer: Expected 1-D argument self, but got 2-D'
@@ -37,21 +32,6 @@ rules:
     length: 2
     target:
       choosen_dtype:
-        out: tensor
-        self: tensor
-        vec2: tensor
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: (all(out.shape[i]==self.shape[i] for i in range(out.rank))) or (out.rank==2)
-  - f1_score: 79.57559681697612
-    overall_score: 39.0
-    precision: 75.0
-    recall: 84.7457627118644
-- - cot: synthesized
-    length: 2
-    target:
-      choosen_dtype:
-        out: tensor
         self: tensor
         vec2: tensor
       msg: Trying to resize storage that is not resizable
@@ -66,22 +46,6 @@ rules:
     length: 3
     target:
       choosen_dtype:
-        out: tensor
-        self: tensor
-        vec2: tensor
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: ((out.rank==self.rank and all(out.shape[i]==self.shape[i] for i in range(out.rank)))
-      or (out.shape[0] == self.shape[0] and out.shape[1] == vec2.shape[0])) or (out.rank==2)
-  - f1_score: 31.62719633307869
-    overall_score: 11.344827586206897
-    precision: 20.689655172413794
-    recall: 67.09886547811993
-- - cot: synthesized
-    length: 3
-    target:
-      choosen_dtype:
-        out: tensor
         self: tensor
         vec2: tensor
       msg: Trying to resize storage that is not resizable
@@ -93,25 +57,10 @@ rules:
     overall_score: 22.839080459770116
     precision: 43.67816091954023
     recall: 74.43682664054847
-- - cot: ''
-    length: 1
-    target:
-      choosen_dtype:
-        out: tensor
-        self: tensor
-        vec2: tensor
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: out.rank==2 and all(out.shape[i]==self.shape[i]*vec2.shape[i] for i in range(out.rank))
-  - f1_score: 81.46077232220863
-    overall_score: 52.21875
-    precision: 98.4375
-    recall: 69.47839046199702
 - - cot: synthesized
     length: 3
     target:
       choosen_dtype:
-        out: tensor
         self: tensor
         vec2: tensor
       msg: result type Float can't be cast to the desired output type Int
@@ -121,3 +70,29 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 64.28571428571428
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        self: Tensor
+        vec2: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in vec2.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        self: Tensor
+        vec2: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and vec2.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

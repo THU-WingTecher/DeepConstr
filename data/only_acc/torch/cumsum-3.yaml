@@ -3,22 +3,18 @@ args:
   - Tensor
   - int
   - None
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   - false
   name:
   - self
   - dim
   - dtype
-  - out
   required:
   - true
   - true
   - false
-  - true
 name: torch.cumsum
 package: torch
 pass_rate: 32.666666666666664
@@ -29,7 +25,6 @@ rules:
       choosen_dtype:
         dim: int
         dtype: None
-        out: tensor
         self: tensor
       msg: Dimension out of range (expected to be in range of [-5, 4], but got 6)
       package: torch
@@ -38,21 +33,31 @@ rules:
     overall_score: 49.666666666666664
     precision: 93.33333333333333
     recall: 68.96551724137932
-- - cot: '`out` tensor shape should be matched with the operation results. In this
-      operation, the result shape is `self.shape`. Therefore, `out.shape` should be
-      equal to `self.shape` and all dimensions of `out.shape` should be equal to the
-      corresponding dimensions of `self.shape`.'
+- - cot: default
     length: 1
     target:
       choosen_dtype:
         dim: int
         dtype: None
-        out: tensor
-        self: tensor
-      msg: Trying to resize storage that is not resizable
+        self: Tensor
+      msg: negative dimensions are not allowed
       package: torch
-    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
-  - f1_score: 74.34944237918216
-    overall_score: 100
-    precision: 100.0
-    recall: 59.171597633136095
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        dtype: None
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

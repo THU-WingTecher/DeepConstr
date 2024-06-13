@@ -4,10 +4,8 @@ args:
   - Optional[float]
   - Optional[float]
   - bool
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   - false
   - false
@@ -16,13 +14,11 @@ args:
   - atol
   - rtol
   - hermitian
-  - out
   required:
   - true
   - false
   - false
   - false
-  - true
 name: torch._C._linalg.linalg_pinv
 package: torch
 pass_rate: 100
@@ -36,7 +32,6 @@ rules:
       choosen_dtype:
         atol: None
         hermitian: bool
-        out: tensor
         rtol: None
         self: tensor
       msg: 'linalg.eigh: A must be batches of square matrices, but they are 1 by 7
@@ -47,32 +42,12 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 50.847457627118644
-- - cot: synthesized
-    length: 4
-    target:
-      choosen_dtype:
-        atol: float
-        hermitian: bool
-        out: tensor
-        rtol: float
-        self: tensor
-      msg: 'linalg.pinv(Float{[]}): expected a tensor with 2 or more dimensions of
-        float, double, cfloat or cdouble types'
-      package: torch
-    txt: (((self.rank >= 2) and (dtype(out) in [float, double, cfloat, cdouble]))
-      or (out.dim() >= 2 and out.dtype in [float, double, cfloat, cdouble])) and (self.dtype
-      in [torch.float32, torch.float64, torch.complex64, torch.complex128])
-  - f1_score: 98.36065573770492
-    overall_score: 100
-    precision: 100.0
-    recall: 96.77419354838709
 - - cot: ''
     length: 1
     target:
       choosen_dtype:
         atol: float
         hermitian: bool
-        out: tensor
         rtol: None
         self: tensor
       msg: 'linalg.pinv: Expected result to be safely castable from ComplexDouble
@@ -83,22 +58,6 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 97.0873786407767
-- - cot: ''
-    length: 1
-    target:
-      choosen_dtype:
-        atol: float
-        hermitian: bool
-        out: tensor
-        rtol: None
-        self: tensor
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
-  - f1_score: 73.71007371007371
-    overall_score: 100
-    precision: 100.0
-    recall: 58.36575875486382
 - - cot: 'Based on the given runtime information, the error occurs because the tensor
       dimensions provided are negative, which is not allowed. Therefore, the constraint
       to prevent this error is:'
@@ -107,7 +66,6 @@ rules:
       choosen_dtype:
         atol: float
         hermitian: bool
-        out: tensor
         rtol: float
         self: tensor
       msg: negative dimensions are not allowed
@@ -117,3 +75,33 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 70.30812324929971
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        atol: Optional[float]
+        hermitian: bool
+        rtol: Optional[float]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        atol: Optional[float]
+        hermitian: bool
+        rtol: Optional[float]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

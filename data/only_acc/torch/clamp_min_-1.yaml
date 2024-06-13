@@ -1,0 +1,85 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  name:
+  - self
+  - min
+  required:
+  - true
+  - true
+name: torch.clamp_min_
+package: torch
+pass_rate: 53.0
+rules:
+- - cot: 'Error is triggered because the size of tensor a (6) does not match the size
+      of tensor b (8) at non-singleton dimension 2. The constraint to prevent this
+      error can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        min: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (6) at non-singleton
+        dimension 3
+      package: torch
+    txt: self.shape[2] == min.shape[2]
+  - f1_score: 77.51937984496125
+    overall_score: 100
+    precision: 100.0
+    recall: 63.291139240506325
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        min: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in min.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        min: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and min.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        min: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in min.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        min: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and min.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

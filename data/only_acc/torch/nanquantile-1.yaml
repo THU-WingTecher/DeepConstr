@@ -1,0 +1,168 @@
+args:
+  dtype:
+  - Tensor
+  - float
+  - Optional[int]
+  - bool
+  - str
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - q
+  - dim
+  - keepdim
+  - interpolation
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+name: torch.nanquantile
+package: torch
+pass_rate: 71.0
+rules:
+- - cot: 'The error occurs because the value of q is outside the valid range. The
+      function torch.nanquantile expects the value of q to be between 0 and 1, but
+      in this case, it was given a value of 5. To prevent this error, we can add a
+      constraint to ensure that the value of q is within the valid range. The constraint
+      for the ''q'' parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        interpolation: str
+        keepdim: bool
+        q: float
+        self: tensor
+      msg: quantile() q must be in the range [0, 1] but got 3
+      package: torch
+    txt: q >= 0 and q <= 1
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error occurs because the interpolation value provided is not one of
+      the expected options. Let''s see what the args were. The interpolation value
+      is ''OdIx'' which is not one of the options ''linear'', ''lower'', ''higher'',
+      ''midpoint'', or ''nearest''. To prevent this error in the future and generate
+      constraints that do not trigger it, we need to ensure that the interpolation
+      value is always one of the expected options. The constraint for the ''interpolation''
+      parameter can be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        interpolation: str
+        keepdim: bool
+        q: float
+        self: tensor
+      msg: quantile() interpolation must be one of linear, lower, higher, midpoint
+        or nearest, but got QMbt
+      package: torch
+    txt: interpolation in ['linear', 'lower', 'higher', 'midpoint', 'nearest']
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        interpolation: str
+        keepdim: bool
+        q: float
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 9)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 76.163610719323
+    overall_score: 48.0
+    precision: 90.0
+    recall: 66.01466992665037
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        interpolation: str
+        keepdim: bool
+        q: float
+        self: tensor
+      msg: Dimension out of range (expected to be in range of [-7, 6], but got 9)
+      package: torch
+    txt: dim < len(self.shape)
+  - f1_score: 64.04199475065616
+    overall_score: 43.666666666666664
+    precision: 81.33333333333333
+    recall: 52.81385281385281
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: Optional[int]
+        interpolation: str
+        keepdim: bool
+        q: float
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: Optional[int]
+        interpolation: str
+        keepdim: bool
+        q: float
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: Optional[int]
+        interpolation: str
+        keepdim: bool
+        q: float
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim: Optional[int]
+        interpolation: str
+        keepdim: bool
+        q: float
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

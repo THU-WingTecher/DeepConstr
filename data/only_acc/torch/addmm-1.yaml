@@ -1,0 +1,162 @@
+args:
+  dtype:
+  - Tensor
+  - Tensor
+  - Tensor
+  - number
+  - number
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - mat1
+  - mat2
+  - beta
+  - alpha
+  - out
+  required:
+  - true
+  - true
+  - true
+  - false
+  - false
+  - true
+name: torch.addmm
+package: torch
+pass_rate: 31.770833333333332
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat1: tensor
+        mat2: tensor
+        out: tensor
+        self: tensor
+      msg: mat1 must be a matrix, got 6-D tensor
+      package: torch
+    txt: (mat1.dim == 2) and (mat2.dim == 2)
+  - f1_score: 94.7867298578199
+    overall_score: 100
+    precision: 100.0
+    recall: 90.09009009009009
+- - cot: 'The error is caused because the shapes of mat1 and mat2 are inconsistent.
+      The shapes of mat1 and mat2 should be such that they can be multiplied. Let''s
+      see what the shapes of mat1 and mat2 were. It seems mat1 has a shape of [9,
+      4] and mat2 has a shape of [8, 5]. In order to prevent the error, the number
+      of columns in mat1 (4) should be equal to the number of rows in mat2 (8). Therefore,
+      the condition to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat1: tensor
+        mat2: tensor
+        out: tensor
+        self: tensor
+      msg: mat1 and mat2 shapes cannot be multiplied (3x3 and 7x2)
+      package: torch
+    txt: mat1.shape[1] == mat2.shape[0]
+  - f1_score: 94.96402877697842
+    overall_score: 100
+    precision: 100.0
+    recall: 90.41095890410959
+- - cot: the number of sizes provided (2) must be greater or equal to the number of
+      dimensions in the tensor (4)
+    length: 1
+    target:
+      choosen_dtype:
+        alpha: int
+        beta: int
+        mat1: tensor
+        mat2: tensor
+        out: tensor
+        self: tensor
+      msg: 'expand(torch.FloatTensor{[3, 9, 5, 8, 9, 7, 9]}, size=[6, 8]): the number
+        of sizes provided (2) must be greater or equal to the number of dimensions
+        in the tensor (7)'
+      package: torch
+    txt: out.shape[0] == self.shape[0]
+  - f1_score: 72.69303201506591
+    overall_score: 100
+    precision: 100.0
+    recall: 57.100591715976336
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        alpha: number
+        beta: number
+        mat1: Tensor
+        mat2: Tensor
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in mat1.shape) and all(i
+      >= 0 for i in mat2.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        alpha: number
+        beta: number
+        mat1: Tensor
+        mat2: Tensor
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and mat1.rank <= 7 and mat2.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        alpha: number
+        beta: number
+        mat1: Tensor
+        mat2: Tensor
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in mat1.shape) and all(i
+      >= 0 for i in mat2.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        alpha: number
+        beta: number
+        mat1: Tensor
+        mat2: Tensor
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and mat1.rank <= 7 and mat2.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

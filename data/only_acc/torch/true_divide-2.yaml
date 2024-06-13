@@ -2,17 +2,13 @@ args:
   dtype:
   - Tensor
   - Tensor
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   name:
   - self
   - other
-  - out
   required:
-  - true
   - true
   - true
 name: torch.true_divide
@@ -26,7 +22,6 @@ rules:
     target:
       choosen_dtype:
         other: tensor
-        out: tensor
         self: tensor
       msg: The size of tensor a (5) must match the size of tensor b (9) at non-singleton
         dimension 6
@@ -36,32 +31,11 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 58.99705014749264
-- - cot: 'The error message indicates that we are trying to resize the ''out'' tensor,
-      which is not resizable. To prevent this error, we need to ensure that the shape
-      and rank of the ''out'' tensor match the shape and rank of the operation result
-      (in this case, the ''self'' tensor).
-
-
-      Therefore, the condition to prevent the error is:'
-    length: 1
-    target:
-      choosen_dtype:
-        other: tensor
-        out: tensor
-        self: tensor
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
-  - f1_score: 36.4063417498532
-    overall_score: 18.57788944723618
-    precision: 31.155778894472363
-    recall: 43.78531073446328
 - - cot: synthesized
     length: 3
     target:
       choosen_dtype:
         other: tensor
-        out: tensor
         self: tensor
       msg: Trying to resize storage that is not resizable
       package: torch
@@ -71,17 +45,29 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 51.02040816326531
-- - cot: synthesized
+- - cot: default
     length: 2
     target:
       choosen_dtype:
-        other: tensor
-        out: tensor
-        self: tensor
-      msg: result type Float can't be cast to the desired output type Int
+        other: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
       package: torch
-    txt: ((dtype(other) == dtype(out))) and (dtype(other) == float32)
-  - f1_score: 86.95652173913044
-    overall_score: 100
-    precision: 100.0
-    recall: 76.92307692307692
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in other.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        other: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and other.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

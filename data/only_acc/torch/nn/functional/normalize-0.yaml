@@ -1,0 +1,109 @@
+args:
+  dtype:
+  - Tensor
+  - float
+  - int
+  - float
+  - Optional[Tensor]
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - input
+  - p
+  - dim
+  - eps
+  - out
+  required:
+  - true
+  - false
+  - false
+  - false
+  - false
+name: torch.nn.functional.normalize
+package: torch
+pass_rate: 17.333333333333336
+rules:
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        eps: float
+        input: tensor
+        out: tensor
+        p: float
+      msg: Dimension out of range (expected to be in range of [-2, 1], but got 2)
+      package: torch
+    txt: (dim >= -3 and dim < 2) and (-4 >= -len(input.shape) and -4 < len(input.shape))
+  - f1_score: 74.34944237918216
+    overall_score: 100
+    precision: 100.0
+    recall: 59.171597633136095
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        eps: float
+        input: Tensor
+        out: Optional[Tensor]
+        p: float
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        eps: float
+        input: Tensor
+        out: Optional[Tensor]
+        p: float
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        eps: float
+        input: Tensor
+        out: Optional[Tensor]
+        p: float
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in input.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: int
+        eps: float
+        input: Tensor
+        out: Optional[Tensor]
+        p: float
+      msg: Too large tensor shape
+      package: torch
+    txt: input.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

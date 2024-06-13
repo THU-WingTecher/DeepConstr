@@ -1,0 +1,197 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[number]
+  - Optional[List[int]]
+  - bool
+  - None
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - ord
+  - dim
+  - keepdim
+  - dtype
+  - out
+  required:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - true
+name: torch._C._linalg.linalg_norm
+package: torch
+pass_rate: 91.30434782608695
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        ord: int
+        out: tensor
+        self: tensor
+      msg: 'linalg.norm: If dim is not specified but ord is, the input must be 1D
+        or 2D. Got 0D.'
+      package: torch
+    txt: (len(self.shape) in [1, 2])
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'Based on the given runtime information, the error occurred because the function
+      `torch._C._linalg.linalg_norm` expects a floating point or complex tensor as
+      input, but it received an integer tensor.
+
+
+      To prevent this error, the input tensor `self` should be of floating point or
+      complex data type.
+
+
+      The constraint that prevents the error can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        ord: int
+        out: tensor
+        self: tensor
+      msg: 'linalg.vector_norm: Expected a floating point or complex tensor as input.
+        Got Int'
+      package: torch
+    txt: dtype(self) in [torch.float32, torch.float64, torch.complex64, torch.complex128]
+  - f1_score: 99.50248756218905
+    overall_score: 100
+    precision: 100.0
+    recall: 99.00990099009901
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        ord: int
+        out: tensor
+        self: tensor
+      msg: 'linalg.norm expected out tensor dtype Double but got: Float'
+      package: torch
+    txt: dtype(out) == dtype(self)
+  - f1_score: 74.74332648870636
+    overall_score: 33.333333333333336
+    precision: 60.66666666666667
+    recall: 97.32620320855614
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        ord: int
+        out: tensor
+        self: tensor
+      msg: 'linalg.norm expected out tensor dtype Double but got: ComplexDouble'
+      package: torch
+    txt: dtype(out) == torch.float
+  - f1_score: 83.44923504867873
+    overall_score: 100
+    precision: 100.0
+    recall: 71.59904534606206
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: None
+        dtype: None
+        keepdim: bool
+        ord: int
+        out: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: all(out.shape[i] == self.shape[i] for i in range(out.rank))
+  - f1_score: 67.72009029345372
+    overall_score: 100
+    precision: 100.0
+    recall: 51.19453924914675
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        dtype: None
+        keepdim: bool
+        ord: Optional[number]
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        dtype: None
+        keepdim: bool
+        ord: Optional[number]
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        dtype: None
+        keepdim: bool
+        ord: Optional[number]
+        out: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        dim: Optional[List[int]]
+        dtype: None
+        keepdim: bool
+        ord: Optional[number]
+        out: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

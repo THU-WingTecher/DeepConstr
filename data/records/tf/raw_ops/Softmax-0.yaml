@@ -49,3 +49,29 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        logits: float16,bfloat16,float32,float64
+        name: str
+      msg: negative dimensions are not allowed
+      package: tensorflow
+    txt: all(i >= 0 for i in logits.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        logits: float16,bfloat16,float32,float64
+        name: str
+      msg: Too large tensor shape
+      package: tensorflow
+    txt: logits.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

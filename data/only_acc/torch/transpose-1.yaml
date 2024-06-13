@@ -1,0 +1,121 @@
+args:
+  dtype:
+  - Tensor
+  - str
+  - str
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - dim0
+  - dim1
+  required:
+  - true
+  - true
+  - true
+name: torch.transpose
+package: torch
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim0: str
+        dim1: str
+        self: tensor
+      msg: Name 'pcGx' not found in Tensor[None, None].
+      package: torch
+    txt: dim0 != dim1
+  - f1_score: 66.66666666666667
+    overall_score: 100
+    precision: 100.0
+    recall: 50.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim0: str
+        dim1: str
+        self: tensor
+      msg: 'Invalid name: a valid identifier contains only digits, alphabetical characters,
+        and/or underscore and starts with a non-digit. got: ''''.'
+      package: torch
+    txt: dim1 != ''
+  - f1_score: 63.48122866894198
+    overall_score: 26.25
+    precision: 46.5
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim0: str
+        dim1: str
+        self: tensor
+      msg: 'Invalid name: a valid identifier contains only digits, alphabetical characters,
+        and/or underscore and starts with a non-digit. got: ''''.'
+      package: torch
+    txt: dim0 != ''
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim0: str
+        dim1: str
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim0: str
+        dim1: str
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim0: str
+        dim1: str
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        dim0: str
+        dim1: str
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

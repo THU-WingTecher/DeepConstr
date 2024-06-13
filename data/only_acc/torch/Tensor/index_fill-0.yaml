@@ -1,0 +1,156 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - Tensor
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  name:
+  - self
+  - dim
+  - index
+  - value
+  required:
+  - true
+  - true
+  - true
+  - true
+name: torch.Tensor.index_fill
+package: torch
+pass_rate: 2.0
+rules:
+- - cot: 'Error is triggered because the value tensor has 4 dimensions, while index_fill
+      only supports a 0-dimensional value tensor. Let''s see what the args were. It
+      seems the value tensor is the problem. So the number of dimensions of the value
+      tensor should be corrected, which is value.dim(). Therefore, the constraint
+      to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        self: tensor
+        value: tensor
+      msg: index_fill_ only supports a 0-dimensional value tensor, but got tensor
+        with 6 dimension(s).
+      package: torch
+    txt: value.dim() == 0
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        self: tensor
+        value: tensor
+      msg: 'index_fill_(): Expected dtype int64 for index.'
+      package: torch
+    txt: index.dtype == int64
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        self: tensor
+        value: tensor
+      msg: Dimension out of range (expected to be in range of [-4, 3], but got 76)
+      package: torch
+    txt: dim >= -len(self.shape)
+  - f1_score: 76.08382888931517
+    overall_score: 50.98850574712644
+    precision: 95.97701149425288
+    recall: 63.02137125605783
+- - cot: 'The error is triggered because the ''index'' argument is not a vector or
+      scalar. Let''s see what the args were. ''index'' was the tensor of int64 type.
+      To be a vector or scalar, it should have only one dimension. However, ''index''
+      had 2 dimensions. Therefore, the left side of the condition should be ''index.dim()
+      == 1''. So the constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        dim: int
+        index: tensor
+        self: tensor
+        value: tensor
+      msg: Index has to be a vector/scalar
+      package: torch
+    txt: index.dim() == 1
+  - f1_score: 95.23809523809523
+    overall_score: 100
+    precision: 100.0
+    recall: 90.9090909090909
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        index: Tensor
+        self: Tensor
+        value: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in index.shape) and
+      all(i >= 0 for i in value.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        index: Tensor
+        self: Tensor
+        value: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and index.rank <= 7 and value.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        index: Tensor
+        self: Tensor
+        value: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in index.shape) and
+      all(i >= 0 for i in value.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 3
+    target:
+      choosen_dtype:
+        dim: int
+        index: Tensor
+        self: Tensor
+        value: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and index.rank <= 7 and value.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

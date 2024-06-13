@@ -2,17 +2,13 @@ args:
   dtype:
   - Tensor
   - number
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   name:
   - self
   - other
-  - out
   required:
-  - true
   - true
   - true
 name: torch.bitwise_xor
@@ -28,7 +24,6 @@ rules:
     target:
       choosen_dtype:
         other: int
-        out: tensor
         self: tensor
       msg: '"bitwise_xor_cpu" not implemented for ''Float'''
       package: torch
@@ -37,17 +32,29 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 50.67567567567568
-- - cot: ''
+- - cot: default
     length: 1
     target:
       choosen_dtype:
-        other: int
-        out: tensor
-        self: tensor
-      msg: Trying to resize storage that is not resizable
+        other: number
+        self: Tensor
+      msg: negative dimensions are not allowed
       package: torch
-    txt: out.rank == self.rank and all(out.shape[i] == self.shape[i] for i in range(out.rank))
-  - f1_score: 74.53416149068322
-    overall_score: 100
-    precision: 100.0
-    recall: 59.4059405940594
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        other: number
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

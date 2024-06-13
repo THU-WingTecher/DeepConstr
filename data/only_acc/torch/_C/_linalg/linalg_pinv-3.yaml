@@ -1,0 +1,243 @@
+args:
+  dtype:
+  - Tensor
+  - Optional[Tensor]
+  - Optional[Tensor]
+  - bool
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - atol
+  - rtol
+  - hermitian
+  - out
+  required:
+  - true
+  - false
+  - false
+  - false
+  - true
+name: torch._C._linalg.linalg_pinv
+package: torch
+pass_rate: 67.12328767123287
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        atol: tensor
+        hermitian: bool
+        out: tensor
+        rtol: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (8) at non-singleton
+        dimension 6
+      package: torch
+    txt: self.shape[i] == 1
+  - f1_score: 65.58516801853997
+    overall_score: 50.16666666666667
+    precision: 94.33333333333334
+    recall: 50.2664298401421
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        atol: tensor
+        hermitian: bool
+        out: tensor
+        rtol: None
+        self: tensor
+      msg: 'linalg.pinv(Float{[]}): expected a tensor with 2 or more dimensions of
+        float, double, cfloat or cdouble types'
+      package: torch
+    txt: (dtype(self) in ["float", "double", "cfloat", "cdouble"]) and (self.dim()
+      >= 2)
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        atol: tensor
+        hermitian: bool
+        out: tensor
+        rtol: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (5) at non-singleton
+        dimension 6
+      package: torch
+    txt: (all(self.shape[i] == rtol.shape[i] or self.shape[i] == 1 or rtol.shape[i]
+      == 1 for i in range(-1, -min(len(self.shape), len(rtol.shape))-1, -1))) and
+      (atol.dim == rtol.dim)
+  - f1_score: 90.88145896656535
+    overall_score: 100
+    precision: 100.0
+    recall: 83.28690807799443
+- - cot: 'The error is due to the fact that the function is expecting batches of square
+      matrices, but is receiving a 5 by 9 matrix. In other words, the number of rows
+      and columns in the matrix should be the same. Therefore, the constraint should
+      be:'
+    length: 1
+    target:
+      choosen_dtype:
+        atol: None
+        hermitian: bool
+        out: tensor
+        rtol: None
+        self: tensor
+      msg: 'linalg.eigh: A must be batches of square matrices, but they are 5 by 2
+        matrices'
+      package: torch
+    txt: self.shape[-1] == self.shape[-2]
+  - f1_score: 65.37585421412301
+    overall_score: 50.833333333333336
+    precision: 95.66666666666667
+    recall: 49.653979238754324
+- - cot: synthesized
+    length: 5
+    target:
+      choosen_dtype:
+        atol: tensor
+        hermitian: bool
+        out: tensor
+        rtol: None
+        self: tensor
+      msg: The size of tensor a (2) must match the size of tensor b (7) at non-singleton
+        dimension 5
+      package: torch
+    txt: ((((atol.shape[6] == out.shape[6]) or (atol.dim == self.dim)) or (self.shape[3]
+      == out.shape[3])) or (atol.shape == self.shape)) or (atol.shape[i] == 1)
+  - f1_score: 68.88633754305395
+    overall_score: 100
+    precision: 100.0
+    recall: 52.53940455341506
+- - cot: synthesized
+    length: 2
+    target:
+      choosen_dtype:
+        atol: tensor
+        hermitian: bool
+        out: tensor
+        rtol: tensor
+        self: tensor
+      msg: Trying to resize storage that is not resizable
+      package: torch
+    txt: (out.shape == self.shape) and (out.rank == self.rank)
+  - f1_score: 75.12562814070351
+    overall_score: 100
+    precision: 100.0
+    recall: 60.16096579476861
+- - cot: 'Error is triggered because size of tensors at non-singleton dimension 6
+      doesn''t match. What the args were? The two tensors matching problem at non-singleton
+      dimension looks like broadcasting request. Broadcasting in tensor operations
+      requires that the trailing dimensions of the tensors are either 1 or the same.
+      We start from the last dimension because broadcasting aligns dimensions from
+      the end. Therefore, we can revise the constraints as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        atol: None
+        hermitian: bool
+        out: tensor
+        rtol: tensor
+        self: tensor
+      msg: The size of tensor a (9) must match the size of tensor b (8) at non-singleton
+        dimension 5
+      package: torch
+    txt: all(self.shape[i] == rtol.shape[i] or self.shape[i] == 1 or rtol.shape[i]
+      == 1 for i in range(-1, -min(len(self.shape), len(rtol.shape))-1, -1))
+  - f1_score: 90.28213166144202
+    overall_score: 100
+    precision: 100.0
+    recall: 82.28571428571429
+- - cot: ''
+    length: 1
+    target:
+      choosen_dtype:
+        atol: None
+        hermitian: bool
+        out: tensor
+        rtol: tensor
+        self: tensor
+      msg: 'linalg.pinv: Expected result to be safely castable from ComplexFloat dtype,
+        but got result with dtype Float'
+      package: torch
+    txt: dtype(self)==dtype(out)
+  - f1_score: 74.93734335839599
+    overall_score: 100
+    precision: 100.0
+    recall: 59.919839679358724
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        atol: Optional[Tensor]
+        hermitian: bool
+        out: Tensor
+        rtol: Optional[Tensor]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in atol.shape) and all(i
+      >= 0 for i in rtol.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        atol: Optional[Tensor]
+        hermitian: bool
+        out: Tensor
+        rtol: Optional[Tensor]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and atol.rank <= 7 and rtol.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        atol: Optional[Tensor]
+        hermitian: bool
+        out: Tensor
+        rtol: Optional[Tensor]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in atol.shape) and all(i
+      >= 0 for i in rtol.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 4
+    target:
+      choosen_dtype:
+        atol: Optional[Tensor]
+        hermitian: bool
+        out: Tensor
+        rtol: Optional[Tensor]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and atol.rank <= 7 and rtol.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

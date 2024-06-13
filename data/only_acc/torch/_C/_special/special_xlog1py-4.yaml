@@ -2,47 +2,24 @@ args:
   dtype:
   - number
   - Tensor
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   name:
   - self
   - other
-  - out
   required:
-  - true
   - true
   - true
 name: torch._C._special.special_xlog1py
 package: torch
 pass_rate: 100
 rules:
-- - cot: 'The error is triggered because we are trying to resize storage that is not
-      resizable. In this case, the ''out'' tensor. Therefore, the ''out'' tensor shape
-      should match with the operation results. In this operation, the result shape
-      is ''other'' tensor shape. Therefore, left : out.shape, out.rank op : == right
-      : other.shape, other.rank'
-    length: 1
-    target:
-      choosen_dtype:
-        other: tensor
-        out: tensor
-        self: int
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: out.rank==other.rank and all(out.shape[i]==other.shape[i] for i in range(other.rank))
-  - f1_score: 83.50730688935283
-    overall_score: 100
-    precision: 100.0
-    recall: 71.68458781362007
 - - cot: synthesized
     length: 2
     target:
       choosen_dtype:
         other: tensor
-        out: tensor
         self: int
       msg: result type Float can't be cast to the desired output type Int
       package: torch
@@ -51,3 +28,29 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 80.64516129032259
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        other: Tensor
+        self: number
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in other.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        other: Tensor
+        self: number
+      msg: Too large tensor shape
+      package: torch
+    txt: other.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

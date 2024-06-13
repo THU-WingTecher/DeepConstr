@@ -1,0 +1,126 @@
+args:
+  dtype:
+  - Tensor
+  - int
+  - None
+  - None
+  - Optional[Device]
+  - Optional[bool]
+  - None
+  is_pos:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - self
+  - high
+  - dtype
+  - layout
+  - device
+  - pin_memory
+  - memory_format
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+name: torch.randint_like
+package: torch
+pass_rate: 71.5
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        dtype: None
+        high: int
+        layout: None
+        memory_format: None
+        pin_memory: bool
+        self: tensor
+      msg: Need to provide pin_memory allocator to use pin memory.
+      package: torch
+    txt: pin_memory == False
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        device: Optional[Device]
+        dtype: None
+        high: int
+        layout: None
+        memory_format: None
+        pin_memory: Optional[bool]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        device: Optional[Device]
+        dtype: None
+        high: int
+        layout: None
+        memory_format: None
+        pin_memory: Optional[bool]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        device: Optional[Device]
+        dtype: None
+        high: int
+        layout: None
+        memory_format: None
+        pin_memory: Optional[bool]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        device: Optional[Device]
+        dtype: None
+        high: int
+        layout: None
+        memory_format: None
+        pin_memory: Optional[bool]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

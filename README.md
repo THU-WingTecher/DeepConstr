@@ -39,6 +39,8 @@ source ./env_std.sh
 ./fuzz.sh 5 deepconstr     tensorflow xla 4h tf.abs,tf.add,tf.acos # test tf.abs, tf.add, tf.acos
 ```
 
+
+
 # Extract Constraints
 
 We strongly recommend using a virtual environment via Anaconda to ensure a clean and controlled setup. For detailed instructions, please refer to the [Anaconda documentation](https://docs.anaconda.com/free/anaconda/install/windows/).
@@ -112,6 +114,13 @@ model.type=tensorflow hydra.verbose=train train.parallel=1 train.num_eval=300 tr
 train.retrain=false train.target='["tf.add","tf.abs"]'
 ```
 
+##### For NumPy( new added )
+```bash
+PYTHONPATH=/artifact/:/artifact/nnsmith/:/artifact/deepconstr/:$PYTHONPATH \
+python deepconstr/train/run.py train.record_path=data/records/tf backend.type=numpy \
+model.type=numpy hydra.verbose=train train.parallel=1 train.num_eval=300 train.pass_rate=95 hydra.verbose=['train'] \
+train.retrain=false train.target='["numpy.add"]'
+```
 # Reproduce Experiments
 
 ### Comparative Experiment (RQ1) 

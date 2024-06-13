@@ -2,17 +2,13 @@ args:
   dtype:
   - Tensor
   - Tensor
-  - Tensor
   is_pos:
   - true
-  - false
   - false
   name:
   - self
   - other
-  - out
   required:
-  - true
   - true
   - true
 name: torch.copysign
@@ -24,7 +20,6 @@ rules:
     target:
       choosen_dtype:
         other: tensor
-        out: tensor
         self: tensor
       msg: The size of tensor a (2) must match the size of tensor b (6) at non-singleton
         dimension 6
@@ -34,27 +29,11 @@ rules:
     overall_score: 100
     precision: 100.0
     recall: 60.120240480961925
-- - cot: synthesized
-    length: 2
-    target:
-      choosen_dtype:
-        other: tensor
-        out: tensor
-        self: tensor
-      msg: Trying to resize storage that is not resizable
-      package: torch
-    txt: (out.shape == other.shape) and (out.rank==other.rank and all(out.shape[i]==other.shape[i]
-      for i in range(out.rank)))
-  - f1_score: 63.602941176470594
-    overall_score: 30.333333333333332
-    precision: 57.666666666666664
-    recall: 70.90163934426229
 - - cot: divided
     length: 1
     target:
       choosen_dtype:
         other: tensor
-        out: tensor
         self: tensor
       msg: Trying to resize storage that is not resizable
       package: torch
@@ -68,7 +47,6 @@ rules:
     target:
       choosen_dtype:
         other: tensor
-        out: tensor
         self: tensor
       msg: result type Float can't be cast to the desired output type Int
       package: torch
@@ -77,3 +55,29 @@ rules:
     overall_score: 51.833333333333336
     precision: 97.66666666666667
     recall: 50.25728987993139
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        other: Tensor
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in other.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        other: Tensor
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and other.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

@@ -1,0 +1,105 @@
+args:
+  dtype:
+  - Tensor
+  - List[int]
+  - Tensor
+  is_pos:
+  - true
+  - false
+  - false
+  name:
+  - self
+  - output_size
+  - out
+  required:
+  - true
+  - true
+  - true
+name: torch._C._nn.adaptive_avg_pool2d
+package: torch
+pass_rate: 45.91836734693878
+rules:
+- - cot: output_size must be a list of 2 integers.
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        output_size: list[int]
+        self: tensor
+      msg: 'adaptive_avg_pool2d: output_size must be 2'
+      package: torch
+    txt: len(output_size) == 2
+  - f1_score: 98.46827133479212
+    overall_score: 100
+    precision: 100.0
+    recall: 96.98275862068965
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        out: tensor
+        output_size: list[int]
+        self: tensor
+      msg: 'adaptive_avg_pool2d(): Expected 3D or 4D tensor, but got []'
+      package: torch
+    txt: self.ndims() == 4
+  - f1_score: 93.44432882414152
+    overall_score: 100
+    precision: 100.0
+    recall: 87.6953125
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        out: Tensor
+        output_size: List[int]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        out: Tensor
+        output_size: List[int]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        out: Tensor
+        output_size: List[int]
+        self: Tensor
+      msg: negative dimensions are not allowed
+      package: torch
+    txt: all(i >= 0 for i in self.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        out: Tensor
+        output_size: List[int]
+        self: Tensor
+      msg: Too large tensor shape
+      package: torch
+    txt: self.rank <= 7 and out.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

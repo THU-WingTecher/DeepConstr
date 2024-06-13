@@ -2,7 +2,6 @@ args:
   dtype:
   - tensor
   - None
-  - tensor
   - bool
   - None
   is_pos:
@@ -10,11 +9,9 @@ args:
   - false
   - false
   - false
-  - false
   name:
   - a
   - axis
-  - out
   - keepdims
   - where
   required:
@@ -22,25 +19,37 @@ args:
   - false
   - false
   - false
-  - false
 name: numpy.all
 package: null
 pass_rate: 100
 rules:
-- - cot: synthesized
-    length: 2
+- - cot: default
+    length: 1
     target:
       choosen_dtype:
         a: tensor
         axis: None
         keepdims: bool
-        out: tensor
         where: None
-      msg: 'output parameter for reduction operation logical_and has the wrong number
-        of dimensions: Found 7 but expected 0'
-      package: numpy
-    txt: (out.ndim() == 0) and (out.dim == a.dim)
-  - f1_score: 81.30081300813009
-    overall_score: 100
-    precision: 100.0
-    recall: 68.4931506849315
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in a.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
+- - cot: default
+    length: 1
+    target:
+      choosen_dtype:
+        a: tensor
+        axis: None
+        keepdims: bool
+        where: None
+      msg: Too large tensor shape
+      package: null
+    txt: a.rank <= 7
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1
