@@ -68,6 +68,8 @@ def get_deepconstr_stats(data_list):
                 deepconstr_stats["processed"] += 1
             else :
                 deepconstr_stats["LLM"] += 1
+            if rule[0]["cot"] == "default" :
+                continue
             deepconstr_len.append(rule[0].get("length", 1))
             deepconstr_f1.append(rule[1]["f1_score"])
             deepconstr_prec.append(rule[1]["precision"])
@@ -136,7 +138,7 @@ def viz_f1(deepconstr_recall : List[float], deepconstr_prec, deepdeepconstr_s_re
 
 if __name__ == "__main__" : 
     record_dir = "/artifact/data/"
-    frameworks = ["torch", "tf"]
+    frameworks = ["torch", "tf", "numpy"]
     kinds = ["records", "only_acc"]
 
     for framework in frameworks:

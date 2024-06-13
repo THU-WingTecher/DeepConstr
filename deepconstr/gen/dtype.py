@@ -9,18 +9,22 @@ from deepconstr.train.inferencer import Inferencer
 from typing import *
 from deepconstr.gen.record import save_record, transform_record_for_saving
 from deepconstr.train.prompter import torch_type_hint_infer_prompts, numpy_type_hint_infer_prompts, tf_type_hint_infer_prompts
-
+from deepconstr.grammar import MAX_ARR_LEN
 
 DEFAULT_RULES = [
     {'cot' : 'default',
     'length': lambda arg_names : len(arg_names),
     'txt' : lambda arg_names : ' and '.join([f'all(i >= 0 for i in {name}.shape)' for name in arg_names]),
     'msg' : 'negative dimensions are not allowed'},
+    {'cot' : 'default',
+    'length': lambda arg_names : len(arg_names),
+    'txt' : lambda arg_names : ' and '.join([f'{name}.rank <= {MAX_ARR_LEN}' for name in arg_names]),
+    'msg' : 'Too large tensor shape'},
 ]
 
 def get_tensor_args(record) :
     from deepconstr.grammar.dtype import AbsTensor
-    return [name for name, dtype in zip(record['args']['name'], record['args']['dtype']) if isinstance(dtype, AbsTensor)]
+    return [name for name, dtype in zip(record['args']['name'], record['args']['dtype_obj']) if isinstance(dtype[0], AbsTensor)]
 
 def gen_default_rule(arg_names, record, rule) :
 
@@ -29,19 +33,23 @@ def gen_default_rule(arg_names, record, rule) :
         'length' : rule['length'](arg_names),
         'txt' : rule['txt'](arg_names),
         'target' : {
-            'choosen_dtype' : {name : dtype.to_str() for name, dtype in zip(record['args']['name'], record['args']['dtype']) if dtype is not None},
+            'choosen_dtype' : {name : dtype for name, dtype in zip(record['args']['name'], record['args']['dtype']) if dtype is not None},
             'msg' : rule['msg'],
             'package' : record['package']
         }
     }
 
 def add_default_rules(record) : 
+    if "rules" not in record.keys() :
+        record['rules'] = []
     for rule in DEFAULT_RULES :
+        for ori_rule in record['rules'] :
+            if ori_rule[0]['target']['msg'] == rule['msg'] :
+                continue
         arg_names = get_tensor_args(record)
         constr = gen_default_rule(arg_names, record, rule)
         scores = {"f1_score" : -1, "overall_score" : -1, "precision" : -1, "recall" : -1}
-        if "rules" not in record.keys() :
-            record['rules'] = []
+
         record['rules'].append([constr, scores]) 
     
     return record

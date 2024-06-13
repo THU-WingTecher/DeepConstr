@@ -48,7 +48,7 @@ if __name__ == "__main__" :
         record_path = "/artifact/data/records"
     else :
         record_path = sys.argv[1]
-    for lib in ["tf", "torch"] :
+    for lib in ["tf", "torch", "numpy"] :
         trained = get_trained_list(record_path+f"/{lib}", lib)
         print(f"Number of trained {lib} apis: ", len(trained))
         print(f"Saving trained {lib} apis to json file")
