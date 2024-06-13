@@ -1,0 +1,17 @@
+args:
+  dtype:
+  - tensor
+  - None
+  is_pos:
+  - true
+  - false
+  name:
+  - x
+  - out
+  required:
+  - true
+  - false
+name: numpy.isfinite
+package: null
+pass_rate: 16.333333333333332
+rules: []

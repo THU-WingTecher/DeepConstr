@@ -127,7 +127,6 @@ def check_trainable(record, executor, ntimes=30, *args, **kwargs) :
             del record["error"]
         return True, record
 
-
 @hydra.main(version_base=None, config_path="../config", config_name="main")
 def main(cfg: DictConfig):
     executor = load_executor(cfg["model"]["type"], "cpu", cfg["train"]["parallel"])

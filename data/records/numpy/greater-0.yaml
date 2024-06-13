@@ -1,0 +1,57 @@
+args:
+  dtype:
+  - tensor
+  - tensor
+  - None
+  is_pos:
+  - true
+  - true
+  - false
+  name:
+  - x1
+  - x2
+  - out
+  required:
+  - true
+  - true
+  - false
+name: numpy.greater
+package: null
+pass_rate: 3.3444816053511706
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        out: None
+        x1: tensor
+        x2: tensor
+      msg: The truth value of an array with more than one element is ambiguous. Use
+        a.any() or a.all()
+      package: numpy
+    txt: len(x2) > 0
+  - f1_score: 72.7697760349898
+    overall_score: 48.3848880174949
+    precision: 65.2027027027027
+    recall: 82.3238355229483
+- - cot: 'operands could not be broadcast together with shapes (4,6,6,6,6,6,6) (1,2,7,2,1,2,7).
+      What the args were? The shapes of ''x1'' and ''x2'' are not broadcastable. So,
+      the constraint should be that for each dimension starting from the last, the
+      size of the dimension in ''x1'' should be equal to the size of the dimension
+      in ''x2'' or one of them should be 1. We start from the last dimension because
+      broadcasting aligns dimensions from the end. Therefore, we can revise the constraints
+      as follows:'
+    length: 1
+    target:
+      choosen_dtype:
+        out: None
+        x1: tensor
+        x2: tensor
+      msg: 'operands could not be broadcast together with shapes (4,6,6,6,6,6,6) (1,2,7,2,1,2,7) '
+      package: numpy
+    txt: all(x1.shape[i] == x2.shape[i] or x1.shape[i] == 1 or x2.shape[i] == 1 for
+      i in range(-1, -min(len(x1.shape), len(x2.shape))-1, -1))
+  - f1_score: 94.31335699867753
+    overall_score: 59.15667849933877
+    precision: 92.8082191780822
+    recall: 95.86811942832884

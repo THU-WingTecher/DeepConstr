@@ -145,6 +145,10 @@ python experiments/evaluate_apis.py \
 exp.save_dir=pt_gen mgen.record_path=$(pwd)/data/records/torch/ mgen.pass_rate=0.05 model.type=torch backend.type=torchjit fuzz.time=15m exp.parallel=16 mgen.noise=0.8 exp.targets=/artifact/data/torch_dc_neuri.json exp.baselines=['deepconstr', 'neuri', 'symbolic-cinit', 'deepconstr_2']
 ```
 
+for testing acetest
+```bash
+PYTHONPATH=/artifact/:/artifact/nnsmith/:/artifact/deepconstr/:$PYTHONPATH python experiments/evaluate_apis.py exp.save_dir= mgen.max_nodes=1 mgen.pass_rate=0.05 model.type=torch backend.type=torchjit fuzz.time=5m exp.parallel=1 mgen.noise=0.8 exp.targets=/artifact/data/tf_dc_acetest.json exp.baselines=['acetest']
+```
 ##### for TensorFlow 
 
 <!-- First, change the environment to the conda environment created for this project.

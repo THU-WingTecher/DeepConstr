@@ -438,7 +438,6 @@ class SMTFuncs:
         Custom "all" function for Z3 expressions.
         Returns z3.And of all elements in the input array.
         """
-        assert all(isinstance(expr, z3.ExprRef) for expr in input_array), "All elements must be Z3 expressions"
         return z3.And(input_array)
 
     @staticmethod
@@ -464,7 +463,6 @@ class SMTFuncs:
         Custom "any" function for Z3 expressions.
         Returns z3.Or of any element in the input array.
         """
-        assert all(isinstance(expr, z3.ExprRef) for expr in input_array), "All elements must be Z3 expressions"
         return z3.Or(input_array)
 
 

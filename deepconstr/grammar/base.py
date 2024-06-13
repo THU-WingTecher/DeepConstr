@@ -52,9 +52,10 @@ def gen_default_constr(
                 )
         elif isinstance(args_types[arg_name], AbsIter) :
             if isinstance(args_types[arg_name].get_arg_dtype(), AbsTensor) :
-                arr_wrapper = args_types[arg_name].z3()(arg_name)
-                for idx in range(len(args_lengths[arg_name])) :
-                    rules.append(pos_max_constraints(arr_wrapper.get_arg_attr(idx, "shape"), args_lengths[arg_name][idx], include_zero))
+                # arr_wrapper = args_types[arg_name].z3()(arg_name)
+                # for idx in range(len(args_lengths[arg_name])) :
+                #     rules.append(pos_max_constraints(arr_wrapper.get_arg_attr(idx, "shape"), args_lengths[arg_name][idx], include_zero))
+                pass
             elif args_types[arg_name].get_arg_dtype() in [AbsDType.int, AbsDType.float] :
                 arr_wrapper = args_types[arg_name].z3()(arg_name)
                 rules.append(min_max_constraints(arr_wrapper.value, args_lengths[arg_name]))

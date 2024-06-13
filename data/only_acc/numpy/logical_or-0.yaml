@@ -1,0 +1,73 @@
+args:
+  dtype:
+  - tensor
+  - tensor
+  - None
+  is_pos:
+  - true
+  - true
+  - false
+  name:
+  - x1
+  - x2
+  - out
+  required:
+  - true
+  - true
+  - false
+name: numpy.logical_or
+package: null
+pass_rate: 0.33333333333333337
+rules:
+- - cot: 'The constraint to prevent the error is:'
+    length: 1
+    target:
+      choosen_dtype:
+        out: None
+        x1: tensor
+        x2: tensor
+      msg: 'operands could not be broadcast together with shapes (4,6,7,6,6,6,6) (1,2,3,3,5,1,7) '
+      package: numpy
+    txt: all(x1.shape[i] == x2.shape[i] or x1.shape[i] == 1 or x2.shape[i] == 1 for
+      i in range(-1, -min(len(x1.shape), len(x2.shape))-1, -1))
+  - f1_score: 94.26605504587155
+    overall_score: 48.666666666666664
+    precision: 91.33333333333333
+    recall: 97.39336492890995
+- - cot: 'The error is due to the fact that numpy.logical_or function cannot handle
+      arrays with more than one element. Both x1 and x2 are arrays according to the
+      error message. Therefore, we should ensure that both x1 and x2 arrays have only
+      one element. Hence, the condition that prevents the error is that the size of
+      both x1 and x2 should be 1. Op:== and right : 1.'
+    length: 1
+    target:
+      choosen_dtype:
+        out: None
+        x1: tensor
+        x2: tensor
+      msg: The truth value of an array with more than one element is ambiguous. Use
+        a.any() or a.all()
+      package: numpy
+    txt: len(x2) == 1
+  - f1_score: 24.371373307543525
+    overall_score: 13.5
+    precision: 21.0
+    recall: 29.03225806451613
+- - cot: 'The error is triggered because the input arrays `x1` and `x2` have more
+      than one element and the result of the logical or operation is ambiguous. To
+      prevent this error, we need to make sure that both `x1` and `x2` have only one
+      element. Therefore, the constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        out: None
+        x1: tensor
+        x2: tensor
+      msg: The truth value of an array with more than one element is ambiguous. Use
+        a.any() or a.all()
+      package: numpy
+    txt: len(x1) == 1 and len(x2) == 1
+  - f1_score: 87.0563674321503
+    overall_score: 49.33333333333333
+    precision: 92.66666666666666
+    recall: 82.08661417322834

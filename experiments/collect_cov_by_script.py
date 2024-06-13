@@ -2,6 +2,7 @@
 Given the directory containing all tests. We replay the test execution and record coverage in LLVM profraw format.
 The intermediate tests can be saved using fuzz.save_test={{DIR_TO_SAVE}}.
 """
+import re
 import json
 import multiprocessing as mp
 import os
@@ -132,13 +133,29 @@ def batched(iterable, n=1):
     for ndx in range(0, l, n):
         yield iterable[ndx : min(ndx + n, l)]
 
+def change_to_legal(strings, file_name) :
+    input_name = file_name.replace(".py", "p")
+    input_keys = pickle.load(open('/artifact/exp/doctor/torch/torch.acos/9f8c1249b47e5caf2bc52976ac1ccab57c3f363f.p', 'rb')).keys()
+    input_keys_strs = ", ".join(input_keys)
+    strings = strings.replace("forward(self, data)", f"forward(self, {input_keys_strs})").replace("eag = model(data)", "")
+    pattern = r'(return\s+torch\.\w+\(\*\*data\))'
+
+    # Function to replace '**data' with '**kwargs' in a string
+    def replace_data_with_kwargs(text):
+        return re.sub(pattern, lambda m: m.group(0).replace('**data', input_keys_strs), text)
+    updated_text =replace_data_with_kwargs(strings)
+    return updated_text
+
 def merge_files(file_paths, save_dir) : 
     temp_script_path = os.path.join(save_dir, generate_random_string(10)+".py")
     with open(temp_script_path, 'w') as file:
         for file_path in file_paths:
             with open(file_path, 'r') as f:
-                file.write(f.read())
+                file.write("try : \n")
+                file.write(change_to_legal("\n".join(["   "+content for content in f.read().split("\n")]), os.path.basename(file_path)))
                 file.write("\n")
+                file.write("except : \n")
+                file.write("    pass\n")
     return temp_script_path
 
 def script_exec(
@@ -221,7 +238,7 @@ if __name__ == "__main__":
 
     time2path = {}
     for i, dir in enumerate(os.listdir(args.root)):
-        if dir != "coverage" and not dir.endswith('json') and not dir.endswith('csv'):
+        if dir != "coverage" and not dir.endswith('json') and not dir.endswith('csv') and not dir.endswith('p') and not dir.endswith('.e') and not dir.startswith('gen_order') and not dir.endswith('record') and not dir.endswith('config'):
             # time2path[float(dir)] = os.path.join(args.root, dir)
             time2path[float(i)] = os.path.join(args.root, dir)
     time_stamps = sorted(time2path.keys())

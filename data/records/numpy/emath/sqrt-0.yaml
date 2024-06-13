@@ -1,0 +1,29 @@
+args:
+  dtype:
+  - tensor
+  is_pos:
+  - false
+  name:
+  - x
+  required:
+  - true
+name: numpy.emath.sqrt
+package: null
+pass_rate: 19.666666666666664
+rules:
+- - cot: Based on the given runtime information, the error occurs because the variable
+      'x' is an array with more than one element, and the truth value of the array
+      is ambiguous. To prevent this error, the constraint should ensure that 'x' is
+      a single element array.
+    length: 1
+    target:
+      choosen_dtype:
+        x: tensor
+      msg: The truth value of an array with more than one element is ambiguous. Use
+        a.any() or a.all()
+      package: numpy
+    txt: len(x) == 1
+  - f1_score: 13.081909251620507
+    overall_score: 9.166666666666668
+    precision: 12.333333333333334
+    recall: 13.927227101631118

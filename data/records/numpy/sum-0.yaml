@@ -1,0 +1,33 @@
+args:
+  dtype:
+  - tensor
+  - None
+  - tensor
+  - bool
+  - None
+  - None
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - a
+  - axis
+  - out
+  - keepdims
+  - initial
+  - where
+  required:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+name: numpy.sum
+package: null
+pass_rate: 0.0
+rules: []

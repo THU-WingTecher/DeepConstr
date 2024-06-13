@@ -1,0 +1,109 @@
+args:
+  dtype:
+  - tensor
+  - tensor
+  - None
+  - tensor
+  - str
+  - str
+  - None
+  - bool
+  is_pos:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - x1
+  - x2
+  - out
+  - where
+  - casting
+  - order
+  - dtype
+  - subok
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+name: numpy.bitwise_and
+package: null
+pass_rate: 0.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        casting: str
+        dtype: None
+        order: str
+        out: None
+        subok: bool
+        where: tensor
+        x1: tensor
+        x2: tensor
+      msg: Cannot cast array data from dtype('float32') to dtype('bool') according
+        to the rule 'safe'
+      package: numpy
+    txt: dtype(where) == 'bool'
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error message states that the `casting` argument must be one of ''no'',
+      ''equiv'', ''safe'', ''same_kind'', or ''unsafe'', but the actual value passed
+      was ''FVwz''. To prevent this error, the `casting` value should be restricted
+      to the allowed values. So the constraint can be formulated as:'
+    length: 1
+    target:
+      choosen_dtype:
+        casting: str
+        dtype: None
+        order: str
+        out: None
+        subok: bool
+        where: tensor
+        x1: tensor
+        x2: tensor
+      msg: casting must be one of 'no', 'equiv', 'safe', 'same_kind', or 'unsafe'
+        (got 'FVwz')
+      package: numpy
+    txt: casting in ['no', 'equiv', 'safe', 'same_kind', 'unsafe']
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0
+- - cot: 'The error occurs because the "order" parameter is set to ''aNwl'', which
+      is not one of the valid options (''C'', ''F'', ''A'', or ''K'').
+
+
+      To prevent this error, we need to ensure that the "order" parameter is always
+      set to one of the valid options. The constraint for the "order" parameter can
+      be expressed as:'
+    length: 1
+    target:
+      choosen_dtype:
+        casting: str
+        dtype: None
+        order: str
+        out: None
+        subok: bool
+        where: tensor
+        x1: tensor
+        x2: tensor
+      msg: order must be one of 'C', 'F', 'A', or 'K' (got 'aNwl')
+      package: numpy
+    txt: order in ['C', 'F', 'A', 'K']
+  - f1_score: 100.0
+    overall_score: 100
+    precision: 100.0
+    recall: 100.0

@@ -5,7 +5,6 @@ from typing import Any, Dict, List, Tuple, Type
 
 import yaml
 from deepconstr.logger import CONVERT_LOG
-# from neuri.specloader.rule import gen_rule
 BLACKLIST = [
 
 ]
@@ -183,3 +182,17 @@ def make_record_finder(
     )
 
     return records
+
+def count_sub_constraints() :
+    pass
+
+
+
+if __name__ == "__main__" :
+    import sys 
+    record_path = "/artifact/data/records/torch/nn/functional/adaptive_max_pool2d_with_indices-0.yaml" 
+    if len(sys.argv) > 1 :
+        record_path = sys.argv[1]
+    
+    record = process_record(record_path)
+    add_default_rules(record)

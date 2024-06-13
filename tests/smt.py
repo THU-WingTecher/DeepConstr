@@ -1,7 +1,7 @@
 
 import hydra
 from omegaconf import DictConfig
-from nnsmith.abstract.dtype import AbsDType, AbsTensor
+from deepconstr.grammar.dtype import AbsDType, AbsTensor
 from nnsmith.logger import SMT_LOG
 from deepconstr.gen.noise import gen_noise
 from deepconstr.gen.solve import gen_val
@@ -41,7 +41,7 @@ def test_smt(names, dtypes, constrs =[], noise_prob=1.0):
     SMT_LOG.info(f"values : {values}")
     return values
 
-@hydra.main(version_base=None, config_path="../neuri/config/", config_name="main")
+@hydra.main(version_base=None, config_path="../nnsmith/config/", config_name="main")
 def main(cfg: DictConfig):
     dtypes = [
         AbsDType.int,

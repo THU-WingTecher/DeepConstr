@@ -210,27 +210,31 @@ def move_files_to_directory(source_dirs, target_dir):
                 shutil.move(file_path, target_dir)
                 print(f"Moved {file_name} to {target_dir}")
     
-def acetest_cov(api_name, config, save_path) : 
+def script_cov(api_name, config, save_path, baseline) : 
     from experiments.collect_cov_by_script import script_exec
     package = config["model"]["type"] 
     if config["model"]["type"] == "tensorflow" :
         package = "tf"
 
     time2path = {}
-    save_path = os.path.join(save_path, f"output_{package}_0", api_name, "non_crash")
+    if baseline in ["acetest"] :
+        save_path = os.path.join(save_path, f"output_{package}_0", api_name, "non_crash")
+    elif baseline == "doctor" : 
+        save_path = os.path.join(os.path.dirname(save_path), api_name)
     for i, dir in enumerate(os.listdir(save_path)):
-        if dir != "coverage" and not dir.endswith('json') and not dir.endswith('csv'):
+        if dir != "coverage" and not dir.endswith('json') and not dir.endswith('csv') and not dir.endswith('p') and not dir.endswith('.e') and not dir.startswith('gen_order') and not dir.endswith('record') and not dir.endswith('config'):
             # time2path[float(dir)] = os.path.join(save_path, dir)
             time2path[float(i)] = os.path.join(save_path, dir)
     time_stamps = sorted(time2path.keys())
-    num_of_batch = 80
+    num_of_batch = 2
     batch_size = len(time_stamps) // num_of_batch
     print(f"Total number of tests: {len(time_stamps)}, each batch size: {batch_size}")
     cov_save = os.path.join(save_path, "coverage")
     if not os.path.exists(cov_save) :
         os.mkdir(cov_save)
     clear_gcda()
-    id_path = f"{max(time_stamps)}.info" if package != 'torch' else f"{max(time_stamps)}.profraw"
+    _id = max(time_stamps) if time_stamps else 0
+    id_path = f"{_id}.info" if package != 'torch' else f"{_id}.profraw"
     output_path = os.path.join(cov_save, id_path)
     script_exec(
         [time2path[time] for time in time_stamps], output_path, random.randint(0, 100000), package, batch_size=batch_size
@@ -263,7 +267,7 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov", dirna
         Executes a given command and prints its output in real-time.
         """
         print("Running\n", command)
-        if baseline == "acetest" and task == "fuzz":
+        if baseline in ["acetest", "doctor"] :
             cwd = "/artifact/ACETest/Tester/src"
         else :
             cwd = os.getcwd()
@@ -295,8 +299,11 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov", dirna
     # Construct the command to run fuzz.py
     if fuzz_time is None :
         fuzz_time = config["fuzz"]["time"]
-    if baseline == "acetest" : 
+    if baseline in ["acetest"] :
         fuzz_command = acetest_run(api_name, config, save_path)
+    elif baseline in ["doctor"] :
+        print("We need to run doctor and move test files to here")
+        pass
     else : 
         fuzz_command = f"PYTHONPATH=$(pwd):$(pwd)/nnsmith:$(pwd)/deepconstr python nnsmith/cli/fuzz.py " \
                     f"fuzz.time={fuzz_time} " \
@@ -310,8 +317,8 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov", dirna
         print(f"Collect Cov for {api_name} with baseline {baseline}")
         print("Activate Conda env -cov")
         activate_conda_environment("cov")
-        if baseline == "acetest" : 
-            save_path = acetest_cov(api_name, config, save_path)
+        if baseline in ["acetest", "doctor"] :
+            save_path = script_cov(api_name, config, save_path, baseline)
             pass
 
         else :
@@ -322,6 +329,8 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov", dirna
                         backend_target="cpu",  # or config-specified
                         parallel=cov_parallel)  # or other desired default
         if config['model']['type'] == "torch":
+            print("running process_profraw", save_path)
+            time.sleep(5)
             process_profraw(save_path)
         elif config['model']['type'] == "tensorflow":
             process_lcov(save_path)
@@ -333,8 +342,9 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov", dirna
             fuzz_time = cal_time(config['fuzz']['time'], baseline)
             for base in baselines :
                 run(api_name, base.strip(), config, task = "fuzz", dirname=gen_save_path(api_name, baseline, config), fuzz_time = fuzz_time, run_cov=False)
-        else :
-            execute_command(fuzz_command)
+        # else :
+        #     if baseline != "doctor" :
+        #         execute_command(fuzz_command)
         if run_cov :
             run(api_name, baseline, config, task = "cov")
     else :
@@ -439,7 +449,7 @@ def main(cfg) :
     else :
         for baseline in cfg["exp"]["baselines"] : 
             for api_name in api_names :
-                if baseline != "acetest" :
+                if baseline not in ["acetest", "doctor"] :
                     if need_to_gen_testcases(api_name, baseline, cfg) :
                         refuzz_list.add((baseline, api_name, "fuzz"))
                 else :

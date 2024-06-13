@@ -5,7 +5,7 @@ import json
 import datetime
 import numpy as np
 import traceback
-
+from experiments.process_pickle import process_pickle
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
 folder_suffix = ".models"
@@ -19,55 +19,19 @@ def parse_directory_name(dirname):
     Returns:
     - tuple: A tuple containing the column name and API name.
     """
+    column = None 
+    api_name = None
     parts = dirname.split('-')
-    if len(parts) == 2:
+    if len(parts) == 1:
+        column = "temp"  # Column name (e.g., 'neuri')
+    elif len(parts) == 2:
         column = parts[0]  # Column name (e.g., 'neuri')
-        api_name = parts[-1].replace(folder_suffix, "")  # API name (e.g., 'torch.acos')
-        return column, api_name
     elif len(parts) >= 3:
         column = parts[1]  # Column name (e.g., 'neuri')
-        api_name = parts[-1].replace(folder_suffix, "")  # API name (e.g., 'torch.acos')
-        return column, api_name
     else:
-        return None, None
-
-def cov_summerize(data, tlimit=None, gen_time=None):
-    """
-    Summarizes coverage data, calculating branch coverage over time and the final branch full.
-
-    Args:
-    - data (dict): The coverage data dictionary.
-    - tlimit (float, optional): Optional time limit for summarization. Defaults to None.
-    - gen_time (np.array, optional): Optional generation time array for adjusting time values. Defaults to None.
-
-    Returns:
-    - tuple: A tuple containing branch_by_time and final_bf.
-    """
-    model_total = 0
-    branch_by_time = [[0, 0, 0]]
-    final_bf = 0
-
-    for time, value in data.items():
-        bf = 0
-        n_model = value["n_model"]
-        cov = value["merged_cov"]
-        model_total += n_model
-
-        if gen_time is not None:
-            time -= gen_time[0][:model_total].sum()
-
-        branch_cov = 0
-        for fname in cov:
-            branch_cov += len(cov[fname]["branches"])
-            bf += cov[fname]["bf"]
-
-        branch_by_time.append([time, model_total, branch_cov])
-        final_bf = max(final_bf, bf)
-
-        if tlimit is not None and time > tlimit:
-            break
-
-    return branch_by_time, final_bf
+        raise ValueError(f"Invalid directory name: {dirname}")
+    api_name = parts[-1].replace(folder_suffix, "")  # API name (e.g., 'torch.acos')
+    return column, api_name
 
 def traverse_and_classify(root_dir, api_data, package):
     """
@@ -105,16 +69,6 @@ def get_model_cnt(pickle_path) :
             cnt +=1
     return cnt
 
-def process_pickle(path) : 
-    with open(path, 'rb') as file:
-        data = pickle.load(file)
-        # Summarize the data
-        branch_by_time, final_bf = cov_summerize(data)
-        return {
-            'branch_by_time': branch_by_time,
-            'final_bf': max([bf for _,_,bf in branch_by_time]),
-        }
-    
 def process_pickle_files(api_coverage_data, package):
     """
     Processes each relevant pickle file using the cov_summerize function.
@@ -133,7 +87,7 @@ def process_pickle_files(api_coverage_data, package):
 
                 try :
                     api_summary[column] = process_pickle(pickle_path)
-                    if column == "acetest" : 
+                    if column in ["acetest", "temp", "doctor"] : 
                         suffix = "info" if package == "tf" else "profraw"
                         files = [info_file_nm for info_file_nm in os.listdir(os.path.dirname(pickle_path)) if info_file_nm.endswith(suffix)]
                         if len(files) < 1 :
@@ -227,7 +181,7 @@ def summarize_final_bf(aggregated_df, pivot):
 
 def get_default_coves(model_type) :
     if model_type == "torch" :
-        path = os.path.join("experiments/torch_default/coverage/merged_cov.pkl")
+        path = os.path.join("experiments/torch_default2/coverage/merged_cov.pkl")
     elif model_type in ["tensorflow", "tf"] :
         path = os.path.join("experiments/tf_default/coverage/merged_cov.pkl")
     else :
@@ -271,7 +225,7 @@ def get_intersected(tool1, tool2, package) :
     for tool in [tool1, tool2] :
         file_name = get_api_list_saved_path(tool, package)
         file_name = os.path.join(root_dir, file_name)
-        with open(file_name, "r") as f :
+        with open("/artifact/data/torch_dc_doctor.json", "r") as f :
             data.append(json.load(f))
 
     intersected = list(set(data[0]).intersection(set(data[1])))

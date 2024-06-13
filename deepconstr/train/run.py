@@ -330,7 +330,7 @@ class TrainingLoop:
         if record.get("error", None) is not None :
             TRAIN_LOG.info(f"{record_path} is errored record")
             return False
-        elif not self.cfg["train"]["retrain"] and len(record.get("rules", [])) > 0 :
+        elif not self.cfg["train"]["retrain"] and any(rule.get('cot') != "default" for rule, score in record.get("rules", [])) > 0 :
             # TRAIN_LOG.info(f"{record_path} is already trained")
             return False
         TRAIN_LOG.info(f"Check whether {record_path} is valid")
@@ -347,12 +347,12 @@ class TrainingLoop:
         # while True :
         while n_func < end_index :
             n_func+=1
-            record_paths = self.select_train_op()
-            if not isinstance(record_paths, str) :
-                record_paths = record_paths(self.inferencer)
+            record_path_or_func = self.select_train_op()
+            if not isinstance(record_path_or_func, str) :
+                record_path_or_func = record_path_or_func(self.inferencer)
             else :
-                record_paths = [record_paths]
-            for record_path in record_paths :
+                record_path_or_func = [record_path_or_func]
+            for record_path in record_path_or_func :
                 if not self.inspect_trainable(record_path) :
                     continue
                 if n_func >= trained_func_index :

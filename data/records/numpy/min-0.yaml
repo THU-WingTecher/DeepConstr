@@ -1,0 +1,50 @@
+args:
+  dtype:
+  - tensor
+  - None
+  - tensor
+  - bool
+  - None
+  - None
+  is_pos:
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - a
+  - axis
+  - out
+  - keepdims
+  - initial
+  - where
+  required:
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+name: numpy.min
+package: null
+pass_rate: 0
+rules:
+- - cot: default
+    length: 2
+    target:
+      choosen_dtype:
+        a: tensor
+        axis: None
+        initial: None
+        keepdims: bool
+        out: tensor
+        where: None
+      msg: negative dimensions are not allowed
+      package: null
+    txt: all(i >= 0 for i in a.shape) and all(i >= 0 for i in out.shape)
+  - f1_score: -1
+    overall_score: -1
+    precision: -1
+    recall: -1

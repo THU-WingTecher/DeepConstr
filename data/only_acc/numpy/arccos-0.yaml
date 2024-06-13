@@ -1,0 +1,31 @@
+args:
+  dtype:
+  - tensor
+  - None
+  is_pos:
+  - true
+  - true
+  name:
+  - x
+  - out
+  required:
+  - true
+  - false
+name: numpy.arccos
+package: null
+pass_rate: 8.0
+rules:
+- - cot: divided
+    length: 1
+    target:
+      choosen_dtype:
+        out: None
+        x: tensor
+      msg: The truth value of an array with more than one element is ambiguous. Use
+        a.any() or a.all()
+      package: numpy
+    txt: len(x) == 1
+  - f1_score: 12.433392539964474
+    overall_score: 8.833333333333332
+    precision: 11.666666666666666
+    recall: 13.307984790874524

@@ -1,0 +1,21 @@
+args:
+  dtype:
+  - int
+  - int
+  - None
+  is_pos:
+  - true
+  - true
+  - false
+  name:
+  - x1
+  - x2
+  - out
+  required:
+  - true
+  - true
+  - false
+name: numpy.right_shift
+package: null
+pass_rate: 100
+rules: []

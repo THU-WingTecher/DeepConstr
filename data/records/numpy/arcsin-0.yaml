@@ -1,0 +1,17 @@
+args:
+  dtype:
+  - tensor
+  - None
+  is_pos:
+  - true
+  - false
+  name:
+  - x
+  - out
+  required:
+  - true
+  - false
+name: numpy.arcsin
+package: null
+pass_rate: 15.666666666666668
+rules: []

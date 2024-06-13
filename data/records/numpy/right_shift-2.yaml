@@ -1,0 +1,48 @@
+args:
+  dtype:
+  - int
+  - tensor
+  - None
+  - tensor
+  - str
+  - str
+  - None
+  - bool
+  - None
+  - None
+  is_pos:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  name:
+  - x1
+  - x2
+  - out
+  - where
+  - casting
+  - order
+  - dtype
+  - subok
+  - signature
+  - extobj
+  required:
+  - true
+  - true
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+  - false
+name: numpy.right_shift
+package: null
+pass_rate: 0

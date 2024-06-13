@@ -1,0 +1,34 @@
+args:
+  dtype:
+  - tensor
+  - None
+  is_pos:
+  - true
+  - true
+  name:
+  - x
+  - out
+  required:
+  - true
+  - false
+name: numpy.arccos
+package: null
+pass_rate: 8.666666666666668
+rules:
+- - cot: 'The error message suggests that there is an ambiguous truth value in the
+      input array ''x''. To prevent this error, we need to ensure that the input array
+      ''x'' has only one element. Therefore, the constraint for preventing this error
+      is:'
+    length: 1
+    target:
+      choosen_dtype:
+        out: None
+        x: tensor
+      msg: The truth value of an array with more than one element is ambiguous. Use
+        a.any() or a.all()
+      package: numpy
+    txt: len(x) == 1
+  - f1_score: 13.118527042577679
+    overall_score: 18.55926352128884
+    precision: 12.666666666666668
+    recall: 13.603818615751791

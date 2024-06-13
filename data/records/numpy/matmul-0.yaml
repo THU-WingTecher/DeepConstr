@@ -12,4 +12,19 @@ args:
   - true
 name: numpy.matmul
 package: numpy
-pass_rate: 0
+pass_rate: 0.0
+rules:
+- - cot: synthesized
+    length: 3
+    target:
+      choosen_dtype:
+        x1: tensor
+        x2: tensor
+      msg: 'matmul: Input operand 1 has a mismatch in its core dimension 0, with gufunc
+        signature (n?,k),(k,m?)->(n?,m?) (size 3 is different from 2)'
+      package: numpy
+    txt: ((x1.shape[0] == 3) and (x2.shape[0] == 2)) and (x1.shape[0] == x2.shape[0])
+  - f1_score: 86.95652173913044
+    overall_score: 100
+    precision: 100.0
+    recall: 76.92307692307692

@@ -1,0 +1,31 @@
+args:
+  dtype:
+  - tensor
+  is_pos:
+  - false
+  name:
+  - x
+  required:
+  - true
+name: numpy.emath.log
+package: null
+pass_rate: 100
+rules:
+- - cot: The error is caused because the numpy.emath.log function is trying to evaluate
+      the truth value of an array with more than one element. This is ambiguous as
+      it is unclear whether the function should return True if any element is True
+      or if all elements are True. Therefore, a condition to prevent this error would
+      be to ensure that the input 'x' is not a multi-element array. Therefore, the
+      condition should be
+    length: 1
+    target:
+      choosen_dtype:
+        x: tensor
+      msg: The truth value of an array with more than one element is ambiguous. Use
+        a.any() or a.all()
+      package: numpy
+    txt: len(x) <= 1
+  - f1_score: 97.50812567713974
+    overall_score: 60.75406283856987
+    precision: 100.0
+    recall: 95.13742071881607

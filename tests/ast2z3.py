@@ -51,7 +51,7 @@ def test_whole_constraints(dir_path = None ) :
 
     print(f"NL_CONSTR ------> SMT CONSTR : {cnt} CASES TEST COMPLETED")
     
-@hydra.main(version_base=None, config_path="../neuri/config/", config_name="main")
+@hydra.main(version_base=None, config_path="../nnsmith/config/", config_name="main")
 def main(cfg: DictConfig):
     from deepconstr.grammar import load_z3_const
     from deepconstr.grammar.dtype import AbsDType, AbsTensor
@@ -100,7 +100,7 @@ def main(cfg: DictConfig):
         # "all(a.shape[i] == b.shape[i] or a.shape[i] == 1 or b.shape[i] == 1 for i in range(-1, -min(len(a.shape), len(b.shape))-1, -1))",
         # "len(set(a.shape)) == len(a.shape)",
         # "a.dim == b.dim and a.shape == b.shape",
-        "len(tensors) > 1",
+        "a.any()",
         "all(tensors[i].ndim <= 2 for i in range(len(tensors)))",
         # "all(tensors[i].dim() >1 for i in range(1, len(tensors)))"
         # "dtype(a) == uint32"

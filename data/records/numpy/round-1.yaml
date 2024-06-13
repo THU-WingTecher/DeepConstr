@@ -1,0 +1,20 @@
+args:
+  dtype:
+  - tensor
+  - int
+  - None
+  is_pos:
+  - false
+  - false
+  - false
+  name:
+  - a
+  - decimals
+  - out
+  required:
+  - true
+  - false
+  - false
+name: numpy.round
+package: null
+pass_rate: 0

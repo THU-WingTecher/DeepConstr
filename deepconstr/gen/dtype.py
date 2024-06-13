@@ -10,6 +10,42 @@ from typing import *
 from deepconstr.gen.record import save_record, transform_record_for_saving
 from deepconstr.train.prompter import torch_type_hint_infer_prompts, numpy_type_hint_infer_prompts, tf_type_hint_infer_prompts
 
+
+DEFAULT_RULES = [
+    {'cot' : 'default',
+    'length': lambda arg_names : len(arg_names),
+    'txt' : lambda arg_names : ' and '.join([f'all(i >= 0 for i in {name}.shape)' for name in arg_names]),
+    'msg' : 'negative dimensions are not allowed'},
+]
+
+def get_tensor_args(record) :
+    from deepconstr.grammar.dtype import AbsTensor
+    return [name for name, dtype in zip(record['args']['name'], record['args']['dtype']) if isinstance(dtype, AbsTensor)]
+
+def gen_default_rule(arg_names, record, rule) :
+
+    return {
+        'cot' : rule['cot'],
+        'length' : rule['length'](arg_names),
+        'txt' : rule['txt'](arg_names),
+        'target' : {
+            'choosen_dtype' : {name : dtype.to_str() for name, dtype in zip(record['args']['name'], record['args']['dtype']) if dtype is not None},
+            'msg' : rule['msg'],
+            'package' : record['package']
+        }
+    }
+
+def add_default_rules(record) : 
+    for rule in DEFAULT_RULES :
+        arg_names = get_tensor_args(record)
+        constr = gen_default_rule(arg_names, record, rule)
+        scores = {"f1_score" : -1, "overall_score" : -1, "precision" : -1, "recall" : -1}
+        if "rules" not in record.keys() :
+            record['rules'] = []
+        record['rules'].append([constr, scores]) 
+    
+    return record
+
 def gen_dtype_info(save_dir, func_name, package, inferencer) :
 
     res = []
@@ -19,7 +55,9 @@ def gen_dtype_info(save_dir, func_name, package, inferencer) :
         type_gen = TypeGenerator(save_dir, func_name, package, inferencer)
         if type_gen.generated :
             res.append(type_gen.save_path())
+    
     return res
+
 def torch_load_from_doc(save_dir, api_name = None):
     import torch.jit.supported_ops
     results = []
@@ -109,6 +147,7 @@ def torch_load_from_doc(save_dir, api_name = None):
                     continue
                 # TRAIN_LOG.info(f"deal with {save_path}")
                 record = gen_record_for_operator(op_name, op_args, is_tensor_method)
+                record = add_default_rules(record)
                 save_record(transform_record_for_saving(record), save_path)
             else:
                 TRAIN_LOG.info(f"  (Ignored: {obj = } from {op_name = } is not callable")
@@ -217,6 +256,19 @@ def custom_split(input_string):
     
     return parts
 
+def process_speical_case(record : dict) -> dict :
+    """
+    If the record is a special case, it will be processed here.
+    """
+    banned_values = ["signature", "dtype", "memory_format", "layout"]
+    idx_to_del = []
+    for i, key in enumerate(record.keys()) :
+        if key in banned_values :
+            idx_to_del.append(key)
+    for key in idx_to_del :
+        record.pop(key)
+    return record
+
 def transfer_older_record_to_newer(record: dict, func_name, package) -> dict:
     all_results = []
     new = {
@@ -232,6 +284,7 @@ def transfer_older_record_to_newer(record: dict, func_name, package) -> dict:
     }
     if package == "tf" :
         new["package"] = "tensorflow"
+    record = process_speical_case(record)
     new["name"] = func_name
     new["args"]["name"] = list(record.keys())
     new["args"]["required"] = list([a["required"] for a in record.values()])
@@ -341,6 +394,7 @@ class TypeGenerator() :
     def dump(self, records) : 
         for idx, record in enumerate(records) :
             converted = transform_record_for_saving(record)
+            converted = add_default_rules(converted)
             for i in range(len(converted['args']['dtype'])) :
                 for i, dtype in enumerate(converted['args']['dtype']) : 
                     if isinstance(dtype, str) :
@@ -349,7 +403,7 @@ class TypeGenerator() :
                         converted['args']['dtype'][i] = dtype.to_abs().to_str() 
                     else :
                         converted['args']['dtype'][i] = dtype.to_str() 
-                        
+
             save_record(converted, self.save_path(idx))
 
     def init(self) : 
