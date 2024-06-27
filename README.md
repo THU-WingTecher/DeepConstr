@@ -39,6 +39,13 @@ source ./env_std.sh
 ./fuzz.sh 5 deepconstr     tensorflow xla 4h tf.abs,tf.add,tf.acos # test tf.abs, tf.add, tf.acos
 ```
 
+#### Generate python code
+
+The test case of deepconstr is saved as the format of `gir.pkl`. To convert the `git.pkl` into python code, you can utilize below code. You can specify the code with the option of compiler. For now, we support "torchcomp" compiler with pytorch, and "xla" with tensorflow.
+
+```python
+python nnsmith/materialize/torch/program.py ${code_saved_dir} torchcomp
+```
 
 
 # Extract Constraints
