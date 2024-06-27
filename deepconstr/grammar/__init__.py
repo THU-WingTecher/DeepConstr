@@ -509,7 +509,7 @@ class SMTFuncs:
         is_attr = True
         datatype = cls._find_datatype_by_decl_id(v.decl().get_id())
         if datatype is None :
-             # AbsTensor.shape - dirty fix
+             # AbsVector.shape - dirty fix
             is_attr = False
             datatype = cls._find_datatype_by_decl_id(v.decl().range().get_id())
 
@@ -547,7 +547,7 @@ class SMTFuncs:
             return v.shape
         else :
             attrs = cls._load_attrs(v)
-            assert len(attrs) > cls.value_idx, f"{v} seems not be AbsTensor object"
+            assert len(attrs) > cls.value_idx, f"{v} seems not be AbsVector object"
             return attrs[cls.value_idx]
     
     @classmethod
@@ -565,7 +565,7 @@ class SMTFuncs:
             return v.dtype
         else :
             attrs = cls._load_attrs(v)
-            assert len(attrs) > cls.dtype_idx, f"{v} seems not be AbsTensor object"
+            assert len(attrs) > cls.dtype_idx, f"{v} seems not be AbsVector object"
             return attrs[cls.dtype_idx]
     @classmethod
     def rank(cls, v) : 
@@ -583,7 +583,7 @@ class SMTFuncs:
             return v.len()
         else :
             attrs = cls._load_attrs(v)
-            assert len(attrs) > cls.rank_idx, f"{v} seems not be AbsTensor object"
+            assert len(attrs) > cls.rank_idx, f"{v} seems not be AbsVector object"
             return attrs[cls.rank_idx]
     @classmethod
     def dim(cls, v, idx=None) :

@@ -2,7 +2,7 @@ import random
 import string
 import z3
 from deepconstr.grammar.dtype import AbsDType, AbsIter
-from deepconstr.grammar.dtype import AbsTensor, DType
+from deepconstr.grammar.dtype import AbsVector, DType
 from deepconstr.grammar import TensorZ3, BOOL_POOLS, MAX_VALUE, \
     MIN_VALUE, OP_POOLS
 import operator
@@ -46,8 +46,8 @@ def gen_noise(arg_name, arg_type, args_length, noise_prob):
     if arg_type is AbsDType.none :
         return noises
     
-    if isinstance(arg_type, AbsTensor):
-        if isinstance(arg_name, z3.ExprRef): # AbsTensorARR
+    if isinstance(arg_type, AbsVector):
+        if isinstance(arg_name, z3.ExprRef): # AbsVectorARR
             shape_var = TensorZ3.shape(arg_name)
             dtype_var = TensorZ3.dtype(arg_name)
         else :
@@ -71,7 +71,7 @@ def gen_noise(arg_name, arg_type, args_length, noise_prob):
             if should_generate_noise(noise_prob):
                 if arg_type.get_arg_dtype() in [AbsDType.complex] :
                     raise NotImplementedError
-                elif isinstance(arg_type.get_arg_dtype(), AbsTensor) :
+                elif isinstance(arg_type.get_arg_dtype(), AbsVector) :
                     noise = z3.And(gen_noise(arr_wrapper[idx], arg_type.get_arg_dtype(), args_length[idx], noise_prob))
                 elif arg_type.get_arg_dtype() in [AbsDType.str] :
                     noise = None # gen_random_string_constr(arr_wrapper[idx])

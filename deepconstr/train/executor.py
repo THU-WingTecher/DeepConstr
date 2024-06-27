@@ -4,8 +4,8 @@ import random
 import traceback
 from typing import Any, Dict, List, Optional, Tuple
 from deepconstr.error import InternalError
-from deepconstr.grammar.dtype import AbsTensor
-from deepconstr.grammar.op import OpInstance
+from deepconstr.grammar.dtype import AbsVector
+from deepconstr.grammar.op import OpPlaceholder
 from deepconstr.grammar.base import DEFAULT_DTYPE_CONSTR
 from deepconstr.gen.record import record_args_info
 from deepconstr.logger import GEN_LOG
@@ -42,7 +42,7 @@ def worker(model, record, noise=0.8, allow_zero_length_rate=0.1, allow_zero_rate
             chosen_dtype[arg_name] = random.choice(record['args']['dtype_obj'][i_arg])
         else:
             chosen_dtype[arg_name] = record['args']['dtype_obj'][i_arg]
-        if isinstance(chosen_dtype[arg_name], AbsTensor) :
+        if isinstance(chosen_dtype[arg_name], AbsVector) :
             dtype_constrs.append(_dtype_constrs_executable(arg_name))
 
     values = gen_val(
@@ -58,7 +58,7 @@ def worker(model, record, noise=0.8, allow_zero_length_rate=0.1, allow_zero_rate
     if values is None : 
         return None
     record_args_info(record, values)
-    inst = OpInstance(record)
+    inst = OpPlaceholder(record)
     for key in values:
         if isinstance(values[key], list):
             concretized_values[key] = [v.concretize(inst.input_symb_2_value, only_shape=True) if hasattr(v, 'concretize') else v for v in values[key]]

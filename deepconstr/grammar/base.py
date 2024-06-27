@@ -3,14 +3,14 @@ import z3
 from typing import *
 from deepconstr.gen.noise import should_generate_noise
 from deepconstr.grammar import ARRTYPES, MAX_ARR_LEN, MAX_SHAPE_SUM, MAX_VALUE, MIN_VALUE, SMTFuncs
-from deepconstr.grammar.dtype import DTYPE_NOT_SUPPORTED, AbsDType, AbsIter, AbsTensor
+from deepconstr.grammar.dtype import DTYPE_NOT_SUPPORTED, AbsDType, AbsIter, AbsVector
 
 
 def gen_dtype_constraints(arg_name : str, not_supported_dtypes : List["DType"]) -> z3.ExprRef :
     
     assert not_supported_dtypes, "DTYPE_NOT_SUPPORTED not defined"
     constr = SMTFuncs.not_in(
-        AbsTensor.z3()(arg_name).dtype, 
+        AbsVector.z3()(arg_name).dtype, 
         [
         dtype.z3_const() for dtype in not_supported_dtypes 
     ]
@@ -32,7 +32,7 @@ def tensor_default_constr(
     return pos_max_constraints(tensor_shape, length, include_zero)
 
 def gen_default_constr(
-        args_types : Dict[str, Union[AbsDType, AbsTensor]],
+        args_types : Dict[str, Union[AbsDType, AbsVector]],
         args_lengths : Dict[str, Optional[int]],
         allow_zero_rate : float = 0.5,
                         ) -> List[z3.ExprRef] :
@@ -42,7 +42,7 @@ def gen_default_constr(
     else :
         include_zero = False
     for arg_name in args_types.keys() :
-        if isinstance(args_types[arg_name], AbsTensor) :
+        if isinstance(args_types[arg_name], AbsVector) :
             shape_var = args_types[arg_name].z3()(arg_name)
             length_var = args_lengths[arg_name]
             rules.append(
@@ -51,7 +51,7 @@ def gen_default_constr(
                                 include_zero)
                 )
         elif isinstance(args_types[arg_name], AbsIter) :
-            if isinstance(args_types[arg_name].get_arg_dtype(), AbsTensor) :
+            if isinstance(args_types[arg_name].get_arg_dtype(), AbsVector) :
                 # arr_wrapper = args_types[arg_name].z3()(arg_name)
                 # for idx in range(len(args_lengths[arg_name])) :
                 #     rules.append(pos_max_constraints(arr_wrapper.get_arg_attr(idx, "shape"), args_lengths[arg_name][idx], include_zero))

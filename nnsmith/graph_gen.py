@@ -6,7 +6,6 @@ from abc import abstractmethod
 from itertools import product
 from typing import Callable, Dict, List, Optional, Set, Tuple, Type
 import z3
-
 from nnsmith.abstract.arith import *
 from nnsmith.abstract.dtype import *
 from nnsmith.abstract.dtype import AbsTensor
@@ -29,9 +28,8 @@ from deepconstr.utils import formatted_dict
 from deepconstr.error import ConstraintError
 from deepconstr.gen.solve import gen_val
 from deepconstr.grammar.base import DEFAULT_DTYPE_CONSTR
-from deepconstr.grammar.op import OpInstance as OpInstance2
-from deepconstr.grammar.dtype import AbsTensor as AbsTensor2
-
+from deepconstr.grammar.op import OpPlaceholder
+from deepconstr.grammar.dtype import AbsVector
 
 class RequiredDimNotFound(Exception):
     pass
@@ -1170,7 +1168,7 @@ class ConstrInf(BaseGen):
             [],
         )
     def new_dtype_sym(self, name):
-        return AbsTensor2.z3()(name).dtype
+        return AbsVector.z3()(name).dtype
 
     def pick_next_record(self):
         return random.choice(self.record_finder)
@@ -1196,7 +1194,7 @@ class ConstrInf(BaseGen):
 
     def make_concrete_placeholder(self, shape : List[int], dtype : str) -> Placeholder:
         ph = Placeholder(
-            AbsTensor2(
+            AbsVector(
                 shape=shape,
                 dtype=dtype
             )
@@ -1209,7 +1207,7 @@ class ConstrInf(BaseGen):
         # FIXME : make uncommon dtype rarely appear
 
         ph = Placeholder(
-            AbsTensor2(
+            AbsVector(
                 shape=shape,
                 dtype=dtype,
             )
@@ -1233,7 +1231,7 @@ class ConstrInf(BaseGen):
             else :
                 chosen_dtype[arg_name] = record['args']['dtype_obj'][i_arg]
 
-            if isinstance(chosen_dtype[arg_name], AbsTensor2) :
+            if isinstance(chosen_dtype[arg_name], AbsVector) :
                 input_tensor_candidates.append(arg_name)
         # assert len(input_tensor_candidates) > 0, f"No input tensor candidates with {record['name']}"
         
@@ -1292,7 +1290,7 @@ class ConstrInf(BaseGen):
                 temp_vars.append(new_inst)
 
         record_args_info(record, values)
-        inst = OpInstance2(record)
+        inst = OpPlaceholder(record)
         opbase = AutoInfOpBase(inst, {
             sym : inst.input_symb_2_value[sym] for sym in inst.A
         })
@@ -1315,7 +1313,7 @@ class ConstrInf(BaseGen):
     def load_err_msg(self) -> str :
         return self.err_msg
 
-    def try_execute_op(self, inst : OpInstance2) : 
+    def try_execute_op(self, inst : OpPlaceholder) : 
         return self.model.execute_op(inst)
 
     def execute_try_forward_insert_at(
@@ -1328,7 +1326,7 @@ class ConstrInf(BaseGen):
         node.inst.add_output_arg(*output_info)
 
         otensors = [
-            AbsTensor2(shape, ttype) for shape, ttype in \
+            AbsVector(shape, ttype) for shape, ttype in \
             zip(node.inst.concrete_output_shapes(), node.inst.output_tensor_dtypes)
         ]
         

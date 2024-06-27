@@ -5,7 +5,7 @@ import string
 import z3
 from deepconstr.gen.noise import add_noises, gen_random_int_constr, should_generate_noise
 from deepconstr.grammar.base import gen_default_constr, length_constr, min_max_constraints
-from deepconstr.grammar.dtype import DTYPE_GEN_ALL, AbsDType, AbsIter, AbsTensor, DType 
+from deepconstr.grammar.dtype import DTYPE_GEN_ALL, AbsDType, AbsIter, AbsVector, DType 
 from deepconstr.grammar import MAX_TENSOR_LIST_RANK, SMTFuncs, TensorZ3, MAX_ARR_LEN, MAX_VALUE, MIN_VALUE, TensorArrWrapper
 from deepconstr.logger import SMT_LOG
 from typing import Callable, Dict, Any, List, Literal, Optional, Tuple, Union
@@ -28,7 +28,7 @@ def handle_string_sort(model, z3_instance):
     return str(z3_instance).replace('"', '').replace("'", "")
 
 def gen_abs_tensor(dtype, shape):
-    return AbsTensor(dtype=DType.from_str(str(dtype)), shape=shape)
+    return AbsVector(dtype=DType.from_str(str(dtype)), shape=shape)
 
 def handle_abs_tensor(model, z3_instance, arg_name, args_types, args_values, args_lengths, ret_len=False):
     wrapper = args_types[arg_name].z3()(arg_name)
@@ -45,7 +45,7 @@ def handle_abs_tensor(model, z3_instance, arg_name, args_types, args_values, arg
         else:
             shapes[i] = handle_int_sort(model, shape)
     
-    # Assuming AbsTensor and DType are defined and have a suitable constructor
+    # Assuming AbsVector and DType are defined and have a suitable constructor
     return gen_abs_tensor(dtype, shapes)
 
 def handle_abs_iter(model, z3_instance, arg_name, args_types, args_values, args_lengths, ret_len=False):
@@ -102,7 +102,7 @@ def sym_to_conc(model, z3_arg, args_types, args_values, args_lengths, ret_len) :
         args_values[arg_name] = handle_string_sort(model, z3_instance)
     else : 
         wrapper = args_types[arg_name].z3()(arg_name)
-        if isinstance(args_types[arg_name], AbsTensor) :
+        if isinstance(args_types[arg_name], AbsVector) :
             args_values[arg_name] = handle_abs_tensor(model, z3_instance, arg_name, args_types, args_values, args_lengths, ret_len=ret_len)
         elif isinstance(args_types[arg_name], AbsIter):
             if args_types[arg_name].get_arg_dtype() in [AbsDType.complex] : 
@@ -120,7 +120,7 @@ def sym_to_conc(model, z3_arg, args_types, args_values, args_lengths, ret_len) :
             #     for i in range(len(args_values[arg_name])) :
             #         if args_values[arg_name][i] is None :
             #             args_values[arg_name][i] = random_gen(args_types[arg_name].get_arg_dtype())
-            #         elif args_types[arg_name].get_arg_dtype() in [AbsTensor] :
+            #         elif args_types[arg_name].get_arg_dtype() in [AbsVector] :
             #             args_values[arg_name][i] = sym_to_conc(model, args_values[arg_name][i], args_types, args_values, args_lengths)
             #         else :
             #             args_values[arg_name][i] = clip_unbound_val(to_conc_py_val(args_values[arg_name][i]), max = MAX_VALUE)
@@ -128,7 +128,7 @@ def sym_to_conc(model, z3_arg, args_types, args_values, args_lengths, ret_len) :
         else :
             raise NotImplementedError(f"Unsupported type {z3_arg.range()}")
 def process_len(
-        args_types : Dict[str, Union[AbsDType, AbsTensor]],
+        args_types : Dict[str, Union[AbsDType, AbsVector]],
         args_lengths : Dict[str, Optional[int]],
         solver : z3.Solver,
         names : List[str],
@@ -139,8 +139,8 @@ def process_len(
     constrs = []
     noises = []
     for arg_name, arg_type in args_types.items() : 
-        if isinstance(arg_type, (AbsTensor, AbsIter)) :
-            is_tensor_list = isinstance(arg_type, AbsIter) and isinstance(arg_type.get_arg_dtype(), AbsTensor)
+        if isinstance(arg_type, (AbsVector, AbsIter)) :
+            is_tensor_list = isinstance(arg_type, AbsIter) and isinstance(arg_type.get_arg_dtype(), AbsVector)
             args_lengths[arg_name] = None
             min_val = 1 if should_generate_noise(allow_zero_length_rate) else 0
             max_val = MAX_TENSOR_LIST_RANK if is_tensor_list else None
@@ -181,7 +181,7 @@ def process_len(
     #             assert isinstance(val, int) and val <= MAX_ARR_LEN, f"Invalid length {val}"
     #         len_val = len(len_val)
     #     constrs.append(args_types[arg_name].z3()(arg_name).rank == len_val)
-    #     # if isinstance(args_types[arg_name], AbsTensor) :
+    #     # if isinstance(args_types[arg_name], AbsVector) :
     #     #     assert isinstance(len_val, int) and len_val <= MAX_ARR_LEN, f"Invalid length {len_val}"
     #         # constrs.append(check_numel_constr(args_types[arg_name].z3()(arg_name).shape, len_val))
     
@@ -219,7 +219,7 @@ def process_model(solver, noises, args_types : Dict[str, Any]) :
 
     for key, value in args_values.items() : 
         if isinstance(value, dict) and "tensor" in value.keys() :
-            args_values[key] = AbsTensor(**value["tensor"])
+            args_values[key] = AbsVector(**value["tensor"])
     return args_values, args_lengths
 
 def gen_val(num_of_try, *args, **kwargs) -> Optional[Dict[str, Any]] : 
@@ -243,7 +243,7 @@ def extract_names_from_constrs(constrs : List[z3.ExprRef]) -> List[str] :
     return names
 
 def _gen_val(
-          args_types : Dict[str, Union[AbsDType, AbsTensor]],
+          args_types : Dict[str, Union[AbsDType, AbsVector]],
           constrs : List[Callable] = [], 
           noise_prob : float = 0.0,
           allow_zero_length_rate : float = 0.5,
@@ -320,12 +320,12 @@ def random_gen(abs, length=None):
     """
     if abs in [AbsDType.none, None] :
         return None
-    elif isinstance(abs, AbsTensor) :
+    elif isinstance(abs, AbsVector) :
         if length is None :
             length = random_gen_arr_len()
         shape = [random_gen_arr_len() for _ in range(length)]
         dtype = random.choice(DTYPE_GEN_ALL)
-        return AbsTensor(dtype=dtype, shape=shape)
+        return AbsVector(dtype=dtype, shape=shape)
     elif isinstance(abs, AbsIter) : 
         if length is None :
             length = random_gen_arr_len()

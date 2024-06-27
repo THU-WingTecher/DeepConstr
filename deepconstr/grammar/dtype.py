@@ -3,6 +3,7 @@ from functools import partial
 from typing import Any, Callable, Dict, List, Union
 import numpy as np
 from deepconstr.logger import CONVERT_LOG
+from nnsmith.abstract.dtype import AbsTensor
 
 @unique
 class DType(Enum):
@@ -502,7 +503,7 @@ TYPE_TO_ABS = {
 }
 
 
-class AbsTensor:
+class AbsVector(AbsTensor):
     def __init__(self,
                  shape: List[Union[int, "z3.ExprRef"]] = [],
                  dtype: DType = None,
@@ -518,15 +519,15 @@ class AbsTensor:
         self.dtype = dtype
 
     @staticmethod
-    def from_numpy(x: "np.ndarray") -> "AbsTensor":
-        return AbsTensor(list(x.shape), str(x.dtype))
+    def from_numpy(x: "np.ndarray") -> "AbsVector":
+        return AbsVector(list(x.shape), str(x.dtype))
     def dump(self) -> Any :
-        return AbsTensor.to_str()
+        return AbsVector.to_str()
     @staticmethod
     def to_str() -> Any :
         return 'tensor'
     def downcast_rank(self):
-        return AbsTensor(shape=[None] * self.ndims, dtype=self.dtype)
+        return AbsVector(shape=[None] * self.ndims, dtype=self.dtype)
 
     def concrete_shape(self, symb_2_value: Dict[str, Any]) -> List[int]:
         return [symb_2_value[s] for s in self.shape]
@@ -537,9 +538,9 @@ class AbsTensor:
             self.rank = len(self.shape)
 
     def concrete_str(self, symb_2_value: Dict[str, Any]) -> str:
-        # AbsTensor<3>([s0=1, s1=2, s2=3], float32)
+        # AbsVector<3>([s0=1, s1=2, s2=3], float32)
         shapes = [f"{s}={symb_2_value[s]}" for s in self.shape]
-        return f"AbsTensor<{self.rank}>({', '.join(shapes)}, {self.dtype})"
+        return f"AbsVector<{self.rank}>({', '.join(shapes)}, {self.dtype})"
     
     def concretize(
         self,
@@ -550,7 +551,7 @@ class AbsTensor:
         **kwargs,
     ):
         if only_shape :
-            return AbsTensor(shape=self.concrete_shape(symb_2_value), dtype=self.dtype)
+            return AbsVector(shape=self.concrete_shape(symb_2_value), dtype=self.dtype)
         from nnsmith.autoinf.instrument.utils import (
             numpy_random,
         )
@@ -571,9 +572,9 @@ class AbsTensor:
 
     def __repr__(self) -> str:
         if self.dtype is None :
-            return f"AbsTensor{str(self.shape)}"
+            return f"AbsVector{str(self.shape)}"
         else :
-            return f"AbsTensor<{self.dtype.short()}>{str(self.shape)}"
+            return f"AbsVector<{self.dtype.short()}>{str(self.shape)}"
 
     def pretty(self) -> str:
         return f"{self.dtype.short()}{self.shape}"
@@ -596,11 +597,11 @@ class AbsTensor:
         return self.nelement() * self.dtype.sizeof()
 
     def deepcopy(self):
-        return AbsTensor(shape=list(self.shape), dtype=self.dtype)
+        return AbsVector(shape=list(self.shape), dtype=self.dtype)
     @staticmethod
     def to_iter() :
         from deepconstr.grammar.dtype import AbsIter
-        return AbsIter([AbsTensor])
+        return AbsIter([AbsVector])
     @property
     def ndims(self):
         return len(self.shape)
@@ -659,8 +660,8 @@ STR_TO_ABS = {
     'list[complex]': AbsDType.complex.to_iter(),
     'list[str]': AbsDType.str.to_iter(),
     'list[none]': AbsDType.none.to_iter(),
-    'list[tensor]': AbsTensor().to_iter(),
-    'list[tensors]': AbsTensor().to_iter(),
+    'list[tensor]': AbsVector().to_iter(),
+    'list[tensors]': AbsVector().to_iter(),
     'list': AbsDType.int.to_iter(),
     'lists': AbsDType.int.to_iter(),
     'array': AbsDType.int.to_iter(),
@@ -669,7 +670,7 @@ STR_TO_ABS = {
     'vectors': AbsDType.int.to_iter(),
     'tuple': AbsDType.int.to_iter(),
     'array_like': AbsDType.int.to_iter(),
-    'sequence[tensor]': AbsTensor().to_iter(),
+    'sequence[tensor]': AbsVector().to_iter(),
     'sequence[int]': AbsDType.int.to_iter(),
     'sequences[int]': AbsDType.int.to_iter(),
     'sequence': AbsDType.int.to_iter(),
@@ -680,14 +681,14 @@ STR_TO_ABS = {
     'optional[bool]': [AbsDType.bool, AbsDType.none],
     'optional[str]': [AbsDType.str, AbsDType.none],
     'optional[complex]': [AbsDType.complex, AbsDType.none],
-    'optional[tensor]': [AbsTensor(), AbsDType.none],
+    'optional[tensor]': [AbsVector(), AbsDType.none],
     'optional[list[float]]': [AbsDType.float.to_iter(), AbsDType.none],
     'optional[list[int]]': [AbsDType.int.to_iter(), AbsDType.none],
     'optional[list[str]]': [AbsDType.str.to_iter(), AbsDType.none],
     'optional[list[bool]]': [AbsDType.bool.to_iter(), AbsDType.none],
     'optional[list[complex]]': [AbsDType.complex.to_iter(), AbsDType.none],
-    'optional[list[optional[tensor]]]': [AbsTensor().to_iter(), AbsDType.none],
-    'list[optional[tensor]]': [AbsTensor().to_iter(), AbsDType.none],
+    'optional[list[optional[tensor]]]': [AbsVector().to_iter(), AbsDType.none],
+    'list[optional[tensor]]': [AbsVector().to_iter(), AbsDType.none],
     # DType
     #qint
 
@@ -821,18 +822,18 @@ STR_TO_ABS = {
     'torch.complex128': DType.complex128,
     'complex128': DType.complex128,
 
-    # AbsTensor and List[AbsTensor]
-    'tf.tensor': AbsTensor(),
-    'torch.tensor': AbsTensor(),
-    'tensor': AbsTensor(),
-    'tf.tensors': AbsTensor(),
-    'torch.tensors': AbsTensor(),
-    'longtensor': AbsTensor(),
-    'sequence of AbsTensors':  AbsTensor.to_iter(),
-    'tensors':  AbsTensor.to_iter(),
-    'list[tensor]':  AbsTensor.to_iter(),
-    'sequence[tensor]':  AbsTensor.to_iter(),
-    'sequences[tensor]':  AbsTensor.to_iter(),
+    # AbsVector and List[AbsVector]
+    'tf.tensor': AbsVector(),
+    'torch.tensor': AbsVector(),
+    'tensor': AbsVector(),
+    'tf.tensors': AbsVector(),
+    'torch.tensors': AbsVector(),
+    'longtensor': AbsVector(),
+    'sequence of AbsVectors':  AbsVector.to_iter(),
+    'tensors':  AbsVector.to_iter(),
+    'list[tensor]':  AbsVector.to_iter(),
+    'sequence[tensor]':  AbsVector.to_iter(),
+    'sequences[tensor]':  AbsVector.to_iter(),
 
     # torch 
     'complexfloat' : AbsDType.complex,
@@ -842,10 +843,10 @@ STR_TO_ABS = {
     'long' : DType.int64,
 
     #numpy
-    'array' : AbsTensor(),
-    'array_like' : AbsTensor(),
-    'ndarray' : AbsTensor(),
-    'matrix' : AbsTensor(),
+    'array' : AbsVector(),
+    'array_like' : AbsVector(),
+    'ndarray' : AbsVector(),
+    'matrix' : AbsVector(),
 }
 
 
@@ -947,7 +948,7 @@ def materalize_dtypes(dtypes : str, merge_tensor : bool = True) -> List[Any] :
                 to_merge.extend(abs.get_tensor_dtypes())
             else :
                 final.append(abs)
-        elif isinstance(abs, AbsTensor) :
+        elif isinstance(abs, AbsVector) :
             if any([isinstance(ele, DType) for ele in res]) :
                 pass
             else :
@@ -955,7 +956,7 @@ def materalize_dtypes(dtypes : str, merge_tensor : bool = True) -> List[Any] :
         else :
             final.append(abs)
     if len(to_merge) > 0 :
-        final.append(AbsTensor(possible_dtypes=to_merge))
+        final.append(AbsVector(possible_dtypes=to_merge))
     if len(final) == 0 :
         return [AbsDType.none]
     else :

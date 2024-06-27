@@ -1,9 +1,9 @@
 from functools import partial, reduce
 from typing import * 
-from deepconstr.grammar.dtype import AbsTensor
+from deepconstr.grammar.dtype import AbsVector
 from deepconstr.grammar.utils import * 
 
-class OpInstance:
+class OpPlaceholder:
     def __init__(
         self,
         record: Dict[str, Any],
@@ -16,14 +16,14 @@ class OpInstance:
         self.input_symb_2_value: Dict[str, Any] = {}
         self.output_symb_2_value: Dict[str, Any] = {}
 
-        self.input_tensors: List[AbsTensor] = []
-        self.output_tensors: List[AbsTensor] = []
+        self.input_tensors: List[AbsVector] = []
+        self.output_tensors: List[AbsVector] = []
         self.int_attrs: List[AbsInt] = []
         self.other_attrs: List[AbsValue] = []
 
         self.names: List[str] = []
         self.is_pos: List[bool] = []
-        self.abs_values: List[AbsValue] = [] # [AbsTensor<4>(s0, s1,... s3, bool), 's4', ...)
+        self.abs_values: List[AbsValue] = [] # [AbsVector<4>(s0, s1,... s3, bool), 's4', ...)
         self.input_types: List[str] = [] # parameter types(tensor, int, float, bool, str, ...)
 
         """fill information by parsing the record"""
@@ -60,16 +60,16 @@ class OpInstance:
                 # some hacks...
                 (
                     self.name
-                    in ["torch.movedim", "torch.AbsTensor.movedim", "torch.moveaxis"]
+                    in ["torch.movedim", "torch.AbsVector.movedim", "torch.moveaxis"]
                     and arg_name in ["source", "destination"]
                 )
                 or (
                     self.name
                     in [
-                        "torch.AbsTensor.diag",
+                        "torch.AbsVector.diag",
                         "torch.diag",
                         "torch.diagonal",
-                        "torch.AbsTensor.diagonal",
+                        "torch.AbsVector.diagonal",
                         "torch.diagonal_copy",
                     ]
                     and arg_name in ["offset"]
@@ -88,14 +88,14 @@ class OpInstance:
             return [self._add_input_arg(v, arg_name) for v in value]
             # TODO(@Colin) model list with AbsValue to avoid manual recursion every time (like self._value_concrete_str)
         elif isinstance(value, np.ndarray): # for neuri
-            abs_tensor = AbsTensor.from_numpy(value)
+            abs_tensor = AbsVector.from_numpy(value)
             for i_s, s in enumerate(abs_tensor.shape):
                 symb = f"s{len(self.input_symb_2_value)}"
                 self.input_symb_2_value[symb] = s
                 abs_tensor.shape[i_s] = symb
             self.input_tensors.append(abs_tensor)
             return abs_tensor
-        elif isinstance(value, AbsTensor): # for deepconstr 
+        elif isinstance(value, AbsVector): # for deepconstr 
             abs_tensor = value
             for i_s, s in enumerate(abs_tensor.shape):
                 symb = f"s{len(self.input_symb_2_value)}"
@@ -145,7 +145,7 @@ class OpInstance:
         name = getattr(self, "name_index", None)
         if not (name and isinstance(name, str)):
             name = self.name
-        return f"OpInstance<{name}>( [{', '.join(inputs)}] -> [{', '.join(outputs)}] )"
+        return f"OpPlaceholder<{name}>( [{', '.join(inputs)}] -> [{', '.join(outputs)}] )"
 
     def concrete_str(
         self, input_symb_2_value: Dict[str, Any], output_symb_2_value: Dict[str, Any]
@@ -161,7 +161,7 @@ class OpInstance:
         name = getattr(self, "name_index", None)
         if not (name and isinstance(name, str)):
             name = self.name
-        return f"OpInstance<{name}>( [{', '.join(inputs)}] -> [{', '.join(outputs)}] )"
+        return f"OpPlaceholder<{name}>( [{', '.join(inputs)}] -> [{', '.join(outputs)}] )"
 
     def __repr__(self) -> str:
         return str(self)
@@ -266,7 +266,7 @@ class OpInstance:
                 return [
                     concretize_arg(v, k, indices + [i]) for i, v in enumerate(value)
                 ]
-            elif isinstance(value, AbsTensor):
+            elif isinstance(value, AbsVector):
                 tplaces.append((k, indices))
                 return value
             else:
@@ -327,7 +327,7 @@ class OpInstance:
         def concretize_input_arg(value: AbsValue) -> Any:
             if isinstance(value, list):
                 return [concretize_input_arg(v) for v in value]
-            elif isinstance(value, AbsTensor):
+            elif isinstance(value, AbsVector):
                 return "??"
             else:
                 return value.concretize(attr_map)
@@ -389,15 +389,15 @@ class OpInstance:
         )
 
     def _parse_output_value(
-        self, value, symb_2_value: Dict[str, Any], output_tensors: List[AbsTensor]
+        self, value, symb_2_value: Dict[str, Any], output_tensors: List[AbsVector]
     ) -> Any:
         if isinstance(value, list):
             return [
                 self._parse_output_value(v, symb_2_value, output_tensors) for v in value
             ]
-        elif isinstance(value, np.ndarray) or isinstance(value, AbsTensor):
+        elif isinstance(value, np.ndarray) or isinstance(value, AbsVector):
             if isinstance(value, np.ndarray):
-                abs_tensor = AbsTensor.from_numpy(value)
+                abs_tensor = AbsVector.from_numpy(value)
             else:
                 abs_tensor = value
             for i_s, s in enumerate(abs_tensor.shape):
@@ -409,9 +409,9 @@ class OpInstance:
         else:
             return value
 
-    def output_info(self, out_list) -> Tuple[Dict[str, Any], List[AbsTensor]]:
+    def output_info(self, out_list) -> Tuple[Dict[str, Any], List[AbsVector]]:
         symb_2_value: Dict[str, Any] = {}
-        output_tensors: List[AbsTensor] = []
+        output_tensors: List[AbsVector] = []
         output_values = self._parse_output_value(out_list, symb_2_value, output_tensors)
         return symb_2_value, output_tensors
 
@@ -422,7 +422,7 @@ class OpInstance:
         abs_from_dtype: Callable = lambda x: x,
         is_tensor: Callable = lambda x: False,
         func : Callable = None,
-    ) -> Tuple[Dict[str, Any], List[AbsTensor]]:
+    ) -> Tuple[Dict[str, Any], List[AbsVector]]:
         if symb_2_value is None:
             symb_2_value = self.input_symb_2_value
         if func is None:

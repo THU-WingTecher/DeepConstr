@@ -59,12 +59,12 @@ def get_ret_list(ret):
     return ret_list
 
 def tensor_to_abs(tensor, abs_from_dtype : Callable) : 
-    from nnsmith.abstract.dtype import AbsTensor
-    return AbsTensor(list(tensor.shape), abs_from_dtype(tensor.dtype))
+    from deepconstr.grammar.op import AbsVector
+    return AbsVector(list(tensor.shape), abs_from_dtype(tensor.dtype))
 
 def data_type_str(x: Any, keep_int_value: bool = True, dtype_class: Any = None) -> str:
     """To distinguish operator instances in one API.
-    1. AbsTensor: only consider rank
+    1. AbsVector: only consider rank
     2. int not bool:
         keep_int_value is True, int values should be the same in one op
         keep_int_value is False, int values can be symbolized
@@ -73,7 +73,7 @@ def data_type_str(x: Any, keep_int_value: bool = True, dtype_class: Any = None) 
     5. others: ignore them; their values can vary in one op
     """
     if isinstance(x, np.ndarray):
-        return f"AbsTensor<{x.ndim}>"
+        return f"AbsVector<{x.ndim}>"
     elif is_int_not_bool(x):
         if keep_int_value:
             return f"int({x})"

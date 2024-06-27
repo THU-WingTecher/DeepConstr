@@ -4,7 +4,7 @@ from typing import Any, Callable, Dict, List, Tuple, Union
 
 import numpy as np
 from nnsmith.abstract.dtype import AbsTensor
-from deepconstr.grammar.dtype import AbsTensor as AbsTensor2
+from deepconstr.grammar.dtype import AbsVector
 from nnsmith.autoinf.inference.rules import (
     gen_nnsmith_rules,
     gen_requires_trees,
@@ -141,7 +141,7 @@ class OpInstance:
                 abs_tensor.shape[i_s] = symb
             self.input_tensors.append(abs_tensor)
             return abs_tensor
-        elif isinstance(value, (AbsTensor, AbsTensor2)): # for deepconstr 
+        elif isinstance(value, (AbsTensor, AbsVector)): # for deepconstr 
             abs_tensor = value
             for i_s, s in enumerate(abs_tensor.shape):
                 symb = f"s{len(self.input_symb_2_value)}"
@@ -312,7 +312,7 @@ class OpInstance:
                 return [
                     concretize_arg(v, k, indices + [i]) for i, v in enumerate(value)
                 ]
-            elif isinstance(value, (AbsTensor, AbsTensor2)):
+            elif isinstance(value, (AbsTensor, AbsVector)):
                 tplaces.append((k, indices))
                 return value
             else:
@@ -373,7 +373,7 @@ class OpInstance:
         def concretize_input_arg(value: AbsValue) -> Any:
             if isinstance(value, list):
                 return [concretize_input_arg(v) for v in value]
-            elif isinstance(value, (AbsTensor, AbsTensor2)):
+            elif isinstance(value, (AbsTensor, AbsVector)):
                 return "??"
             else:
                 return value.concretize(attr_map)
@@ -441,7 +441,7 @@ class OpInstance:
             return [
                 self._parse_output_value(v, symb_2_value, output_tensors) for v in value
             ]
-        elif isinstance(value, np.ndarray) or isinstance(value, (AbsTensor, AbsTensor2)):
+        elif isinstance(value, np.ndarray) or isinstance(value, (AbsTensor, AbsVector)):
             if isinstance(value, np.ndarray):
                 abs_tensor = AbsTensor.from_numpy(value)
             else:
