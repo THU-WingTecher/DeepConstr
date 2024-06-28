@@ -5,7 +5,47 @@ from typing import Any, Dict, List, Tuple, Type
 
 import yaml
 from deepconstr.logger import CONVERT_LOG
+
+RANDOM_FILTER_NAME = "random"
+BUG_FILTER_NAME = "exist_bug"
+BUG_OPS = ["torch.Tensor.unsqueeze_"]
+RANDOM_OPS = [
+    # PyTorch
+    # value randomness
+    "torch.rand_like",
+    "torch.randn_like",
+    "torch.randint_like",
+    "torch.Tensor.random_",
+    "torch.Tensor.uniform_",
+    "torch.empty_like",
+    "torch.Tensor.normal_",
+    "torch.Tensor.new_empty",
+    "torch.Tensor.new_empty_strided",
+    "torch.dropout",
+    "torch.native_dropout",
+    "torch.nn.functional.dropout",
+    "torch.nn.functional.dropout1d",
+    "torch.nn.functional.dropout2d",
+    "torch.nn.functional.dropout3d",
+    "torch.nn.functional.feature_alpha_dropout",
+    # TensorFlow
+    "tf.raw_ops.Unique", 
+]
 BLACKLIST = [
+    # unlock when preprocessing filters out dynamic output numbers.
+    "torch.Tensor.unbind",
+    "torch.unbind",
+    "torch.Tensor.split",
+    "torch.split",
+    # some special cases
+    "torch.gather",
+    "torch.Tensor.resize_as_",  # resize_as_ can't be represented in the JIT at the moment ...
+    "torch.Tensor.rename",
+    "torch.Tensor.rename_",
+    "torch.Tensor.requires_grad_",
+    "torch.searchsorted",  # sorter has value constraints but the crash needs to be triggered by a big value.
+    "torch.native_batch_norm",  # crash when input constraint is violated.
+    "torch.Tensor.sum_to_size",  # some odd dtype transfer
 
 ]
 
@@ -84,7 +124,7 @@ def load_yaml(path) :
     with open(path, 'r') as f:
         return yaml.safe_load(f)
 
-def process_record(file_path: str, test_pool: list = [], filter : Dict[str, List[str]] = {"args" : ["out"]}) -> dict:
+def process_record(file_path: str, test_pool: list = [], filter = []) -> dict:
     """
     Process a single file and return the configuration as a record dictionary.
     """
@@ -93,7 +133,8 @@ def process_record(file_path: str, test_pool: list = [], filter : Dict[str, List
     record = load_yaml(file_path)
     if test_pool and record["name"].split("-")[0] not in test_pool:
         return None
-    record = filter_record(record, filter)
+    if "out_in_args" in filter : 
+        record = filter_record(record, {"args" : ["out"]})
     record['args']['dtype_obj'] = [materalize_dtypes(dtype) for dtype in record['args']['dtype']]
     record['args']['value'] = [None] * len(record['args']["name"]) # Placeholder for the input values
     record['outputs'] = {'value': []} # Placeholder for the output values
@@ -102,7 +143,7 @@ def process_record(file_path: str, test_pool: list = [], filter : Dict[str, List
     return record
 # Step 2: Define the traversal function
 
-def gen_inst_with_records(data_dir: str, filter, test_pool: list = []):
+def gen_inst_with_records(data_dir: str, filter: List = [], test_pool: List = []):
     """
     Traverse directories to process files and yield configuration records.
     """
@@ -127,7 +168,7 @@ def save_record(record, path) :
 def make_record_finder(
     path: PathLike = None,
     pass_rate: float = 0.8,
-    filter: Dict[str, List[str]] = {"args" : ["out"]},
+    filter: List = [],
     test_pool: List = [],
 ) -> List[Dict[str, Any]]:
     
@@ -161,7 +202,13 @@ def make_record_finder(
                 CONVERT_LOG.info(f"low pass_rate[thr:{pass_rate}] {record.get('pass_rate')}")
                 skipped_unenough_psrate+=1
                 continue
-            if record['name'] in BLACKLIST:  # black list
+            if RANDOM_FILTER_NAME in filter and record['name'] in RANDOM_OPS:  # black list
+                if record['name'] not in blacklisted:
+                    CONVERT_LOG.warning(f"Blacklist operator {record['name']} found!")
+                    blacklisted.add(record['name'])
+                skipped_blacklist += 1
+                continue
+            if BUG_FILTER_NAME in filter and record['name'] in BUG_OPS:  # black list
                 if record['name'] not in blacklisted:
                     CONVERT_LOG.warning(f"Blacklist operator {record['name']} found!")
                     blacklisted.add(record['name'])

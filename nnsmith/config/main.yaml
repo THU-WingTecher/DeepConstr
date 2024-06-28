@@ -45,7 +45,7 @@ mgen: # model gen.
   allow_zero_length_rate: 0.04 # 0 ~ 1
   allow_zero_rate: 0.1 # 0 ~ 1
   num_of_try: 1 ## num_of_try * noise will be the number of trials for each input
-  filter: null
+  filter: ["random", "exist_bug"] # "out_in_args", 
 # backend config
 backend:
   type: null
