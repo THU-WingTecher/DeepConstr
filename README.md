@@ -6,55 +6,60 @@ This repository contains the implementation of DeepConstr.
 
 > [!NOTE]
 >
-> **Command usage of**: `./fuzz.sh NSIZE METHOD MODEL BACKEND TIME`
+> **Command usage of**: `python nnsmith/cli/fuzz.py`
 >
 > **Arguments**:
-> - `NSIZE`: the number of operators in each generated graph.
-> - `METHOD`: Choose from `["deepconstr", "neuri", "symbolic-cinit"]`.
-> - `MODEL`: Choose from `["tensorflow", "torch"]`.
-> - `BACKEND`: Choose from `["xla", "torchjit"]`.
-> - `TIME`: fuzzing time in formats such as `4h`, `1m`, `30s`.
-> - `POOL`(Optional): Targets a specific API for fuzzing. If not specified, fuzzing will be conducted across all prepared APIs.
+> - `mgen.max_nodes`: the number of operators in each generated graph.
+> - `mgen.method`: Choose from `["deepconstr", "neuri", "symbolic-cinit"]`.
+> - `model.type`: Choose from `["tensorflow", "torch"]`.
+> - `backend.type`: Choose from `["xla", "torchjit"]`.
+> - `fuzz.time`: fuzzing time in formats such as `4h`, `1m`, `30s`.
+> - `mgen.record_path`: the directory that constraints are saved, such as `$(pwd)/data/records/torch`.
+> - `fuzz.save_test`: the directory that generated test cases are saved, such as `$(pwd)/bugs/${model.type}-${mgen.method}-n${mgen.max_nodes}`.
+> - `fuzz.root`: the directory that buggy test cases are saved, such as `$(pwd)/bugs/${model.type}-${mgen.method}-n${mgen.max_nodes}-buggy`.
+> - `mgen.test_pool`(Optional): Targets a specific API for fuzzing. If not specified, fuzzing will be conducted across all prepared APIs.
 >
 > **Outputs**:
-> - `$(pwd)/outputs/${MODEL}-${METHOD}-n${NSIZE}-{POOL}.models` : Directory where the generated test cases (models) are stored.
+> The buggy test cases will be saved in the directory specified by `fuzz.root`, while the generated test cases will be saved in the directory specified by `fuzz.save_test`.
 
-#### For PyTorch
+#### Quick start for PyTorch
+First, activate the conda environment created for this project.
+```bash 
+conda activate std
+``` 
 
->
+For PyTorch, you can specify the APIs to be tested by setting the `mgen.test_pool` argument, such as `[torch.abs,torch.add]`. For example, following code will fuzz `torch.abs` and `torch.add` for 15 minutes.
 ```bash
-source ./env_std.sh
-./fuzz.sh 5 deepconstr     torch torchcomp 4h # test all apis that deepconstr supports
-./fuzz.sh 5 deepconstr     torch torchcomp 4h torch.abs,torch.add # test torch.abs, and torch.add
-./fuzz.sh 5 deepconstr     torch torchcomp 4h torch.abs,torch.add,torch.acos # test torch.abs, torch.add, and torch.acos
+PYTHONPATH=$(pwd):$(pwd)/deepconstr:$(pwd)/nnsmith python nnsmith/cli/fuzz.py fuzz.time=15m mgen.record_path=/DeepConstr/data/records/torch fuzz.root=/DeepConstr/outputs/torch-deepconstr-n5-torch.abs-torch.add fuzz.save_test=/DeepConstr/outputs/torch-deepconstr-n5-torch.abs-torch.add.models model.type=torch backend.type=torchcomp filter.type=[nan,dup,inf] debug.viz=true hydra.verbose=['fuzz'] fuzz.resume=true mgen.method=deepconstr mgen.max_nodes=5 mgen.test_pool=[torch.abs,torch.add] mgen.pass_rate=10
+```
+If the `mgen.test_pool` is not specified, we are fuzzing all APIs that deepconstr supports. Following code will fuzz all APIs for 4 hours.
+```bash
+PYTHONPATH=$(pwd):$(pwd)/deepconstr:$(pwd)/nnsmith python nnsmith/cli/fuzz.py fuzz.time=4h mgen.record_path=/DeepConstr/data/records/torch fuzz.root=/DeepConstr/outputs/torch-deepconstr-n5-torch.abs-torch.add fuzz.save_test=/DeepConstr/outputs/torch-deepconstr-n5-torch.abs-torch.add.models model.type=torch backend.type=torchcomp filter.type=[nan,dup,inf] debug.viz=true hydra.verbose=['fuzz'] fuzz.resume=true mgen.method=deepconstr mgen.max_nodes=5 mgen.pass_rate=10
 ```
 
-#### For TensorFlow
-
->
+#### Quick start for TensorFlow
+First, activate the conda environment created for this project.
 ```bash
-source ./env_std.sh
-./fuzz.sh 5 deepconstr     tensorflow xla 4h # test all apis that deepconstr supports
-./fuzz.sh 5 deepconstr     tensorflow xla 4h tf.abs,tf.add # test tf.abs, tf.add
-./fuzz.sh 5 deepconstr     tensorflow xla 4h tf.abs,tf.add,tf.acos # test tf.abs, tf.add, tf.acos
+conda activate std
+```
+Then, execute the following commands to start fuzzing. Following code will fuzz all APIs that deepconstr supports for 4 hours.
+```bash 
+PYTHONPATH=$(pwd):$(pwd)/deepconstr:$(pwd)/nnsmith python nnsmith/cli/fuzz.py fuzz.time=4h mgen.record_path=/DeepConstr/data/records/tf fuzz.root=/DeepConstr/outputs/tensorflow-deepconstr-n5- fuzz.save_test=/DeepConstr/outputs/tensorflow-deepconstr-n5-.models model.type=tensorflow backend.type=xla filter.type=[nan,dup,inf] debug.viz=true hydra.verbose=['fuzz'] fuzz.resume=true mgen.method=deepconstr mgen.max_nodes=5 mgen.pass_rate=10
 ```
 
 #### Generate python code
 
-The test case of deepconstr is saved as the format of `gir.pkl`. To convert the `git.pkl` into python code, you can utilize below code. You can specify the code with the option of compiler. For now, we support "torchcomp" compiler with pytorch, and "xla" with tensorflow.
+The test case of deepconstr is saved as the format of `gir.pkl`. To convert the `git.pkl` into python code, you can utilize below code. You can specify the code with the option of compiler. For now, we support "torchcomp" compiler with pytorch, and "xla" with tensorflow. You can use following code to convert the `gir.pkl` which is saved at `code_saved_dir` into python code.
 
-```python
+```bash
 python nnsmith/materialize/torch/program.py ${code_saved_dir} torchcomp
 ```
 
-
 # Extract Constraints
-
-We strongly recommend using a virtual environment via Anaconda to ensure a clean and controlled setup. For detailed instructions, please refer to the [Anaconda documentation](https://docs.anaconda.com/free/anaconda/install/windows/).
 
 ### Setup Instructions
 
-1. Install Required Libraries:
+1. (optional) If you are not using docker, install required packages:
 ```bash 
 pip install -r requirements.txt
 ```
@@ -79,7 +84,7 @@ If configured correctly, you will receive a response from the OpenAI API, such a
 > - `train.retrain`: A boolean value that determines whether to reconduct constraint extraction. If set to false, the tool will only collect APIs that haven't been extracted. If set to true, the tool collects all APIs except those where the pass rate exceeds the preset target pass rate (`train.pass_rate`).
 > - `train.pass_rate`: The target pass rate to filter out APIs that have a pass rate higher than this target.
 > - `train.parallel`: The number of parallel processes used to validate the constraints.
-> - `train.record_path`: The path where the extracted constraints are saved.
+> - `train.record_path`: The path where the extracted constraints are saved. This directlry should be the same as the `mgen.record_path` in the fuzzing step.
 > - `hydra.verbose`: Set the logging level of Hydra for specific modules ("smt", "train", "convert", "constr", "llm").
 > - `train.num_eval`: The number of evaluations performed to validate the constraints (default: 500).
 > - `model.type`: Choose from `["tensorflow", "torch"]`.
