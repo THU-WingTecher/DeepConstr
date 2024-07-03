@@ -80,6 +80,7 @@ class Program:
         code_forward: List[str] = []
         for input_var_name in ir.input_var():
             if self.inputs.get(input_var_name) is None:
+                print(f"Input {input_var_name} is not provided, generating random input")
                 abs_tensor: AbsTensor = ir.vars[input_var_name]
                 assert abs_tensor.is_concrete(), f"Input {input_var_name} is not concrete"
                 random_input = random_tensor(
@@ -204,7 +205,9 @@ def run_and_report(path):
         print("Test passed: No errors detected.")
         return True
     except subprocess.CalledProcessError as e:
-        print("Error detected during this :\n", path)
+        print("Error detected during this :\n", f"{path}/prog.py")
+        print("Error output:")
+        print(e.output.decode())
         return False
 
 # def try_with_random_val(path, inputs, params):
@@ -239,7 +242,14 @@ if __name__ == "__main__":
                 try :
                     prog = Program(ir, input, backend_type)
                     prog.dump(root_path)
-                    run_and_report(root_path)
+                    is_normal = run_and_report(root_path)
+                    if not is_normal :
+                        print(ir.pretty())
+                        # print("Error in the normal run, trying with random values")
+                        # input = None
+                        # prog = Program(ir, input, backend_type)
+                        # prog.dump(root_path)
+                        # run_and_report(root_path)
                 except KeyError :
                     ## complex 32 error :: https://github.com/pytorch/pytorch/issues/120290
                     pass

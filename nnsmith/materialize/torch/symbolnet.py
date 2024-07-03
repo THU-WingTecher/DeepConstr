@@ -380,6 +380,7 @@ class SymbolNet(nn.Module):
             if self.check_intermediate_numeric or (
                 self.use_gradient and not self.stop_updating_loss
             ):
+                TORCH_LOG.debug(f"Checking intermediate numeric for {op}")
                 if loss_fn.dispatch(type(op)) is not None:
                     loss = loss_fn(op)(*input_tensors)
                     if not isinstance(loss, tuple):
