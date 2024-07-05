@@ -5,11 +5,8 @@ from typing import Literal
 import hydra
 import concurrent.futures
 import subprocess
-import threading
-import multiprocessing
 from experiments.evaluate_models import model_exec, batched
 from experiments.evaluate_tf_models import tf_model_exec, clear_gcda
-from nnsmith.logger import DTEST_LOG
 from nnsmith.util import parse_timestr
 import shutil
 import time
@@ -342,9 +339,9 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov", dirna
             fuzz_time = cal_time(config['fuzz']['time'], baseline)
             for base in baselines :
                 run(api_name, base.strip(), config, task = "fuzz", dirname=gen_save_path(api_name, baseline, config), fuzz_time = fuzz_time, run_cov=False)
-        # else :
-        #     if baseline != "doctor" :
-        #         execute_command(fuzz_command)
+        else :
+            if baseline != "doctor" :
+                execute_command(fuzz_command)
         if run_cov :
             run(api_name, baseline, config, task = "cov")
     else :
@@ -454,7 +451,7 @@ def main(cfg) :
                         refuzz_list.add((baseline, api_name, "fuzz"))
                 else :
                     refuzz_list.add((baseline, api_name, "fuzz"))
-                # refuzz_list.add((baseline, api_name, "fuzz"))
+                refuzz_list.add((baseline, api_name, "fuzz"))
                 recollect_list.add((baseline, api_name, "cov"))
                 
     recollect_list = sorted(list(recollect_list), key=lambda x: x[1])
