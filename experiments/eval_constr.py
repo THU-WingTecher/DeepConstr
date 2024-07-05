@@ -154,7 +154,7 @@ def viz_f1(deepconstr_recall : List[float], deepconstr_prec, deepdeepconstr_s_re
     plt.savefig(path + f"5_dist_{name}.png")
 
 if __name__ == "__main__" : 
-    record_dir = "/artifact/data/"
+    record_dir = "/DeepConstr/data/"
     frameworks = ["torch", "tf", "numpy"]
     kinds = ["records", "only_acc"]
 
