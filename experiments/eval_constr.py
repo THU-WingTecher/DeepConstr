@@ -96,7 +96,7 @@ def mean(numbers):
     return sum(numbers) / len(numbers)
 import statistics
 # -> visualize distribution of length of cosntr, f1_ prec_ recall of constr, pie chart of constr type
-def viz_passrate(data_list, deepdeepconstr_s_data_list, name, path = "/artifact/results/") :
+def viz_passrate(data_list, deepdeepconstr_s_data_list, name, path = "/DeepConstr/results/") :
     all = []
     for i, data_li in enumerate([data_list, deepdeepconstr_s_data_list]):
         pass_rate_num_of_constr = []
@@ -122,7 +122,7 @@ def viz_deepconstr_len(deepconstr_len : List[int]):
     plt.hist(deepconstr_len, bins=range(1, max(deepconstr_len) + 1))
     plt.show()
 
-def viz_f1(deepconstr_recall : List[float], deepconstr_prec, deepdeepconstr_s_recall, deepdeepconstr_s_prec , path = "/artifact/results/", name = "PyTorch"):
+def viz_f1(deepconstr_recall : List[float], deepconstr_prec, deepdeepconstr_s_recall, deepdeepconstr_s_prec , path = "/DeepConstr/results/", name = "PyTorch"):
 
     plt.figure(figsize=(9,9))
     plt.legend(loc='lower right')

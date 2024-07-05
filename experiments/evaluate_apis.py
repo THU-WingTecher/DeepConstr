@@ -265,7 +265,7 @@ def run(api_name, baseline, config, task : Literal["fuzz", "cov"] = "cov", dirna
         """
         print("Running\n", command)
         if baseline in ["acetest", "doctor"] :
-            cwd = "/artifact/ACETest/Tester/src"
+            cwd = "/DeepConstr/ACETest/Tester/src"
         else :
             cwd = os.getcwd()
         time.sleep(7)
@@ -429,7 +429,7 @@ def main(cfg) :
     """
     # model_type=cfg["model"]["type"]
     # backend_type=cfg["backend"]["type"]
-    # root="/artifact/exp/deepconstr_1/tf/tensorflow-deepconstr-n1-tf.raw_ops.Abs.models"
+    # root="/DeepConstr/exp/deepconstr_1/tf/tensorflow-deepconstr-n1-tf.raw_ops.Abs.models"
     # collect_cov(root, model_type, backend_type, batch_size=100, backend_target="cpu", parallel=8)
     recollect_list = set()
     refuzz_list = set()

@@ -203,12 +203,12 @@ def summarize_final_bf(aggregated_df):
             cnt+=1
 
     all_data = final_bf_summary.shape[0]
-    revise_complete_data("/artifact/experiments/results/completed.json", completed_data)
+    revise_complete_data("/DeepConstr/experiments/results/completed.json", completed_data)
     print("Total APIs with deepconstr as the largest final BF: ", cnt, "from", all_data)
     print(f"Increase ratio of deepconstr as the largest final BF: {cnt/all_data}")
     return pd.concat([final_bf_summary, model_cnt], axis=1), completed_data 
 
-def save_data(final_bf, completed_data, save_dir="/artifact/experiments/results"):
+def save_data(final_bf, completed_data, save_dir="/DeepConstr/experiments/results"):
     save_path = os.path.join(save_dir, datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + ".csv")
     complete_data_path = os.path.join(save_dir, "completed.json")
     final_bf.to_csv(save_path)
@@ -270,7 +270,7 @@ def extract_unnormal_val(df) :
     # Step 3: Iterate through the rows and cols to save the (row, col) tuples where the condition is met
     # Note: This uses the actual index and column labels, not integer positions
     positions = [(df.index[row], df.columns[col]) for row, col in zip(rows, cols)]            
-    with open("/artifact/results/unnormal_val.json", "w") as file:
+    with open("/DeepConstr/results/unnormal_val.json", "w") as file:
         json.dump(positions, file)
 
 def gen_table4_from_df(*args, nnsmith_path, neuri_path, type="torch") :
@@ -380,13 +380,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     assert args.package == "torch" or args.package == "tensorflow"
-    dir = "/artifact/results/"
+    dir = "/DeepConstr/results/"
     if args.package == "torch" : 
-        nnsmith_path = "/artifact/data/torch_nnsmith.json"
-        neuri_path = "/artifact/data/torch_neuri.json"
+        nnsmith_path = "/DeepConstr/data/torch_nnsmith.json"
+        neuri_path = "/DeepConstr/data/torch_neuri.json"
     elif args.package == "tensorflow" :
-        nnsmith_path = "/artifact/data/tf_nnsmith.json"
-        neuri_path = "/artifact/data/tf_neuri.json"
+        nnsmith_path = "/DeepConstr/data/tf_nnsmith.json"
+        neuri_path = "/DeepConstr/data/tf_neuri.json"
     result_df = gen_table4_from_df(
         *[os.path.join(dir, folder) for folder in args.folders],  
         nnsmith_path=nnsmith_path,
@@ -396,51 +396,51 @@ if __name__ == "__main__":
     
     # result_df = gen_table4(
     #     final_bf_summary,  
-    #     "/artifact/data/torch_nnsmith.json",
-    #     "/artifact/data/torch_neuri.json",
+    #     "/DeepConstr/data/torch_nnsmith.json",
+    #     "/DeepConstr/data/torch_neuri.json",
     #     type="torch")
-    # result_df.to_csv(os.path.join("/artifact/results/", args.output+".csv"), index=False)
+    # result_df.to_csv(os.path.join("/DeepConstr/results/", args.output+".csv"), index=False)
     # print("tf")
     # csv_paths = [
-    #     "/artifact/experiments/results/final_tf.csv",
+    #     "/DeepConstr/experiments/results/final_tf.csv",
     # ]
-    # df = merge_csvs(*csv_paths, save_path="/artifact/experiments/results/merged_tf_v3.csv")
+    # df = merge_csvs(*csv_paths, save_path="/DeepConstr/experiments/results/merged_tf_v3.csv")
     # gen_table4(
     #     df,
-    #     "/artifact/data/tf_nnsmith.json",
-    #     "/artifact/data/tf_neuri.json",
+    #     "/DeepConstr/data/tf_nnsmith.json",
+    #     "/DeepConstr/data/tf_neuri.json",
     #     type="tf")
 
     # print("torch")
     # df = merge_csvs(*csv_paths)
     # gen_table4(
     #     df,  
-    #     nnsmith_path="/artifact/data/torch_nnsmith.json",
-    #     neuri_path="/artifact/data/torch_overall_apis.json",
+    #     nnsmith_path="/DeepConstr/data/torch_nnsmith.json",
+    #     neuri_path="/DeepConstr/data/torch_overall_apis.json",
     #     type="torch")
     # print("tf")
     # csv_paths = [
-    #     "/artifact/experiments/results/merged_tf_v2.csv",
-    #     "/artifact/experiments/results/20240402-235616.csv",
-    #     "/artifact/experiments/results/20240404-124049.csv"
+    #     "/DeepConstr/experiments/results/merged_tf_v2.csv",
+    #     "/DeepConstr/experiments/results/20240402-235616.csv",
+    #     "/DeepConstr/experiments/results/20240404-124049.csv"
     # ]
-    # df = merge_csvs(*csv_paths, save_path="/artifact/experiments/results/merged_tf_v3.csv")
+    # df = merge_csvs(*csv_paths, save_path="/DeepConstr/experiments/results/merged_tf_v3.csv")
     # gen_table4(
     #     df,
-    #     "/artifact/data/tf_nnsmith.json",
-    #     "/artifact/data/tf_overall_apis.json",
+    #     "/DeepConstr/data/tf_nnsmith.json",
+    #     "/DeepConstr/data/tf_overall_apis.json",
     #     type="torch")
 
 # pt_data_paths = [
-#     "/artifact/experiments/results/merged_torch_v2.csv",
+#     "/DeepConstr/experiments/results/merged_torch_v2.csv",
 # ]
-# pt_neuri_data_path = "/artifact/data/torch_overall_apis.json"
-# pt_nnsmith_data_path = "/artifact/data/torch_nnsmith.json"
+# pt_neuri_data_path = "/DeepConstr/data/torch_overall_apis.json"
+# pt_nnsmith_data_path = "/DeepConstr/data/torch_nnsmith.json"
 # tf_data_paths = [
-#     "/artifact/experiments/results/merged_tf_v2.csv"
+#     "/DeepConstr/experiments/results/merged_tf_v2.csv"
 # ]
-# tf_neuri_data_path = "/artifact/data/tf_overall_apis.json"
-# tf_nnsmith_data_path = "/artifact/data/tf_nnsmith.json"
+# tf_neuri_data_path = "/DeepConstr/data/tf_overall_apis.json"
+# tf_nnsmith_data_path = "/DeepConstr/data/tf_nnsmith.json"
 
 # def exclude_intestable() :
 #     neuri_pt = check_left_api(
@@ -448,22 +448,22 @@ if __name__ == "__main__":
 #         pt_data_paths
 #     )
 
-#     neuri_pt_rec = check_record(neuri_pt, "/artifact/data/records")
+#     neuri_pt_rec = check_record(neuri_pt, "/DeepConstr/data/records")
 #     neuri_tf = check_left_api(
 #         tf_neuri_data_path,
 #         tf_data_paths
 #     )
-#     neuri_tf_rec = check_record(neuri_tf, "/artifact/data/records")
+#     neuri_tf_rec = check_record(neuri_tf, "/DeepConstr/data/records")
 
 #     nnsmith_pt = check_left_api(
 #         pt_nnsmith_data_path,
 #         pt_data_paths
 #     )
 
-#     nnsmith_pt_rec = check_record(nnsmith_pt, "/artifact/data/records")
+#     nnsmith_pt_rec = check_record(nnsmith_pt, "/DeepConstr/data/records")
 #     nnsmith_tf = check_left_api(
 #         tf_nnsmith_data_path,
 #         tf_data_paths
 #     )
-#     nnsmith_tf_rec = check_record(nnsmith_tf, "/artifact/data/records")
+#     nnsmith_tf_rec = check_record(nnsmith_tf, "/DeepConstr/data/records")
 #     return list(set(neuri_pt_rec + neuri_tf_rec + nnsmith_pt_rec + nnsmith_tf_rec))

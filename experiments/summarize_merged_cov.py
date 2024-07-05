@@ -175,7 +175,7 @@ def summarize_final_bf(aggregated_df, pivot):
             cnt+=1
 
     all_data = final_bf_summary.shape[0]
-    # revise_complete_data("/artifact/experiments/results/completed.json", completed_data)
+    # revise_complete_data("/DeepConstr/experiments/results/completed.json", completed_data)
     print(final_bf_summary.head())
     return pd.concat([final_bf_summary, model_cnt], axis=1), completed_data 
 
@@ -200,7 +200,7 @@ def extract_and_remove_unnormal_val(df, package):
     # Step 3: Save the positions of unnormal values
     rows, cols = np.where(mask)
     for col in cols :
-        with open(f"/artifact/results/unnormal_val_{df.columns[col]}_{package}.json", "w") as file:
+        with open(f"/DeepConstr/results/unnormal_val_{df.columns[col]}_{package}.json", "w") as file:
             json.dump(list(set([df.index[row] for row in rows])), file)
 
     # positions = [(df.index[row], df.columns[col]) for row, col in zip(rows, cols) if not str(df.columns[col]).endswith("cnt")]
@@ -225,7 +225,7 @@ def get_intersected(tool1, tool2, package) :
     for tool in [tool1, tool2] :
         file_name = get_api_list_saved_path(tool, package)
         file_name = os.path.join(root_dir, file_name)
-        with open("/artifact/data/torch_dc_doctor.json", "r") as f :
+        with open("/DeepConstr/data/torch_dc_doctor.json", "r") as f :
             data.append(json.load(f))
 
     intersected = list(set(data[0]).intersection(set(data[1])))
@@ -343,5 +343,5 @@ if __name__ == "__main__":
     aggregated_df = aggregate_summarized_data(processed_data)
     final_bf_summary, completed_data = summarize_final_bf(aggregated_df, args.pivot)
     final_bf_summary = final_bf_summary.reset_index()
-    final_bf_summary.to_csv(os.path.join("/artifact/results/", f"raw_{args.output}"), index=False)
-    gen_table4_from_df(final_bf_summary, args.load, pivot=args.pivot, package=args.package).to_csv(os.path.join("/artifact/results/", f"{args.output}"), index=False)
+    final_bf_summary.to_csv(os.path.join("/DeepConstr/results/", f"raw_{args.output}"), index=False)
+    gen_table4_from_df(final_bf_summary, args.load, pivot=args.pivot, package=args.package).to_csv(os.path.join("/DeepConstr/results/", f"{args.output}"), index=False)

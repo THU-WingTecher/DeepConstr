@@ -60,7 +60,7 @@ def deal_special_case(record) :
             elif key == "is_pos" :
                 record["args"]["is_pos"] = value
 
-def tf_prepare(save_dir, executor, datapath="/artifact/data/tf_nnsmith.json"):
+def tf_prepare(save_dir, executor, datapath="/DeepConstr/data/tf_nnsmith.json"):
     legal, illegal, notfound = 0, 0, 0
     notfounds = []
     illegals = []

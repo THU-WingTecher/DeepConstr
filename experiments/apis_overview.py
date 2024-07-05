@@ -30,7 +30,7 @@ def get_trained_list(record_path, path) :
 
 def get_prepared_list() : 
     data = set()
-    prepared_path = "/artifact/data/records"
+    prepared_path = "/DeepConstr/data/records"
     for root, dirs, files in os.walk(prepared_path+"/torch"):
         for file in files:
             if file.endswith(".yaml"):
@@ -45,16 +45,16 @@ def save_to_json(data, path) :
 if __name__ == "__main__" : 
     import sys 
     if len(sys.argv) < 2 :
-        record_path = "/artifact/data/records"
+        record_path = "/DeepConstr/data/records"
     else :
         record_path = sys.argv[1]
     for lib in ["tf", "torch", "numpy"] :
         trained = get_trained_list(record_path+f"/{lib}", lib)
         print(f"Number of trained {lib} apis: ", len(trained))
         print(f"Saving trained {lib} apis to json file")
-        save_to_json(trained, f"/artifact/data/{lib}_deepconstr.json")
+        save_to_json(trained, f"/DeepConstr/data/{lib}_deepconstr.json")
     # tf_prepared = get_prepared_list()
     # tf_untrained = set(tf_prepared) - set(tf_trained)
     # print(tf_untrained)
     # print(len(tf_untrained))
-    # save_to_json(list(tf_untrained), "/artifact/data/tf_untrained.json")
+    # save_to_json(list(tf_untrained), "/DeepConstr/data/tf_untrained.json")

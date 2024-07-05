@@ -16,7 +16,7 @@ results = dict()
 from pathlib import Path
 from tqdm import tqdm
 import shutil
-ROOT_DIR = "/artifact"
+ROOT_DIR = "/DeepConstr"
 
 def generate_random_string(length):
     """Generate a random string of fixed length."""
@@ -135,7 +135,7 @@ def batched(iterable, n=1):
 
 def change_to_legal(strings, file_name) :
     input_name = file_name.replace(".py", "p")
-    input_keys = pickle.load(open('/artifact/exp/doctor/torch/torch.acos/9f8c1249b47e5caf2bc52976ac1ccab57c3f363f.p', 'rb')).keys()
+    input_keys = pickle.load(open('/DeepConstr/exp/doctor/torch/torch.acos/9f8c1249b47e5caf2bc52976ac1ccab57c3f363f.p', 'rb')).keys()
     input_keys_strs = ", ".join(input_keys)
     strings = strings.replace("forward(self, data)", f"forward(self, {input_keys_strs})").replace("eag = model(data)", "")
     pattern = r'(return\s+torch\.\w+\(\*\*data\))'

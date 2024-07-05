@@ -237,7 +237,7 @@ def count_sub_constraints() :
 
 if __name__ == "__main__" :
     import sys 
-    record_path = "/artifact/data/records/torch/nn/functional/adaptive_max_pool2d_with_indices-0.yaml" 
+    record_path = "/DeepConstr/data/records/torch/nn/functional/adaptive_max_pool2d_with_indices-0.yaml" 
     if len(sys.argv) > 1 :
         record_path = sys.argv[1]
     
