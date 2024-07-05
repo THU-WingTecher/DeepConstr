@@ -12,7 +12,7 @@ from nnsmith.util import mkdir
 
 results = dict()
 WORKSPACE = "temp_cov"
-ROOT_DIR = "/artifact"
+ROOT_DIR = "/DeepConstr"
 
 def collect():
     for root, dirs, files in os.walk("./bazel-out"):
