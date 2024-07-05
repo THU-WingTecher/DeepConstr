@@ -3,9 +3,9 @@
 import os
 import yaml
 from matplotlib import pyplot as plt
-import pandas as pd
-import numpy as np
-from typing import *
+import statistics
+from typing import List
+# -> visualize distribution of length of cosntr, f1_ prec_ recall of constr, pie chart of constr type
 
 SMALL_SIZE = 10
 MEDIUM_SIZE = 14
@@ -92,10 +92,10 @@ def get_deepconstr_stats(data_list):
     print(" ## Num of Sub Constraints : ", total, "from", len(list(api_per_subconstraints.keys())), "number of operators")
     print(" ## Mean : ", total/len(list(api_per_subconstraints.keys())), " Median ",  statistics.median(api_per_subconstraints.values()))
     return deepconstr_stats, deepconstr_len, deepconstr_operator, deepconstr_f1, deepconstr_prec, deepconstr_recall
+
 def mean(numbers):
     return sum(numbers) / len(numbers)
-import statistics
-# -> visualize distribution of length of cosntr, f1_ prec_ recall of constr, pie chart of constr type
+
 def viz_passrate(data_list, deepdeepconstr_s_data_list, name, path = "/DeepConstr/results/") :
     all = []
     for i, data_li in enumerate([data_list, deepdeepconstr_s_data_list]):
@@ -150,6 +150,8 @@ def viz_f1(deepconstr_recall : List[float], deepconstr_prec, deepdeepconstr_s_re
     plt.xticks(range(0, 101, 10))
     plt.yticks(range(0, 101, 10))
     plt.grid(True, which='both', linestyle='--', linewidth=0.5)
+    if os.path.exists(path) == False:
+        os.makedirs(path)
     plt.savefig(path + f"5_dist_{name}.pdf")
     plt.savefig(path + f"5_dist_{name}.png")
 
