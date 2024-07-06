@@ -13,7 +13,10 @@ Get Docker image from Docker Hub
 ```bash
 docker pull gwihwan/artifact-issta24:latest
 ``` 
-
+Navigate to the DeepConstr project directory.
+```bash
+cd ../DeepConstr
+```
 ### Start fuzzing
 
 You can start fuzzing with the `fuzz.py` script.
@@ -34,7 +37,7 @@ You can start fuzzing with the `fuzz.py` script.
 > - `mgen.test_pool`(Optional): specific API for fuzzing. If not specified, fuzzing will be conducted across all prepared APIs.
 >
 > **Outputs**:
-> The buggy test cases will be saved in the directory specified by `fuzz.root`, while generated test cases will be saved in the directory specified by `fuzz.save_test`.
+> The buggy test cases will be saved in the directory specified by `fuzz.root`, while every generated test case will be saved in the directory specified by `fuzz.save_test`.
 
 #### Quick start for PyTorch
 
@@ -45,11 +48,20 @@ conda activate std
 
 For PyTorch, you can specify the APIs to be tested by setting the `mgen.test_pool` argument, such as `[torch.abs,torch.add]`. For example, following code will fuzz `torch.abs` and `torch.add` for 15 minutes.
 ```bash
-PYTHONPATH=$(pwd):$(pwd)/deepconstr:$(pwd)/nnsmith python nnsmith/cli/fuzz.py fuzz.time=15m mgen.record_path=/DeepConstr/data/records/torch fuzz.root=/DeepConstr/outputs/torch-deepconstr-n5-torch.abs-torch.add fuzz.save_test=/DeepConstr/outputs/torch-deepconstr-n5-torch.abs-torch.add.models model.type=torch backend.type=torchcomp filter.type=[nan,dup,inf] debug.viz=true hydra.verbose=['fuzz'] fuzz.resume=true mgen.method=deepconstr mgen.max_nodes=5 mgen.test_pool=[torch.abs,torch.add] mgen.pass_rate=10
+PYTHONPATH=$(pwd):$(pwd)/deepconstr:$(pwd)/nnsmith python nnsmith/cli/fuzz.py fuzz.time=15m \
+mgen.record_path=/DeepConstr/data/records/torch fuzz.root=/DeepConstr/outputs/torch-deepconstr-n5-torch.abs-torch.add \
+fuzz.save_test=/DeepConstr/outputs/torch-deepconstr-n5-torch.abs-torch.add.models \
+model.type=torch backend.type=torchcomp filter.type=[nan,dup,inf] \
+debug.viz=true hydra.verbose=['fuzz'] fuzz.resume=true \
+mgen.method=deepconstr mgen.max_nodes=5 mgen.test_pool=[torch.abs,torch.add] mgen.pass_rate=10
 ```
-If the `mgen.test_pool` is not specified, we are fuzzing all APIs that deepconstr supports. Following code will fuzz all APIs for 4 hours.
+If the `mgen.test_pool` is not specified, the program will fuzz all APIs that deepconstr supports. Following code will fuzz all APIs that deepconstr support for 4 hours.
 ```bash
-PYTHONPATH=$(pwd):$(pwd)/deepconstr:$(pwd)/nnsmith python nnsmith/cli/fuzz.py fuzz.time=4h mgen.record_path=/DeepConstr/data/records/torch fuzz.root=/DeepConstr/outputs/torch-deepconstr-n5-torch.abs-torch.add fuzz.save_test=/DeepConstr/outputs/torch-deepconstr-n5-torch.abs-torch.add.models model.type=torch backend.type=torchcomp filter.type=[nan,dup,inf] debug.viz=true hydra.verbose=['fuzz'] fuzz.resume=true mgen.method=deepconstr mgen.max_nodes=5 mgen.pass_rate=10
+PYTHONPATH=$(pwd):$(pwd)/deepconstr:$(pwd)/nnsmith python nnsmith/cli/fuzz.py fuzz.time=4h \
+mgen.record_path=/DeepConstr/data/records/torch \
+fuzz.root=/DeepConstr/outputs/torch-deepconstr-n5-torch.abs-torch.add \
+fuzz.save_test=/DeepConstr/outputs/torch-deepconstr-n5-torch.abs-torch.add.models \
+model.type=torch backend.type=torchcomp filter.type=[nan,dup,inf] debug.viz=true hydra.verbose=['fuzz'] fuzz.resume=true mgen.method=deepconstr mgen.max_nodes=5 mgen.pass_rate=10
 ```
 
 #### Quick start for TensorFlow
@@ -59,12 +71,17 @@ conda activate std
 ```
 Then, execute the following commands to start fuzzing. Following code will fuzz all APIs that deepconstr supports for 4 hours.
 ```bash 
-PYTHONPATH=$(pwd):$(pwd)/deepconstr:$(pwd)/nnsmith python nnsmith/cli/fuzz.py fuzz.time=4h mgen.record_path=/DeepConstr/data/records/tf fuzz.root=/DeepConstr/outputs/tensorflow-deepconstr-n5- fuzz.save_test=/DeepConstr/outputs/tensorflow-deepconstr-n5-.models model.type=tensorflow backend.type=xla filter.type=[nan,dup,inf] debug.viz=true hydra.verbose=['fuzz'] fuzz.resume=true mgen.method=deepconstr mgen.max_nodes=5 mgen.pass_rate=10
+PYTHONPATH=$(pwd):$(pwd)/deepconstr:$(pwd)/nnsmith python nnsmith/cli/fuzz.py fuzz.time=4h \
+mgen.record_path=/DeepConstr/data/records/tf \
+fuzz.root=/DeepConstr/outputs/tensorflow-deepconstr-n5- fuzz.save_test=/DeepConstr/outputs/tensorflow-deepconstr-n5-.models \
+model.type=tensorflow backend.type=xla filter.type=[nan,dup,inf] \
+debug.viz=true hydra.verbose=['fuzz'] \
+fuzz.resume=true mgen.method=deepconstr mgen.max_nodes=5 mgen.pass_rate=10
 ```
 
 #### Generate python code
 
-The test case of deepconstr is saved as the format of `gir.pkl`. To convert the `git.pkl` into python code, you can utilize below code. You can specify the code with the option of compiler. For now, we support "torchcomp" compiler with pytorch, and "xla" with tensorflow. You can use following code to convert the `gir.pkl` which is saved at `code_saved_dir` into python code.
+The test case of deepconstr is saved as the format of `gir.pkl`. To convert the `git.pkl` into python code, you can utilize below code. You can specify the code with the option of compiler. For now, we support "torchcomp" compiler with pytorch. You can use following code to convert the `gir.pkl` which is saved at `code_saved_dir` into python code.
 
 ```bash
 python nnsmith/materialize/torch/program.py ${code_saved_dir} torchcomp
@@ -78,14 +95,13 @@ python nnsmith/materialize/torch/program.py ${code_saved_dir} torchcomp
 ```bash 
 pip install -r requirements.txt
 ```
-2. Configuration Setup:
-Generate a .env file in your workspace directory ($(pwd)/.env) and populate it with your specific values:
+2. Generate a `.env` file in your workspace directory `$(pwd)/.env` and populate it with your specific values:
 - OpenAI API Key:
 ```OPENAI_API_KEY1 ='sk-********'```
 - Proxy Setting (Optional):
-```MYPROXY ='166.111.***.***:****'```
-3. Testing Your Configuration:
-After setting your environment variables, you can verify your configuration by running:
+```MYPROXY ='166.***.***.***:****'```
+
+3. Testing Your Configuration: After setting your environment variables, you can verify your configuration by running:
 ```bash
 PYTHONPATH=$(pwd):$(pwd)/deepconstr:$(pwd)/nnsmith python tests/proxy.py
 # INFO    llm    - Output(Ptk12-OtkPtk9) : 
@@ -122,7 +138,7 @@ You can extract constraints by running `deepconstr/train/run.py` script.
 
 #### Quick Start :
 
-Please set your `train.record_path` to the desired location that you want to store such as `$(pwd)/repro/records/torch`
+Please set your `train.record_path` to the desired location that you want to store. For instance, `$(pwd)/repro/records/torch`
 
 ##### for PyTorch 
 Below command will extract constraints from `"torch.add","torch.abs"`. The extracted constraints are stored to `$(pwd)/repro/records/torch`. We recommand to set `train.parallel` to larger than 1.
@@ -175,15 +191,13 @@ python experiments/apis_overview.py /DeepConstr/data/records
 # Number of trained tf apis:  258
 # Number of trained torch apis:  843
 ```
-By default, is set to `/DeepConstr/data/records`.
 
 #### Coverage Comparison Experiment
 > [!NOTE]
 > For this step, you need first download PyTorch and TensorFlow and compile them 
 > Or you can pull our docker containor(Work in Progress)
 
-We have four baselines for conducting experiments. Additionally, approximately 700 operators (programs) require testing for PyTorch and 150 operators for TensorFlow. Given that each operator needs to be tested for 15 minutes, completing the experiment will be time-intensive. To expedite the process, we recommend using the `exp.parallel` argument to enable multiple threads during the experiment.
-The experiment results will be saved at the folder specified in `exp.save_dir`.
+We have four baselines for conducting experiments. Additionally, approximately 700 operators (programs) require testing for PyTorch and 150 operators for TensorFlow. Given that each operator needs to be tested for 15 minutes, completing the experiment will be time-intensive. To expedite the process, we recommend using the `exp.parallel` argument to enable multiple threads during the experiment. The experiment results will be saved in the folder specified by `exp.save_dir`.
 
 ##### for PyTorch 
 
