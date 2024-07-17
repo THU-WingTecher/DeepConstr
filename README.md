@@ -269,4 +269,4 @@ This script will automatically gather the constraints from the  default location
 
 ### Bug finding evidence (RQ3)
 
-To ensure the anonymity of this artifact, we are currently withholding the list of identified bugs.
+You can find the bug finding evidence [here](https://github.com/THU-WingTecher/DeepConstr/blob/main/docs/bug_list.md)
