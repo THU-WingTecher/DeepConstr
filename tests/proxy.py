@@ -24,7 +24,8 @@ from omegaconf import DictConfig
 @hydra.main(version_base=None, config_path="../nnsmith/config", config_name="main")
 def main(cfg: DictConfig):
     load_dotenv(override=True)
-    os.environ['ALL_PROXY'] =os.getenv("MYPROXY")
+    if os.getenv("MYPROXY") is not None:
+        os.environ['ALL_PROXY'] =os.getenv("MYPROXY")
     check_internet_connection("http://www.google.com")
     proxy_check(cfg)
 
