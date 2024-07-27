@@ -3,8 +3,7 @@
 > **Note** Annotations
 > * **Status**: ✅ fixed; 🚨 high-priority bug; 🔵 explicitly confirmed by developers; ❌ won't fix / not a bug; 🔁 duplicated; 
 > * **Symptom**: 💥 Crash or exception; 🧮 Wrong Error Messages 🔀 inconsistency;
-inconsistency - 30
-12+22 = 34
+
 ### PyTorch
 1. 🚨💥✅[Segmentation fault in torch.nn.functional.cosine_embedding_loss with empty tensors and mixed dtypes #112732· pytorch/pytorch · GitHub](https://github.com/pytorch/pytorch/issues/112732)
 2. 🚨💥✅[Segmentation Fault on torch.div with Empty Tensor Dimensions #113037· pytorch/pytorch · GitHub](https://github.com/pytorch/pytorch/issues/113037)
