@@ -24,7 +24,7 @@ DEFAULT_RULES = [
 
 def get_tensor_args(record) :
     from deepconstr.grammar.dtype import AbsVector
-    return [name for name, dtype in zip(record['args']['name'], record['args']['dtype']) if isinstance(dtype, AbsVector)]
+    return [name for name, dtype in zip(record['args']['name'], record['args']['dtype_obj']) if isinstance(dtype[0], AbsVector)]
 
 def gen_default_rule(arg_names, record, rule) :
 

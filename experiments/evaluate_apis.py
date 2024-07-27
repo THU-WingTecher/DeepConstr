@@ -418,6 +418,15 @@ def need_to_gen_testcases(api_name, base_line, cfg) :
             if max(map(float, test_list)) > timeout_s-60 : return False
     return True
 
+def load_nnsmith_api_names(model_type) :
+    if model_type == "torch" :
+        with open("./data/torch_nnsmith.json", "r") as f :
+            api_names = json.load(f)
+    elif model_type == "tensorflow" :
+        with open("./data/tf_nnsmith.json", "r") as f :
+            api_names = json.load(f)
+    return api_names
+    
 @hydra.main(version_base=None, config_path="../nnsmith/config", config_name="main")
 def main(cfg) : 
     # from nnsmith.cli.train import get_completed_list
@@ -435,6 +444,7 @@ def main(cfg) :
     refuzz_list = set()
     # api_names = load_api_names_from_data(cfg["mgen"]["record_path"], cfg["mgen"]["pass_rate"])
     # api_names = list(set(api_names))
+    nnsmith_api_list = load_nnsmith_api_names(cfg["model"]["type"])
     with open(cfg["exp"]["targets"], "r") as f :
         api_names = json.load(f)
     if cfg["exp"]["mode"] is not None :
@@ -447,6 +457,9 @@ def main(cfg) :
         for baseline in cfg["exp"]["baselines"] : 
             for api_name in api_names :
                 if baseline not in ["acetest", "doctor"] :
+                    if baseline in ["symbolic-cinit"] : 
+                        if api_name not in nnsmith_api_list :
+                            continue 
                     if need_to_gen_testcases(api_name, baseline, cfg) :
                         refuzz_list.add((baseline, api_name, "fuzz"))
                 else :

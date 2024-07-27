@@ -67,7 +67,8 @@ class Inferencer() :
                   update : bool = False
                   ) -> str :
         # self.flip_key()
-        os.environ['ALL_PROXY'] = os.getenv("MYPROXY")
+        if os.getenv("MYPROXY") is not None:
+            os.environ['ALL_PROXY'] = os.getenv("MYPROXY")
         completion = None
 
         start = time.time()
