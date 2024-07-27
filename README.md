@@ -260,7 +260,7 @@ conda activate cov
 ```bash
 PYTHONPATH=/DeepConstr/:/DeepConstr/nnsmith/:/DeepConstr/deepconstr/:$PYTHONPATH \
 python experiments/evaluate_apis.py \
-exp.save_dir=exp/tf mgen.record_path=$(pwd)/data/records/tf/ mgen.pass_rate=0.05 model.type=tensorflow backend.type=xla fuzz.time=15m exp.parallel=16 mgen.noise=0.8 exp.targets=/DeepConstr/data/tf_dc_neuri.json exp.baselines=['deepconstr', 'neuri', 'symbolic-cinit', 'deepconstr_2']
+exp.save_dir=exp/tf mgen.record_path=$(pwd)/data/records/tf/ mgen.pass_rate=0.05 model.type=tensorflow backend.type=xla fuzz.time=15m exp.parallel=16 mgen.noise=0.8 exp.targets=/DeepConstr/data/tf_dc_neuri.json exp.baselines="['deepconstr', 'neuri', 'symbolic-cinit', 'deepconstr_2']"
 ```
 
 <!-- for testing acetest
